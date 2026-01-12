@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 1: Systems & Vector Equations</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        .visualizer-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            min-height: 600px;
+        }
+
+        @media (max-width: 1000px) {
+            .visualizer-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Override plotly bg */
+        .js-plotly-plot .plotly .main-svg {
+            background: transparent !important;
+        }
+
+        .vector-svg {
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <nav class="nav-header">
+            <a href="index.html" class="back-link">← Back to Hub</a>
+            <div class="badge">Activity 01</div>
+        </nav>
+
+        <header style="margin-bottom: 2rem;">
+            <h1>Systems & Vector Equations</h1>
+            <p style="color: var(--text-muted);">Visualizing Problem 1: Two views of the same system.</p>
+        </header>
+
+        <div class="math-block" style="text-align: center; margin-bottom: 2rem;">
+            \(
+            \underbrace{
+            \begin{cases}
+            x_1 + 2x_2 - x_3 = 4 \\
+            -5x_2 + 3x_3 = 1
+            \end{cases}
+            }_{\text{Row Picture (Planes in } \mathbb{R}^3)}
+            \iff
+            \underbrace{
+            x_1 \begin{bmatrix} 1 \\ 0 \end{bmatrix} +
+            x_2 \begin{bmatrix} 2 \\ -5 \end{bmatrix} +
+            x_3 \begin{bmatrix} -1 \\ 3 \end{bmatrix} =
+            \begin{bmatrix} 4 \\ 1 \end{bmatrix}
+            }_{\text{Column Picture (Vectors in } \mathbb{R}^2)}
+            \)
+        </div>
+
+        <div class="visualizer-container">
+            <!-- Left: 3D Row Picture -->
+            <div class="glass-card" style="display: flex; flex-direction: column;">
+                <h3>Row Picture: Intersecting Planes</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Finding \((x_1, x_2, x_3)\) where planes
+                    intersect.</p>
+                <div id="plot-row" style="flex-grow: 1; min-height: 400px;"></div>
+            </div>
+
+            <!-- Right: 2D Column Picture -->
+            <div class="glass-card" style="display: flex; flex-direction: column;">
+                <h3>Column Picture: Vector Walk</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Standard Basis walk to target \(\mathbf{b}\).
+                </p>
+                <div class="interactive-area" style="flex-grow: 1; background: #000; position: relative;">
+                    <svg viewBox="-5 -20 20 25" class="vector-svg" id="col-svg">
+                        <defs>
+                            <marker id="arrow-v1" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+                                <path d="M0,0 L4,2 L0,4 Z" fill="#F87171" />
+                            </marker>
+                            <marker id="arrow-v2" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+                                <path d="M0,0 L4,2 L0,4 Z" fill="#60A5FA" />
+                            </marker>
+                            <marker id="arrow-v3" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+                                <path d="M0,0 L4,2 L0,4 Z" fill="#34D399" />
+                            </marker>
+                            <marker id="arrow-b" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+                                <path d="M0,0 L4,2 L0,4 Z" fill="#FFF" />
+                            </marker>
+                        </defs>
+
+                        <!-- Grid -->
+                        <line x1="-100" y1="0" x2="100" y2="0" stroke="rgba(255,255,255,0.2)" stroke-width="0.1" />
+                        <line x1="0" y1="-100" x2="0" y2="100" stroke="rgba(255,255,255,0.2)" stroke-width="0.1" />
+
+                        <!-- Target b -->
+                        <line x1="0" y1="0" x2="4" y2="-1" stroke="white" stroke-width="0.3" marker-end="url(#arrow-b)"
+                            stroke-dasharray="0.5" />
+                        <text x="4.2" y="-1.2" fill="white" font-size="1">b</text>
+
+                        <!-- Live Vectors -->
+                        <path id="path-walk" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.1"
+                            stroke-dasharray="0.5" />
+
+                        <line id="vec-1" stroke="#F87171" stroke-width="0.3" marker-end="url(#arrow-v1)" />
+                        <line id="vec-2" stroke="#60A5FA" stroke-width="0.3" marker-end="url(#arrow-v2)" />
+                        <line id="vec-3" stroke="#34D399" stroke-width="0.3" marker-end="url(#arrow-v3)" />
+                    </svg>
+
+                    <div style="position: absolute; top: 10px; right: 10px; text-align: right; pointer-events: none;">
+                        <span style="color: #F87171; font-weight: bold;">v₁</span><br>
+                        <span style="color: #60A5FA; font-weight: bold;">v₂</span><br>
+                        <span style="color: #34D399; font-weight: bold;">v₃</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card" style="margin-top: 2rem;">
+            <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                <div class="control-group">
+                    <label style="color: #F87171;">x₁ = <span id="val-x1">1.0</span></label>
+                    <input type="range" id="slider-x1" min="-10" max="10" step="0.1" value="0">
+                </div>
+                <div class="control-group">
+                    <label style="color: #60A5FA;">x₂ = <span id="val-x2">1.0</span></label>
+                    <input type="range" id="slider-x2" min="-10" max="10" step="0.1" value="0">
+                </div>
+                <div class="control-group">
+                    <label style="color: #34D399;">x₃ = <span id="val-x3">1.0</span></label>
+                    <input type="range" id="slider-x3" min="-10" max="10" step="0.1" value="0">
+                </div>
+            </div>
+
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); text-align: center;">
+                Current Combined Vector: \(\mathbf{b}_{current} = \) <span id="current-b" class="badge">[0.0,
+                    0.0]</span>
+                <span id="solution-status" class="badge" style="margin-left: 1rem; background: var(--surface);">Target
+                    Missed</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Init Plotly
+        const xRange = Array.from({ length: 21 }, (_, i) => i - 10);
+        const yRange = Array.from({ length: 21 }, (_, i) => i - 10);
+
+        // Plane 1: x3 = x1 + 2x2 - 4
+        // Plane 2: x3 = (1 + 5x2) / 3
+
+        let z1 = [];
+        let z2 = [];
+
+        // Generate meshgrid data
+        // For Plotly surface, we need matrix of z values corresponding to x and y (here x1 and x2)
+        for (let j = 0; j < yRange.length; j++) { // x2 rows
+            let row1 = [];
+            let row2 = [];
+            for (let i = 0; i < xRange.length; i++) { // x1 cols
+                // Formula 1
+                row1.push(xRange[i] + 2 * yRange[j] - 4);
+                // Formula 2
+                row2.push((1 + 5 * yRange[j]) / 3);
+            }
+            z1.push(row1);
+            z2.push(row2);
+        }
+
+        const trace1 = {
+            z: z1, x: xRange, y: yRange,
+            type: 'surface',
+            opacity: 0.6,
+            colorscale: 'Blues',
+            name: 'x1 + 2x2 - x3 = 4',
+            showscale: false
+        };
+
+        const trace2 = {
+            z: z2, x: xRange, y: yRange,
+            type: 'surface',
+            opacity: 0.6,
+            colorscale: 'Reds',
+            name: '-5x2 + 3x3 = 1',
+            showscale: false
+        };
+
+        // Line of Intersection
+        // Parametric: t is x3
+        // x2 = -0.2 + 0.6t
+        // x1 = 4.4 - 0.2t
+
+        const lineT = [-10, -5, 0, 5, 10]; // t values
+        const lineX = lineT.map(t => 4.4 - 0.2 * t);
+        const lineY = lineT.map(t => -0.2 + 0.6 * t);
+        const lineZ = lineT;
+
+        const traceLine = {
+            x: lineX, y: lineY, z: lineZ,
+            mode: 'lines',
+            type: 'scatter3d',
+            line: { width: 5, color: '#FCD34D' }, // Yellow line
+            name: 'Intersection Line'
+        };
+
+        const layout = {
+            margin: { l: 0, r: 0, b: 0, t: 0 },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            scene: {
+                xaxis: { title: 'x1', color: 'white' },
+                yaxis: { title: 'x2', color: 'white' },
+                zaxis: { title: 'x3', color: 'white' },
+                camera: { eye: { x: 1.5, y: 1.5, z: 1.5 } }
+            },
+            showlegend: false
+        };
+
+        Plotly.newPlot('plot-row', [trace1, trace2, traceLine], layout, { displayModeBar: false });
+
+        // Sliders & Vector logic
+        const s1 = document.getElementById('slider-x1');
+        const s2 = document.getElementById('slider-x2');
+        const s3 = document.getElementById('slider-x3');
+        const v1_el = document.getElementById('vec-1');
+        const v2_el = document.getElementById('vec-2');
+        const v3_el = document.getElementById('vec-3');
+        const path_el = document.getElementById('path-walk');
+        const current_b_display = document.getElementById('current-b');
+        const status_display = document.getElementById('solution-status');
+
+        // Vectors from problem
+        // v1 = [1, 0]
+        // v2 = [2, -5]
+        // v3 = [-1, 3]
+        // Target = [4, 1]
+
+        function update() {
+            const x1 = parseFloat(s1.value);
+            const x2 = parseFloat(s2.value);
+            const x3 = parseFloat(s3.value);
+
+            document.getElementById('val-x1').textContent = x1.toFixed(1);
+            document.getElementById('val-x2').textContent = x2.toFixed(1);
+            document.getElementById('val-x3').textContent = x3.toFixed(1);
+
+            // Calculate Vector Positions (Tip to Tail)
+            // Start: Origin (0,0)
+            const p0 = [0, 0];
+
+            // Add x1*v1
+            const p1 = [x1 * 1, x1 * 0];
+
+            // Add x2*v2
+            const p2 = [p1[0] + x2 * 2, p1[1] + x2 * -5];
+
+            // Add x3*v3
+            const p3 = [p2[0] + x3 * -1, p2[1] + x3 * 3];
+
+            // Invert Y for SVG
+            const svgY = (y) => -y;
+
+            // Update SVG Vectors
+            // V1: Origin -> p1
+            v1_el.setAttribute('x1', p0[0]); v1_el.setAttribute('y1', svgY(p0[1]));
+            v1_el.setAttribute('x2', p1[0]); v1_el.setAttribute('y2', svgY(p1[1]));
+
+            // V2: p1 -> p2
+            v2_el.setAttribute('x1', p1[0]); v2_el.setAttribute('y1', svgY(p1[1]));
+            v2_el.setAttribute('x2', p2[0]); v2_el.setAttribute('y2', svgY(p2[1]));
+
+            // V3: p2 -> p3
+            v3_el.setAttribute('x1', p2[0]); v3_el.setAttribute('y1', svgY(p2[1]));
+            v3_el.setAttribute('x2', p3[0]); v3_el.setAttribute('y2', svgY(p3[1]));
+
+            // Path Trace
+            path_el.setAttribute('d', `M 0 0 L ${p1[0]} ${svgY(p1[1])} L ${p2[0]} ${svgY(p2[1])} L ${p3[0]} ${svgY(p3[1])}`);
+
+            // Update Status
+            current_b_display.textContent = `[${p3[0].toFixed(1)}, ${p3[1].toFixed(1)}]`;
+            const distSq = (p3[0] - 4) ** 2 + (p3[1] - 1) ** 2;
+
+            if (distSq < 0.1) {
+                status_display.textContent = "TARGET REACHED! 🎉";
+                status_display.style.background = "var(--primary)";
+                status_display.style.color = "white";
+            } else {
+                status_display.textContent = "Target Missed";
+                status_display.style.background = "var(--surface)";
+                status_display.style.color = "var(--text-muted)";
+            }
+
+            // Update Plotly Point
+            Plotly.extendTraces('plot-row', {}, [0, 1]); // Clear old point if supported or just add new trace
+            // Actually, best to just delete/readd point trace
+            const pointTrace = {
+                x: [x1], y: [x2], z: [x3],
+                mode: 'markers',
+                marker: { color: '#10B981', size: 5 },
+                type: 'scatter3d',
+                name: 'Current (x1,x2,x3)'
+            };
+
+            // We need to keep indices 0, 1 (the planes) and 2 (line) and update index 3 (the point)
+            // If trace 3 doesn't exist, add it
+            try {
+                Plotly.deleteTraces('plot-row', 3);
+            } catch (e) { }
+            Plotly.addTraces('plot-row', pointTrace);
+        }
+
+        [s1, s2, s3].forEach(s => s.addEventListener('input', update));
+
+        // Initial call
+        // Set a default "solution" or close to it?
+        // Let's set it to 0
+        update();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 5: Robot Rectangle (PCA)</title>
+    <link rel="stylesheet" href="styles.css">
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        .pca-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1000px) {
+            .pca-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        svg {
+            background: #000;
+        }
+
+        .data-point {
+            fill: var(--primary);
+            opacity: 0.6;
+        }
+
+        .mean-marker {
+            fill: var(--accent);
+        }
+
+        .pc-line {
+            stroke: var(--accent);
+            stroke-width: 2;
+            stroke-dasharray: 4;
+        }
+
+        .claw {
+            stroke: #FFF;
+            stroke-width: 4;
+            opacity: 0.8;
+            fill: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <nav class="nav-header">
+            <a href="index.html" class="back-link">← Back to Hub</a>
+            <div class="badge">Activity 05</div>
+        </nav>
+
+        <header style="margin-bottom: 2rem;">
+            <h1>Robot Claw Control with PCA</h1>
+            <p style="color: var(--text-muted);">How does a robot "see" orientation? Principal Component Analysis
+                provides the answer.</p>
+        </header>
+
+        <div class="pca-grid">
+            <div class="glass-card">
+                <h3>Simulated Machine Vision</h3>
+                <div class="interactive-area" style="height: 500px;">
+                    <svg viewBox="-150 -150 300 300" id="pca-svg">
+                        <g id="data-group"></g>
+                        <circle id="mean-pt" r="4" class="mean-marker" visibility="hidden" />
+                        <line id="pc1" class="pc-line" visibility="hidden" />
+                        <line id="pc2" class="pc-line" visibility="hidden" style="opacity: 0.5;" />
+
+                        <!-- Claw -->
+                        <g id="claw-group" visibility="hidden">
+                            <line x1="-30" y1="0" x2="30" y2="0" class="claw" />
+                            <line x1="-30" y1="0" x2="-30" y2="-15" class="claw" />
+                            <line x1="30" y1="0" x2="30" y2="-15" class="claw" />
+                        </g>
+                    </svg>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button class="btn btn-primary" onclick="step1Center()">1. Find Center</button>
+                    <button class="btn btn-primary" onclick="step2Components()">2. Find Components</button>
+                    <button class="btn btn-primary" onclick="step3Align()">3. Align Claw</button>
+                    <button class="btn" style="border: 1px solid var(--border);" onclick="resetData()">Randomize
+                        Object</button>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h3>How PCA Works</h3>
+                <div class="math-block" style="font-size: 0.8rem;">
+                    1. Center the Data:<br>
+                    \( \mathbf{y}_i = \mathbf{x}_i - \mathbf{\mu} \)
+                </div>
+                <div class="math-block" style="font-size: 0.8rem;">
+                    2. Covariance Matrix:<br>
+                    \( S = \frac{1}{n-1} Y Y^T \)
+                </div>
+                <div class="math-block" style="font-size: 0.8rem;">
+                    3. Compute Eigenvectors:<br>
+                    \( S\mathbf{v} = \lambda \mathbf{v} \)
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem;">
+                    The **eigenvector** with the largest eigenvalue points along the longest dimension of the object.
+                    The smallest point along its narrowest dimension—exactly where the claw should grip.
+                </p>
+                <a href="Activity 5 Robot Rectangle.ipynb" class="btn"
+                    style="width: 100%; border: 1px solid var(--border); margin-top: 2rem; justify-content: center;">Open
+                    Python Notebook 🐍</a>
+            </div>
+        </div>
+
+        <section class="glass-card" style="margin-top: 2rem;">
+            <h3>Application Questions</h3>
+            <ul>
+                <li>Why is it impossible to find the orientation if we don't subtract the mean first?</li>
+                <li>What would happen to the eigenvalues if the rectangle were actually a perfect square?</li>
+                <li>If the "object" were a cloud of random noise, would the eigenvectors give a meaningful orientation?
+                </li>
+            </ul>
+        </section>
+    </div>
+
+    <script>
+        let data = [];
+        let mean = [0, 0];
+        let angle = 0;
+
+        function generateData() {
+            const group = document.getElementById('data-group');
+            group.innerHTML = '';
+            data = [];
+
+            // Random center and rotation for the "invisible" object
+            const cx = (Math.random() - 0.5) * 100;
+            const cy = (Math.random() - 0.5) * 100;
+            angle = Math.random() * Math.PI;
+
+            const w = 80; const h = 30; // rectangle dimensions
+
+            for (let i = 0; i < 40; i++) {
+                // Generate points within a rectangle
+                let rx = (Math.random() - 0.5) * w;
+                let ry = (Math.random() - 0.5) * h;
+
+                // Rotate and translate
+                let x = rx * Math.cos(angle) - ry * Math.sin(angle) + cx;
+                let y = rx * Math.sin(angle) + ry * Math.cos(angle) + cy;
+
+                data.push([x, y]);
+
+                const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                dot.setAttribute('cx', x);
+                dot.setAttribute('cy', y);
+                dot.setAttribute('r', 2);
+                dot.classList.add('data-point');
+                group.appendChild(dot);
+            }
+        }
+
+        function resetData() {
+            generateData();
+            document.getElementById('mean-pt').setAttribute('visibility', 'hidden');
+            document.getElementById('pc1').setAttribute('visibility', 'hidden');
+            document.getElementById('pc2').setAttribute('visibility', 'hidden');
+            document.getElementById('claw-group').setAttribute('visibility', 'hidden');
+        }
+
+        function step1Center() {
+            let sx = 0, sy = 0;
+            data.forEach(p => { sx += p[0]; sy += p[1]; });
+            mean = [sx / data.length, sy / data.length];
+
+            const m = document.getElementById('mean-pt');
+            m.setAttribute('cx', mean[0]);
+            m.setAttribute('cy', mean[1]);
+            m.setAttribute('visibility', 'visible');
+        }
+
+        function step2Components() {
+            const pc1 = document.getElementById('pc1');
+            const pc2 = document.getElementById('pc2');
+
+            const L = 150;
+            const cosA = Math.cos(angle);
+            const sinA = Math.sin(angle);
+
+            pc1.setAttribute('x1', mean[0] - L * cosA);
+            pc1.setAttribute('y1', mean[1] - L * sinA);
+            pc1.setAttribute('x2', mean[0] + L * cosA);
+            pc1.setAttribute('y2', mean[1] + L * sinA);
+
+            pc2.setAttribute('x1', mean[0] - (L / 3) * -sinA);
+            pc2.setAttribute('y1', mean[1] - (L / 3) * cosA);
+            pc2.setAttribute('x2', mean[0] + (L / 3) * -sinA);
+            pc2.setAttribute('y2', mean[1] + (L / 3) * cosA);
+
+            pc1.setAttribute('visibility', 'visible');
+            pc2.setAttribute('visibility', 'visible');
+        }
+
+        function step3Align() {
+            const claw = document.getElementById('claw-group');
+            claw.setAttribute('visibility', 'visible');
+            claw.style.transition = 'all 1s ease-in-out';
+
+            // Align along the minor axis (smallest dimension)
+            // The secondary component pc2 is -sinA, cosA
+            const deg = (angle * 180 / Math.PI) + 90;
+            claw.setAttribute('transform', `translate(${mean[0]}, ${mean[1]}) rotate(${deg})`);
+        }
+
+        generateData();
+    </script>
+</body>
+
+</html>

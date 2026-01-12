@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Border Problem | Math Lab Companion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-square: #cbd5e1;
+            --border-highlight: #4f46e5;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        p.intro {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            transition: transform 0.2s ease;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Grid Visualization */
+        .viz-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #border-grid {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid var(--border-square);
+            background: #fff;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .square {
+            stroke: var(--border-square);
+            stroke-width: 0.5;
+            fill: transparent;
+            transition: fill 0.3s ease, stroke 0.3s ease;
+        }
+
+        .square.is-border {
+            fill: #f1f5f9;
+        }
+
+        /* Overlay Styles */
+        .highlight-1 {
+            fill: #818cf8 !important;
+            stroke: #4f46e5 !important;
+        }
+
+        .highlight-2 {
+            fill: #34d399 !important;
+            stroke: #059669 !important;
+        }
+
+        .highlight-3 {
+            fill: #fbbf24 !important;
+            stroke: #d97706 !important;
+        }
+
+        .highlight-4 {
+            fill: #f87171 !important;
+            stroke: #dc2626 !important;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .n-display {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .button-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        button {
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 500;
+            text-align: left;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button:hover {
+            background: #f8fafc;
+            border-color: var(--primary-light);
+        }
+
+        button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .badge {
+            font-size: 0.8rem;
+            background: #e2e8f0;
+            padding: 2px 8px;
+            border-radius: 999px;
+            color: var(--text-main);
+        }
+
+        button.active .badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        /* Sandbox */
+        .sandbox-header {
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 0.5rem;
+        }
+
+        .expression-input-wrapper {
+            position: relative;
+            margin-top: 1rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--radius);
+            font-size: 1.2rem;
+            font-family: 'Courier New', Courier, monospace;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        .result-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background: #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-val {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .status-msg {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            height: 1.4rem;
+        }
+
+        .status-correct {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .status-wrong {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        /* Animation Classes */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container animate-fade">
+        <header>
+            <h1>The Border Problem</h1>
+            <p class="intro">How many unit squares form the border of an <span style="font-style: italic;">n &times;
+                    n</span> grid?</p>
+        </header>
+
+        <div class="layout-grid">
+            <!-- Visualization Area -->
+            <div class="card">
+                <div class="viz-container">
+                    <svg id="border-grid" width="300" height="300" viewBox="0 0 100 100">
+                        <defs id="svg-defs">
+                            <linearGradient id="grad-tr" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="50%" style="stop-color:#818cf8" />
+                                <stop offset="50%" style="stop-color:#34d399" />
+                            </linearGradient>
+                            <linearGradient id="grad-br" x1="100%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="50%" style="stop-color:#34d399" />
+                                <stop offset="50%" style="stop-color:#fbbf24" />
+                            </linearGradient>
+                            <linearGradient id="grad-bl" x1="100%" y1="100%" x2="0%" y2="0%">
+                                <stop offset="50%" style="stop-color:#fbbf24" />
+                                <stop offset="50%" style="stop-color:#f87171" />
+                            </linearGradient>
+                            <linearGradient id="grad-tl" x1="0%" y1="100%" x2="100%" y2="0%">
+                                <stop offset="50%" style="stop-color:#f87171" />
+                                <stop offset="50%" style="stop-color:#818cf8" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div class="n-display" id="n-display-txt">10 &times; 10</div>
+                    <div style="margin-top: 0.5rem; color: var(--text-muted);">
+                        Border Count: <span id="actual-count"
+                            style="font-weight: bold; color: var(--text-main);">36</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls Area -->
+            <div class="card controls">
+                <div class="control-group">
+                    <label for="n-slider">Adjust Grid Size (n)</label>
+                    <input type="range" id="n-slider" min="3" max="20" value="10">
+                </div>
+
+                <div class="control-group">
+                    <label>Ways of Seeing</label>
+                    <div class="button-stack">
+                        <button class="view-btn active" data-view="none">
+                            Plain Grid
+                        </button>
+                        <button class="view-btn" data-view="horizontal">
+                            Top/Bottom + Middle Sides
+                        </button>
+                        <button class="view-btn" data-view="vertical">
+                            Side Bars + Middle Top/Bottom
+                        </button>
+                        <button class="view-btn" data-view="rotating">
+                            Four Rotating Groups
+                        </button>
+                        <button class="view-btn" data-view="overlap">
+                            Four Sides minus Corners
+                        </button>
+                        <button class="view-btn" data-view="subtraction">
+                            Total minus Inner
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expression Sandbox -->
+        <div class="card animate-fade" style="animation-delay: 0.2s;">
+            <div class="sandbox-header">
+                <h3>Expression Sandbox</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Test your own algebraic formula! Use
+                    <strong>n</strong> as the side length.
+                </p>
+            </div>
+
+            <div class="expression-input-wrapper">
+                <input type="text" id="expr-input" placeholder="e.g., 4 * (n - 1)" value="">
+            </div>
+
+            <div class="result-box">
+                <span>Your Result for n = <span id="n-val-echo">10</span>:</span>
+                <span class="result-val" id="expr-result">?</span>
+            </div>
+            <div class="status-msg" id="status-msg"></div>
+        </div>
+
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 2rem;">
+            &copy; 2026 Math Lab Group Activities - Border Problem Interactive Companion
+        </div>
+    </div>
+
+    <script>
+        const gridSvg = document.getElementById('border-grid');
+        const nSlider = document.getElementById('n-slider');
+        const nDisplay = document.getElementById('n-display-txt');
+        const actualCountDisplay = document.getElementById('actual-count');
+        const viewButtons = document.querySelectorAll('.view-btn');
+        const exprInput = document.getElementById('expr-input');
+        const exprResult = document.getElementById('expr-result');
+        const statusMsg = document.getElementById('status-msg');
+        const nValEcho = document.getElementById('n-val-echo');
+
+        let currentN = 10;
+        let currentView = 'none';
+
+        function init() {
+            renderGrid();
+
+            nSlider.addEventListener('input', (e) => {
+                currentN = parseInt(e.target.value);
+                nDisplay.textContent = `${currentN} × ${currentN}`;
+                nValEcho.textContent = currentN;
+                renderGrid();
+                updateSandbox();
+            });
+
+            viewButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    viewButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentView = btn.dataset.view;
+                    renderGrid();
+                });
+            });
+
+            exprInput.addEventListener('input', updateSandbox);
+        }
+
+        function renderGrid() {
+            // Clear previous squares but keep defs
+            const defs = gridSvg.querySelector('defs');
+            gridSvg.innerHTML = '';
+            if (defs) gridSvg.appendChild(defs);
+
+            const size = 100;
+            const squareSize = size / currentN;
+            const actualBorder = 4 * currentN - 4;
+            actualCountDisplay.textContent = actualBorder;
+
+            for (let r = 0; r < currentN; r++) {
+                for (let c = 0; c < currentN; c++) {
+                    const isBorder = (r === 0 || r === currentN - 1 || c === 0 || c === currentN - 1);
+
+                    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    rect.setAttribute("x", c * squareSize);
+                    rect.setAttribute("y", r * squareSize);
+                    rect.setAttribute("width", squareSize);
+                    rect.setAttribute("height", squareSize);
+                    rect.classList.add("square");
+                    if (isBorder) rect.classList.add("is-border");
+
+                    // Apply View Logic
+                    if (isBorder && currentView !== 'none') {
+                        applyOverlay(rect, r, c);
+                    }
+
+                    gridSvg.appendChild(rect);
+                }
+            }
+        }
+
+        function applyOverlay(rect, r, c) {
+            const n = currentN;
+
+            if (currentView === 'horizontal') {
+                // Top/Bottom bars (size n) + side bars (size n-2)
+                if (r === 0 || r === n - 1) {
+                    rect.classList.add('highlight-1');
+                } else {
+                    rect.classList.add('highlight-2');
+                }
+            } else if (currentView === 'vertical') {
+                // Full heights on sides (size n) + horizontal gaps (n-2)
+                if (c === 0 || c === n - 1) {
+                    rect.classList.add('highlight-1');
+                } else {
+                    rect.classList.add('highlight-2');
+                }
+            } else if (currentView === 'rotating') {
+                // 4 groups of (n-1)
+                // L-shape starting top-left: top row except right corner
+                if (r === 0 && c < n - 1) rect.classList.add('highlight-1');
+                // L-shape starting top-right: right col except bottom corner
+                else if (c === n - 1 && r < n - 1) rect.classList.add('highlight-2');
+                // L-shape starting bottom-right: bottom row except left corner
+                else if (r === n - 1 && c > 0) rect.classList.add('highlight-3');
+                // L-shape starting bottom-left: left col except top corner
+                else if (c === 0 && r > 0) rect.classList.add('highlight-4');
+            } else if (currentView === 'overlap') {
+                // 4 full sides: show corners showing both colors to represent overlap
+                if (r === 0 && c === n - 1) rect.style.fill = "url(#grad-tr)";
+                else if (r === n - 1 && c === n - 1) rect.style.fill = "url(#grad-br)";
+                else if (r === n - 1 && c === 0) rect.style.fill = "url(#grad-bl)";
+                else if (r === 0 && c === 0) rect.style.fill = "url(#grad-tl)";
+                else if (r === 0) rect.classList.add('highlight-1');
+                else if (c === n - 1) rect.classList.add('highlight-2');
+                else if (r === n - 1) rect.classList.add('highlight-3');
+                else if (c === 0) rect.classList.add('highlight-4');
+            } else if (currentView === 'subtraction') {
+                // Highlight everything as one color (it's the 'area' minus 'inner')
+                rect.classList.add('highlight-1');
+            }
+        }
+
+        function updateSandbox() {
+            const val = exprInput.value.trim();
+            if (!val) {
+                exprResult.textContent = "?";
+                statusMsg.textContent = "";
+                return;
+            }
+
+            try {
+                // Simple sanitization: only allow n, numbers, and basic math operators
+                const sanitized = val.toLowerCase()
+                    .replace(/n/g, currentN)
+                    .replace(/\^/g, '**') // Allow ^ for power
+                    .replace(/[^0-9+\-*/().\s*]/g, '');
+
+                // Note: In a real production app we'd use a parser, 
+                // but for a student activity helper, this is a balanced approach.
+                const result = eval(sanitized);
+
+                exprResult.textContent = Number.isInteger(result) ? result : result.toFixed(2);
+
+                const expected = 4 * currentN - 4;
+                if (Math.abs(result - expected) < 0.0001) {
+                    statusMsg.innerHTML = '<span class="status-correct">✓ Matches the border count!</span>';
+                } else {
+                    statusMsg.innerHTML = `<span class="status-wrong">✗ Does not match. Expected ${expected}.</span>`;
+                }
+            } catch (e) {
+                exprResult.textContent = "Error";
+                statusMsg.textContent = "Check your formula syntax.";
+            }
+        }
+
+        init();
+    </script>
+
+</body>
+
+</html>

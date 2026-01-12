@@ -1,0 +1,10 @@
+title: Milligan Mathematics
+remote_theme: just-the-docs/just-the-docs
+
+aux_links:
+  "Milligan University":
+    - "https://www.milligan.edu"
+
+# Enable MathJax support via kramdown if desired, but we are using custom head for script 
+kramdown:
+  math_engine: mathjax

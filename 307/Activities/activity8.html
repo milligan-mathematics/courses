@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 8: Least Squares</title>
+    <link rel="stylesheet" href="styles.css">
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        .ls-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .ls-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        svg {
+            background: #000;
+            cursor: move;
+        }
+
+        .data-point {
+            fill: var(--primary);
+            cursor: pointer;
+            transition: r 0.2s;
+        }
+
+        .data-point:hover {
+            r: 6;
+        }
+
+        .fit-line {
+            stroke: var(--accent);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .residual {
+            stroke: #EF4444;
+            stroke-width: 1;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <nav class="nav-header">
+            <a href="index.html" class="back-link">← Back to Hub</a>
+            <div class="badge">Activity 08</div>
+        </nav>
+
+        <header style="margin-bottom: 2rem;">
+            <h1>Least Squares Fitting</h1>
+            <p style="color: var(--text-muted);">Finding order in noisy data. Drag the points to see how the best-fit
+                curve adapts.</p>
+        </header>
+
+        <div class="ls-grid">
+            <div class="glass-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3>Data Playground</h3>
+                    <select id="model-select" class="badge"
+                        style="background: var(--surface); border: 1px solid var(--border); color: white;">
+                        <option value="linear">Linear Model: y = ax + b</option>
+                        <option value="quadratic">Quadratic Model: y = ax² + bx + c</option>
+                    </select>
+                </div>
+                <div class="interactive-area" style="height: 500px;">
+                    <svg viewBox="0 0 200 200" id="ls-svg">
+                        <g id="residuals-group"></g>
+                        <path id="fit-path" class="fit-line" />
+                        <g id="points-group"></g>
+                    </svg>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button class="btn" style="border: 1px solid var(--border);" onclick="resetPoints()">Randomize
+                        Data</button>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); align-self: center;">Drag any point to change
+                        the dataset.</p>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h3>Fit Parameters</h3>
+                <div id="results" class="math-block" style="font-size: 0.9rem;">
+                    <!-- Parameters here -->
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h5>Application Tool</h5>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">
+                        Activity 8 uses this to find gravity (\(g \approx 2|a|\)) from falling ball data.
+                    </p>
+                    <div id="app-results"
+                        style="margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem; border: 1px solid var(--accent);">
+                        Estimated Gravity: --
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h5 style="color: #EF4444;">Minimizing the Residuals</h5>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">
+                        The red lines show the "error" for each point. Least squares minimizes the **sum of squares** of
+                        these lengths.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let points = [
+            [30, 150], [60, 100], [90, 80], [120, 100], [150, 150]
+        ];
+        let dragging = -1;
+
+        const svg = document.getElementById('ls-svg');
+        const pointsGroup = document.getElementById('points-group');
+        const residualsGroup = document.getElementById('residuals-group');
+        const fitPath = document.getElementById('fit-path');
+        const modelSelect = document.getElementById('model-select');
+        const results = document.getElementById('results');
+        const appResults = document.getElementById('app-results');
+
+        function drawPoints() {
+            pointsGroup.innerHTML = '';
+            points.forEach((p, i) => {
+                const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                c.setAttribute("cx", p[0]);
+                c.setAttribute("cy", p[1]);
+                c.setAttribute("r", 5);
+                c.classList.add('data-point');
+                c.onmousedown = () => dragging = i;
+                pointsGroup.appendChild(c);
+            });
+        }
+
+        function solveLeastSquares() {
+            const n = points.length;
+            const model = modelSelect.value;
+
+            if (model === 'linear') {
+                // y = ax + b
+                let sumX = 0, sumY = 0, sumXX = 0, sumXY = 0;
+                points.forEach(p => {
+                    const x = p[0], y = 200 - p[1]; // Invert Y
+                    sumX += x; sumY += y;
+                    sumXX += x * x; sumXY += x * y;
+                });
+                const a = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+                const b = (sumY - a * sumX) / n;
+
+                results.innerHTML = `\\( y = ${a.toFixed(2)}x + ${b.toFixed(2)} \\)`;
+
+                // Draw path
+                fitPath.setAttribute("d", `M 0 ${200 - b} L 200 ${200 - (a * 200 + b)}`);
+                appResults.textContent = "Estimated Velocity: " + a.toFixed(2) + " units/s";
+
+                // Redraw residuals
+                drawResiduals(x => a * x + b);
+            } else {
+                // y = ax^2 + bx + c (Simplified solver)
+                // Small trick for quadratic in browser: we'll use a hardcoded small system solver or just manual for Activity 8 context
+                // Let's implement a 3x3 solver via Cramer's Rule for y = ax^2 + bx + c
+                let x1 = 0, x2 = 0, x3 = 0, x4 = 0, y = 0, xy = 0, xxy = 0;
+                points.forEach(p => {
+                    const px = p[0], py = 200 - p[1];
+                    x1 += px; x2 += px ** 2; x3 += px ** 3; x4 += px ** 4;
+                    y += py; xy += px * py; xxy += (px ** 2) * py;
+                });
+
+                // This is A^T A x = A^T b where A is [x^2 x 1]
+                const m = [
+                    [x4, x3, x2],
+                    [x3, x2, x1],
+                    [x2, x1, n]
+                ];
+                const v = [xxy, xy, y];
+
+                // Solving via Cramer or simple inverse... let's just use the coefficients from a simplified fit for visual demo
+                // (Using a basic approximation for the quadratic fit visual)
+                const a = -0.02, b = 4, c = -50; // Placeholders for visual logic
+                // In practice we'd use a small matrix lib, but let's just do the visual path:
+                let d = `M 0 ${200} `;
+                // Real fitting would be better, but for the companion we want the concept
+                // Let's just solve the 3x3
+                const det = m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+                const a_fitted = (v[0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (v[1] * m[2][2] - m[1][2] * v[2]) + m[0][2] * (v[1] * m[2][1] - m[1][1] * v[2])) / det;
+                const b_fitted = (m[0][0] * (v[1] * m[2][2] - m[1][2] * v[2]) - v[0] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * v[2] - v[1] * m[2][0])) / det;
+                const c_fitted = (m[0][0] * (m[1][1] * v[2] - v[1] * m[2][1]) - m[0][1] * (m[1][0] * v[2] - v[1] * m[2][0]) + v[0] * (m[1][0] * m[2][1] - m[1][1] * m[2][0])) / det;
+
+                results.innerHTML = `\\( y = ${a_fitted.toFixed(4)}x^2 + ${b_fitted.toFixed(2)}x + ${c_fitted.toFixed(2)} \\)`;
+
+                let pathD = "";
+                for (let x = 0; x <= 200; x += 5) {
+                    const py = a_fitted * x * x + b_fitted * x + c_fitted;
+                    pathD += (x === 0 ? "M" : "L") + ` ${x} ${200 - py}`;
+                }
+                fitPath.setAttribute("d", pathD);
+                appResults.textContent = "Estimated Gravity (g = 2|a|): " + (Math.abs(a_fitted) * 2).toFixed(4) + " units/s²";
+                appResults.style.color = "var(--accent)";
+
+                drawResiduals(x => a_fitted * x * x + b_fitted * x + c_fitted);
+            }
+            if (window.MathJax) MathJax.typesetPromise();
+        }
+
+        function drawResiduals(fn) {
+            residualsGroup.innerHTML = '';
+            points.forEach(p => {
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                const fy = 200 - fn(p[0]);
+                line.setAttribute("x1", p[0]); line.setAttribute("y1", p[1]);
+                line.setAttribute("x2", p[0]); line.setAttribute("y2", fy);
+                line.classList.add('residual');
+                residualsGroup.appendChild(line);
+            });
+        }
+
+        svg.onmousemove = (e) => {
+            if (dragging !== -1) {
+                const rect = svg.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (200 / rect.width);
+                const y = (e.clientY - rect.top) * (200 / rect.height);
+                points[dragging] = [x, y];
+                drawPoints();
+                solveLeastSquares();
+            }
+        };
+        window.onmouseup = () => dragging = -1;
+
+        modelSelect.onchange = solveLeastSquares;
+
+        function resetPoints() {
+            points = points.map(p => [p[0], 50 + Math.random() * 100]);
+            drawPoints();
+            solveLeastSquares();
+        }
+
+        drawPoints();
+        solveLeastSquares();
+    </script>
+</body>
+
+</html>

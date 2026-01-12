@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 2: Linear Transformations</title>
+    <link rel="stylesheet" href="styles.css">
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+
+        .matrix-input {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 0.5rem;
+        }
+
+        .matrix-input input {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            text-align: center;
+            width: 60px;
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .preset-btn {
+            font-size: 0.75rem;
+            padding: 0.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .preset-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .column-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <nav class="nav-header">
+            <a href="index.html" class="back-link">← Back to Hub</a>
+            <div class="badge">Activity 02</div>
+        </nav>
+
+        <header style="margin-bottom: 2rem;">
+            <h1>Linear Transformations</h1>
+            <p style="color: var(--text-muted);">See how matrices act on vectors to stretch, squish, and rotate space.
+            </p>
+        </header>
+
+        <div class="grid-layout">
+            <div class="glass-card" style="padding: 1rem;">
+                <div class="interactive-area" style="height: 500px;">
+                    <svg viewBox="-100 -100 200 200" id="transform-svg">
+                        <defs>
+                            <marker id="arrow-e1" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                <path d="M0,0 L10,5 L0,10 Z" fill="#EF4444" />
+                            </marker>
+                            <marker id="arrow-e2" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                <path d="M0,0 L10,5 L0,10 Z" fill="#3B82F6" />
+                            </marker>
+                        </defs>
+                        <!-- Grid Lines -->
+                        <g id="grid-group" opacity="0.2"></g>
+
+                        <!-- Transformed Square -->
+                        <path id="trans-poly" d="" fill="rgba(124, 58, 237, 0.3)" stroke="var(--primary)"
+                            stroke-width="1" />
+
+                        <!-- Axes -->
+                        <line x1="-100" y1="0" x2="100" y2="0" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+                        <line x1="0" y1="-100" x2="0" y2="100" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+
+                        <!-- Vectors -->
+                        <line id="vec-e1" stroke="#EF4444" stroke-width="3" marker-end="url(#arrow-e1)" />
+                        <line id="vec-e2" stroke="#3B82F6" stroke-width="3" marker-end="url(#arrow-e2)" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="controls glass-card">
+                <h3>Standard Matrix \( A \)</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Modify the columns of the matrix to see the
+                    effect.</p>
+
+                <div class="matrix-input">
+                    <div>
+                        <span class="column-label" style="color: #EF4444;">T(e₁)</span><br>
+                        <input type="number" id="m00" value="1" step="0.1"><br>
+                        <input type="number" id="m10" value="0" step="0.1">
+                    </div>
+                    <div>
+                        <span class="column-label" style="color: #3B82F6;">T(e₂)</span><br>
+                        <input type="number" id="m01" value="0" step="0.1"><br>
+                        <input type="number" id="m11" value="1" step="0.1">
+                    </div>
+                </div>
+
+                <div id="det-display" class="badge" style="width: 100%; text-align: center; margin-bottom: 1rem;">
+                    Determinant: 1.00
+                </div>
+
+                <div class="preset-grid">
+                    <button class="preset-btn" onclick="setMatrix(1,0,0,1)">Identity</button>
+                    <button class="preset-btn" onclick="setMatrix(0,-1,1,0)">Rotate 90°</button>
+                    <button class="preset-btn" onclick="setMatrix(1,1,0,1)">Shear X</button>
+                    <button class="preset-btn" onclick="setMatrix(-1,0,0,1)">Reflect Y</button>
+                    <button class="preset-btn" onclick="setMatrix(1,0,0,0)">Proj on X</button>
+                    <button class="preset-btn" onclick="setMatrix(0.5,0,0,0.5)">Contract</button>
+                </div>
+
+                <div class="math-block" style="margin-top: 1.5rem;">
+                    \( T(\mathbf{x}) = A\mathbf{x} \)
+                </div>
+            </div>
+        </div>
+
+        <section class="glass-card" style="margin-top: 2rem;">
+            <h3>Space Compression Discussion</h3>
+            <p style="margin-bottom: 1rem;">Observe the **Determinant** value above. The determinant describes how much
+                the area of the unit square changes under the transformation.</p>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                <div class="badge" style="color: var(--accent);">Det = 1: Area Proserved</div>
+                <div class="badge" style="color: #EF4444;">Det = 0: Space Collapsed</div>
+                <div class="badge" style="color: var(--primary);">Det < 0: Space Flipped</div>
+                </div>
+        </section>
+    </div>
+
+    <script>
+        const inputs = [
+            document.getElementById('m00'), document.getElementById('m01'),
+            document.getElementById('m10'), document.getElementById('m11')
+        ];
+        const detDisplay = document.getElementById('det-display');
+        const gridGroup = document.getElementById('grid-group');
+        const transPoly = document.getElementById('trans-poly');
+        const vecE1 = document.getElementById('vec-e1');
+        const vecE2 = document.getElementById('vec-e2');
+
+        const SCALE = 40; // Pixels per unit
+
+        function createGrid() {
+            for (let i = -5; i <= 5; i++) {
+                const lineH = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                lineH.setAttribute("x1", -100); lineH.setAttribute("y1", i * SCALE);
+                lineH.setAttribute("x2", 100); lineH.setAttribute("y2", i * SCALE);
+                lineH.setAttribute("stroke", "white"); gridGroup.appendChild(lineH);
+
+                const lineV = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                lineV.setAttribute("x1", i * SCALE); lineV.setAttribute("y1", -100);
+                lineV.setAttribute("x2", i * SCALE); lineV.setAttribute("y2", 100);
+                lineV.setAttribute("stroke", "white"); gridGroup.appendChild(lineV);
+            }
+        }
+
+        function setMatrix(m00, m01, m10, m11) {
+            inputs[0].value = m00; inputs[1].value = m01;
+            inputs[2].value = m10; inputs[3].value = m11;
+            update();
+        }
+
+        function update() {
+            const m00 = parseFloat(inputs[0].value);
+            const m01 = parseFloat(inputs[1].value);
+            const m10 = parseFloat(inputs[2].value);
+            const m11 = parseFloat(inputs[3].value);
+
+            // Transformed Unit Square Vertices
+            const p0 = [0, 0];
+            const p1 = [m00 * SCALE, -m10 * SCALE];
+            const p2 = [(m00 + m01) * SCALE, -(m10 + m11) * SCALE];
+            const p3 = [m01 * SCALE, -m11 * SCALE];
+
+            transPoly.setAttribute("d", `M ${p0[0]} ${p0[1]} L ${p1[0]} ${p1[1]} L ${p2[0]} ${p2[1]} L ${p3[0]} ${p3[1]} Z`);
+
+            vecE1.setAttribute("x1", 0); vecE1.setAttribute("y1", 0);
+            vecE1.setAttribute("x2", p1[0]); vecE1.setAttribute("y2", p1[1]);
+
+            vecE2.setAttribute("x1", 0); vecE2.setAttribute("y1", 0);
+            vecE2.setAttribute("x2", p3[0]); vecE2.setAttribute("y2", p3[1]);
+
+            const det = (m00 * m11) - (m01 * m10);
+            detDisplay.textContent = `Determinant: ${det.toFixed(2)}`;
+            detDisplay.style.color = (Math.abs(det) < 0.01) ? "#EF4444" : "var(--text)";
+        }
+
+        inputs.forEach(input => input.addEventListener('input', update));
+        createGrid();
+        update();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 4: Eigenstuff</title>
+    <link rel="stylesheet" href="styles.css">
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        .eigen-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .eigen-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        svg {
+            background: #000;
+        }
+
+        .history-list {
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.75rem;
+        }
+
+        .history-item {
+            padding: 0.25rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <nav class="nav-header">
+            <a href="index.html" class="back-link">← Back to Hub</a>
+            <div class="badge">Activity 04</div>
+        </nav>
+
+        <header style="margin-bottom: 2rem;">
+            <h1>Eigenstuff & The Power Method</h1>
+            <p style="color: var(--text-muted);">Visualize eigenvectors and see how repeated transformations reveal the
+                dominant features of a system.</p>
+        </header>
+
+        <div class="eigen-grid">
+            <div class="glass-card">
+                <h3>Power Method Visualizer</h3>
+                <div class="interactive-area" style="height: 500px;">
+                    <svg viewBox="-100 -100 200 200" id="eigen-svg">
+                        <defs>
+                            <marker id="arrow-v" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                <path d="M0,0 L10,5 L0,10 Z" fill="var(--primary)" />
+                            </marker>
+                            <marker id="arrow-eigen" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                                <path d="M0,0 L8,4 L0,8 Z" fill="var(--accent)" />
+                            </marker>
+                        </defs>
+                        <!-- Grid lines -->
+                        <g opacity="0.1">
+                            <line x1="-100" y1="0" x2="100" y2="0" stroke="white" />
+                            <line x1="0" y1="-100" x2="0" y2="100" stroke="white" />
+                        </g>
+
+                        <!-- Dominant Eigenvector Line -->
+                        <line id="eigen-line" stroke="var(--accent)" stroke-width="1" stroke-dasharray="5,5" />
+
+                        <!-- Vector v -->
+                        <path id="path-trace" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.5" />
+                        <line id="vec-v" stroke="var(--primary)" stroke-width="4" marker-end="url(#arrow-v)" />
+                    </svg>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button class="btn btn-primary" onclick="iterate()">Iterate: v = Av</button>
+                    <button class="btn" style="border: 1px solid var(--border);" onclick="reset()">Reset Vector</button>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h3>Interactive Metrics</h3>
+                <div class="math-block">
+                    \( A = \begin{bmatrix} 6 & 5 \\ 1 & 2 \end{bmatrix} \)
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Current Vector \(\mathbf{v}_k\):</p>
+                <div id="vector-display" class="badge" style="width: 100%; text-align: center;">[1.00, 0.00]</div>
+
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">Est. Eigenvalue \(\mu_k\):</p>
+                <div id="mu-display" class="badge" style="width: 100%; text-align: center; color: var(--accent);">--
+                </div>
+
+                <div class="history-list" id="history">
+                    <!-- History of iterations -->
+                </div>
+            </div>
+        </div>
+
+        <section class="glass-card" style="margin-top: 2rem;">
+            <h3>Step-by-Step Diagonalization</h3>
+            <p>For Matrix \( A = \begin{bmatrix} 4 & -3 \\ 2 & -1 \end{bmatrix} \)</p>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-top: 1rem;">
+                <div class="math-block" style="font-size: 0.75rem;">
+                    1. Characteristic Eq:<br>
+                    \(\det(A - \lambda I) = 0\)<br>
+                    \((\lambda - 1)(\lambda - 2) = 0\)
+                </div>
+                <div class="math-block" style="font-size: 0.75rem;">
+                    2. Eigenvalues:<br>
+                    \(\lambda_1 = 1, \lambda_2 = 2\)
+                </div>
+                <div class="math-block" style="font-size: 0.75rem;">
+                    3. Diagonal Matrix \(D\):<br>
+                    \(D = \begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix}\)
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const A = [[6, 5], [1, 2]];
+        let v = [1, 0];
+        let iteration = 0;
+        let points = [[1, 0]];
+
+        const vecV = document.getElementById('vec-v');
+        const vDisplay = document.getElementById('vector-display');
+        const muDisplay = document.getElementById('mu-display');
+        const historyList = document.getElementById('history');
+        const pathTrace = document.getElementById('path-trace');
+        const eigenLine = document.getElementById('eigen-line');
+
+        function updateViz() {
+            const scale = 15;
+            vecV.setAttribute('x2', v[0] * scale);
+            vecV.setAttribute('y2', -v[1] * scale);
+
+            vDisplay.textContent = `[${v[0].toFixed(2)}, ${v[1].toFixed(2)}]`;
+
+            // Draw path trace
+            let d = `M ${points[0][0] * scale} ${-points[0][1] * scale}`;
+            for (let i = 1; i < points.length; i++) {
+                d += ` L ${points[i][0] * scale} ${-points[i][1] * scale}`;
+            }
+            pathTrace.setAttribute('d', d);
+
+            // True dominant eigenvector of [[6,5],[1,2]] is approx [5,1]
+            eigenLine.setAttribute('x1', -100); eigenLine.setAttribute('y1', 20);
+            eigenLine.setAttribute('x2', 100); eigenLine.setAttribute('y2', -20);
+        }
+
+        function iterate() {
+            iteration++;
+            // Av
+            let nextV = [
+                A[0][0] * v[0] + A[0][1] * v[1],
+                A[1][0] * v[0] + A[1][1] * v[1]
+            ];
+
+            // Estimate Rayleigh quotient / norm
+            let mu = Math.max(Math.abs(nextV[0]), Math.abs(nextV[1]));
+            v = [nextV[0] / mu, nextV[1] / mu];
+
+            muDisplay.textContent = mu.toFixed(4);
+            points.push([...v]);
+
+            // History
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            item.innerHTML = `<span>k=${iteration}</span><span>&mu; ≈ ${mu.toFixed(3)}</span>`;
+            historyList.prepend(item);
+
+            updateViz();
+        }
+
+        function reset() {
+            v = [1, Math.random() * 2 - 1];
+            iteration = 0;
+            points = [[...v]];
+            historyList.innerHTML = '';
+            muDisplay.textContent = '--';
+            updateViz();
+        }
+
+        updateViz();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Wheel of Names - Math 351</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --accent-color: #2c5282;
+            --text-color: #2d3748;
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --wheel-colors: #e53e3e, #3182ce, #38a169, #d69e2e, #805ad5, #e53e3e;
+            /* Simplified list */
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            width: 100%;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #setup-screen,
+        #wheel-screen {
+            max-width: 800px;
+            width: 90%;
+            background: var(--card-bg);
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        #wheel-screen {
+            display: none;
+        }
+
+        .attendance-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            text-align: left;
+            margin: 2rem 0;
+        }
+
+        .student-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .student-option:hover {
+            background: #edf2f7;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: var(--accent-color);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Wheel Styles */
+        #wheel-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 2rem auto;
+        }
+
+        #wheel-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
+        }
+
+        #pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #e53e3e;
+            z-index: 10;
+        }
+
+        .probability-display {
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .prob-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .winner-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            text-align: center;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .winner-popup.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .winner-popup h2 {
+            font-size: 3rem;
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 90;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: white;
+            opacity: 0.8;
+            margin-right: auto;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <header style="display: flex; align-items: center; justify-content: center;">
+        <a href="index.html" class="back-link" style="position: absolute; left: 1.5rem;">&larr; Hub</a>
+        <h1 style="margin: 0;">Math 351: Student Wheel</h1>
+    </header>
+
+    <div id="setup-screen">
+        <h2>Attendance</h2>
+        <p>Who is present today?</p>
+        <div class="attendance-list" id="student-list">
+            <!-- Populated by JS -->
+        </div>
+        <button onclick="startApp()">Start Class</button>
+    </div>
+
+    <div id="wheel-screen">
+        <div id="wheel-container">
+            <div id="pointer"></div>
+            <canvas id="wheel-canvas" width="800" height="800"></canvas>
+        </div>
+        <button id="spin-button" onclick="spin()">Spin Wheel</button>
+
+        <div class="probability-display">
+            <h3>Current Odds</h3>
+            <div id="prob-list"></div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="winner-popup" id="winner-popup">
+        <p>The student is...</p>
+        <h2 id="winner-name"></h2>
+        <button onclick="closePopup()" style="margin-top: 2rem;">Got it!</button>
+    </div>
+
+    <script>
+        const allStudents = ["Isaac", "Ben", "Cooper", "Lucy", "Joao", "Jacob"];
+        const colors = ["#e53e3e", "#3182ce", "#38a169", "#d69e2e", "#805ad5", "#319795", "#ed64a6", "#718096"];
+
+        let activeStudents = [];
+        let currentRotation = 0;
+        let isSpinning = false;
+
+        // Initialize setup screen
+        const listEl = document.getElementById('student-list');
+        allStudents.forEach(name => {
+            const div = document.createElement('div');
+            div.className = 'student-option';
+            div.innerHTML = `<input type="checkbox" checked id="check-${name}"> <label for="check-${name}">${name}</label>`;
+            listEl.appendChild(div);
+        });
+
+        function startApp() {
+            activeStudents = allStudents
+                .filter(name => document.getElementById(`check-${name}`).checked)
+                .map(name => ({ name, weight: 1 }));
+
+            if (activeStudents.length === 0) {
+                alert("Please select at least one student.");
+                return;
+            }
+
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('wheel-screen').style.display = 'block';
+            drawWheel();
+            updateProbDisplay();
+        }
+
+        function drawWheel() {
+            const canvas = document.getElementById('wheel-canvas');
+            const ctx = canvas.getContext('2d');
+            const totalWeight = activeStudents.reduce((sum, s) => sum + s.weight, 0);
+
+            let currentAngle = 0;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            activeStudents.forEach((student, i) => {
+                const sliceAngle = (student.weight / totalWeight) * 2 * Math.PI;
+
+                ctx.beginPath();
+                ctx.moveTo(400, 400);
+                ctx.arc(400, 400, 380, currentAngle, currentAngle + sliceAngle);
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.fill();
+                ctx.stroke();
+
+                // Draw labels
+                ctx.save();
+                ctx.translate(400, 400);
+                ctx.rotate(currentAngle + sliceAngle / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "white";
+                ctx.font = "bold 32px Inter";
+                ctx.fillText(student.name, 350, 10);
+                ctx.restore();
+
+                currentAngle += sliceAngle;
+            });
+        }
+
+        function updateProbDisplay() {
+            const probList = document.getElementById('prob-list');
+            const totalWeight = activeStudents.reduce((sum, s) => sum + s.weight, 0);
+
+            probList.innerHTML = activeStudents.map(s => {
+                const percentage = ((s.weight / totalWeight) * 100).toFixed(1);
+                return `<div class="prob-row"><span>${s.name}</span><span>${percentage}%</span></div>`;
+            }).join('');
+        }
+
+        function spin() {
+            if (isSpinning) return;
+            isSpinning = true;
+
+            const spinRotation = 1440 + Math.random() * 360; // At least 4 full spins
+            currentRotation += spinRotation;
+
+            const wheel = document.getElementById('wheel-canvas');
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                isSpinning = false;
+                calculateWinner();
+            }, 4000);
+        }
+
+        function calculateWinner() {
+            const totalWeight = activeStudents.reduce((sum, s) => sum + s.weight, 0);
+            // The pointer is at the top (negative 90 degrees or 270 degrees in canvas terms)
+            // But CSS rotation rotates clockwise.
+            // Let's find out which part of the wheel is at the top.
+            const normalizedRotation = (360 - (currentRotation % 360)) % 360;
+            const targetAngle = (normalizedRotation - 90 + 360) % 360;
+            const targetRad = (targetAngle * Math.PI) / 180;
+
+            let currentAngle = 0;
+            let winner = null;
+
+            activeStudents.forEach(student => {
+                const sliceAngle = (student.weight / totalWeight) * 2 * Math.PI;
+                if (targetRad >= currentAngle && targetRad < currentAngle + sliceAngle) {
+                    winner = student;
+                }
+                currentAngle += sliceAngle;
+            });
+
+            // Handle edge case if rounding misses
+            if (!winner) winner = activeStudents[activeStudents.length - 1];
+
+            showWinner(winner);
+        }
+
+        function showWinner(student) {
+            document.getElementById('winner-name').innerText = student.name;
+            document.getElementById('winner-popup').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+
+            // Update Logic: Reduce probability of winner by half
+            const lostWeight = student.weight * 0.5;
+            student.weight *= 0.5;
+
+            // Share lost weight among others
+            const othersCount = activeStudents.length - 1;
+            if (othersCount > 0) {
+                const redistribution = lostWeight / othersCount;
+                activeStudents.forEach(s => {
+                    if (s.name !== student.name) {
+                        s.weight += redistribution;
+                    }
+                });
+            }
+
+            drawWheel();
+            updateProbDisplay();
+        }
+
+        function closePopup() {
+            document.getElementById('winner-popup').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+    </script>
+</body>
+
+</html>

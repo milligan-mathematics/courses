@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MENACE Simulation - Donald Michie 1961</title>
+
+    <!-- Scripts: React, Tailwind, Babel, Lucide -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Lora:ital,wght@0,400;0,700;1,400&display=swap');
+
+        body {
+            font-family: 'Lora', serif;
+            background-color: #f4f1ea;
+        }
+
+        .font-inter {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        @keyframes pulse-soft {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .animate-pulse-soft {
+            animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useCallback, useMemo } = React;
+
+        const Icon = ({ name, size = 20, className = "" }) => {
+            const iconRef = React.useRef(null);
+            useEffect(() => {
+                if (iconRef.current) {
+                    lucide.createIcons({
+                        attrs: {
+                            class: className,
+                            'stroke-width': 2,
+                            width: size,
+                            height: size,
+                        },
+                        nameMap: { [name]: name }
+                    });
+                }
+            }, [name, size, className]);
+            return <i data-lucide={name} ref={iconRef} className={className} style={{ width: size, height: size, display: 'inline-block' }}></i>;
+        };
+
+        const SYMMETRIES = [
+            (b) => [b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7], b[8]], // Identity
+            (b) => [b[6], b[3], b[0], b[7], b[4], b[1], b[8], b[5], b[2]], // Rot 90
+            (b) => [b[8], b[7], b[6], b[5], b[4], b[3], b[2], b[1], b[0]], // Rot 180
+            (b) => [b[2], b[5], b[8], b[1], b[4], b[7], b[0], b[3], b[6]], // Rot 270
+            (b) => [b[2], b[1], b[0], b[5], b[4], b[3], b[8], b[7], b[6]], // Horizontal Reflection
+            (b) => [b[6], b[7], b[8], b[3], b[4], b[5], b[0], b[1], b[2]], // Vertical Reflection
+            (b) => [b[0], b[3], b[6], b[1], b[4], b[7], b[2], b[5], b[8]], // Diagonal \ Reflection
+            (b) => [b[8], b[5], b[2], b[7], b[4], b[1], b[6], b[3], b[0]], // Diagonal / Reflection
+        ];
+
+        const getCanonicalState = (board) => {
+            let minBoard = null;
+            let minIndex = -1;
+            SYMMETRIES.forEach((sym, idx) => {
+                const symBoard = sym(board);
+                const symStr = symBoard.map(c => c === null ? 'n' : c).join('');
+                if (minBoard === null || symStr < minBoard) {
+                    minBoard = symStr;
+                    minIndex = idx;
+                }
+            });
+            return { canonical: minBoard, symmetryIndex: minIndex };
+        };
+
+        const mapMoveBack = (canonicalIndex, symmetryIndex) => {
+            const board = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+            const transformedBoard = SYMMETRIES[symmetryIndex](board);
+            return transformedBoard[canonicalIndex];
+        };
+
+        const INITIAL_BEADS = { 1: 8, 3: 4, 5: 3, 7: 2 };
+        const WIN_REWARD = 5;
+        const DRAW_REWARD = 3;
+        const LOSS_PUNISHMENT = -1;
+
+        const MenaceApp = () => {
+            const [board, setBoard] = useState(Array(9).fill(null));
+            const [isXNext, setIsXNext] = useState(true);
+            const [winner, setWinner] = useState(null);
+            const [gameLog, setGameLog] = useState([]);
+            const [moveHistory, setMoveHistory] = useState([]);
+            const [matchboxes, setMatchboxes] = useState({});
+            const [isTraining, setIsTraining] = useState(false);
+            const [isThinking, setIsThinking] = useState(false);
+            const [activeBox, setActiveBox] = useState(null);
+            const [speed, setSpeed] = useState(800);
+            const [explorerStates, setExplorerStates] = useState([]);
+            const [filterDepth, setFilterDepth] = useState('all');
+            const [trainingMode, setTrainingMode] = useState('smart'); // 'random' or 'smart'
+            const [initBeads, setInitBeads] = useState({ 1: 8, 3: 4, 5: 3, 7: 2 });
+            const [winReward, setWinReward] = useState(5);
+            const [drawReward, setDrawReward] = useState(3);
+            const [lossPunishment, setLossPunishment] = useState(-1);
+            const [stats, setStats] = useState({ wins: 0, losses: 0, draws: 0, games: 0 });
+            const [showExplainer, setShowExplainer] = useState(false);
+            const [showSettings, setShowSettings] = useState(false);
+            const [lastReinforcement, setLastReinforcement] = useState(null);
+
+            const checkWinner = (squares) => {
+                const lines = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+                for (let i = 0; i < lines.length; i++) {
+                    const [a, b, c] = lines[i];
+                    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) return squares[a];
+                }
+                if (squares.every(s => s !== null)) return 'Draw';
+                return null;
+            };
+
+            const findWinningMove = (currentBoard, player) => {
+                const lines = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+                for (let i = 0; i < lines.length; i++) {
+                    const [a, b, c] = lines[i];
+                    const squares = [currentBoard[a], currentBoard[b], currentBoard[c]];
+                    if (squares.filter(s => s === player).length === 2 && squares.includes(null)) {
+                        return lines[i].find(idx => currentBoard[idx] === null);
+                    }
+                }
+                return null;
+            };
+
+            const generateAllStates = useCallback(() => {
+                const visited = new Set();
+                const states = [];
+                const recurse = (currentBoard, turn) => {
+                    const result = checkWinner(currentBoard);
+                    if (result) return;
+                    if (turn === 'O') {
+                        const { canonical } = getCanonicalState(currentBoard);
+                        if (!visited.has(canonical)) {
+                            visited.add(canonical);
+                            states.push({ canonical, depth: currentBoard.filter(s => s !== null).length });
+                        }
+                        for (let i = 0; i < 9; i++) {
+                            if (currentBoard[i] === null) {
+                                const b = [...currentBoard]; b[i] = 'O'; recurse(b, 'X');
+                            }
+                        }
+                    } else {
+                        for (let i = 0; i < 9; i++) {
+                            if (currentBoard[i] === null) {
+                                const b = [...currentBoard]; b[i] = 'X'; recurse(b, 'O');
+                            }
+                        }
+                    }
+                };
+                recurse(Array(9).fill(null), 'X');
+                setExplorerStates(states.sort((a, b) => a.depth - b.depth || a.canonical.localeCompare(b.canonical)));
+            }, []);
+
+            useEffect(() => { generateAllStates(); }, [generateAllStates]);
+
+            const initBrain = () => {
+                setMatchboxes({}); setStats({ wins: 0, losses: 0, draws: 0, games: 0 });
+                setGameLog([]); resetGame();
+            };
+
+            const resetGame = () => {
+                setBoard(Array(9).fill(null)); setIsXNext(true); setWinner(null);
+                setMoveHistory([]); setActiveBox(null); setIsThinking(false);
+            };
+
+            const handleGameOver = useCallback((result) => {
+                setWinner(result);
+                setStats(prev => ({
+                    ...prev, games: prev.games + 1,
+                    wins: result === 'O' ? prev.wins + 1 : prev.wins,
+                    losses: result === 'X' ? prev.losses + 1 : prev.losses,
+                    draws: result === 'Draw' ? prev.draws + 1 : prev.draws
+                }));
+                setGameLog(prev => [{ id: Date.now(), winner: result, moves: moveHistory.length }, ...prev].slice(0, 5));
+                setMatchboxes(prev => {
+                    const next = { ...prev };
+                    const history = [];
+                    const reward = result === 'O' ? winReward : (result === 'Draw' ? drawReward : lossPunishment);
+
+                    moveHistory.forEach(({ canonicalState, moveIndex }) => {
+                        const beadsBefore = [...(next[canonicalState] || getBeadsForState(canonicalState))];
+                        const beadsAfter = [...beadsBefore];
+                        beadsAfter[moveIndex] = Math.max(0, beadsAfter[moveIndex] + reward);
+                        next[canonicalState] = beadsAfter;
+                        history.push({ canonical: canonicalState, moveIndex, beadsBefore, beadsAfter, change: reward });
+                    });
+
+                    setLastReinforcement({ result, reward, history });
+                    return next;
+                });
+            }, [moveHistory, winReward, drawReward, lossPunishment, getBeadsForState]);
+
+            const getBeadsForState = useCallback((canonical) => {
+                if (matchboxes[canonical]) return matchboxes[canonical];
+                const arr = canonical.split('').map(c => c === 'n' ? null : c);
+                const count = arr.filter(s => s !== null).length;
+                const initial = initBeads[count] || 1;
+                const beads = Array(9).fill(0).map((_, i) => arr[i] === null ? initial : 0);
+                setMatchboxes(prev => ({ ...prev, [canonical]: beads }));
+                return beads;
+            }, [matchboxes, initBeads]);
+
+            const getMenaceMove = useCallback(() => {
+                const { canonical, symmetryIndex } = getCanonicalState(board);
+                const beads = getBeadsForState(canonical);
+                setActiveBox({ canonical, beads, symmetryIndex });
+                const total = beads.reduce((a, b) => a + b, 0);
+                if (total === 0) return null;
+                let rand = Math.floor(Math.random() * total);
+                let chosen = -1; let sum = 0;
+                for (let i = 0; i < beads.length; i++) {
+                    sum += beads[i]; if (rand < sum) { chosen = i; break; }
+                }
+                return { actualIndex: mapMoveBack(chosen, symmetryIndex), canonical, chosenCanonicalIndex: chosen };
+            }, [board, getBeadsForState]);
+
+            const handleSquareClick = (i) => {
+                if (board[i] || winner || !isXNext || isThinking) return;
+                const b = [...board]; b[i] = 'X'; setBoard(b); setIsXNext(false);
+                const res = checkWinner(b); if (res) handleGameOver(res);
+            };
+
+            useEffect(() => {
+                if (!isXNext && !winner && !isTraining) {
+                    setIsThinking(true);
+                    const t = setTimeout(() => {
+                        const m = getMenaceMove();
+                        if (!m) { handleGameOver('X'); setIsThinking(false); return; }
+                        const b = [...board]; b[m.actualIndex] = 'O'; setBoard(b);
+                        setMoveHistory(prev => [...prev, { canonicalState: m.canonical, moveIndex: m.chosenCanonicalIndex }]);
+                        setIsXNext(true); setIsThinking(false);
+                        const res = checkWinner(b); if (res) handleGameOver(res);
+                    }, speed);
+                    return () => clearTimeout(t);
+                }
+            }, [isXNext, winner, board, getMenaceMove, handleGameOver, speed, isTraining]);
+
+            const trainGames = (n) => {
+                setIsTraining(true);
+                setTimeout(() => {
+                    let mbs = { ...matchboxes };
+                    let ns = { ...stats };
+
+                    for (let g = 0; g < n; g++) {
+                        let sb = Array(9).fill(null);
+                        let sh = [];
+                        let sw = null;
+                        let t = 'X';
+
+                        while (!sw) {
+                            if (t === 'X') {
+                                let move = null;
+                                if (trainingMode === 'smart') {
+                                    // Smart Teacher: 1) Take win, 2) Block O, 3) Strategic opening, 4) Random
+                                    move = findWinningMove(sb, 'X');
+                                    if (move === null) move = findWinningMove(sb, 'O');
+
+                                    // Varied openings to train all branches
+                                    if (move === null) {
+                                        const moveCount = sb.filter(x => x !== null).length;
+                                        if (moveCount === 0) {
+                                            // First move: 40% center, 40% corner, 20% edge
+                                            const r = Math.random();
+                                            if (r < 0.4) {
+                                                move = 4; // Center
+                                            } else if (r < 0.8) {
+                                                const corners = [0, 2, 6, 8];
+                                                move = corners[Math.floor(Math.random() * 4)];
+                                            } else {
+                                                const edges = [1, 3, 5, 7];
+                                                move = edges[Math.floor(Math.random() * 4)];
+                                            }
+                                        } else if (sb[4] === null) {
+                                            move = 4; // Take center if available
+                                        }
+                                    }
+                                }
+
+                                if (move === null) {
+                                    const av = sb.map((s, i) => s === null ? i : null).filter(s => s !== null);
+                                    if (!av.length) { sw = 'Draw'; break; }
+                                    move = av[Math.floor(Math.random() * av.length)];
+                                }
+
+                                sb[move] = 'X';
+                                t = 'O';
+                            } else {
+                                const { canonical, symmetryIndex } = getCanonicalState(sb);
+                                if (!mbs[canonical]) {
+                                    const arr = canonical.split('').map(c => c === 'n' ? null : c);
+                                    const init = initBeads[arr.filter(s => s !== null).length] || 1;
+                                    mbs[canonical] = Array(9).fill(0).map((_, i) => arr[i] === null ? init : 0);
+                                }
+
+
+                                const bds = mbs[canonical];
+                                let total = bds.reduce((a, b) => a + b, 0);
+
+                                // RESURRECTION: If box is empty, refill it to give it another chance
+                                if (total === 0) {
+                                    const arr = canonical.split('').map(c => c === 'n' ? null : c);
+                                    const init = initBeads[arr.filter(s => s !== null).length] || 1;
+                                    const newBeads = Array(9).fill(0).map((_, i) => arr[i] === null ? init : 0);
+                                    mbs[canonical] = newBeads;
+                                    total = newBeads.reduce((a, b) => a + b, 0);
+                                }
+
+                                let r = Math.floor(Math.random() * total);
+                                let c = -1; let s = 0;
+                                for (let i = 0; i < mbs[canonical].length; i++) {
+                                    s += mbs[canonical][i];
+                                    if (r < s) { c = i; break; }
+                                }
+
+                                sh.push({ canonical, moveIndex: c });
+                                const actualMove = mapMoveBack(c, symmetryIndex);
+
+                                // Safety check: ensure we're not overwriting an occupied square
+                                if (sb[actualMove] !== null) {
+                                    console.error('BUG: MENACE tried to play on occupied square!', { sb, actualMove, c, symmetryIndex });
+                                    sw = 'X'; // Treat as loss if this happens
+                                    break;
+                                }
+
+                                sb[actualMove] = 'O';
+                                t = 'X';
+                            }
+                            sw = checkWinner(sb);
+                        }
+
+                        const lastHistory = [];
+                        const reward = sw === 'O' ? winReward : (sw === 'Draw' ? drawReward : lossPunishment);
+                        sh.forEach(({ canonical, moveIndex }) => {
+                            const beadsBefore = [...mbs[canonical]];
+                            const beadsAfter = [...beadsBefore];
+                            beadsAfter[moveIndex] = Math.max(0, beadsAfter[moveIndex] + reward);
+                            mbs[canonical] = beadsAfter;
+                            if (g === n - 1) {
+                                lastHistory.push({ canonical, moveIndex, beadsBefore, beadsAfter, change: reward });
+                            }
+                        });
+
+                        if (g === n - 1) {
+                            setLastReinforcement({ result: sw, reward, history: lastHistory });
+                        }
+
+                        ns.games++;
+                        if (sw === 'O') ns.wins++;
+                        else if (sw === 'X') ns.losses++;
+                        else ns.draws++;
+                    }
+
+                    setMatchboxes(mbs);
+                    setStats(ns);
+                    setIsTraining(false);
+                    resetGame();
+                }, 100);
+            };
+
+            const filteredStates = useMemo(() => {
+                if (filterDepth === 'all') return explorerStates;
+                return explorerStates.filter(s => s.depth === parseInt(filterDepth));
+            }, [explorerStates, filterDepth]);
+
+            return (
+                <div className="min-h-screen bg-[#f4f1ea] text-slate-800 p-4 md:p-8 flex flex-col items-center">
+                    <header className="max-w-6xl w-full flex justify-between items-center mb-12 border-b-2 border-slate-300 pb-4 font-inter">
+                        <div>
+                            <h1 className="text-4xl font-black flex items-center gap-3"><Icon name="brain" size={40} className="text-rose-700" /> MENACE</h1>
+                            <p className="text-sm text-slate-500 italic">Matchbox Educable Noughts and Crosses Engine</p>
+                        </div>
+                        <div className="flex gap-3">
+                            <button onClick={() => setShowExplainer(true)} className="px-4 py-2 rounded-full bg-white border border-slate-300 text-sm font-bold flex items-center gap-2 hover:bg-slate-50"><Icon name="info" size={18} /> History</button>
+                            <button onClick={() => setShowSettings(true)} className="px-4 py-2 rounded-full bg-white border border-slate-300 text-sm font-bold flex items-center gap-2 hover:bg-slate-50"><Icon name="settings" size={18} /> Settings</button>
+                            <button onClick={initBrain} className="px-4 py-2 rounded-full bg-white border border-slate-300 text-sm font-bold flex items-center gap-2 hover:bg-slate-50"><Icon name="rotate-ccw" size={18} /> Reset</button>
+                        </div>
+                    </header>
+
+                    <main className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
+                        <div className="lg:col-span-4 bg-white p-8 rounded-2xl shadow-xl border border-slate-200 flex flex-col items-center">
+                            <div className="w-full flex justify-between items-center mb-6 font-inter font-bold">
+                                <h2 className="flex items-center gap-2"><Icon name="activity" className="text-rose-600" /> Arena</h2>
+                                <span className={`px-3 py-1 rounded-full text-[10px] uppercase ${winner ? 'bg-indigo-600 text-white' : 'bg-rose-100 text-rose-800'}`}>{winner || (isXNext ? 'Player' : 'Thinking')}</span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-3 w-64 h-64 md:w-80 md:h-80 bg-slate-300 p-3 rounded-lg relative">
+                                {board.map((s, i) => (
+                                    <button key={i} onClick={() => handleSquareClick(i)} className="bg-white rounded flex items-center justify-center text-5xl font-black font-inter hover:bg-rose-50 transition-colors">
+                                        {s === 'X' && <span className="text-rose-600">X</span>}
+                                        {s === 'O' && <span className="text-indigo-600">O</span>}
+                                    </button>
+                                ))}
+                                {winner && (
+                                    <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center rounded">
+                                        <Icon name="trophy" size={64} className="text-amber-500" />
+                                        <button onClick={resetGame} className="mt-4 bg-slate-900 text-white px-6 py-2 rounded-full font-bold">Play Again</button>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="w-full mt-8">
+                                <h3 className="text-[10px] uppercase font-bold text-slate-400 mb-2 flex items-center gap-2"><Icon name="history" size={14} /> Log</h3>
+                                {gameLog.map(l => <div key={l.id} className="text-xs p-2 bg-slate-50 border-b flex justify-between"><span>{l.winner}</span><span>{l.moves} moves</span></div>)}
+                            </div>
+                        </div>
+
+                        <div className="lg:col-span-8 space-y-8">
+                            <div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-200 relative overflow-hidden">
+                                <div className="flex justify-between items-start mb-8 font-inter">
+                                    <h2 className="text-xl font-bold flex items-center gap-2"><Icon name="brain" className="text-indigo-600" /> Matchbox View</h2>
+                                    {activeBox && (
+                                        <div className="flex items-center gap-3 bg-slate-50 p-2 rounded border">
+                                            <code className="text-[10px] font-mono">{activeBox.canonical}</code>
+                                            <div className="grid grid-cols-3 gap-0.5 w-8 h-8 bg-slate-200">
+                                                {activeBox.canonical.split('').map((c, i) => <div key={i} className="bg-white flex items-center justify-center text-[6px] font-bold">{c === 'n' ? '' : c}</div>)}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="h-48 flex justify-center items-center relative">
+                                    {!activeBox && <p className="absolute text-slate-300 italic">Select a box or play a move</p>}
+                                    {activeBox && (
+                                        <div className="grid grid-cols-3 gap-2 w-48 h-48">
+                                            {activeBox.beads.map((c, i) => {
+                                                const tot = activeBox.beads.reduce((a, b) => a + b, 0);
+                                                const prob = tot > 0 ? c / tot : 0;
+                                                const isOccupied = activeBox.canonical[i] !== 'n';
+
+                                                return (
+                                                    <div k={i} className={`rounded-lg border flex flex-col items-center justify-center relative ${isOccupied ? 'bg-slate-100 border-slate-200' : 'border-indigo-200'}`}
+                                                        style={{ backgroundColor: isOccupied ? undefined : `rgba(99, 102, 241, ${0.1 + (prob * 0.9)})` }}>
+
+                                                        {isOccupied ? (
+                                                            <span className="text-slate-300 font-bold text-xl">{activeBox.canonical[i]}</span>
+                                                        ) : (
+                                                            <>
+                                                                <span className={`text-lg font-black ${prob > 0.5 ? 'text-white' : 'text-indigo-900'}`}>{c}</span>
+                                                                <span className={`text-[8px] font-bold uppercase ${prob > 0.5 ? 'text-indigo-100' : 'text-indigo-400'}`}>{(prob * 100).toFixed(0)}%</span>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                                {isThinking && <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center font-bold text-indigo-600"><Icon name="settings" className="animate-spin mr-2" /> Shaking...</div>}
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-8 font-inter">
+                                <div className="bg-[#e8e4db] p-6 rounded-2xl border">
+                                    <h3 className="text-[10px] uppercase font-bold mb-4">Laboratory Stats</h3>
+                                    <div className="flex justify-around">
+                                        <div className="text-center"><p className="text-2xl font-black">{stats.wins}</p><p className="text-[8px] uppercase text-indigo-600">Wins</p></div>
+                                        <div className="text-center"><p className="text-2xl font-black">{stats.draws}</p><p className="text-[8px] uppercase text-slate-400">Draws</p></div>
+                                        <div className="text-center"><p className="text-2xl font-black">{stats.losses}</p><p className="text-[8px] uppercase text-rose-600">Losses</p></div>
+                                    </div>
+                                    <p className="text-center text-[10px] mt-4 uppercase font-bold text-slate-500">Games: {stats.games}</p>
+                                </div>
+                                <div className="bg-white p-6 rounded-2xl border shadow-lg flex flex-col justify-between">
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-widest">Training Opponent</p>
+                                            <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+                                                <button
+                                                    onClick={() => setTrainingMode('random')}
+                                                    className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold transition-all ${trainingMode === 'random' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                                                >
+                                                    Random
+                                                </button>
+                                                <button
+                                                    onClick={() => setTrainingMode('smart')}
+                                                    className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold transition-all ${trainingMode === 'smart' ? 'bg-white text-rose-700 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                                                >
+                                                    Smart Teacher
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <input type="range" min="0" max="2000" step="200" value={speed} onChange={e => setSpeed(Number(e.target.value))} className="w-full accent-rose-700" />
+                                            <div className="flex justify-between text-[8px] font-bold text-slate-400 mt-1 uppercase">
+                                                <span>Fast</span>
+                                                <span>{speed}ms</span>
+                                                <span>Slow</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => trainGames(100)} disabled={isTraining} className={`w-full py-3 mt-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${isTraining ? 'bg-slate-100' : 'bg-rose-700 text-white shadow-md active:translate-y-0.5'}`}>
+                                        <Icon name={isTraining ? 'rotate-ccw' : 'zap'} className={isTraining ? 'animate-spin' : ''} /> {isTraining ? 'Training...' : 'Train 100 Games'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+
+                    <section className="max-w-6xl w-full bg-white p-8 rounded-2xl shadow-xl border border-slate-200">
+                        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 font-inter">
+                            <div>
+                                <h2 className="text-2xl font-black flex items-center gap-2 text-slate-900"><Icon name="brain" className="text-rose-700" /> The Archive</h2>
+                                <p className="text-xs text-slate-400">Explore all 304 matchbox configurations</p>
+                            </div>
+                            <div className="flex bg-slate-100 p-1 rounded-lg">
+                                {['all', '1', '3', '5', '7'].map(d => <button key={d} onClick={() => setFilterDepth(d)} className={`px-4 py-1 text-[10px] font-bold uppercase rounded ${filterDepth === d ? 'bg-white shadow-sm' : 'text-slate-400'}`}>{d === 'all' ? 'All' : `Move ${d}`}</button>)}
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-6 sm:grid-cols-10 lg:grid-cols-12 gap-2 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+                            {filteredStates.map(s => (
+                                <button key={s.canonical} onClick={() => setActiveBox({ canonical: s.canonical, beads: getBeadsForState(s.canonical), symmetryIndex: 0 })} className={`p-1 border rounded-lg hover:border-rose-400 transition-all ${activeBox?.canonical === s.canonical ? 'border-rose-700 bg-rose-50' : 'border-slate-100 bg-slate-50'}`}>
+                                    <div className="grid grid-cols-3 gap-[1px] w-full aspect-square">
+                                        {s.canonical.split('').map((c, i) => <div key={i} className={`rounded-[1px] ${c === 'n' ? 'bg-white/50' : 'bg-white'} flex items-center justify-center text-[6px] font-black`}>{c === 'n' ? '' : c}</div>)}
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </section>
+
+                    {showSettings && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+                            <div className="bg-white max-w-2xl w-full rounded-3xl p-8 relative font-inter shadow-2xl overflow-y-auto max-h-[90vh]">
+                                <button onClick={() => setShowSettings(false)} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 transition-colors"><Icon name="x" size={24} /></button>
+                                <h2 className="text-2xl font-black mb-6 flex items-center gap-3"><Icon name="settings" className="text-rose-700" /> Engine Configuration</h2>
+
+                                <div className="space-y-8">
+                                    <div>
+                                        <h3 className="text-xs uppercase font-bold text-slate-400 mb-4 tracking-widest">Initialization (Starting Beads)</h3>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                            {[1, 3, 5, 7].map(turn => (
+                                                <div key={turn} className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                                    <label className="text-[10px] font-bold text-slate-500 block mb-1 uppercase">Move {turn}</label>
+                                                    <input
+                                                        type="number"
+                                                        value={initBeads[turn]}
+                                                        onChange={(e) => setInitBeads(p => ({ ...p, [turn]: parseInt(e.target.value) || 0 }))}
+                                                        className="w-full bg-transparent text-xl font-black focus:outline-none"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-xs uppercase font-bold text-slate-400 mb-4 tracking-widest">Reinforcement Weights</h3>
+                                        <div className="grid grid-cols-3 gap-4">
+                                            <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100 italic">
+                                                <label className="text-[10px] font-bold text-indigo-600 block mb-1 uppercase">Win O</label>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-indigo-400 font-bold">+</span>
+                                                    <input
+                                                        type="number"
+                                                        value={winReward}
+                                                        onChange={(e) => setWinReward(parseInt(e.target.value) || 0)}
+                                                        className="w-full bg-transparent text-xl font-black text-indigo-900 focus:outline-none"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                                <label className="text-[10px] font-bold text-slate-500 block mb-1 uppercase">Draw</label>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-slate-300 font-bold">+</span>
+                                                    <input
+                                                        type="number"
+                                                        value={drawReward}
+                                                        onChange={(e) => setDrawReward(parseInt(e.target.value) || 0)}
+                                                        className="w-full bg-transparent text-xl font-black focus:outline-none"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="bg-rose-50 p-4 rounded-xl border border-rose-100">
+                                                <label className="text-[10px] font-bold text-rose-600 block mb-1 uppercase">Loss O</label>
+                                                <div className="flex items-center gap-2">
+                                                    <input
+                                                        type="number"
+                                                        value={lossPunishment}
+                                                        onChange={(e) => setLossPunishment(parseInt(e.target.value) || 0)}
+                                                        className="w-full bg-transparent text-xl font-black text-rose-900 focus:outline-none"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-4 pt-4">
+                                        <button
+                                            onClick={() => {
+                                                setInitBeads({ 1: 8, 3: 4, 5: 3, 7: 2 });
+                                                setWinReward(5);
+                                                setDrawReward(3);
+                                                setLossPunishment(-1);
+                                            }}
+                                            className="flex-1 py-3 border border-slate-200 rounded-xl font-bold text-slate-500 hover:bg-slate-50"
+                                        >
+                                            Reset to Defaults
+                                        </button>
+                                        <button
+                                            onClick={() => setShowSettings(false)}
+                                            className="flex-1 py-3 bg-slate-900 text-white rounded-xl font-bold shadow-lg active:translate-y-0.5 transition-transform"
+                                        >
+                                            Done
+                                        </button>
+                                    </div>
+                                    <p className="text-[10px] text-center text-slate-400 uppercase font-bold">Note: Changes to initialization only apply to new matchboxes or after memory reset.</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {showExplainer && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+                            <div className="bg-white max-w-lg w-full rounded-3xl p-8 relative font-inter">
+                                <button onClick={() => setShowExplainer(false)} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 transition-colors"><Icon name="x" size={24} /></button>
+                                <h2 className="text-2xl font-black mb-4">How it works</h2>
+                                <p className="text-sm text-slate-600 leading-relaxed mb-6">Donald Michie built MENACE in 1961 using 304 matchboxes. Each box represents a game state. Beads inside represent moves. Winning moves get beads, draws get fewer, and losses remove beads. This digital version lets you customize these rules in the Settings.</p>
+                                <button onClick={() => setShowExplainer(false)} className="w-full py-3 bg-slate-900 text-white rounded-xl font-bold">Close</button>
+                            </div>
+                        </div>
+                    )}
+
+                    <section className="max-w-6xl w-full bg-white p-8 rounded-2xl shadow-xl border border-slate-200 mt-8 mb-12">
+                        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 font-inter">
+                            <div>
+                                <h2 className="text-2xl font-black flex items-center gap-2 text-slate-900"><Icon name="history" size={24} className="text-indigo-600" /> Last Game Breakdown</h2>
+                                <p className="text-xs text-slate-400">Step-by-step reinforcement analysis from the most recent game</p>
+                            </div>
+                            {lastReinforcement && (
+                                <div className={`px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2 ${lastReinforcement.result === 'O' ? 'bg-indigo-100 text-indigo-700' :
+                                        lastReinforcement.result === 'Draw' ? 'bg-slate-100 text-slate-700' : 'bg-rose-100 text-rose-700'
+                                    }`}>
+                                    <Icon name={lastReinforcement.result === 'O' ? 'trophy' : lastReinforcement.result === 'Draw' ? 'minus' : 'x-circle'} size={18} />
+                                    {lastReinforcement.result === 'O' ? 'Win' : lastReinforcement.result === 'Draw' ? 'Draw' : 'Loss'}
+                                    <span className="opacity-50 mx-1">|</span>
+                                    {lastReinforcement.reward > 0 ? `+${lastReinforcement.reward}` : lastReinforcement.reward} Beads
+                                </div>
+                            )}
+                        </div>
+
+                        {!lastReinforcement ? (
+                            <div className="h-48 flex items-center justify-center border-2 border-dashed border-slate-100 rounded-2xl text-slate-300 italic">
+                                Play a game or train to see the breakdown
+                            </div>
+                        ) : (
+                            <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+                                {lastReinforcement.history.map((step, idx) => (
+                                    <div key={idx} className="flex-shrink-0 w-40 animate-in fade-in slide-in-from-bottom-2 duration-300" style={{ animationDelay: `${idx * 100}ms` }}>
+                                        <div className="p-3 border rounded-xl bg-slate-50 mb-2 relative">
+                                            <div className="grid grid-cols-3 gap-1 aspect-square mb-2 group cursor-pointer" onClick={() => setActiveBox({ canonical: step.canonical, beads: step.beadsAfter, symmetryIndex: 0 })}>
+                                                {step.canonical.split('').map((c, i) => {
+                                                    const tot = step.beadsAfter.reduce((a, b) => a + b, 0);
+                                                    const probAfter = tot > 0 ? step.beadsAfter[i] / tot : 0;
+                                                    const isSelected = i === step.moveIndex;
+                                                    const isOccupied = c !== 'n';
+
+                                                    return (
+                                                        <div key={i} className={`rounded-[2px] transition-colors relative flex items-center justify-center text-[8px] font-bold ${isOccupied ? 'bg-white text-slate-200' : isSelected ? 'ring-2 ring-indigo-500 z-10' : 'bg-white'
+                                                            }`} style={{
+                                                                backgroundColor: isOccupied ? undefined : `rgba(99, 102, 241, ${0.1 + (probAfter * 0.9)})`
+                                                            }}>
+                                                            {isOccupied ? c : ''}
+                                                            {isSelected && (
+                                                                <div className={`absolute -top-1 -right-1 w-2 h-2 rounded-full border border-white shadow-sm ${lastReinforcement.reward > 0 ? 'bg-green-500' : 'bg-rose-500'
+                                                                    }`} />
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                            <div className="flex justify-between items-center bg-white px-2 py-1 rounded-lg border border-slate-100">
+                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Turn {idx * 2 + 2}</span>
+                                                <div className={`text-[10px] font-black flex items-center gap-1 ${step.change > 0 ? 'text-green-600' : 'text-rose-600'}`}>
+                                                    {step.beadsBefore[step.moveIndex]} <Icon name="arrow-right" size={8} /> {step.beadsAfter[step.moveIndex]}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </section>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<MenaceApp />);
+    </script>
+</body>
+
+</html>

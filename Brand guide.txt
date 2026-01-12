@@ -1,0 +1,49 @@
+﻿Primary Colors
+These colors should be used most prominently on the website.
+* Milligan Orange
+   * RGB: 243,110,36
+   * HEX: #F36E24
+* Buffalo Black
+   * RGB: 0,0,0
+   * HEX: #000000
+________________
+
+
+Secondary Colors
+These colors are meant to supplement the primary palette.
+* White
+   * RGB: 255,255,255
+   * HEX: #FFFFFF
+* Gray
+   * RGB: 162,162,162
+   * HEX: #A2A2A2
+* Mountain Gray
+   * RGB: 110,110,110
+   * HEX: #6E6E6E
+________________
+
+
+Accent Colors
+Use these colors sparingly, making up no more than 10% of the design.
+* Burnt Orange
+   * RGB: 205,89,32
+   * HEX: #CD5920
+* Stoele Blue
+   * RGB: 0,156,222
+   * HEX: #009CDE
+* Appalachian Sunrise
+   * RGB: 249,160,27
+   * HEX: #F9A01B
+* Anglin Field
+   * RGB: 0,133,82
+   * HEX: #008552
+________________
+
+
+Usage Guidelines
+* Color Codes: Use the provided RGB and HEX values for all screen-based applications, including websites.
+* Body Copy: Limit the use of color in body text.
+* Shadows: Avoid using colored drop shadows.
+
+Primary font family: Franklin Gothic
+Secondary font family: Proxima Nova

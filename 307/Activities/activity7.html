@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 7: Gram-Schmidt Process</title>
+    <link rel="stylesheet" href="styles.css">
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        .gs-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .gs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        svg {
+            background: #000;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .vec-x {
+            stroke-width: 2;
+            opacity: 0.3;
+            stroke-dasharray: 2, 2;
+        }
+
+        .vec-f {
+            stroke-width: 4;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .proj-line {
+            stroke: #FFF;
+            stroke-width: 1;
+            stroke-dasharray: 4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <nav class="nav-header">
+            <a href="index.html" class="back-link">← Back to Hub</a>
+            <div class="badge">Activity 07</div>
+        </nav>
+
+        <header style="margin-bottom: 2rem;">
+            <h1>The Gram-Schmidt Process</h1>
+            <p style="color: var(--text-muted);">Transform any basis into an orthogonal one. This is the blueprint for
+                reorienting 3D space.</p>
+        </header>
+
+        <div class="gs-grid">
+            <div class="glass-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3>Process Visualization</h3>
+                    <div id="step-badge" class="badge">Step 0: Initial Basis</div>
+                </div>
+                <div class="interactive-area" style="height: 500px;">
+                    <svg viewBox="-100 -100 200 200" id="gs-svg">
+                        <!-- Pseudo-3D axes -->
+                        <line x1="0" y1="0" x2="80" y2="40" stroke="rgba(255,255,255,0.1)" />
+                        <line x1="0" y1="0" x2="0" y2="-90" stroke="rgba(255,255,255,0.1)" />
+                        <line x1="0" y1="0" x2="-80" y2="40" stroke="rgba(255,255,255,0.1)" />
+
+                        <!-- Original Vectors -->
+                        <line id="x1" class="vec-x" stroke="#EF4444" />
+                        <line id="x2" class="vec-x" stroke="#3B82F6" />
+                        <line id="x3" class="vec-x" stroke="#10B981" />
+
+                        <!-- Orthogonal Vectors -->
+                        <line id="f1" class="vec-f" stroke="#EF4444" />
+                        <line id="f2" class="vec-f" stroke="#3B82F6" />
+                        <line id="f3" class="vec-f" stroke="#10B981" />
+
+                        <line id="proj-marker" class="proj-line" visibility="hidden" />
+                    </svg>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button class="btn btn-primary" id="btn-next" onclick="nextStep()">Next Step</button>
+                    <button class="btn" style="border: 1px solid var(--border);" onclick="resetGS()">Reset
+                        Basis</button>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h3>The Algorithm</h3>
+                <div id="algo-display" class="math-block" style="font-size: 0.8rem;">
+                    We start with linear independent vectors \( \mathbf{x}_1, \mathbf{x}_2, \mathbf{x}_3 \).
+                </div>
+
+                <div id="step-desc" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem;">
+                    Click "Next Step" to start orthogonalizing the basis.
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h5>Rotation Matrix \( R = PQP^T \)</h5>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">
+                        Activity 7 uses Gram-Schmidt to find \(P\), an orthonormal matrix that centers a rotation axis.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <section class="glass-card" style="margin-top: 2rem;">
+            <h3>Step-by-Step Logic</h3>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); text-align: center;">
+                <div>
+                    <div class="badge">Step 1</div>
+                    <p>\( \mathbf{f}_1 = \mathbf{x}_1 \)</p>
+                </div>
+                <div>
+                    <div class="badge">Step 2</div>
+                    <p>\( \mathbf{f}_2 = \mathbf{x}_2 - \text{proj}_{f_1} \mathbf{x}_2 \)</p>
+                </div>
+                <div>
+                    <div class="badge">Step 3</div>
+                    <p>\( \mathbf{f}_3 = \mathbf{x}_3 - \text{proj}_{f_1} \mathbf{x}_3 - \text{proj}_{f_2} \mathbf{x}_3
+                        \)</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let step = 0;
+        // Pseudo-3D projected vectors
+        let x = [
+            [40, -60],
+            [70, -20],
+            [-20, -50]
+        ];
+        let f = [[0, 0], [0, 0], [0, 0]];
+
+        function updateViz() {
+            ['x1', 'x2', 'x3'].forEach((id, i) => {
+                const el = document.getElementById(id);
+                el.setAttribute('x2', x[i][0]);
+                el.setAttribute('y2', x[i][1]);
+            });
+
+            ['f1', 'f2', 'f3'].forEach((id, i) => {
+                const el = document.getElementById(id);
+                el.setAttribute('x2', f[i][0]);
+                el.setAttribute('y2', f[i][1]);
+            });
+        }
+
+        function nextStep() {
+            step++;
+            const badge = document.getElementById('step-badge');
+            const desc = document.getElementById('step-desc');
+            const algo = document.getElementById('algo-display');
+
+            if (step === 1) {
+                f[0] = [...x[0]];
+                badge.textContent = "Step 1: Set f1 = x1";
+                desc.textContent = "The first orthogonal vector is simply the first original vector.";
+                algo.innerHTML = "\\( \\mathbf{f}_1 = \\mathbf{x}_1 \\)";
+            } else if (step === 2) {
+                // Visual orthogonalization move
+                f[1] = [-x[0][1] * 0.8, x[0][0] * 0.8]; // Rotated 90 deg for visual orthogonality
+                badge.textContent = "Step 2: Orthogonalize x2";
+                desc.textContent = "We subtract the projection of x2 onto f1. This leaves only the part of x2 perpendicular to f1.";
+                algo.innerHTML = "\\( \\mathbf{f}_2 = \\mathbf{x}_2 - \\text{proj}_{f_1} \\mathbf{x}_2 \\)";
+            } else if (step === 3) {
+                f[2] = [-20, 20]; // Arbitrary 3rd orthogonal vector
+                badge.textContent = "Step 3: Orthogonalize x3";
+                desc.textContent = "Now we subtract projections onto both previous vectors. x3 is now orthogonal to the plane of f1 and f2.";
+                algo.innerHTML = "\\( \\mathbf{f}_3 = \\mathbf{x}_3 - \\text{proj}_{f_1} \\mathbf{x}_3 - \\text{proj}_{f_2} \\mathbf{x}_3 \\)";
+            } else if (step === 4) {
+                badge.textContent = "Step 4: Normalize";
+                desc.textContent = "Finally, we divide each vector by its length to create an orthonormal basis (unit vectors).";
+                algo.innerHTML = "\\( \\mathbf{u}_i = \\frac{\\mathbf{f}_i}{\\|\\mathbf{f}_i\\|} \\)";
+                // Scale f down for visual normalization
+                f = f.map(v => {
+                    const l = Math.sqrt(v[0] * v[0] + v[1] * v[1]);
+                    return [v[0] * 50 / l, v[1] * 50 / l];
+                });
+                document.getElementById('btn-next').disabled = true;
+            }
+
+            updateViz();
+            if (window.MathJax) MathJax.typesetPromise();
+        }
+
+        function resetGS() {
+            step = 0;
+            f = [[0, 0], [0, 0], [0, 0]];
+            document.getElementById('step-badge').textContent = "Step 0: Initial Basis";
+            document.getElementById('btn-next').disabled = false;
+            updateViz();
+        }
+
+        updateViz();
+    </script>
+</body>
+
+</html>

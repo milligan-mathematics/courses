@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 6: Orthogonal Projections</title>
+    <link rel="stylesheet" href="styles.css">
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        .proj-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .proj-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        svg {
+            background: #000;
+            cursor: crosshair;
+        }
+
+        .subspace-line {
+            stroke: var(--primary);
+            stroke-width: 2;
+            opacity: 0.4;
+        }
+
+        .vector-b {
+            stroke: #FFF;
+            stroke-width: 3;
+            marker-end: url(#arrow-b);
+        }
+
+        .vector-p {
+            stroke: var(--accent);
+            stroke-width: 3;
+            marker-end: url(#arrow-p);
+        }
+
+        .vector-e {
+            stroke: #EF4444;
+            stroke-width: 2;
+            stroke-dasharray: 4;
+            marker-end: url(#arrow-e);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <nav class="nav-header">
+            <a href="index.html" class="back-link">← Back to Hub</a>
+            <div class="badge">Activity 06</div>
+        </nav>
+
+        <header style="margin-bottom: 2rem;">
+            <h1>Orthogonal Projections</h1>
+            <p style="color: var(--text-muted);">The best approximation for an unsolvable system is finding the shadow
+                it casts on the available space.</p>
+        </header>
+
+        <div class="proj-grid">
+            <div class="glass-card">
+                <h3>Interactive Projection</h3>
+                <p style="font-size: 0.8rem; margin-bottom: 1rem;">Click and drag anywhere to move vector
+                    \(\mathbf{b}\).</p>
+                <div class="interactive-area" style="height: 500px;">
+                    <svg viewBox="-100 -100 200 200" id="proj-svg">
+                        <defs>
+                            <marker id="arrow-b" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                <path d="M0,0 L10,5 L0,10 Z" fill="#FFF" />
+                            </marker>
+                            <marker id="arrow-p" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                <path d="M0,0 L10,5 L0,10 Z" fill="var(--accent)" />
+                            </marker>
+                            <marker id="arrow-e" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                                <path d="M0,0 L6,3 L0,6 Z" fill="#EF4444" />
+                            </marker>
+                        </defs>
+                        <!-- Grid lines -->
+                        <g opacity="0.1">
+                            <line x1="-100" y1="0" x2="100" y2="0" stroke="white" />
+                            <line x1="0" y1="-100" x2="0" y2="100" stroke="white" />
+                        </g>
+
+                        <!-- Subspace (Line) -->
+                        <line id="sub-line" x1="-200" y1="100" x2="200" y2="-100" class="subspace-line" />
+
+                        <!-- Vectors -->
+                        <line id="vec-p" class="vector-p" x1="0" y1="0" />
+                        <line id="vec-b" class="vector-b" x1="0" y1="0" />
+                        <line id="vec-e" class="vector-e" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h3>The Best Approximation</h3>
+                <div class="math-block" style="font-size: 0.9rem;">
+                    \( \hat{\mathbf{b}} = \text{proj}_L \mathbf{b} \)
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem;">
+                    The orthogonal projection \(\hat{\mathbf{b}}\) is the point in the subspace closest to
+                    \(\mathbf{b}\).
+                </p>
+
+                <h5 style="margin-top: 2rem; color: #EF4444;">Error Vector \(\mathbf{e}\)</h5>
+                <div class="math-block" style="font-size: 0.9rem; color: #EF4444;">
+                    \( \mathbf{e} = \mathbf{b} - \hat{\mathbf{b}} \)
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    Notice that \(\mathbf{e}\) is **always** orthogonal (perpendicular) to the subspace.
+                </p>
+
+                <div class="control-group" style="margin-top: 2rem;">
+                    <label>Subspace Slope:</label>
+                    <input type="range" id="slope-slider" min="-2" max="2" step="0.1" value="-0.5">
+                </div>
+            </div>
+        </div>
+
+        <section class="glass-card" style="margin-top: 2rem;">
+            <h3>Mathematical Insight</h3>
+            <p>If we want to solve \( A\mathbf{x} = \mathbf{b} \) but \(\mathbf{b}\) is not in the column space of
+                \(A\), we solve the **Normal Equations**: </p>
+            <div class="math-block">
+                \( A^T A \mathbf{\hat{x}} = A^T \mathbf{b} \)
+            </div>
+            <p>This "moves" the problem into the subspace where a solution exists.</p>
+        </section>
+    </div>
+
+    <script>
+        const svg = document.getElementById('proj-svg');
+        const subLine = document.getElementById('sub-line');
+        const vecB = document.getElementById('vec-b');
+        const vecP = document.getElementById('vec-p');
+        const vecE = document.getElementById('vec-e');
+        const slopeSlider = document.getElementById('slope-slider');
+
+        let b = [60, -40];
+        let slope = -0.5;
+
+        function update() {
+            slope = parseFloat(slopeSlider.value);
+
+            // Update subspace line
+            subLine.setAttribute('x1', -200);
+            subLine.setAttribute('y1', -200 * slope);
+            subLine.setAttribute('x2', 200);
+            subLine.setAttribute('y2', 200 * slope);
+
+            // Vector along the subspace
+            const u = [1, slope];
+            const uNormSq = 1 + slope * slope;
+
+            // Projection formula: ((b dot u) / (u dot u)) * u
+            const dot = (b[0] * u[0]) + (b[1] * u[1]);
+            const scalar = dot / uNormSq;
+            const p = [u[0] * scalar, u[1] * scalar];
+
+            // Update visuals
+            vecB.setAttribute('x2', b[0]);
+            vecB.setAttribute('y2', b[1]);
+
+            vecP.setAttribute('x2', p[0]);
+            vecP.setAttribute('y2', p[1]);
+
+            vecE.setAttribute('x1', p[0]);
+            vecE.setAttribute('y1', p[1]);
+            vecE.setAttribute('x2', b[0]);
+            vecE.setAttribute('y2', b[1]);
+        }
+
+        svg.addEventListener('mousemove', (e) => {
+            if (e.buttons === 1) {
+                const rect = svg.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                // Map to SVG coordinates (-100 to 100)
+                b[0] = (x / rect.width) * 200 - 100;
+                b[1] = (y / rect.height) * 200 - 100;
+                update();
+            }
+        });
+
+        slopeSlider.addEventListener('input', update);
+        update();
+    </script>
+</body>
+
+</html>
