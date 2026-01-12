@@ -1,11 +1,32 @@
 <!-- Custom Head -->
 <style>
   :root {
-    --color-primary: #F36E24;
-    --color-primary-dark: #cc520f; /* Darker shade mainly for hover */
+    --jtd-brand-color: #F36E24;
+    --jtd-link-color: #F36E24;
   }
-  body, h1, h2, h3, h4, h5, h6 {
-    font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+
+  /* Applying font family to the theme's core variables if possible, 
+     otherwise direct override */
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .site-title,
+  .nav-list-link {
+    font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif !important;
+  }
+
+  /* Specific color overrides for elements that might not use the variables */
+  .site-title {
+    color: #F36E24 !important;
+  }
+
+  .btn-primary {
+    background-color: #F36E24 !important;
+    border-color: #F36E24 !important;
   }
 </style>
 
