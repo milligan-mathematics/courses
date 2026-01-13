@@ -11,27 +11,31 @@ layout: default
 
 <div class="container">
     <div class="course-grid">
-        {% assign courses = site.pages | where: "parent", "Home" | sort: "nav_order" %}
-        {% for course in courses %}
+        {% assign items = site.pages | sort: "nav_order" %}
+        {% for item in items %}
+        {% if item.layout == "course" %}
         <div class="course-card">
             <div class="course-number">
-                {% assign title_parts = course.title | split: ": " %}
+                {% assign title_parts = item.title | split: ": " %}
                 {% if title_parts.size > 1 %}
                 {{ title_parts[0] }}
                 {% else %}
-                Course
+                COURSE
                 {% endif %}
             </div>
             <h3>
-                {% assign title_parts = course.title | split: ": " %}
+                {% assign title_parts = item.title | split: ": " %}
                 {% if title_parts.size > 1 %}
                 {{ title_parts[1] }}
                 {% else %}
-                {{ course.title }}
+                {{ item.title }}
                 {% endif %}
             </h3>
-            <a href="{{ course.url | relative_url }}" class="course-link">View Materials</a>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: var(--spacing-md);">Interactive
+                materials and course details.</p>
+            <a href="{{ item.url | relative_url }}" class="course-link">View Materials</a>
         </div>
+        {% endif %}
         {% endfor %}
     </div>
 </div>
