@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: course
 title: MATH 315: Probability and Statistics II
 parent: Home
 nav_order: 315

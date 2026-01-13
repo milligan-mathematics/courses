@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: course
 title: Math Lab
 parent: Home
 nav_order: 100

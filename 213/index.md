@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: course
 title: MATH 213: Statistics
 parent: Home
 nav_order: 213

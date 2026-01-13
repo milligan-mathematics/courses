@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: course
 title: MATH 153: Fundamental Concepts I
 parent: Home
 nav_order: 153

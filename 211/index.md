@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: course
 title: MATH 211: Calculus I
 parent: Home
 nav_order: 211

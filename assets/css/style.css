@@ -1,0 +1,268 @@
+/* Milligan University Mathematics - Custom Theme */
+
+:root {
+  /* Brand Palette */
+  --color-primary: #F36E24; /* Milligan Orange */
+  --color-primary-dark: #CD5920; /* Burnt Orange */
+  --color-black: #000000; /* Buffalo Black */
+  --color-white: #FFFFFF;
+  --color-gray: #A2A2A2;
+  --color-mountain-gray: #6E6E6E;
+  
+  /* Accents */
+  --color-accent-blue: #009CDE; /* Stoele Blue */
+  --color-accent-sunrise: #F9A01B; /* Appalachian Sunrise */
+  --color-accent-green: #008552; /* Anglin Field */
+  
+  /* UX Colors */
+  --bg-body: #F5F5F7;
+  --bg-card: #FFFFFF;
+  --text-main: #333333;
+  --text-muted: #666666;
+  
+  /* Spacing */
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 4rem;
+  
+  /* Typography */
+  --font-primary: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  --font-secondary: "Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  
+  /* Shadows */
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Reset & Base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-secondary);
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-primary);
+  color: var(--color-black);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.2;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+/* Navbar */
+.navbar {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: var(--spacing-md) 0;
+}
+
+.navbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  font-family: var(--font-primary);
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-black);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand span {
+  color: var(--color-primary);
+}
+
+.nav-links a {
+  color: var(--color-mountain-gray);
+  margin-left: var(--spacing-lg);
+  font-weight: 500;
+}
+
+.nav-links a:hover {
+  color: var(--color-primary);
+}
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(135deg, var(--color-black) 0%, #2a2a2a 100%);
+  color: var(--color-white);
+  padding: var(--spacing-xl) 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: radial-gradient(circle at top right, rgba(243, 110, 36, 0.2), transparent 70%);
+  pointer-events: none;
+}
+
+.hero h1 {
+  color: var(--color-white);
+  font-size: 3.5rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.hero p {
+  font-size: 1.25rem;
+  color: var(--color-gray);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Course Grid */
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl) 0;
+}
+
+.course-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  border-top: 4px solid var(--color-primary);
+}
+
+.course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+.course-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.course-number {
+  color: var(--color-primary);
+  font-family: var(--font-primary);
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  margin-bottom: var(--spacing-sm);
+}
+
+.course-link {
+  margin-top: auto;
+  align-self: flex-start;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Content Page */
+.page-content {
+  padding: var(--spacing-xl) 0;
+  background: var(--color-white);
+  min-height: 80vh;
+}
+
+.page-content h1 {
+  font-size: 2.5rem;
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: var(--spacing-sm);
+  display: inline-block;
+}
+
+.demos-list {
+  list-style: none;
+  margin-top: var(--spacing-lg);
+}
+
+.demo-item {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  margin-bottom: var(--spacing-sm);
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.demo-item a {
+  display: block;
+  padding: var(--spacing-md);
+  color: var(--color-black);
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.demo-item:hover {
+  background: #fff;
+  border-color: var(--color-primary);
+}
+
+.demo-item a::after {
+  content: '→';
+  color: var(--color-primary);
+  transition: transform 0.2s;
+}
+
+.demo-item:hover a::after {
+  transform: translateX(5px);
+}
+
+/* Footer */
+footer {
+  background: var(--color-black);
+  color: var(--color-gray);
+  padding: var(--spacing-lg) 0;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+footer a {
+  color: var(--color-white);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+}

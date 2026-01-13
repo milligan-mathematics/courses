@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: course
 title: MATH 304: Modern Geometry
 parent: Home
 nav_order: 304

@@ -1,0 +1,37 @@
+---
+layout: default
+---
+
+<section class="hero">
+    <div class="container">
+        <h1>Mathematics Courses</h1>
+        <p>Explore the Milligan University mathematics curriculum and interactive learning materials.</p>
+    </div>
+</section>
+
+<div class="container">
+    <div class="course-grid">
+        {% assign courses = site.pages | where: "parent", "Home" | sort: "nav_order" %}
+        {% for course in courses %}
+        <div class="course-card">
+            <div class="course-number">
+                {% assign title_parts = course.title | split: ": " %}
+                {% if title_parts.size > 1 %}
+                {{ title_parts[0] }}
+                {% else %}
+                Course
+                {% endif %}
+            </div>
+            <h3>
+                {% assign title_parts = course.title | split: ": " %}
+                {% if title_parts.size > 1 %}
+                {{ title_parts[1] }}
+                {% else %}
+                {{ course.title }}
+                {% endif %}
+            </h3>
+            <a href="{{ course.url | relative_url }}" class="course-link">View Materials</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>

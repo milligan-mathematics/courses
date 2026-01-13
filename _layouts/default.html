@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if page.title %}{{ page.title }} - {% endif %}{{ site.title }}</title>
+    <link rel="stylesheet" href="{{ " /assets/css/style.css" | relative_url }}">
+    <!-- Custom Head -->
+    {% include head_custom.html %}
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="{{ " /" | relative_url }}" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="{{ " /" | relative_url }}">Courses</a>
+                {% for link in site.aux_links %}
+                {% for item in link %}
+                <a href="{{ item[1] }}">{{ item[0] }}</a>
+                {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {{ content }}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; {{ "now" | date: "%Y" }} Milligan University. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

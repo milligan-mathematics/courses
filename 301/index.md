@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: course
 title: MATH 301: Mathematical Logic
 parent: Home
 nav_order: 301

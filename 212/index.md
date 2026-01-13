@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: course
 title: MATH 212: Calculus II
 parent: Home
 nav_order: 212

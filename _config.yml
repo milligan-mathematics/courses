@@ -1,7 +1,6 @@
 title: Milligan Mathematics
 baseurl: "/courses"
 url: "https://milligan-mathematics.github.io"
-remote_theme: just-the-docs/just-the-docs
 
 aux_links:
   "Milligan University":

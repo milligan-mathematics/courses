@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: course
 title: MATH 253: Fundamental Concepts II
 parent: Home
 nav_order: 253

@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: course
 title: MATH 303: Multivariable Calculus
 parent: Home
 nav_order: 303
