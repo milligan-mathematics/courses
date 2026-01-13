@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if page.title %}{{ page.title }} - {% endif %}{{ site.title }}</title>
-    <!-- Fixed CSS Link -->
-    <link rel="stylesheet" href="{{ " /assets/css/style.css" | relative_url }}">
-    <!-- Custom Head -->
+    <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/style.css">
     {% include head_custom.html %}
 </head>
 
@@ -15,11 +13,11 @@
 
     <nav class="navbar">
         <div class="container navbar-content">
-            <a href="{{ " /" | relative_url }}" class="brand">
+            <a href="{{ site.baseurl }}/" class="brand">
                 <span>Milligan</span> Mathematics
             </a>
             <div class="nav-links">
-                <a href="{{ " /" | relative_url }}">Courses</a>
+                <a href="{{ site.baseurl }}/">Courses</a>
                 {% for link in site.aux_links %}
                 {% for item in link %}
                 <a href="{{ item[1] }}">{{ item[0] }}</a>
