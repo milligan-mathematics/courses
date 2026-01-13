@@ -24,7 +24,7 @@ ________________
 
 
 Accent Colors
-Use these colors sparingly, making up no more than 10% of the design.
+Use these colors as accents, making up no more than 20% of the design.
 * Burnt Orange
    * RGB: 205,89,32
    * HEX: #CD5920

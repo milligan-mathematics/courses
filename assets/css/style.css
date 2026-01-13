@@ -2,34 +2,40 @@
 
 :root {
   /* Brand Palette */
-  --color-primary: #F36E24; /* Milligan Orange */
-  --color-primary-dark: #CD5920; /* Burnt Orange */
-  --color-black: #000000; /* Buffalo Black */
+  --color-primary: #F36E24;
+  /* Milligan Orange */
+  --color-primary-dark: #CD5920;
+  /* Burnt Orange */
+  --color-black: #000000;
+  /* Buffalo Black */
   --color-white: #FFFFFF;
   --color-gray: #A2A2A2;
   --color-mountain-gray: #6E6E6E;
-  
+
   /* Accents */
-  --color-accent-blue: #009CDE; /* Stoele Blue */
-  --color-accent-sunrise: #F9A01B; /* Appalachian Sunrise */
-  --color-accent-green: #008552; /* Anglin Field */
-  
+  --color-accent-blue: #009CDE;
+  /* Stoele Blue */
+  --color-accent-sunrise: #F9A01B;
+  /* Appalachian Sunrise */
+  --color-accent-green: #008552;
+  /* Anglin Field */
+
   /* UX Colors */
   --bg-body: #F5F5F7;
   --bg-card: #FFFFFF;
   --text-main: #333333;
   --text-muted: #666666;
-  
+
   /* Spacing */
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
   --spacing-lg: 2rem;
   --spacing-xl: 4rem;
-  
+
   /* Typography */
   --font-primary: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
   --font-secondary: "Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  
+
   /* Shadows */
   --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -49,7 +55,12 @@ body {
   line-height: 1.6;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-primary);
   color: var(--color-black);
   margin-bottom: var(--spacing-md);
@@ -76,7 +87,7 @@ a:hover {
 .navbar {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -245,6 +256,71 @@ a:hover {
 
 .demo-item:hover a::after {
   transform: translateX(5px);
+}
+
+/* Resource Grid (for Course Pages) */
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.resource-card {
+  background: var(--bg-card);
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: var(--spacing-md);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none !important;
+  /* Override default link underline */
+  color: inherit;
+}
+
+.resource-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--color-primary);
+}
+
+.resource-card h4 {
+  font-family: var(--font-primary);
+  font-size: 1.1rem;
+  color: var(--color-black);
+  margin-bottom: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.resource-card h4::after {
+  content: '→';
+  color: var(--color-primary);
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.2s;
+}
+
+.resource-card:hover h4::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.resource-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: bold;
+}
+
+.resource-desc {
+  font-size: 0.95rem;
+  color: var(--text-main);
+  line-height: 1.5;
 }
 
 /* Footer */

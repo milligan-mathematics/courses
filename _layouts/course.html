@@ -7,5 +7,21 @@ layout: default
 
     <div class="content-wrapper">
         {{ content }}
+
+        {% if page.activities %}
+        <h2>Interactive Resources</h2>
+        <div class="resource-grid">
+            {% for activity in page.activities %}
+            <a href="{{ activity.url | relative_url }}" class="resource-card">
+                <div class="resource-meta" style="color: var(--color-accent-blue);">{{ activity.type | default:
+                    'Activity' }}</div>
+                <h4>{{ activity.title }}</h4>
+                {% if activity.description %}
+                <p class="resource-desc">{{ activity.description }}</p>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
 </div>
