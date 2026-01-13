@@ -2,10 +2,6 @@ title: Milligan Mathematics
 baseurl: "/courses"
 url: "https://milligan-mathematics.github.io"
 
-aux_links:
-  "Milligan University":
-    - "https://www.milligan.edu"
-
 # Enable MathJax support via kramdown if desired, but we are using custom head for script 
 kramdown:
   math_engine: mathjax
