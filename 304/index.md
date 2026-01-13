@@ -1,6 +1,6 @@
 ---
 layout: course
-title: MATH 304: Modern Geometry
+title: "MATH 304: Modern Geometry"
 parent: Home
 nav_order: 304
 ---

@@ -1,6 +1,6 @@
 ---
 layout: course
-title: MATH 351: Mathematical Modeling
+title: "MATH 351: Mathematical Modeling"
 parent: Home
 nav_order: 351
 ---

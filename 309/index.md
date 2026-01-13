@@ -1,6 +1,6 @@
 ---
 layout: course
-title: MATH 309: Differential Equations
+title: "MATH 309: Differential Equations"
 parent: Home
 nav_order: 309
 ---

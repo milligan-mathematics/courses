@@ -1,6 +1,6 @@
 ---
 layout: course
-title: Math Lab
+title: "Math Lab"
 parent: Home
 nav_order: 100
 ---

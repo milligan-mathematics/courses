@@ -1,6 +1,6 @@
 ---
 layout: course
-title: MATH 411: Real Analysis
+title: "MATH 411: Real Analysis"
 parent: Home
 nav_order: 411
 ---

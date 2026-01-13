@@ -1,6 +1,6 @@
 ---
 layout: course
-title: MATH 308: Modern Algebra
+title: "MATH 308: Modern Algebra"
 parent: Home
 nav_order: 308
 ---

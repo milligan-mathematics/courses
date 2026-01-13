@@ -1,6 +1,6 @@
 ---
 layout: course
-title: MATH 494: Capstone Seminar
+title: "MATH 494: Capstone Seminar"
 parent: Home
 nav_order: 494
 ---
