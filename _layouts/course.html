@@ -9,10 +9,10 @@ layout: default
         {{ content }}
 
         {% if page.activities %}
-        <h2>Interactive Resources</h2>
+        <h2 style="margin-top: var(--spacing-xl);">Interactive Resources</h2>
         <div class="resource-grid">
             {% for activity in page.activities %}
-            <a href="{{ activity.url | relative_url }}" class="resource-card">
+            <a href="{{ activity.url }}" class="resource-card">
                 <div class="resource-meta" style="color: var(--color-accent-blue);">{{ activity.type | default:
                     'Activity' }}</div>
                 <h4>{{ activity.title }}</h4>
