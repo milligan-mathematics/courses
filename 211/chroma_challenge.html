@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chroma Challenge</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --accent-color: #38bdf8;
+            --surface-color: #1e293b;
+            --grid-gap: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* --- UI Elements --- */
+        .header {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .score-container,
+        .timer-container {
+            background: var(--surface-color);
+            padding: 10px 20px;
+            border-radius: 99px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-label {
+            font-size: 1rem;
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        /* --- Game Board --- */
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: var(--grid-gap);
+            width: 90vw;
+            max-width: 500px;
+            aspect-ratio: 3/2;
+            padding: 10px;
+            /* Container shake animation anchor */
+            position: relative;
+        }
+
+        .tile {
+            background-color: #444;
+            /* Fallback */
+            border-radius: 16px;
+            cursor: pointer;
+            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .tile:active {
+            transform: scale(0.92);
+        }
+
+        .tile:hover {
+            filter: brightness(1.1);
+        }
+
+        /* --- Overlays --- */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+            transition: opacity 0.3s ease;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin: 0 0 1rem 0;
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            font-size: 1.5rem;
+            border-radius: 99px;
+            cursor: pointer;
+            font-weight: 700;
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .instruction {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* --- Footer Timer Bar --- */
+        .timer-bar-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #1e293b;
+        }
+
+        .timer-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+            width: 100%;
+            transform-origin: left;
+            transition: transform 100ms linear;
+        }
+
+        /* --- Animations --- */
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-10px);
+            }
+
+            40% {
+                transform: translateX(10px);
+            }
+
+            60% {
+                transform: translateX(-10px);
+            }
+
+            80% {
+                transform: translateX(10px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .shaking {
+            animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+        }
+
+        .pop {
+            animation: pop 0.4s ease-out;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        #final-score {
+            font-size: 5rem;
+            font-weight: 800;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        #final-score-label {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+
+        /* --- High Score Styles --- */
+        .name-input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            max-width: 300px;
+            margin-top: 1rem;
+        }
+
+        .name-input {
+            background: #1e293b;
+            border: 2px solid #334155;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            width: 100%;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .name-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .leaderboard {
+            width: 100%;
+            max-width: 400px;
+            margin-top: 2rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 20px;
+            padding: 20px;
+            display: none;
+        }
+
+        .leaderboard.visible {
+            display: block;
+        }
+
+        .leaderboard h2 {
+            margin: 0 0 1rem 0;
+            text-align: center;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        .score-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .score-item:last-child {
+            border-bottom: none;
+        }
+
+        .score-rank {
+            width: 30px;
+            opacity: 0.6;
+        }
+
+        .score-name {
+            flex-grow: 1;
+            font-weight: 500;
+        }
+
+        .score-val {
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="timer-bar-wrapper">
+        <div id="timer-bar" class="timer-bar"></div>
+    </div>
+
+    <div class="header">
+        <div class="score-container">
+            <span>lvl</span>
+            <span id="level-display">1</span>
+        </div>
+        <div class="score-container">
+            <span>score</span>
+            <span id="score-display">0</span>
+        </div>
+    </div>
+
+    <div class="game-board" id="game-board">
+        <!-- Tiles will be generated here -->
+    </div>
+
+    <!-- Start Screen Overlay -->
+    <div id="start-overlay" class="overlay">
+        <h1>Chroma Challenge</h1>
+        <div class="instruction">Spot the different color. Be quick!</div>
+        <button class="btn" onclick="game.start()">Play</button>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div id="game-over-overlay" class="overlay hidden">
+        <div id="game-over-content">
+            <div id="final-score-label">Final Score</div>
+            <div id="final-score">0</div>
+
+            <div id="name-entry-section" class="name-input-container">
+                <input type="text" id="player-name" class="name-input" placeholder="Enter your name" maxlength="15">
+                <button class="btn" onclick="game.saveScore()">Save Score</button>
+            </div>
+
+            <div id="leaderboard-section" class="leaderboard">
+                <h2>Leaderboard</h2>
+                <ul id="score-list" class="score-list">
+                    <!-- Scores injected here -->
+                </ul>
+                <button class="btn" style="width: 100%; margin-top: 20px;" onclick="game.restart()">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase Integration
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCP2qHT-0wHfIALMkGbJLxbAj6582MVIrM",
+            authDomain: "chromachallenge-1de11.firebaseapp.com",
+            projectId: "chromachallenge-1de11",
+            storageBucket: "chromachallenge-1de11.firebasestorage.app",
+            messagingSenderId: "248110311965",
+            appId: "1:248110311965:web:6ff57f4f3b11f37682f4f4",
+            measurementId: "G-Y73HZR5RSG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        class ColorGame {
+            constructor() {
+                this.level = 1;
+                this.score = 0;
+                this.isPlaying = false;
+                this.timerMax = 15000;
+                this.timeLeft = this.timerMax;
+                this.lastTime = 0;
+
+                this.boardEl = document.getElementById('game-board');
+                this.scoreEl = document.getElementById('score-display');
+                this.levelEl = document.getElementById('level-display');
+                this.timerBarEl = document.getElementById('timer-bar');
+                this.startOverlay = document.getElementById('start-overlay');
+                this.gameOverOverlay = document.getElementById('game-over-overlay');
+                this.finalScoreEl = document.getElementById('final-score');
+                this.nameInput = document.getElementById('player-name');
+                this.nameEntrySection = document.getElementById('name-entry-section');
+                this.leaderboardSection = document.getElementById('leaderboard-section');
+                this.scoreListEl = document.getElementById('score-list');
+                this.animationFrame = null;
+            }
+
+            start() {
+                this.reset();
+                this.startOverlay.classList.add('hidden');
+                this.gameOverOverlay.classList.add('hidden');
+                this.nameEntrySection.style.display = 'flex';
+                this.leaderboardSection.classList.remove('visible');
+                this.isPlaying = true;
+                this.lastTime = performance.now();
+                this.gameLoop();
+                this.nextLevel();
+            }
+
+            restart() {
+                this.start();
+            }
+
+            reset() {
+                this.level = 1;
+                this.score = 0;
+                this.scoreEl.textContent = '0';
+                this.levelEl.textContent = '1';
+                this.timerMax = 10000;
+                this.timeLeft = this.timerMax;
+            }
+
+            endGame() {
+                this.isPlaying = false;
+                cancelAnimationFrame(this.animationFrame);
+                this.finalScoreEl.textContent = this.score;
+                this.nameInput.value = '';
+                this.nameEntrySection.style.display = 'flex';
+                this.leaderboardSection.classList.remove('visible');
+                this.gameOverOverlay.classList.remove('hidden');
+            }
+
+            async saveScore() {
+                const name = this.nameInput.value.trim() || 'Anonymous';
+                const button = this.nameEntrySection.querySelector('.btn');
+
+                try {
+                    button.disabled = true;
+                    button.textContent = 'Saving...';
+
+                    // Save to Firestore
+                    await addDoc(collection(db, "leaderboard"), {
+                        name: name,
+                        score: this.score,
+                        date: new Date().toISOString()
+                    });
+
+                    await this.fetchAndShowLeaderboard();
+                } catch (error) {
+                    console.error("Error saving score: ", error);
+                    alert("Failed to save score. Make sure Firestore is enabled in Test Mode!");
+                    button.disabled = false;
+                    button.textContent = 'Save Score';
+                }
+            }
+
+            async fetchAndShowLeaderboard() {
+                this.nameEntrySection.style.display = 'none';
+                this.leaderboardSection.classList.add('visible');
+                this.scoreListEl.innerHTML = '<li class="score-item" style="justify-content:center; opacity:0.6;">Loading scores...</li>';
+
+                try {
+                    const q = query(collection(db, "leaderboard"), orderBy("score", "desc"), limit(5));
+                    const querySnapshot = await getDocs(q);
+
+                    if (querySnapshot.empty) {
+                        this.scoreListEl.innerHTML = '<li class="score-item" style="justify-content:center; opacity:0.6;">No high scores yet!</li>';
+                        return;
+                    }
+
+                    const scores = [];
+                    querySnapshot.forEach((doc) => {
+                        scores.push(doc.data());
+                    });
+
+                    this.scoreListEl.innerHTML = scores.map((s, i) => `
+                        <li class="score-item">
+                            <span class="score-rank">#${i + 1}</span>
+                            <span class="score-name">${s.name}</span>
+                            <span class="score-val">${s.score}</span>
+                        </li>
+                    `).join('');
+                } catch (error) {
+                    console.error("Error fetching scores: ", error);
+                    this.scoreListEl.innerHTML = '<li class="score-item" style="justify-content:center; color:#ef4444;">Error loading scores.</li>';
+                }
+            }
+
+            gameLoop(currentTime) {
+                if (!this.isPlaying) return;
+
+                if (!currentTime) currentTime = performance.now();
+                const delta = currentTime - this.lastTime;
+                this.lastTime = currentTime;
+
+                this.timeLeft -= delta;
+
+                const pct = Math.max(0, this.timeLeft / this.timerMax);
+                this.timerBarEl.style.transform = `scaleX(${pct})`;
+
+                if (this.timeLeft <= 0) {
+                    this.endGame();
+                    return;
+                }
+
+                this.animationFrame = requestAnimationFrame((t) => this.gameLoop(t));
+            }
+
+            nextLevel() {
+                this.boardEl.innerHTML = '';
+                const difficultyFactor = Math.pow(0.90, this.level - 1);
+                const diffLightness = Math.max(2, 25 * difficultyFactor);
+
+                const hue = Math.floor(Math.random() * 360);
+                const sat = 70 + Math.random() * 20;
+                const lit = 40 + Math.random() * 30;
+
+                const baseColor = `hsl(${hue}, ${sat}%, ${lit}%)`;
+                const litShift = Math.random() > 0.5 ? diffLightness : -diffLightness;
+
+                let newLit = lit + litShift;
+                if (newLit > 95) newLit = lit - diffLightness;
+                if (newLit < 5) newLit = lit + diffLightness;
+
+                const oddColor = `hsl(${hue}, ${sat}%, ${newLit}%)`;
+                const correctIndex = Math.floor(Math.random() * 6);
+
+                for (let i = 0; i < 6; i++) {
+                    const tile = document.createElement('div');
+                    tile.classList.add('tile');
+                    tile.style.backgroundColor = (i === correctIndex) ? oddColor : baseColor;
+
+                    if (i === correctIndex) {
+                        tile.onclick = () => this.handleCorrectClick();
+                    } else {
+                        tile.onclick = () => this.handleWrongClick();
+                    }
+
+                    this.boardEl.appendChild(tile);
+                }
+
+                this.levelEl.textContent = this.level;
+            }
+
+            handleCorrectClick() {
+                this.score += 100 + (this.level * 10);
+                this.scoreEl.textContent = this.score;
+                this.timeLeft = Math.min(this.timerMax, this.timeLeft + 1500);
+                this.level++;
+                this.playAudio(true);
+                this.nextLevel();
+            }
+
+            handleWrongClick() {
+                this.timeLeft -= 2000;
+                this.boardEl.classList.remove('shaking');
+                void this.boardEl.offsetWidth;
+                this.boardEl.classList.add('shaking');
+                this.playAudio(false);
+            }
+
+            playAudio(success) {
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContext) return;
+                    if (!this.audioCtx) this.audioCtx = new AudioContext();
+
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.connect(gain);
+                    gain.connect(this.audioCtx.destination);
+
+                    if (success) {
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(500, this.audioCtx.currentTime);
+                        osc.frequency.exponentialRampToValueAtTime(1000, this.audioCtx.currentTime + 0.1);
+                        gain.gain.setValueAtTime(0.1, this.audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 0.1);
+                        osc.start();
+                        osc.stop(this.audioCtx.currentTime + 0.1);
+                    } else {
+                        osc.type = 'sawtooth';
+                        osc.frequency.setValueAtTime(150, this.audioCtx.currentTime);
+                        osc.frequency.linearRampToValueAtTime(100, this.audioCtx.currentTime + 0.1);
+                        gain.gain.setValueAtTime(0.1, this.audioCtx.currentTime);
+                        gain.gain.linearRampToValueAtTime(0.001, this.audioCtx.currentTime + 0.2);
+                        osc.start();
+                        osc.stop(this.audioCtx.currentTime + 0.2);
+                    }
+                } catch (e) {
+                    console.error("Audio error", e);
+                }
+            }
+        }
+
+        const game = new ColorGame();
+        // Expose to global for HTML onclick handlers
+        window.game = game;
+    </script>
+</body>
+
+</html>
