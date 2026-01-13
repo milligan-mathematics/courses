@@ -268,21 +268,21 @@ a:hover {
 
 .resource-card {
   background: var(--bg-card);
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: var(--spacing-md);
-  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  border-radius: 12px;
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
   flex-direction: column;
+  border-top: 4px solid var(--color-primary);
   text-decoration: none !important;
-  /* Override default link underline */
   color: inherit;
+  margin-bottom: var(--spacing-md);
 }
 
 .resource-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-5px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--color-primary);
 }
 
 .resource-card h4 {
