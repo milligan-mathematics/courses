@@ -51,6 +51,37 @@
 
         #wheel-screen {
             display: none;
+            max-width: 1200px;
+            width: 95%;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #wheel-screen.active {
+            display: flex;
+        }
+
+        @media (min-width: 900px) {
+            #wheel-screen.active {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 3rem;
+                margin-top: 1rem;
+            }
+
+            .wheel-main-area {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .probability-display {
+                width: 300px;
+                margin-top: 2rem !important;
+            }
         }
 
         .attendance-list {
@@ -205,11 +236,13 @@
     </div>
 
     <div id="wheel-screen">
-        <div id="wheel-container">
-            <div id="pointer"></div>
-            <canvas id="wheel-canvas" width="800" height="800"></canvas>
+        <div class="wheel-main-area">
+            <div id="wheel-container">
+                <div id="pointer"></div>
+                <canvas id="wheel-canvas" width="800" height="800"></canvas>
+            </div>
+            <button id="spin-button" onclick="spin()">Spin Wheel</button>
         </div>
-        <button id="spin-button" onclick="spin()">Spin Wheel</button>
 
         <div class="probability-display">
             <h3>Current Odds</h3>
@@ -252,7 +285,9 @@
             }
 
             document.getElementById('setup-screen').style.display = 'none';
-            document.getElementById('wheel-screen').style.display = 'block';
+            const wheelScreen = document.getElementById('wheel-screen');
+            wheelScreen.classList.add('active');
+
             drawWheel();
             updateProbDisplay();
         }
@@ -350,14 +385,15 @@
             const lostWeight = student.weight * 0.5;
             student.weight *= 0.5;
 
-            // Share lost weight among others
-            const othersCount = activeStudents.length - 1;
-            if (othersCount > 0) {
-                const redistribution = lostWeight / othersCount;
-                activeStudents.forEach(s => {
-                    if (s.name !== student.name) {
-                        s.weight += redistribution;
-                    }
+            // Share lost weight proportionally among others
+            const others = activeStudents.filter(s => s.name !== student.name);
+            const totalWeightOfOthers = others.reduce((sum, s) => sum + s.weight, 0);
+
+            if (totalWeightOfOthers > 0) {
+                others.forEach(s => {
+                    // Redistribute proportionally based on their current share of the 'others' group
+                    const share = s.weight / totalWeightOfOthers;
+                    s.weight += lostWeight * share;
                 });
             }
 
