@@ -381,15 +381,21 @@
             document.getElementById('winner-popup').classList.add('active');
             document.getElementById('overlay').classList.add('active');
 
-            // Update Logic: Reduce probability of winner by half
-            const lostWeight = student.weight * 0.5;
-            student.weight *= 0.5;
-
-            // Share lost weight proportionally among others
+            // Update Logic: Reduce probability of winner to exactly 1% of new total
+            const totalWeight = activeStudents.reduce((sum, s) => sum + s.weight, 0);
             const others = activeStudents.filter(s => s.name !== student.name);
             const totalWeightOfOthers = others.reduce((sum, s) => sum + s.weight, 0);
 
             if (totalWeightOfOthers > 0) {
+                const oldWinnerWeight = student.weight;
+                // We want student.weight / (student.weight + totalWeightOfOthers) = 0.01
+                // student.weight = 0.01 * student.weight + 0.01 * totalWeightOfOthers
+                // 0.99 * student.weight = 0.01 * totalWeightOfOthers
+                // student.weight = totalWeightOfOthers / 99
+                student.weight = totalWeightOfOthers / 99;
+
+                const lostWeight = oldWinnerWeight - student.weight;
+
                 others.forEach(s => {
                     // Redistribute proportionally based on their current share of the 'others' group
                     const share = s.weight / totalWeightOfOthers;
