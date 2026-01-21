@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Row Operation Buddy - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        /* Specific styles for the Row Operation Buddy */
+        .controls-section {
+            background: #f8f9fa;
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            margin-bottom: var(--spacing-lg);
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .matrix-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: var(--spacing-lg) 0;
+            overflow-x: auto;
+            min-height: 200px;
+        }
+
+        .matrix-wrapper {
+            position: relative;
+            padding: 0 1rem;
+        }
+
+        /* Brackets simulation */
+        .matrix-wrapper::before,
+        .matrix-wrapper::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 10px;
+            border: 2px solid var(--color-black);
+        }
+
+        .matrix-wrapper::before {
+            left: 0;
+            border-right: none;
+        }
+
+        .matrix-wrapper::after {
+            right: 0;
+            border-left: none;
+        }
+
+        .matrix-grid {
+            display: grid;
+            gap: 10px;
+            text-align: center;
+        }
+
+        .matrix-input {
+            width: 60px;
+            padding: 5px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: var(--font-primary);
+            font-size: 1.1rem;
+        }
+
+        .matrix-input:focus {
+            border-color: var(--color-primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(243, 110, 36, 0.2);
+        }
+
+        .operation-panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .op-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .op-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .op-label {
+            font-weight: bold;
+            min-width: 100px;
+            color: var(--color-primary-dark);
+        }
+
+        input[type="number"],
+        select {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-width: 60px;
+        }
+
+        .btn {
+            background-color: var(--color-primary);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+        }
+
+        .btn:hover {
+            background-color: var(--color-primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--color-gray);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--color-mountain-gray);
+        }
+
+        .history-log {
+            margin-top: var(--spacing-lg);
+            border-top: 2px solid #eee;
+            padding-top: var(--spacing-md);
+        }
+
+        .history-item {
+            padding: 10px;
+            border-left: 2px solid var(--color-gray);
+            margin-bottom: 10px;
+            background: #fafafa;
+        }
+
+        .history-item.new {
+            border-left-color: var(--color-primary);
+            background: #fff5f0;
+        }
+
+        .math-symbol {
+            font-family: "Times New Roman", serif;
+            font-style: italic;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+    <!-- MathJax for nice rendering in history if needed, though simple HTML is often enough -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 307</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Row Operation Buddy</h1>
+            <p>Interactive tool for performing elementary row operations.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <!-- Setup Phase -->
+        <div id="setup-panel" class="controls-section">
+            <h3>Initialize Matrix</h3>
+            <p>Enter the dimensions for your matrix:</p>
+            <div style="margin-top: 1rem; display: flex; align-items: center; gap: 10px;">
+                <label>Rows (m): <input type="number" id="rows-in" value="3" min="1" max="10"></label>
+                <label>Columns (n): <input type="number" id="cols-in" value="4" min="1" max="10"></label>
+                <button class="btn" onclick="initMatrix()">Start</button>
+            </div>
+        </div>
+
+        <!-- Working Phase (Hidden initially) -->
+        <div id="work-panel" class="hidden">
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Current Matrix</h2>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-secondary" onclick="undo()" id="undo-btn" disabled>Undo</button>
+                    <button class="btn btn-secondary" onclick="reset()">Reset</button>
+                </div>
+            </div>
+
+            <div class="matrix-container">
+                <div class="matrix-wrapper">
+                    <div id="matrix-grid" class="matrix-grid">
+                        <!-- Grid generated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <h3>Elementary Row Operations</h3>
+                <p>Select an operation to perform:</p>
+
+                <div class="operation-panel">
+                    <!-- Interchange -->
+                    <div class="op-row">
+                        <span class="op-label">• Interchange</span>
+                        <span>Row</span>
+                        <select id="swap-r1"></select>
+                        <span>and Row</span>
+                        <select id="swap-r2"></select>
+                        <button class="btn" onclick="doSwap()">Do it</button>
+                    </div>
+
+                    <!-- Scale -->
+                    <div class="op-row">
+                        <span class="op-label">• Multiply</span>
+                        <span>Row</span>
+                        <select id="scale-r"></select>
+                        <span>by scalar</span>
+                        <input type="text" id="scale-k" placeholder="k (e.g. 1/2)" class="scalar-input">
+                        <button class="btn" onclick="doScale()">Do it</button>
+                    </div>
+
+                    <!-- Add -->
+                    <div class="op-row">
+                        <span class="op-label">• Add</span>
+                        <input type="text" id="add-k" placeholder="k (e.g. -3/4)" class="scalar-input">
+                        <span>times Row</span>
+                        <select id="add-source"></select>
+                        <span>to Row</span>
+                        <select id="add-target"></select>
+                        <button class="btn" onclick="doAdd()">Do it</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="history-log">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>Operation History</h3>
+                </div>
+                <div id="history-container">
+                    <p class="text-muted">No operations performed yet.</p>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Milligan University Mathematics</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Fraction Class ---
+        class Fraction {
+            constructor(n, d = 1) {
+                if (d === 0) throw new Error("Denominator cannot be zero");
+                if (d < 0) { n = -n; d = -d; }
+                this.n = n;
+                this.d = d;
+                this.reduce();
+            }
+
+            reduce() {
+                const gcd = (a, b) => b ? gcd(b, a % b) : Math.abs(a);
+                const common = gcd(this.n, this.d);
+                this.n /= common;
+                this.d /= common;
+            }
+
+            add(other) {
+                return new Fraction(this.n * other.d + other.n * this.d, this.d * other.d);
+            }
+
+            subtract(other) {
+                return new Fraction(this.n * other.d - other.n * this.d, this.d * other.d);
+            }
+
+            multiply(other) {
+                return new Fraction(this.n * other.n, this.d * other.d);
+            }
+
+            equals(other) {
+                return this.n === other.n && this.d === other.d;
+            }
+
+            toString() {
+                if (this.d === 1) return this.n.toString();
+                return `${this.n}/${this.d}`;
+            }
+
+            toTex() {
+                if (this.d === 1) return this.n.toString();
+                if (this.n < 0) return `-\\frac{${Math.abs(this.n)}}{${this.d}}`;
+                return `\\frac{${this.n}}{${this.d}}`;
+            }
+
+            static parse(input) {
+                if (input instanceof Fraction) return input;
+                input = String(input).trim();
+                if (!input) return new Fraction(0);
+
+                if (input.includes('/')) {
+                    const parts = input.split('/');
+                    if (parts.length > 2) throw new Error("Invalid fraction format");
+                    return new Fraction(parseInt(parts[0]), parseInt(parts[1]));
+                }
+
+                // Decimal support (basic)
+                if (input.includes('.')) {
+                    const len = input.split('.')[1].length;
+                    const d = Math.pow(10, len);
+                    const n = Math.round(parseFloat(input) * d);
+                    return new Fraction(n, d);
+                }
+
+                return new Fraction(parseInt(input));
+            }
+        }
+
+        // --- App State ---
+        let matrix = []; // 2D array of Fraction objects
+        let rows = 0;
+        let cols = 0;
+        let history = []; // Array of step objects
+        let undoStack = []; // Array of snapshot objects
+
+        function initMatrix() {
+            rows = parseInt(document.getElementById('rows-in').value);
+            cols = parseInt(document.getElementById('cols-in').value);
+
+            if (rows < 1 || cols < 1) {
+                alert("Dimensions must be positive integers.");
+                return;
+            }
+
+            // Create empty matrix (zeros)
+            matrix = [];
+            for (let i = 0; i < rows; i++) {
+                let row = [];
+                for (let j = 0; j < cols; j++) {
+                    row.push(new Fraction(0));
+                }
+                matrix.push(row);
+            }
+
+            history = [];
+            undoStack = [];
+
+            renderGrid();
+            populateSelects();
+            updateHistoryView();
+            updateUndoBtn();
+
+            document.getElementById('setup-panel').classList.add('hidden');
+            document.getElementById('work-panel').classList.remove('hidden');
+        }
+
+        function reset() {
+            if (confirm("Are you sure you want to reset? All progress will be lost.")) {
+                document.getElementById('work-panel').classList.add('hidden');
+                document.getElementById('setup-panel').classList.remove('hidden');
+            }
+        }
+
+        function saveState() {
+            // Deep copy matrix and history
+            const matrixCopy = matrix.map(row => row.map(f => new Fraction(f.n, f.d)));
+            const historyCopy = JSON.parse(JSON.stringify(history)); // Simple enough for history array
+            undoStack.push({ matrix: matrixCopy, history: historyCopy });
+            updateUndoBtn();
+        }
+
+        function undo() {
+            if (undoStack.length === 0) return;
+            const state = undoStack.pop();
+
+            // Restore matrix (re-instantiate Fractions)
+            matrix = state.matrix.map(row => row.map(f => new Fraction(f.n, f.d)));
+            history = state.history;
+
+            renderGrid();
+            updateHistoryView();
+            updateUndoBtn();
+        }
+
+        function updateUndoBtn() {
+            document.getElementById('undo-btn').disabled = undoStack.length === 0;
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('matrix-grid');
+            grid.style.gridTemplateColumns = `repeat(${cols}, auto)`;
+            grid.innerHTML = '';
+
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    const input = document.createElement('input');
+                    input.type = 'text'; // Text input for fractions
+                    input.className = 'matrix-input';
+                    input.value = matrix[i][j].toString();
+                    input.dataset.row = i;
+                    input.dataset.col = j;
+                    input.onchange = (e) => updateValue(i, j, e.target.value);
+                    grid.appendChild(input);
+                }
+            }
+        }
+
+        function updateValue(r, c, val) {
+            try {
+                // If manual edit, we might want to save state before? 
+                // Usually undo is for operations, but let's allow undoing edits too if we want.
+                // For now, let's just update.
+                matrix[r][c] = Fraction.parse(val);
+                renderGrid(); // Re-render to show normalized form
+            } catch (e) {
+                alert("Invalid number format. Please enter an integer, decimal, or fraction (e.g., '1/2').");
+                renderGrid(); // Reset to valid value
+            }
+        }
+
+        function populateSelects() {
+            const selects = ['swap-r1', 'swap-r2', 'scale-r', 'add-source', 'add-target'];
+            selects.forEach(id => {
+                const el = document.getElementById(id);
+                el.innerHTML = '';
+                for (let i = 1; i <= rows; i++) {
+                    const option = document.createElement('option');
+                    option.value = i - 1;
+                    option.text = i;
+                    el.appendChild(option);
+                }
+            });
+        }
+
+        // --- Operations ---
+
+        function doSwap() {
+            const r1 = parseInt(document.getElementById('swap-r1').value);
+            const r2 = parseInt(document.getElementById('swap-r2').value);
+
+            if (r1 === r2) {
+                alert("Please select two different rows.");
+                return;
+            }
+
+            saveState();
+
+            const temp = matrix[r1];
+            matrix[r1] = matrix[r2];
+            matrix[r2] = temp;
+
+            addHistory(`Interchanged Row ${r1 + 1} and Row ${r2 + 1}`, `R_{${r1 + 1}} \\leftrightarrow R_{${r2 + 1}}`);
+            renderGrid();
+        }
+
+        function doScale() {
+            const r = parseInt(document.getElementById('scale-r').value);
+            const kStr = document.getElementById('scale-k').value;
+
+            try {
+                const k = Fraction.parse(kStr);
+                if (k.n === 0) { // Check if zero
+                    if (!confirm("Multiplying a row by zero is usually not a valid elementary row operation. Do you want to proceed anyway?")) return;
+                }
+
+                saveState();
+
+                for (let j = 0; j < cols; j++) {
+                    matrix[r][j] = matrix[r][j].multiply(k);
+                }
+
+                addHistory(`Multiplied Row ${r + 1} by ${k.toString()}`, `${k.toTex()} R_{${r + 1}} \\to R_{${r + 1}}`);
+                renderGrid();
+            } catch (e) {
+                alert("Invalid scalar k.");
+            }
+        }
+
+        function doAdd() {
+            const source = parseInt(document.getElementById('add-source').value);
+            const target = parseInt(document.getElementById('add-target').value);
+            const kStr = document.getElementById('add-k').value;
+
+            if (source === target) {
+                alert("Select distinct rows.");
+                return;
+            }
+
+            try {
+                const k = Fraction.parse(kStr);
+
+                saveState();
+
+                for (let j = 0; j < cols; j++) {
+                    // target = target + k * source
+                    const term = matrix[source][j].multiply(k);
+                    matrix[target][j] = matrix[target][j].add(term);
+                }
+
+                const sign = k.n >= 0 ? '+' : '-';
+                const absK = new Fraction(Math.abs(k.n), k.d);
+                let kTex = absK.toTex();
+                if (kTex === '1') kTex = ''; // Hide 1
+
+                const opString = `R_{${target + 1}} ${sign} ${kTex}R_{${source + 1}} \\to R_{${target + 1}}`;
+                addHistory(`Added ${k.toString()} times Row ${source + 1} to Row ${target + 1}`, opString);
+                renderGrid();
+            } catch (e) {
+                alert("Invalid scalar k.");
+            }
+        }
+
+        function addHistory(desc, mathTex) {
+            // Snapshot current matrix state for display
+            // We use simple LaTeX array for matrix
+            let matTex = '\\begin{bmatrix}';
+            for (let i = 0; i < rows; i++) {
+                matTex += matrix[i].map(f => f.toTex()).join(' & ');
+                if (i < rows - 1) matTex += ' \\\\ ';
+            }
+            matTex += '\\end{bmatrix}';
+
+            history.push({ desc, mathTex, matTex });
+            updateHistoryView();
+        }
+
+        function updateHistoryView() {
+            const container = document.getElementById('history-container');
+            if (history.length === 0) {
+                container.innerHTML = '<p class="text-muted">No operations performed yet.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+
+            history.forEach((step, index) => {
+                const el = document.createElement('div');
+                el.className = 'history-item ' + (index === history.length - 1 ? 'new' : '');
+
+                el.innerHTML = `
+                    <div><strong>Step ${index + 1}:</strong> ${step.desc}</div>
+                    <div style="font-size: 1.1rem; margin: 10px 0;">\\[ ${step.mathTex} \\]</div>
+                    <div style="overflow-x: auto; margin-top: 10px;">\\[ ${step.matTex} \\]</div>
+                `;
+                container.appendChild(el);
+            });
+
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        }
+    </script>
+
+</body>
+
+</html>
