@@ -388,11 +388,10 @@
 
             if (totalWeightOfOthers > 0) {
                 const oldWinnerWeight = student.weight;
-                // We want student.weight / (student.weight + totalWeightOfOthers) = 0.01
-                // student.weight = 0.01 * student.weight + 0.01 * totalWeightOfOthers
-                // 0.99 * student.weight = 0.01 * totalWeightOfOthers
-                // student.weight = totalWeightOfOthers / 99
-                student.weight = totalWeightOfOthers / 99;
+                // We want winner to be exactly 1% of the TOTAL weight
+                // targetWeight = totalWeight * 0.01
+                const targetWeight = totalWeight * 0.01;
+                student.weight = targetWeight;
 
                 const lostWeight = oldWinnerWeight - student.weight;
 
