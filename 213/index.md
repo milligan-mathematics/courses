@@ -7,4 +7,8 @@ nav_order: 213
 
 # MATH 213: Statistics
 
-No interactive content available yet.
+Welcome to the Statistics course site.
+
+## Interactive Activities
+
+- [Test Activity](test-page.html){: .demo-item }
