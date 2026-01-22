@@ -16,12 +16,22 @@ Welcome to the team! This guide will help you get set up with the repository and
    cd courses
    ```
 
+### Install Dependencies
+To run the site locally, you'll need the gems defined in our `Gemfile`.
+1. Ensure you have Ruby and Bundler installed.
+2. Install dependencies:
+   ```bash
+   bundle install
+   ```
+
 ### Open in Antigravity
 1. Open the **Antigravity** application.
 2. Select **Open Folder** and navigate to the cloned `courses` directory.
 3. Antigravity will index the project and be ready to assist you.
 
 ## 2. Development Workflow
+
+The safest way to contribute is to verify your changes locally before pushing.
 
 1. **Pull the latest changes** before starting work:
    ```bash
@@ -32,11 +42,12 @@ Welcome to the team! This guide will help you get set up with the repository and
    git checkout -b name-of-your-feature
    ```
 3. **Make your changes**. You can ask Antigravity to help you write content, fix bugs, or style pages.
-4. **Test locally** (if you have Jekyll installed):
+4. **Test locally**:
+   This allows you to see the exact site that will be deployed.
    ```bash
    bundle exec jekyll serve
    ```
-   *If you don't have Jekyll, you can push your branch and check the GitHub pages deployment (if enabled for branches).*
+   Open your browser to `http://localhost:4000/courses/` (or the URL shown in your terminal) to check your work.
 5. **Commit and Push**:
    ```bash
    git add .
