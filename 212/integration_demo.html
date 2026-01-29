@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numerical Integration Demo - Math 212</title>
+    <style>
+        :root {
+            --milligan-orange: #F36E24;
+            --milligan-black: #000000;
+            --milligan-white: #FFFFFF;
+            --milligan-gray: #A2A2A2;
+            --milligan-mountain-gray: #6E6E6E;
+            --milligan-burnt-orange: #CD5920;
+            --milligan-blue: #009CDE;
+            --milligan-sunrise: #F9A01B;
+            --milligan-green: #008552;
+
+            --bg-color: #f8fafc;
+            --card-bg: #FFFFFF;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--milligan-black);
+            color: var(--milligan-white);
+            width: 100%;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--milligan-gray);
+            margin-top: 0.25rem;
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+            max-width: 1200px;
+            width: 95%;
+            margin: 2rem auto;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid var(--milligan-orange);
+        }
+
+        .canvas-container {
+            width: 100%;
+            aspect-ratio: 16/9;
+            position: relative;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #cbd5e1;
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-main);
+            transition: all 0.2s;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn:hover {
+            border-color: var(--milligan-orange);
+            color: var(--milligan-orange);
+        }
+
+        .btn.active {
+            background: var(--milligan-orange);
+            color: white;
+            border-color: var(--milligan-orange);
+            box-shadow: 0 2px 4px rgba(243, 110, 36, 0.3);
+        }
+
+        .stats {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .stat-item {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--milligan-black);
+        }
+
+        .error-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .info-box {
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-main);
+            background: #fff7ed;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--milligan-orange);
+        }
+
+        .method-description {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Latex style font for math */
+        .math {
+            font-family: "Times New Roman", Times, serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Numerical Integration Explorer</h1>
+        <div class="subtitle">Math 212: Calculus II | Investigating accuracy and efficiency</div>
+    </header>
+
+    <main>
+        <div class="viz-section">
+            <div class="card">
+                <div class="canvas-container" id="canvas-wrapper">
+                    <canvas id="graphCanvas"></canvas>
+                </div>
+                <div class="info-box" id="method-info">
+                    Select a method to see how it approximates the area under the curve.
+                </div>
+            </div>
+        </div>
+
+        <div class="controls-section">
+            <div class="card controls">
+                <div class="control-group">
+                    <label class="control-label">Function</label>
+                    <div
+                        style="font-size: 1.2rem; font-weight: bold; background: #eee; padding: 0.5rem; border-radius: 6px; text-align: center;">
+                        <span class="math">f(x) = x&sup2; - x&sup3;</span> on <span class="math">[0, 1]</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Subintervals (n)</label>
+                    <div class="btn-group">
+                        <button class="btn active" onclick="updateN(4)">4</button>
+                        <button class="btn" onclick="updateN(8)">8</button>
+                        <button class="btn" onclick="updateN(16)">16</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Method</label>
+                    <div class="btn-group" style="flex-direction: column;">
+                        <button class="btn active" onclick="updateMethod('left')">Left Hand Rule (Lₙ)</button>
+                        <button class="btn" onclick="updateMethod('right')">Right Hand Rule (Rₙ)</button>
+                        <button class="btn" onclick="updateMethod('mid')">Midpoint Rule (Mₙ)</button>
+                        <button class="btn" onclick="updateMethod('trap')">Trapezoidal Rule (Tₙ)</button>
+                        <button class="btn" onclick="updateMethod('simp')">Simpson's Rule (Sₙ)</button>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-label">True Integral</span>
+                        <div class="stat-value">0.083333</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Approximation</span>
+                        <div class="stat-value" id="approx-val">--</div>
+                    </div>
+                    <div class="stat-item" style="grid-column: span 2;">
+                        <span class="stat-label">Absolute Error</span>
+                        <div class="stat-value error-value" id="error-val" style="color: var(--milligan-burnt-orange);">
+                            --</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const wrapper = document.getElementById('canvas-wrapper');
+
+        let state = {
+            n: 4,
+            method: 'left' // left, right, mid, trap, simp
+        };
+
+        const descriptions = {
+            'left': "The <strong>Left Hand Rule</strong> approximates the area using rectangles where the height is determined by the function value at the <em>left</em> endpoint of each subinterval.",
+            'right': "The <strong>Right Hand Rule</strong> approximates the area using rectangles where the height is determined by the function value at the <em>right</em> endpoint of each subinterval.",
+            'mid': "The <strong>Midpoint Rule</strong> uses rectangles where the height is the function value at the <em>midpoint</em> of each subinterval. It often provides a better estimate than Left or Right rules.",
+            'trap': "The <strong>Trapezoidal Rule</strong> connects the function values at both endpoints of each subinterval with a straight line, forming trapezoids. It is the average of the Left and Right rules.",
+            'simp': "<strong>Simpson's Rule</strong> approximates the function using parabolic arcs instead of straight lines. It is a weighted average of the Midpoint and Trapezoidal rules and is usually very accurate."
+        };
+
+        function f(x) {
+            return x * x - x * x * x;
+        }
+
+        // True integral calculation: [x^3/3 - x^4/4] from 0 to 1 = 1/3 - 1/4 = 1/12
+        const TRUE_INTEGRAL = 1 / 12;
+
+        function resizeCanvas() {
+            canvas.width = wrapper.clientWidth * window.devicePixelRatio;
+            canvas.height = wrapper.clientHeight * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            draw();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function updateN(n) {
+            state.n = n;
+            document.querySelectorAll('.control-group:nth-child(2) .btn').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.innerText) === n);
+            });
+            draw();
+        }
+
+        function updateMethod(method) {
+            state.method = method;
+            document.querySelectorAll('.control-group:nth-child(3) .btn').forEach(btn => {
+                const btnMethod = btn.getAttribute('onclick').match(/'(.*)'/)[1];
+                btn.classList.toggle('active', btnMethod === method);
+            });
+            document.getElementById('method-info').innerHTML = descriptions[method];
+            draw();
+        }
+
+        function draw() {
+            const width = wrapper.clientWidth;
+            const height = wrapper.clientHeight;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+
+            // Setup math coordinates
+            // x: [-0.1, 1.1], y: [-0.05, 0.25] (Make sure there's room)
+            // f(x) max is at x=2/3 approx 0.148
+            const padding = 60;
+            const plotW = width - 2 * padding;
+            const plotH = height - 2 * padding;
+
+            // Transform functions
+            const toPxX = (x) => padding + (x - (-0.1)) / (1.1 - (-0.1)) * plotW;
+            const toPxY = (y) => height - padding - (y - (-0.05)) / (0.3 - (-0.05)) * plotH;
+
+            // Draw Axes
+            ctx.beginPath();
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 2;
+            // X-axis
+            ctx.moveTo(toPxX(-0.1), toPxY(0));
+            ctx.lineTo(toPxX(1.1), toPxY(0));
+            // Y-axis
+            ctx.moveTo(toPxX(0), toPxY(-0.05));
+            ctx.lineTo(toPxX(0), toPxY(0.3));
+            ctx.stroke();
+
+            // Draw ticks and labels
+            ctx.font = '12px sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.textAlign = 'center';
+
+            // X ticks
+            for (let i = 0; i <= 10; i++) {
+                let val = i / 10;
+                let x = toPxX(val);
+                let y = toPxY(0);
+                ctx.beginPath();
+                ctx.moveTo(x, y - 5);
+                ctx.lineTo(x, y + 5);
+                ctx.stroke();
+                ctx.fillText(val.toFixed(1), x, y + 20);
+            }
+
+            // Draw Function Curve
+            ctx.beginPath();
+            ctx.strokeStyle = '#000'; // Milligan Black
+            ctx.lineWidth = 3;
+            for (let i = 0; i <= plotW; i++) {
+                const px = padding + i;
+                const x = ((px - padding) / plotW) * 1.2 - 0.1; // Reverse map px to x
+                const y = f(x);
+                if (i === 0) ctx.moveTo(toPxX(x), toPxY(y));
+                else ctx.lineTo(toPxX(x), toPxY(y));
+            }
+            ctx.stroke();
+
+            // Draw Method
+            const dx = 1 / state.n;
+            let approxArea = 0;
+
+            ctx.fillStyle = 'rgba(243, 110, 36, 0.2)'; // Milligan Orange transparent
+            ctx.strokeStyle = '#F36E24'; // Milligan Orange
+            ctx.lineWidth = 1;
+
+            if (state.method === 'left') {
+                for (let i = 0; i < state.n; i++) {
+                    const x0 = i * dx;
+                    const height = f(x0);
+                    approxArea += height * dx;
+
+                    ctx.fillRect(toPxX(x0), toPxY(0) - (toPxY(0) - toPxY(height)), toPxX(x0 + dx) - toPxX(x0), toPxY(0) - toPxY(height));
+                    ctx.strokeRect(toPxX(x0), toPxY(height), toPxX(x0 + dx) - toPxX(x0), toPxY(0) - toPxY(height));
+
+                    // Draw point
+                    drawPoint(toPxX(x0), toPxY(height));
+                }
+            } else if (state.method === 'right') {
+                for (let i = 0; i < state.n; i++) {
+                    const x1 = (i + 1) * dx;
+                    const height = f(x1);
+                    approxArea += height * dx;
+
+                    ctx.fillRect(toPxX(i * dx), toPxY(0) - (toPxY(0) - toPxY(height)), toPxX((i + 1) * dx) - toPxX(i * dx), toPxY(0) - toPxY(height));
+                    ctx.strokeRect(toPxX(i * dx), toPxY(height), toPxX((i + 1) * dx) - toPxX(i * dx), toPxY(0) - toPxY(height));
+
+                    drawPoint(toPxX(x1), toPxY(height));
+                }
+            } else if (state.method === 'mid') {
+                for (let i = 0; i < state.n; i++) {
+                    const mid = (i + 0.5) * dx;
+                    const height = f(mid);
+                    approxArea += height * dx;
+
+                    ctx.fillRect(toPxX(i * dx), toPxY(0) - (toPxY(0) - toPxY(height)), toPxX((i + 1) * dx) - toPxX(i * dx), toPxY(0) - toPxY(height));
+                    ctx.strokeRect(toPxX(i * dx), toPxY(height), toPxX((i + 1) * dx) - toPxX(i * dx), toPxY(0) - toPxY(height));
+
+                    drawPoint(toPxX(mid), toPxY(height));
+                }
+            } else if (state.method === 'trap') {
+                for (let i = 0; i < state.n; i++) {
+                    const x0 = i * dx;
+                    const x1 = (i + 1) * dx;
+                    const y0 = f(x0);
+                    const y1 = f(x1);
+                    const area = (y0 + y1) * dx / 2;
+                    approxArea += area;
+
+                    ctx.beginPath();
+                    ctx.moveTo(toPxX(x0), toPxY(0));
+                    ctx.lineTo(toPxX(x0), toPxY(y0));
+                    ctx.lineTo(toPxX(x1), toPxY(y1));
+                    ctx.lineTo(toPxX(x1), toPxY(0));
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+
+                    drawPoint(toPxX(x0), toPxY(y0));
+                    drawPoint(toPxX(x1), toPxY(y1));
+                }
+            } else if (state.method === 'simp') {
+                // S_n = dx/3 * [f(x0) + 4f(x1) + 2f(x2) + ... + f(xn)]
+                // Logic for calculation matches standard formula
+                let sum = f(0) + f(1);
+                for (let i = 1; i < state.n; i++) {
+                    const x = i * dx;
+                    sum += (i % 2 === 0 ? 2 : 4) * f(x);
+                }
+                approxArea = (dx / 3) * sum;
+
+                // Visualization: Draw quadratic curves
+                // For Simpson's, we take pairs of intervals (so n must be even, usually)
+                // However, the prompt asks for n=4, 8, 16 which are all even, so we are good.
+                // We draw parabolas over [x_{2i}, x_{2i+2}]
+
+                ctx.fillStyle = 'rgba(0, 156, 222, 0.2)'; // Stoele Blue for Simpson
+                ctx.strokeStyle = '#009CDE';
+
+                for (let i = 0; i < state.n; i += 2) {
+                    const xLeft = i * dx;
+                    const xMid = (i + 1) * dx;
+                    const xRight = (i + 2) * dx;
+
+                    const yL = f(xLeft);
+                    const yM = f(xMid);
+                    const yR = f(xRight);
+
+                    // Fit parabola P(x) = ax^2 + bx + c
+                    // Shift x to 0, h, 2h for easier calculation of coefs relative to xLeft
+                    // But for drawing, we can just use quadratic Bezier or sample points.
+                    // Sampling is easiest to ensure it matches exactly the Simpson geometry
+
+                    ctx.beginPath();
+                    ctx.moveTo(toPxX(xLeft), toPxY(0));
+                    ctx.lineTo(toPxX(xLeft), toPxY(yL));
+
+                    // Draw curve
+                    for (let j = 0; j <= 20; j++) {
+                        let t = j / 20; // 0 to 1
+                        let currX = xLeft + t * (2 * dx);
+                        // Quadratic interpolation through 3 points (Lagrange)
+                        // L0 = (x-xm)(x-xr)/((xl-xm)(xl-xr))
+                        // etc.
+                        let xm = xMid; let xr = xRight; let xl = xLeft;
+                        let L0 = (currX - xm) * (currX - xr) / ((xl - xm) * (xl - xr));
+                        let L1 = (currX - xl) * (currX - xr) / ((xm - xl) * (xm - xr));
+                        let L2 = (currX - xl) * (currX - xm) / ((xr - xl) * (xr - xm));
+
+                        let interpY = yL * L0 + yM * L1 + yR * L2;
+                        ctx.lineTo(toPxX(currX), toPxY(interpY));
+                    }
+
+                    ctx.lineTo(toPxX(xRight), toPxY(0));
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+
+                    drawPoint(toPxX(xLeft), toPxY(yL), '#009CDE');
+                    drawPoint(toPxX(xMid), toPxY(yM), '#009CDE');
+                    drawPoint(toPxX(xRight), toPxY(yR), '#009CDE');
+                }
+            }
+
+            // Update stats
+            document.getElementById('approx-val').textContent = approxArea.toFixed(6);
+            const error = Math.abs(TRUE_INTEGRAL - approxArea);
+            document.getElementById('error-val').textContent = error.toExponential(4);
+
+            // Re-draw axis lines on top if needed or keep behind
+        }
+
+        function drawPoint(x, y, color = '#F36E24') {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Initialize
+        resizeCanvas();
+        updateMethod('left'); // Trigger initial description
+    </script>
+</body>
+
+</html>
