@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parametric Functions Explorer - Math 212</title>
+    <style>
+        :root {
+            --milligan-orange: #F36E24;
+            --milligan-black: #000000;
+            --milligan-white: #FFFFFF;
+            --milligan-gray: #A2A2A2;
+            --milligan-mountain-gray: #6E6E6E;
+            --milligan-burnt-orange: #CD5920;
+            --milligan-blue: #009CDE;
+            --bg-color: #f8fafc;
+            --card-bg: #FFFFFF;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--milligan-black);
+            color: var(--milligan-white);
+            width: 100%;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--milligan-gray);
+            margin-top: 0.25rem;
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+            max-width: 1200px;
+            width: 95%;
+            margin: 2rem auto;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Etch A Sketch Styles */
+        .etch-container {
+            background-color: var(--milligan-orange);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow:
+                inset 0 0 20px rgba(0, 0, 0, 0.2),
+                0 15px 25px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        .BrandLogo {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 1.5rem;
+            color: gold;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .etch-screen-wrapper {
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 100%;
+            aspect-ratio: 4/3;
+            position: relative;
+            overflow: hidden;
+            background-color: #e8e8e8;
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        .knob-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 20px;
+            margin-top: 20px;
+            box-sizing: border-box;
+        }
+
+        .knob-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .knob {
+            width: 80px;
+            height: 80px;
+            background-color: white;
+            border-radius: 50%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2), inset 0 -2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transition: transform 0.1s linear;
+        }
+
+        .knob::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 25px;
+            background-color: #ddd;
+            border-radius: 3px;
+        }
+
+        .knob-label {
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Controls Panel */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid var(--milligan-blue);
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: var(--text-main);
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            border-color: var(--milligan-blue);
+            color: var(--milligan-blue);
+        }
+
+        .btn.active {
+            background: var(--milligan-blue);
+            color: white;
+            border-color: var(--milligan-blue);
+        }
+
+        .btn-clear {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border-color: #fecaca;
+            text-align: center;
+        }
+
+        .btn-clear:hover {
+            background-color: #fca5a5;
+            color: #7f1d1d;
+            border-color: #fca5a5;
+        }
+
+        .math-display {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 1rem;
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .var-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .var-item {
+            background: #f1f5f9;
+            padding: 0.5rem;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .instruction-toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .instruction-toast.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Parametric Functions Explorer</h1>
+        <div class="subtitle">Math 212: Calculus II</div>
+    </header>
+
+    <main>
+        <!-- Left Column: Etch A Sketch -->
+        <div class="viz-section">
+            <div class="etch-container">
+                <div class="BrandLogo">Milligan Sketch</div>
+                <div class="etch-screen-wrapper" id="canvas-wrapper">
+                    <canvas id="etchCanvas"></canvas>
+                </div>
+                <div class="knob-container">
+                    <div class="knob-wrapper">
+                        <div class="knob" id="knobX"></div>
+                        <div class="knob-label">Horizontal (X)</div>
+                    </div>
+                    <div class="knob-wrapper">
+                        <div class="knob" id="knobY"></div>
+                        <div class="knob-label">Vertical (Y)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+                <p><strong>Controls:</strong> Arrow Keys / WASD to draw. <br>Hold correct keys to trace the shapes!</p>
+            </div>
+        </div>
+
+        <!-- Right Column: Settings & Feedback -->
+        <div class="controls-section">
+            <div class="card">
+                <div class="control-group">
+                    <label class="control-label">Mode</label>
+                    <button class="btn active" onclick="setMode('free')">Free Draw</button>
+                    <button class="btn" onclick="setMode('circle')">Trace Circle</button>
+                    <button class="btn" onclick="setMode('rect')">Trace Rectangle</button>
+                    <button class="btn" onclick="setMode('custom')">Trace Challenge Function</button>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Current Relations</label>
+                    <div class="math-display" id="math-display">
+                        Free Style
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">State</label>
+                    <div class="var-display">
+                        <div class="var-item"><span>t:</span> <span id="val-t">0.00</span></div>
+                        <div class="var-item"><span>x:</span> <span id="val-x">0.00</span></div>
+                        <div class="var-item"><span>y:</span> <span id="val-y">0.00</span></div>
+                        <div class="var-item"><span>Speed:</span> <span id="val-speed">0.00</span></div>
+                    </div>
+                </div>
+
+                <div class="control-group"
+                    style="padding: 0.5rem; background: #f0fdf4; border-radius: 6px; border: 1px solid #bbf7d0;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="check-velocity" onchange="draw()">
+                        <span style="font-size: 0.9rem; font-weight: 600; color: #166534;">Show Velocity Vector</span>
+                    </label>
+                </div>
+
+                <button class="btn btn-clear" onclick="clearScreen()">Clear Screen</button>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast" class="instruction-toast">Use Arrow Keys to move the stylus!</div>
+
+    <script>
+        const canvas = document.getElementById('etchCanvas');
+        const ctx = canvas.getContext('2d');
+        const wrapper = document.getElementById('canvas-wrapper');
+        const knobX = document.getElementById('knobX');
+        const knobY = document.getElementById('knobY');
+
+        // State
+        let mode = 'free'; // free, circle, rect, custom
+        let pos = { x: 0.5, y: 0.5 }; // Normalized 0-1
+        let rotation = { x: 0, y: 0 }; // Knob rotation in degrees
+        let t = 0;
+        let isDrawing = false;
+        let path = []; // Array of normalized points
+        let ghostPath = []; // Points for the background trace shape
+        let isAutoPlaying = false;
+        let animationFrameId; // To cancel loop if needed
+
+        // Simulation Constants
+        const USER_SPEED = 0.005;
+        const AUTO_SPEED_T = 0.02; // Speed of t increment in auto mode
+
+        // Resize Canvas
+        function resizeCanvas() {
+            canvas.width = wrapper.clientWidth;
+            canvas.height = wrapper.clientHeight;
+            draw();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        // Core Draw Loop
+        function draw(dx = 0, dy = 0) {
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Speed Calculation (Euclidean distance of delta)
+            // Magnitude of (dx, dy)
+            // Note: USER_SPEED is 0.005. Max speed approx 0.007.
+            // Scale nicely for display (x1000)
+            const speed = Math.sqrt(dx * dx + dy * dy) * 1000;
+            const valSpeedEl = document.getElementById('val-speed');
+            if (valSpeedEl) valSpeedEl.innerText = speed.toFixed(1);
+
+            // 1. Draw Background / Screen
+            ctx.fillStyle = '#e8e8e8';
+            ctx.fillRect(0, 0, w, h);
+
+            // 2. Draw Ghost Path (if Trace Mode)
+            if (mode !== 'free' && ghostPath.length > 0) {
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+                ctx.lineWidth = 10;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                // Draw ghost
+                ghostPath.forEach((p, i) => {
+                    const px = p.x * w;
+                    const py = (1 - p.y) * h; // Flip Y for cartesian feel
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                });
+                ctx.stroke();
+            }
+
+            // 3. Draw User Path
+            if (path.length > 1) {
+                ctx.beginPath();
+                ctx.strokeStyle = '#333'; // Dark charcoal/graphite look
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                path.forEach((p, i) => {
+                    const px = p.x * w;
+                    const py = (1 - p.y) * h;
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                });
+                ctx.stroke();
+            }
+
+            // 4. Draw Cursor / Stylus Point
+            const cx = pos.x * w;
+            const cy = (1 - pos.y) * h;
+
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 5. Draw Velocity Vector
+            if (document.getElementById('check-velocity') && document.getElementById('check-velocity').checked && (dx !== 0 || dy !== 0)) {
+                const vecScale = 2000; // Scale up for visibility
+                const vx = dx * vecScale;
+                const vy = -dy * vecScale; // Flip Y for canvas
+
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(cx + vx, cy + vy);
+                ctx.strokeStyle = '#16a34a'; // Green
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Arrowhead
+                const angle = Math.atan2(vy, vx);
+                const headLen = 8;
+                ctx.beginPath();
+                ctx.moveTo(cx + vx, cy + vy);
+                ctx.lineTo(cx + vx - headLen * Math.cos(angle - Math.PI / 6), cy + vy - headLen * Math.sin(angle - Math.PI / 6));
+                ctx.lineTo(cx + vx - headLen * Math.cos(angle + Math.PI / 6), cy + vy - headLen * Math.sin(angle + Math.PI / 6));
+                ctx.fillStyle = '#16a34a';
+                ctx.fill();
+            }
+
+            // Update UI/Knobs
+            knobX.style.transform = `rotate(${rotation.x}deg)`;
+            knobY.style.transform = `rotate(${rotation.y}deg)`;
+
+            // Velocity Indicators (Simple visual feedback on interaction)
+            // Here we could add a visual "speed" bar if desired, 
+            // but the knob rotation is the primary feedback.
+
+            // Update Stats
+            // For custom mode, show true coordinate values if possible, else 0-1
+            let dispX = pos.x;
+            let dispY = pos.y;
+
+            // Adjust display info based on mode scaling
+            if (mode === 'custom') {
+                // Inverse Map: 
+                // Recall: xNorm = (xReal - (-1)) / 14
+                // xReal = xNorm * 14 - 1
+                dispX = pos.x * 14 - 1;
+
+                // yNorm = (yReal - (-6)) / 10.5 (preserving aspect)
+                // yReal = yNorm * 10.5 - 6
+                dispY = pos.y * 10.5 - 6;
+            } else {
+                // Free mode: -5 to 5
+                dispX = pos.x * 10 - 5;
+                dispY = pos.y * 10 - 5;
+            }
+
+            document.getElementById('val-x').innerText = dispX.toFixed(2);
+            document.getElementById('val-y').innerText = dispY.toFixed(2);
+            document.getElementById('val-t').innerText = t.toFixed(2);
+        }
+
+        // Keyboard Input
+        const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false, w: false, a: false, s: false, d: false };
+
+        window.addEventListener('keydown', (e) => {
+            if (keys.hasOwnProperty(e.key) || keys.hasOwnProperty(e.key.toLowerCase())) {
+                keys[e.key] = true;
+                if (e.key.length > 1) e.preventDefault();
+                startLoop();
+                document.getElementById('toast').classList.remove('visible');
+
+                // Stop auto-play if user intervenes
+                if (isAutoPlaying) stopAutoPlay();
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (keys.hasOwnProperty(e.key) || keys.hasOwnProperty(e.key.toLowerCase())) {
+                keys[e.key] = false;
+            }
+        });
+
+        // Game Loop
+        function loop() {
+            if (isAutoPlaying) {
+                updateAuto();
+                return;
+            }
+
+            let dx = 0;
+            let dy = 0;
+
+            if (keys.ArrowLeft || keys.a) dx -= USER_SPEED;
+            if (keys.ArrowRight || keys.d) dx += USER_SPEED;
+            if (keys.ArrowUp || keys.w) dy += USER_SPEED;
+            if (keys.ArrowDown || keys.s) dy -= USER_SPEED;
+
+            if (dx !== 0 || dy !== 0) {
+                // Bounds check
+                const nextX = Math.max(0, Math.min(1, pos.x + dx));
+                const nextY = Math.max(0, Math.min(1, pos.y + dy));
+
+                // Update Path
+                if (nextX !== pos.x || nextY !== pos.y) {
+                    pos.x = nextX;
+                    pos.y = nextY;
+                    path.push({ x: pos.x, y: pos.y });
+
+                    rotation.x += dx * 1000;
+                    rotation.y += dy * 1000;
+                }
+                draw(dx, dy);
+            }
+
+            if (Object.values(keys).some(k => k) || isAutoPlaying) {
+                animationFrameId = requestAnimationFrame(loop);
+            }
+        }
+
+        function startLoop() {
+            if (!animationFrameId) loop(); // Start if not running
+            // But loop() checks keys, so effectively it only runs when needed or calls itself.
+            // A better pattern:
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = requestAnimationFrame(loop);
+        }
+
+        // Auto Play Logic
+        function toggleAutoPlay() {
+            if (isAutoPlaying) stopAutoPlay();
+            else startAutoPlay();
+        }
+
+        function startAutoPlay() {
+            if (mode === 'free') return; // Cannot auto-play free mode
+
+            isAutoPlaying = true;
+            document.getElementById('btn-auto').classList.add('active');
+
+            // Reset to start of t range
+            if (mode === 'custom') t = -4;
+            else t = 0;
+
+            path = []; // New trace
+
+            // Initial Pos
+            const p = getParametricPoint(t);
+            pos = p;
+
+            loop();
+        }
+
+        function stopAutoPlay() {
+            isAutoPlaying = false;
+            document.getElementById('btn-auto').classList.remove('active');
+        }
+
+        function updateAuto() {
+            if (!isAutoPlaying) return;
+
+            // Increment T
+            t += AUTO_SPEED_T;
+
+            // Check Bounds
+            let done = false;
+            if (mode === 'circle' && t > Math.PI * 2) done = true;
+            if (mode === 'rect' && t > 4) done = true; // t goes 0..4 for rect sides
+            if (mode === 'custom' && t > 3) done = true;
+
+            if (done) {
+                stopAutoPlay();
+                return;
+            }
+
+            // Calculate new pos
+            const nextP = getParametricPoint(t);
+
+            // Calculate delta for knobs
+            const dx = nextP.x - pos.x;
+            const dy = nextP.y - pos.y;
+
+            pos = nextP;
+            path.push({ x: pos.x, y: pos.y });
+
+            rotation.x += dx * 1000;
+            rotation.y += dy * 1000;
+
+            draw(dx, dy);
+
+            animationFrameId = requestAnimationFrame(loop);
+        }
+
+        function getParametricPoint(currT) {
+            if (mode === 'circle') {
+                const aspect = canvas.width / canvas.height;
+                // Scale Y by aspect ratio so visual height equals visual width for same radius value
+                // x range 0..1 maps to width. y range 0..1 maps to height.
+                // We want rx * width = ry * height
+                // ry = rx * (width/height)
+                const r = 0.3;
+                return {
+                    x: 0.5 + r * Math.cos(currT),
+                    y: 0.5 + (r * aspect) * Math.sin(currT)
+                };
+            } else if (mode === 'rect') {
+                // Perimeter of rect. 0..1..2..3..4
+                // 0..1: Bottom (0.2, 0.2) -> (0.8, 0.2)
+                // 1..2: Right (0.8, 0.2) -> (0.8, 0.8)
+                // 2..3: Top (0.8, 0.8) -> (0.2, 0.8)
+                // 3..4: Left (0.2, 0.8) -> (0.2, 0.2)
+                let localT = currT % 4;
+                if (localT < 1) return { x: 0.2 + (localT) * 0.6, y: 0.2 };
+                if (localT < 2) return { x: 0.8, y: 0.2 + (localT - 1) * 0.6 };
+                if (localT < 3) return { x: 0.8 - (localT - 2) * 0.6, y: 0.8 };
+                return { x: 0.2, y: 0.8 - (localT - 3) * 0.6 };
+            } else if (mode === 'custom') {
+                // x = t^2 + t on [-4, 3] -> range [-0.25, 12]
+                // y = t - 1 on [-4, 3] -> range [-5, 2]
+
+                const rawX = currT * currT + currT;
+                const rawY = currT - 1;
+
+                // Uniform Scaling:
+                // X range size: 12.25
+                // Y range size: 7
+                // Use larger range to determine scale factor
+                // Let's fit width to 14 units (-1 to 13)
+                // Scale = 1/14 per unit
+                // xNorm = (rawX - (-1)) / 14
+
+                // Center y: -1.5 is center of [-5, 2].
+                // Center of 0..1 is 0.5.
+                // 0.5 = (rawY - min) / span
+                // Let's use same span 14 for Y to preserve aspect ratio?
+                // yNorm = (rawY - (-1.5)) / 14 + 0.5
+                // Wait, if aspect ratio of canvas is 4:3 = 1.33
+                // We should map coordinate space 14 x (14/1.33 = 10.5)
+
+                // Final Mapping:
+                // x: map [-1, 13] to [0, 1] (Span 14)
+                // y: map [-6.75, 3.75] to [0, 1] (Span 10.5, Center -1.5)
+
+                return {
+                    x: (rawX - (-1)) / 14,
+                    y: (rawY - (-6)) / 10.5
+                };
+            }
+            return { x: 0.5, y: 0.5 };
+        }
+
+        // Modes
+        function setMode(newMode) {
+            mode = newMode;
+            stopAutoPlay();
+
+            // Update Buttons
+            document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+            // Find prompt button
+            // (Logic in HTML onclick handles this actually, but we need to ensure 'active' is set visually)
+            // Simpler: just clear all actives then re-add
+        }
+
+        // Helper to bind buttons
+        document.querySelectorAll('.control-group .btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (e.target.id === 'btn-auto') return; // handled separately
+                document.querySelectorAll('.control-group .btn').forEach(b => {
+                    if (b.id !== 'btn-auto') b.classList.remove('active')
+                });
+                e.target.classList.add('active');
+
+                // Logic
+                const txt = e.target.innerText;
+                if (txt.includes('Free')) mode = 'free';
+                if (txt.includes('Circle')) mode = 'circle';
+                if (txt.includes('Rect')) mode = 'rect';
+                if (txt.includes('Challenge')) mode = 'custom';
+
+                resetMode();
+            });
+        });
+
+        function resetMode() {
+            clearScreen();
+
+            // Setup Ghost Path
+            ghostPath = [];
+
+            let label = "Free Draw";
+
+            if (mode === 'circle') {
+                label = "x = cos(t), y = sin(t)";
+                const steps = 100;
+                for (let i = 0; i <= steps; i++) {
+                    const gt = (i / steps) * Math.PI * 2;
+                    ghostPath.push(getParametricPoint(gt)); // Use shared logic
+                }
+            } else if (mode === 'rect') {
+                label = "Rectangle Trace";
+                const steps = 100;
+                for (let i = 0; i <= steps; i++) {
+                    const gt = (i / steps) * 4;
+                    ghostPath.push(getParametricPoint(gt));
+                }
+            } else if (mode === 'custom') {
+                label = "x = t² + t, y = t - 1 <br> t ∈ [-4, 3]";
+                const steps = 300;
+                for (let i = 0; i <= steps; i++) {
+                    const gt = -4 + (i / steps) * 7;
+                    ghostPath.push(getParametricPoint(gt));
+                }
+            }
+
+            document.getElementById('math-display').innerHTML = label;
+            document.getElementById('btn-auto').style.display = (mode === 'free') ? 'none' : 'block';
+            draw();
+        }
+
+        function clearScreen() {
+            path = [];
+            // Reset Pos for custom mode to start?
+            if (mode === 'custom') {
+                pos = getParametricPoint(-4);
+                t = -4;
+            } else {
+                pos = { x: 0.5, y: 0.5 };
+                t = 0;
+            }
+            draw();
+        }
+
+        // Init
+        // Add Auto Button Programmatically if not in HTML
+        const card = document.querySelector('.controls-section .card');
+        const clearBtn = document.querySelector('.btn-clear');
+
+        if (!document.getElementById('btn-auto')) {
+            const autoBtn = document.createElement('button');
+            autoBtn.id = 'btn-auto';
+            autoBtn.className = 'btn';
+            autoBtn.style.textAlign = 'center';
+            autoBtn.style.marginTop = '1rem';
+            autoBtn.style.backgroundColor = '#f0f9ff';
+            autoBtn.style.borderColor = '#bae6fd';
+            autoBtn.style.color = '#0284c7';
+            autoBtn.innerText = '▶ Auto-Draw (Demonstration)';
+            autoBtn.onclick = toggleAutoPlay;
+            autoBtn.style.display = 'none'; // Hidden in free mode
+
+            // Insert before clear button
+            card.insertBefore(autoBtn, clearBtn);
+        }
+
+        resizeCanvas();
+        resetMode(); // Start as free
+        loop();
+
+        setTimeout(() => document.getElementById('toast').classList.add('visible'), 1000);
+        setTimeout(() => document.getElementById('toast').classList.remove('visible'), 5000);
+
+    </script>
+</body>
+
+</html>
