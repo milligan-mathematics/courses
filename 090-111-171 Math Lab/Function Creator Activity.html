@@ -4,24 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Function Guessing Game | Math Lab</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Guess My Rule | Math Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #6366f1;
-            --primary-light: #818cf8;
+            --primary-dark: #4338ca;
             --secondary: #ec4899;
             --ultimate: #8b5cf6;
             --success: #10b981;
             --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
             --border: #e2e8f0;
-            --radius: 16px;
-            --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
         }
 
         * {
@@ -32,11 +29,10 @@
 
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
+            background: var(--bg);
+            color: var(--text);
             line-height: 1.6;
             padding: 2rem 1rem;
-            min-height: 100vh;
         }
 
         .container {
@@ -46,168 +42,196 @@
 
         header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
         }
 
         h1 {
             font-size: 3rem;
+            font-weight: 800;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-weight: 800;
-            letter-spacing: -0.025em;
+            letter-spacing: -0.02em;
             margin-bottom: 0.5rem;
         }
 
-        p.intro {
-            font-size: 1.25rem;
-            color: var(--text-muted);
-            max-width: 600px;
-            margin: 0 auto;
+        .intro {
+            font-size: 1.1rem;
+            color: var(--muted);
         }
 
-        .main-grid {
+        .grid {
             display: grid;
             grid-template-columns: 1fr 1.2fr;
             gap: 2rem;
         }
 
-        @media (max-width: 850px) {
-            .main-grid {
+        @media (max-width: 840px) {
+            .grid {
                 grid-template-columns: 1fr;
             }
         }
 
         .card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
+            background: var(--card);
+            border-radius: 16px;
             padding: 2rem;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
         }
 
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
+        .card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 700;
         }
 
-        .level-selector {
+        .level-bar {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
-        .level-btn {
-            font-size: 0.8rem;
-            background: #f1f5f9;
+        .lvl-btn {
+            font-size: 0.78rem;
+            font-weight: 700;
             padding: 4px 12px;
             border-radius: 999px;
-            color: var(--text-muted);
-            font-weight: 600;
-            border: 1px solid transparent;
+            border: 1.5px solid transparent;
+            color: var(--muted);
+            background: #f1f5f9;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
         }
 
-        .level-btn.active {
+        .lvl-btn.active {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
         }
 
-        .level-btn.level-ultimate.active {
+        .lvl-btn.ult.active {
             background: var(--ultimate);
             border-color: var(--ultimate);
         }
 
-        /* Input Styles */
-        .input-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
+        /* --- INPUT SECTION --- */
+        .section-label {
+            font-size: 0.85rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--text-muted);
+            color: var(--muted);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.5rem;
+            display: block;
         }
 
-        .math-input-wrapper {
-            position: relative;
+        .input-row {
             display: flex;
-            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.25rem;
         }
 
-        .math-prefix {
-            position: absolute;
-            left: 1rem;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.2rem;
-        }
-
-        input[type="text"],
-        input[type="number"] {
-            width: 100%;
-            padding: 0.75rem 1rem;
+        .input-row input {
+            flex: 1;
+            padding: 0.85rem 1.1rem;
             border: 2px solid var(--border);
             border-radius: 12px;
-            font-size: 1.2rem;
-            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
             outline: none;
-            transition: all 0.2s ease;
-        }
-
-        /* Hide number spinner arrows */
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        input[type="number"] {
+            transition: border-color 0.2s, box-shadow 0.2s;
+            /* Hide spinner arrows in all browsers */
             -moz-appearance: textfield;
             appearance: textfield;
         }
 
-        input[id="guess-input"] {
-            padding-left: 3.5rem;
+        .input-row input::-webkit-inner-spin-button,
+        .input-row input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
-        input:focus {
+        .input-row input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
         }
 
-        /* Machine Visualization */
-        .machine-container {
+        /* Guess input — prefix sits to the left, padding shifts text right */
+        .guess-wrap {
+            position: relative;
+            margin-bottom: 1.25rem;
+        }
+
+        .guess-prefix {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--primary);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .guess-wrap input {
+            width: 100%;
+            padding: 0.85rem 1rem 0.85rem 5.5rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1.4rem;
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .guess-wrap input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+        }
+
+        /* --- MACHINE --- */
+        .machine-area {
+            background: #f1f5f9;
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1rem;
+            justify-content: center;
+            gap: 0;
             padding: 1rem;
-            background: #f1f5f9;
-            border-radius: 12px;
+            min-height: 230px;
             position: relative;
             overflow: hidden;
-            margin: 1.5rem 0;
-            min-height: 250px;
-            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .tube {
+            width: 56px;
+            height: 50px;
+            background: #cbd5e1;
+        }
+
+        .tube.top {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .tube.bot {
+            border-radius: 0 0 8px 8px;
         }
 
         .machine-box {
-            width: 200px;
-            height: 120px;
+            width: 190px;
+            height: 115px;
             background: var(--primary);
             border-radius: 12px;
             display: flex;
@@ -215,185 +239,206 @@
             justify-content: center;
             color: white;
             font-weight: 700;
-            font-size: 2rem;
-            position: relative;
-            box-shadow: 0 10px 0 #4338ca;
+            font-size: 2.5rem;
+            box-shadow: 0 8px 0 var(--primary-dark);
             z-index: 2;
         }
 
-        .machine-tube {
-            width: 60px;
-            height: 60px;
-            background: #cbd5e1;
-            position: relative;
-            z-index: 1;
-        }
-
-        .tube-top {
-            border-radius: 8px 8px 0 0;
-            margin-bottom: -5px;
-        }
-
-        .tube-bottom {
-            border-radius: 0 0 8px 8px;
-            margin-top: -5px;
-        }
-
         .ball {
-            width: 50px;
-            height: 50px;
+            width: 54px;
+            height: 54px;
             background: var(--secondary);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: 700;
+            font-weight: 800;
             font-size: 1rem;
             position: absolute;
-            opacity: 0;
             z-index: 3;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
-        @keyframes dropIn {
+        @keyframes drop {
             0% {
-                transform: translateY(-120px);
+                transform: translateY(-130px);
                 opacity: 0;
             }
 
-            20% {
+            15% {
                 opacity: 1;
             }
 
             45% {
-                transform: translateY(-30px);
-                opacity: 1;
+                transform: translateY(-25px);
             }
 
             55% {
-                transform: translateY(30px);
-                opacity: 1;
+                transform: translateY(25px);
             }
 
-            80% {
+            85% {
                 opacity: 1;
             }
 
             100% {
-                transform: translateY(120px);
-                opacity: 1;
+                transform: translateY(135px);
+                opacity: 0;
             }
         }
 
-        .animating .ball {
-            animation: dropIn 2s ease-in-out forwards;
+        .running .ball {
+            animation: drop 2s ease-in-out forwards;
         }
 
-        /* Ultimate Visual */
-        #ultimate-visual {
+        /* Output banner — shows below machine for 3 seconds */
+        .output-banner {
+            background: white;
+            border: 2.5px solid var(--secondary);
+            border-radius: 10px;
+            padding: 0.5rem 1.5rem;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--secondary);
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 5;
+        }
+
+        .output-banner.show {
+            opacity: 1;
+        }
+
+        /* --- Ultimate geometry --- */
+        #geom-wrap {
             display: none;
-            width: 100%;
-            height: 100%;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            width: 100%;
         }
 
-        .geometry-box {
-            background: rgba(99, 102, 241, 0.2);
+        .geom-title {
+            font-weight: 800;
+            color: var(--ultimate);
+            margin-bottom: 0.75rem;
+        }
+
+        .geom-shape {
+            background: rgba(99, 102, 241, 0.18);
             border: 3px solid var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
+            font-weight: 800;
+            font-size: 1.4rem;
             position: relative;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
 
-        .dim-label {
+        .dim-lbl {
             position: absolute;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--primary);
             font-weight: 800;
         }
 
+        /* --- BUTTONS --- */
         .btn {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
             border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
             width: 100%;
-            font-size: 1rem;
+            transition: background 0.2s, transform 0.1s;
         }
 
         .btn:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
+            background: #818cf8;
+            transform: translateY(-1px);
         }
 
         .btn:active {
             transform: translateY(0);
         }
 
-        .btn-secondary {
+        .btn-pink {
             background: var(--secondary);
         }
 
-        .btn-success {
+        .btn-pink:hover {
+            background: #db2777;
+        }
+
+        .btn-green {
             background: var(--success);
         }
 
-        .btn-success:hover {
+        .btn-green:hover {
             background: #059669;
         }
 
+        .btn-row {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* --- FEEDBACK --- */
         .feedback {
-            padding: 1rem;
             border-radius: 12px;
             font-weight: 600;
             text-align: center;
+            padding: 0.9rem;
             margin-top: 1rem;
             display: none;
         }
 
-        .feedback.correct {
+        .feedback.ok {
             display: block;
             background: #ecfdf5;
             color: #065f46;
             border: 1px solid #a7f3d0;
         }
 
-        .feedback.wrong {
+        .feedback.bad {
             display: block;
             background: #fef2f2;
             color: #991b1b;
             border: 1px solid #fecaca;
         }
 
-        .viz-container {
+        /* --- RIGHT PANEL --- */
+        .viz-wrap {
             position: relative;
-            margin-top: 1rem;
+            margin-top: 0.5rem;
         }
 
         .viz-box {
-            height: 300px;
+            height: 290px;
             width: 100%;
-            background: #f8fafc;
+            background: var(--bg);
             border: 1px solid var(--border);
             border-radius: 12px;
-            position: relative;
             overflow: hidden;
+            position: relative;
         }
 
-        .lock-overlay {
+        .lock {
             position: absolute;
             inset: 0;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.88);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -403,15 +448,15 @@
             text-align: center;
             padding: 2rem;
             font-weight: 600;
-            color: var(--text-muted);
+            color: var(--muted);
         }
 
-        .hint-display {
-            margin-top: 1rem;
+        .hint-msg {
+            margin-top: 0.75rem;
             font-size: 0.9rem;
             color: var(--secondary);
             font-style: italic;
-            min-height: 1.4rem;
+            min-height: 1.4em;
         }
 
         .grid-line {
@@ -424,17 +469,17 @@
             stroke-width: 2;
         }
 
-        .function-path {
+        .fn-path {
             fill: none;
             stroke: var(--primary);
             stroke-width: 3;
             stroke-linecap: round;
         }
 
-        .point {
+        .dot {
             fill: var(--secondary);
             stroke: white;
-            stroke-width: 1;
+            stroke-width: 2;
         }
 
         table {
@@ -445,31 +490,22 @@
 
         th,
         td {
-            padding: 0.75rem;
+            padding: 0.65rem;
             text-align: center;
             border-bottom: 1px solid var(--border);
         }
 
         th {
-            font-weight: 700;
-            color: var(--text-muted);
             font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--muted);
             text-transform: uppercase;
         }
 
-        /* Current Result Display */
-        .result-display {
-            background: #fff;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            border: 2px solid var(--secondary);
-            font-weight: 800;
-            color: var(--secondary);
-            margin-top: 1rem;
-            text-align: center;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            display: none;
+        .section-divider {
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+            margin-top: 0.25rem;
         }
     </style>
 </head>
@@ -478,98 +514,89 @@
     <div class="container">
         <header>
             <h1>Guess My Rule</h1>
-            <p class="intro">Input numbers to see how the machine transforms them. Can you figure out the secret
-                function?</p>
+            <p class="intro">Inject numbers to see how the machine transforms them — then figure out the secret
+                function!</p>
         </header>
-
-        <div class="main-grid">
+        <div class="grid">
+            <!-- LEFT CARD -->
             <div class="card">
-                <div class="card-title">
+                <div class="card-header">
                     <span>Secret Machine</span>
-                    <div class="level-selector" id="level-container">
-                        <button class="level-btn active" data-level="0">Easy</button>
-                        <button class="level-btn" data-level="1">Medium</button>
-                        <button class="level-btn" data-level="2">Hard</button>
-                        <button class="level-btn level-ultimate" data-level="3">🚀 Ultimate</button>
+                    <div class="level-bar" id="level-bar">
+                        <button class="lvl-btn active" data-level="0">Easy</button>
+                        <button class="lvl-btn" data-level="1">Medium</button>
+                        <button class="lvl-btn" data-level="2">Hard</button>
+                        <button class="lvl-btn ult" data-level="3">🚀 Ultimate</button>
                     </div>
                 </div>
 
-                <div class="input-group">
-                    <label id="input-label">1. Test an Input</label>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <input type="number" id="test-input" placeholder="e.g., 5">
-                        <button class="btn" id="run-btn" style="width: auto; white-space: nowrap;">Inject</button>
-                    </div>
+                <span class="section-label">1. Enter a Number to Test</span>
+                <div class="input-row">
+                    <input type="number" id="num-in" placeholder="e.g. 5">
+                    <button class="btn" id="inject-btn" style="width:auto; white-space:nowrap;">Inject →</button>
                 </div>
 
-                <div class="machine-container" id="machine-area">
-                    <!-- Standard Machine -->
-                    <div id="standard-machine" style="display: flex; flex-direction: column; align-items: center;">
-                        <div class="machine-tube tube-top"></div>
+                <!-- Machine -->
+                <div class="machine-area" id="machine-area">
+                    <div id="std-machine" style="display:flex; flex-direction:column; align-items:center;">
+                        <div class="tube top"></div>
                         <div class="machine-box">?</div>
-                        <div class="machine-tube tube-bottom"></div>
-                        <div class="ball" id="anim-ball"></div>
+                        <div class="tube bot"></div>
+                        <div class="ball" id="ball"></div>
                     </div>
-
-                    <!-- Ultimate Geometry Visual -->
-                    <div id="ultimate-visual">
-                        <div style="font-weight: 800; color: var(--ultimate); margin-bottom: 1rem;" id="geom-title">
-                            Shape Challenge</div>
-                        <div class="geometry-box" id="geom-shape">
-                            <span id="shape-area-text" style="font-size: 1.5rem;">?</span>
-                            <div class="dim-label" id="label-x" style="bottom: -25px;">x</div>
-                            <div class="dim-label" id="label-h" style="right: -25px;">h</div>
+                    <div id="geom-wrap">
+                        <div class="geom-title" id="geom-title">Shape Challenge</div>
+                        <div class="geom-shape" id="geom-shape">
+                            <span id="geom-val" style="font-size:1.4rem;">?</span>
+                            <div class="dim-lbl" id="lbl-x" style="bottom:-22px;">x</div>
+                            <div class="dim-lbl" id="lbl-h" style="right:-22px;">h</div>
                         </div>
                     </div>
+                    <div class="output-banner" id="out-banner">Output: <span id="out-val">?</span></div>
+                </div>
 
-                    <!-- Result Panel -->
-                    <div id="last-result-panel" class="result-display">
-                        Output: <span id="last-result-val">?</span>
+                <!-- Guess -->
+                <div class="section-divider">
+                    <span class="section-label">2. Guess the Secret Function</span>
+                    <div class="guess-wrap">
+                        <span class="guess-prefix">f(x) =</span>
+                        <input type="text" id="guess-in" placeholder="e.g.,  2*x + 1">
                     </div>
                 </div>
 
-                <div class="input-group" style="padding-top: 1rem; border-top: 1px solid var(--border);">
-                    <label>2. Guess the Function</label>
-                    <div class="math-input-wrapper">
-                        <span class="math-prefix">f(x) =</span>
-                        <input type="text" id="guess-input" placeholder="e.g., x + 5">
-                    </div>
+                <div class="btn-row">
+                    <button class="btn" id="check-btn">Check My Guess</button>
+                    <button class="btn btn-pink" id="hint-btn" style="width:38%;">Hint</button>
                 </div>
 
-                <div style="display: flex; gap: 1rem;">
-                    <button class="btn" id="guess-btn">Check My Guess</button>
-                    <button class="btn btn-secondary" id="hint-btn" style="width: 40%;">Hint</button>
-                </div>
-
-                <div id="feedback" class="feedback"></div>
-                <button class="btn btn-success" id="next-btn" style="display: none; margin-top: 1rem;">Next Challenge
+                <div class="feedback" id="feedback"></div>
+                <button class="btn btn-green" id="next-btn" style="display:none; margin-top:1rem;">Next Challenge
                     →</button>
             </div>
 
+            <!-- RIGHT CARD -->
             <div class="card">
-                <div class="card-title">Evidence & Plot</div>
-
-                <div class="viz-container">
-                    <div id="lock-overlay" class="lock-overlay">
-                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔒</div>
-                        Solve the rule to unlock the function plot!
-                        <div id="hint-display" class="hint-display"></div>
+                <div class="card-header">Evidence &amp; Plot</div>
+                <div class="viz-wrap">
+                    <div class="lock" id="lock">
+                        <div style="font-size:2rem; margin-bottom:0.5rem;">🔒</div>
+                        Solve the rule to unlock the graph!
+                        <div class="hint-msg" id="hint-msg"></div>
                     </div>
                     <div class="viz-box">
-                        <svg id="graph-svg" width="100%" height="100%" viewBox="0 0 400 300"></svg>
+                        <svg id="graph" width="100%" height="100%" viewBox="0 0 400 290"></svg>
                     </div>
                 </div>
-
-                <div style="margin-top: 2rem;">
-                    <label>Transformation Table</label>
-                    <table id="value-table">
+                <div style="margin-top:1.5rem;">
+                    <span class="section-label">Transformation Table</span>
+                    <table>
                         <thead>
                             <tr>
                                 <th>Input (x)</th>
-                                <th>Result</th>
+                                <th>Output (y)</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody id="t-body"></tbody>
                     </table>
                 </div>
             </div>
@@ -577,267 +604,262 @@
     </div>
 
     <script>
-        const levels = [
-            { name: "Easy", functions: ["x + 2", "x + 5", "x - 3", "x - 10", "x * 2", "x + 1", "x - 1", "x * 3"] },
-            { name: "Medium", functions: ["2*x + 1", "2*x + 5", "3*x - 2", "x / 2", "x / 5", "10 - x", "2*x - 4"] },
-            { name: "Hard", functions: ["x*x", "x*x + 1", "x*x - 2", "2*x + 15", "x*x + x", "3*x + 7"] },
+        // ── DATA ────────────────────────────────────────────────────────────────────
+        const LEVELS = [
+            { name: "Easy", fns: ["x + 2", "x + 5", "x - 3", "x - 10", "x * 2", "x * 3", "x + 1", "x - 1"] },
+            { name: "Medium", fns: ["2*x + 1", "2*x + 5", "3*x - 2", "x / 2", "x / 5", "10 - x", "2*x - 4"] },
+            { name: "Hard", fns: ["x*x", "x*x + 1", "x*x - 2", "2*x + 15", "x*x + x", "3*x + 7"] },
             {
-                name: "Ultimate",
-                functions: [
-                    { rule: "x * x", title: "Square Area", prompt: "A square with side x.", visual: "square" },
-                    { rule: "x * 2", title: "Rectangle Area (h=2)", prompt: "A rectangle with base x and height 2.", visual: "rect-fixed" },
-                    { rule: "4 * x", title: "Square Perimeter", prompt: "The total distance around a square with side x.", visual: "perim" }
+                name: "Ultimate", challenges: [
+                    { rule: "x * x", title: "Area of a Square", visual: "square", hl: "2", hh: "x" },
+                    { rule: "x * 2", title: "Area of a Rectangle (h=2)", visual: "rect", hl: "x", hh: "2" },
+                    { rule: "4 * x", title: "Perimeter of a Square", visual: "perim", hl: "x", hh: "x" }
                 ]
             }
         ];
 
-        let currentLevel = 0, currentRule = "", currentVisualType = "", history = [], isSolved = false, hintStep = 0;
+        // ── STATE ────────────────────────────────────────────────────────────────────
+        let lvl = 0, rule = "", visual = null, history = [], solved = false, hints = 0;
+        let bannerTimer = null;
 
-        const testInput = document.getElementById('test-input');
-        const runBtn = document.getElementById('run-btn');
-        const guessInput = document.getElementById('guess-input');
-        const guessBtn = document.getElementById('guess-btn');
+        // ── DOM ───────────────────────────────────────────────────────────────────────
+        const numIn = document.getElementById('num-in');
+        const injectBtn = document.getElementById('inject-btn');
+        const guessIn = document.getElementById('guess-in');
+        const checkBtn = document.getElementById('check-btn');
         const hintBtn = document.getElementById('hint-btn');
         const nextBtn = document.getElementById('next-btn');
-        const feedback = document.getElementById('feedback');
-        const hintDisplay = document.getElementById('hint-display');
-        const machineArea = document.getElementById('machine-area');
-        const animBall = document.getElementById('anim-ball');
-        const lockOverlay = document.getElementById('lock-overlay');
-        const valueTable = document.querySelector('#value-table tbody');
-        const graphSvg = document.getElementById('graph-svg');
-        const standardMachine = document.getElementById('standard-machine');
-        const ultimateVisual = document.getElementById('ultimate-visual');
+        const feedbackEl = document.getElementById('feedback');
+        const hintMsg = document.getElementById('hint-msg');
+        const machArea = document.getElementById('machine-area');
+        const ball = document.getElementById('ball');
+        const lockEl = document.getElementById('lock');
+        const tbody = document.getElementById('t-body');
+        const graphSvg = document.getElementById('graph');
+        const stdMach = document.getElementById('std-machine');
+        const geomWrap = document.getElementById('geom-wrap');
         const geomShape = document.getElementById('geom-shape');
-        const labelH = document.getElementById('label-h');
-        const labelX = document.getElementById('label-x');
         const geomTitle = document.getElementById('geom-title');
-        const shapeAreaText = document.getElementById('shape-area-text');
-        const lastResultPanel = document.getElementById('last-result-panel');
-        const lastResultVal = document.getElementById('last-result-val');
+        const geomVal = document.getElementById('geom-val');
+        const lblX = document.getElementById('lbl-x');
+        const lblH = document.getElementById('lbl-h');
+        const outBanner = document.getElementById('out-banner');
+        const outVal = document.getElementById('out-val');
 
-        function setLevel(idx) {
-            currentLevel = idx;
-            document.querySelectorAll('.level-btn').forEach((btn, i) => btn.classList.toggle('active', i === idx));
-            resetChallenge();
-        }
-
-        function resetChallenge() {
-            const levelData = levels[currentLevel];
-            if (currentLevel === 3) {
-                const challenge = levelData.functions[Math.floor(Math.random() * levelData.functions.length)];
-                currentRule = challenge.rule;
-                currentVisualType = challenge.visual;
-                geomTitle.textContent = challenge.title;
-                standardMachine.style.display = "none";
-                ultimateVisual.style.display = "flex";
-                updateUltimateVisual(5); // Initial visual
-            } else {
-                let pool = levelData.functions;
-                let newRule = pool[Math.floor(Math.random() * pool.length)];
-                while (newRule === currentRule) newRule = pool[Math.floor(Math.random() * pool.length)];
-                currentRule = newRule;
-                standardMachine.style.display = "flex";
-                ultimateVisual.style.display = "none";
-            }
-
-            history = []; isSolved = false; hintStep = 0;
-            hintDisplay.textContent = ""; feedback.style.display = "none";
-            lockOverlay.style.display = "flex"; nextBtn.style.display = "none";
-            guessBtn.style.display = "block"; hintBtn.style.display = "block";
-            hintBtn.disabled = false; hintBtn.style.opacity = "1";
-            guessInput.value = "";
-            lastResultPanel.style.display = "none";
-            updateUI();
-        }
-
-        function updateUltimateVisual(x) {
-            const scale = 15;
-            let width = x * scale;
-            let height = 0;
-
-            if (currentVisualType === 'square' || currentVisualType === 'perim') {
-                height = width;
-                labelH.textContent = "x";
-            } else if (currentVisualType === 'rect-fixed') {
-                height = 2 * scale;
-                labelH.textContent = "2";
-            }
-
-            geomShape.style.width = Math.min(width, 180) + "px";
-            geomShape.style.height = Math.min(height, 180) + "px";
-            labelX.textContent = "x=" + x;
-            shapeAreaText.textContent = "?";
-        }
-
-        function evaluate(x, rule) {
+        // ── HELPERS ───────────────────────────────────────────────────────────────────
+        function calc(x, r) {
             try {
-                // Better sanitization for evaluation
-                let cleanRule = rule.toLowerCase().replace(/\^/g, '**');
-                // Use a safe list of allowed math operations if needed, but for students simple injection is okay
-                let expr = cleanRule.replace(/x/g, `(${x})`);
-                return new Function(`return ${expr}`)();
+                const expr = r.toLowerCase().replace(/\^/g, '**').replace(/x/g, `(${x})`);
+                return Function('return ' + expr)();
             } catch (e) { return null; }
         }
 
-        async function injectNumber() {
-            const x = parseFloat(testInput.value);
-            if (isNaN(x)) return;
-            if (currentLevel === 3 && x <= 0) return; // Geometry restricts to positive
+        function fmt(v) {
+            if (v === null) return '?';
+            return Number.isInteger(v) ? String(v) : v.toFixed(2);
+        }
 
-            const y = evaluate(x, currentRule);
+        function showBanner(text) {
+            clearTimeout(bannerTimer);
+            outVal.textContent = text;
+            outBanner.classList.add('show');
+            bannerTimer = setTimeout(() => outBanner.classList.remove('show'), 3000);
+        }
+
+        // ── RESET ─────────────────────────────────────────────────────────────────────
+        function reset() {
+            if (lvl === 3) {
+                const ch = LEVELS[3].challenges[Math.floor(Math.random() * LEVELS[3].challenges.length)];
+                rule = ch.rule;
+                visual = ch;
+                geomTitle.textContent = ch.title;
+                lblX.textContent = ch.hl;
+                lblH.textContent = ch.hh;
+                setGeomSize(5);
+                stdMach.style.display = 'none';
+                geomWrap.style.display = 'flex';
+            } else {
+                const pool = LEVELS[lvl].fns;
+                let r;
+                do { r = pool[Math.floor(Math.random() * pool.length)]; } while (r === rule);
+                rule = r;
+                visual = null;
+                stdMach.style.display = 'flex';
+                geomWrap.style.display = 'none';
+            }
+
+            history = []; solved = false; hints = 0;
+            hintMsg.textContent = '';
+            feedbackEl.className = 'feedback';
+            feedbackEl.style.display = 'none';
+            lockEl.style.display = 'flex';
+            nextBtn.style.display = 'none';
+            checkBtn.style.display = 'block';
+            hintBtn.style.display = 'block';
+            hintBtn.disabled = false; hintBtn.style.opacity = '1';
+            guessIn.value = '';
+            outBanner.classList.remove('show');
+            tbody.innerHTML = '';
+            drawGraph();
+        }
+
+        // ── GEOMETRY ──────────────────────────────────────────────────────────────────
+        function setGeomSize(x) {
+            const s = 16;
+            const w = Math.min(x * s, 170);
+            const h = visual && visual.visual === 'rect' ? Math.min(2 * s, 170) : w;
+            geomShape.style.width = w + 'px';
+            geomShape.style.height = h + 'px';
+            geomVal.textContent = '?';
+        }
+
+        // ── INJECT ────────────────────────────────────────────────────────────────────
+        function inject() {
+            const x = parseFloat(numIn.value);
+            if (isNaN(x)) { numIn.focus(); return; }
+            if (lvl === 3 && x <= 0) { alert('Please enter a positive number for geometry!'); return; }
+
+            const y = calc(x, rule);
             if (y === null) return;
 
-            // Clear result panel during animation
-            lastResultPanel.style.display = "none";
-
-            if (currentLevel === 3) {
-                updateUltimateVisual(x);
+            if (lvl === 3) {
+                setGeomSize(x);
                 setTimeout(() => {
-                    const displayY = Number.isInteger(y) ? y : y.toFixed(2);
-                    shapeAreaText.textContent = displayY;
-                    lastResultVal.textContent = displayY;
-                    lastResultPanel.style.display = "block";
-                    addToHistory(x, y);
-                }, 500);
+                    geomVal.textContent = fmt(y);
+                    showBanner(fmt(y));
+                    addHistory(x, y);
+                }, 400);
             } else {
-                machineArea.classList.remove('animating');
-                void machineArea.offsetWidth;
-                animBall.textContent = x;
-                machineArea.classList.add('animating');
+                machArea.classList.remove('running');
+                void machArea.offsetWidth;
+                ball.textContent = fmt(x);
+                machArea.classList.add('running');
                 setTimeout(() => {
-                    const displayY = Number.isInteger(y) ? y : y.toFixed(2);
-                    animBall.textContent = displayY;
-                    lastResultVal.textContent = displayY;
-                    lastResultPanel.style.display = "block";
-                    addToHistory(x, y);
-                }, 1600); // Wait for animation to finish
+                    showBanner(fmt(y));
+                    addHistory(x, y);
+                }, 1700);
             }
         }
 
-        function addToHistory(x, y) {
+        function addHistory(x, y) {
             if (!history.some(p => p.x === x)) {
                 history.push({ x, y });
                 history.sort((a, b) => a.x - b.x);
             }
-            updateUI();
-        }
-
-        function checkGuess() {
-            const guess = guessInput.value.trim();
-            if (!guess) return;
-            const testPoints = [0, 1, 2, 3, 5, 8, 10];
-            let correct = true;
-            try {
-                for (let p of testPoints) {
-                    if (currentLevel === 3 && p <= 0) p = 1; // Geometry check
-                    const actual = evaluate(p, currentRule);
-                    const user = evaluate(p, guess);
-                    if (user === null || Math.abs(actual - user) > 0.0001) { correct = false; break; }
-                }
-            } catch (e) { correct = false; }
-
-            if (correct) {
-                isSolved = true;
-                feedback.textContent = "✨ Correct! Rule: " + currentRule;
-                feedback.className = "feedback correct";
-                lockOverlay.style.display = "none";
-                nextBtn.style.display = "block";
-                guessBtn.style.display = "none";
-                hintBtn.style.display = "none";
-                updateUI();
-            } else {
-                feedback.textContent = "Not quite. Check your pattern!";
-                feedback.className = "feedback wrong";
-            }
-        }
-
-        function giveHint() {
-            hintStep++;
-            if (hintStep === 1) {
-                hintDisplay.textContent = "Hint 1: If x = " + (currentLevel == 3 ? 1 : 0) + ", Output = " + evaluate((currentLevel == 3 ? 1 : 0), currentRule);
-            } else if (hintStep === 2) {
-                hintDisplay.textContent = "Hint 2: If x = 10, Output = " + evaluate(10, currentRule);
-            } else {
-                hintDisplay.textContent = "Hint 3: Use the table to find the pattern!";
-                hintBtn.disabled = true; hintBtn.style.opacity = "0.5";
-            }
-        }
-
-        function updateUI() {
-            valueTable.innerHTML = '';
-            history.forEach(p => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${p.x}</td><td>${Number.isInteger(p.y) ? p.y : p.y.toFixed(2)}</td>`;
-                valueTable.appendChild(tr);
-            });
+            renderTable();
             drawGraph();
         }
 
-        function drawGraph() {
-            const w = 400, h = 300, scale = 20;
-            let cx = w / 2, cy = h / 2;
-            if (currentLevel === 3) { cx = w / 10; cy = h * 0.9; } // Geometry quadrant
+        // ── RENDER TABLE ─────────────────────────────────────────────────────────────
+        function renderTable() {
+            tbody.innerHTML = '';
+            history.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${p.x}</td><td>${fmt(p.y)}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
 
+        // ── CHECK GUESS ───────────────────────────────────────────────────────────────
+        function checkGuess() {
+            const g = guessIn.value.trim();
+            if (!g) { guessIn.focus(); return; }
+            const pts = [-10, -5, 0, 1, 2, 5, 10];
+            let ok = true;
+            for (const p of pts) {
+                const a = calc(p, rule), u = calc(p, g);
+                if (u === null || Math.abs(a - u) > 0.001) { ok = false; break; }
+            }
+            if (ok) {
+                solved = true;
+                feedbackEl.textContent = '✨ Correct! The rule was: ' + rule;
+                feedbackEl.className = 'feedback ok';
+                lockEl.style.display = 'none';
+                nextBtn.style.display = 'block';
+                checkBtn.style.display = 'none';
+                hintBtn.style.display = 'none';
+                drawGraph();
+            } else {
+                feedbackEl.textContent = '❌ Not quite — keep testing numbers to find the pattern!';
+                feedbackEl.className = 'feedback bad';
+            }
+        }
+
+        // ── HINT ──────────────────────────────────────────────────────────────────────
+        function hint() {
+            hints++;
+            const start = lvl === 3 ? 1 : 0;
+            if (hints === 1) hintMsg.textContent = `Hint 1: When x=${start}, Output = ${fmt(calc(start, rule))}`;
+            else if (hints === 2) hintMsg.textContent = `Hint 2: When x=10, Output = ${fmt(calc(10, rule))}`;
+            else {
+                hintMsg.textContent = 'Hint 3: Study the table — how does the output change each time x increases by 1?';
+                hintBtn.disabled = true; hintBtn.style.opacity = '0.45';
+            }
+        }
+
+        // ── DRAW GRAPH ────────────────────────────────────────────────────────────────
+        function drawGraph() {
+            const W = 400, H = 290, sc = 20;
+            const cx = lvl === 3 ? 40 : W / 2;
+            const cy = lvl === 3 ? H - 30 : H / 2;
             graphSvg.innerHTML = '';
 
-            // Grid
+            const mk = (tag, attrs) => {
+                const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+                for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+                return el;
+            };
+
+            // Grid lines
             for (let i = -20; i <= 20; i++) {
-                const x = cx + i * scale, y = cy - i * scale;
-                if (x >= 0 && x <= w) {
-                    const lx = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    lx.setAttribute("x1", x); lx.setAttribute("x2", x); lx.setAttribute("y1", 0); lx.setAttribute("y2", h);
-                    lx.classList.add("grid-line"); graphSvg.appendChild(lx);
-                }
-                if (y >= 0 && y <= h) {
-                    const ly = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    ly.setAttribute("x1", 0); ly.setAttribute("x2", w); ly.setAttribute("y1", y); ly.setAttribute("y2", y);
-                    ly.classList.add("grid-line"); graphSvg.appendChild(ly);
-                }
+                const gx = cx + i * sc, gy = cy - i * sc;
+                if (gx >= 0 && gx <= W) graphSvg.appendChild(mk('line', { x1: gx, x2: gx, y1: 0, y2: H, class: 'grid-line' }));
+                if (gy >= 0 && gy <= H) graphSvg.appendChild(mk('line', { x1: 0, x2: W, y1: gy, y2: gy, class: 'grid-line' }));
             }
-
             // Axes
-            const xa = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            xa.setAttribute("x1", 0); xa.setAttribute("x2", w); xa.setAttribute("y1", cy); xa.setAttribute("y2", cy); xa.classList.add("axis"); graphSvg.appendChild(xa);
-            const ya = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            ya.setAttribute("x1", cx); ya.setAttribute("x2", cx); ya.setAttribute("y1", 0); ya.setAttribute("y2", h); ya.classList.add("axis"); graphSvg.appendChild(ya);
+            graphSvg.appendChild(mk('line', { x1: 0, x2: W, y1: cy, y2: cy, class: 'axis' }));
+            graphSvg.appendChild(mk('line', { x1: cx, x2: cx, y1: 0, y2: H, class: 'axis' }));
 
-            if (isSolved) {
-                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                let d = "";
-                let start = (currentLevel === 3 ? 0 : -10);
-                for (let px = start; px <= 20; px += 0.5) {
-                    const py = evaluate(px, currentRule);
-                    if (py !== null) {
-                        const sx = cx + px * scale, sy = cy - py * scale;
-                        if (sy >= 0 && sy <= h && sx >= 0 && sx <= w) d += (d === "" ? "M" : "L") + sx + "," + sy;
-                    }
+            if (solved) {
+                const xStart = lvl === 3 ? 0 : -10;
+                let d = '';
+                for (let px = xStart; px <= 20; px += 0.25) {
+                    const py = calc(px, rule);
+                    if (py === null) continue;
+                    const sx = cx + px * sc, sy = cy - py * sc;
+                    if (sx < 0 || sx > W || sy < -50 || sy > H + 50) continue;
+                    d += (d === '' ? 'M' : 'L') + sx.toFixed(1) + ',' + sy.toFixed(1);
                 }
-                path.setAttribute("d", d); path.classList.add("function-path"); graphSvg.appendChild(path);
+                if (d) graphSvg.appendChild(mk('path', { d, class: 'fn-path' }));
             }
 
             history.forEach(p => {
-                const sx = cx + p.x * scale, sy = cy - p.y * scale;
-                if (sy >= 0 && sy <= h && sx >= 0 && sx <= w) {
-                    const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                    c.setAttribute("cx", sx); c.setAttribute("cy", sy); c.setAttribute("r", 4);
-                    c.classList.add("point"); graphSvg.appendChild(c);
+                const sx = cx + p.x * sc, sy = cy - p.y * sc;
+                if (sx >= 0 && sx <= W && sy >= 0 && sy <= H) {
+                    graphSvg.appendChild(mk('circle', { cx: sx.toFixed(1), cy: sy.toFixed(1), r: 5, class: 'dot' }));
                 }
             });
         }
 
-        document.getElementById('level-container').onclick = e => {
-            if (e.target.classList.contains('level-btn')) setLevel(parseInt(e.target.dataset.level));
-        };
+        // ── LEVEL SWITCH ──────────────────────────────────────────────────────────────
+        document.getElementById('level-bar').addEventListener('click', e => {
+            const btn = e.target.closest('.lvl-btn');
+            if (!btn) return;
+            lvl = parseInt(btn.dataset.level);
+            document.querySelectorAll('.lvl-btn').forEach((b, i) => b.classList.toggle('active', i === lvl));
+            reset();
+        });
 
-        nextBtn.onclick = resetChallenge;
-        runBtn.onclick = injectNumber;
-        guessBtn.onclick = checkGuess;
-        hintBtn.onclick = giveHint;
-        testInput.onkeypress = e => e.key === 'Enter' && injectNumber();
-        guessInput.onkeypress = e => e.key === 'Enter' && checkGuess();
+        // ── WIRE UP EVENTS ────────────────────────────────────────────────────────────
+        injectBtn.addEventListener('click', inject);
+        checkBtn.addEventListener('click', checkGuess);
+        hintBtn.addEventListener('click', hint);
+        nextBtn.addEventListener('click', reset);
+        numIn.addEventListener('keypress', e => { if (e.key === 'Enter') inject(); });
+        guessIn.addEventListener('keypress', e => { if (e.key === 'Enter') checkGuess(); });
 
-        setLevel(0);
+        // ── INIT ──────────────────────────────────────────────────────────────────────
+        reset();
     </script>
 </body>
 
