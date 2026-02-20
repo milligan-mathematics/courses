@@ -611,7 +611,7 @@
             { name: "Hard", fns: ["x*x", "x*x + 1", "x*x - 2", "2*x + 15", "x*x + x", "3*x + 7"] },
             {
                 name: "Ultimate", challenges: [
-                    { rule: "x * x", title: "Area of a Square", visual: "square", hl: "2", hh: "x" },
+                    { rule: "x * x", title: "Area of a Square", visual: "square", hl: "x", hh: "x" },
                     { rule: "x * 2", title: "Area of a Rectangle (h=2)", visual: "rect", hl: "x", hh: "2" },
                     { rule: "4 * x", title: "Perimeter of a Square", visual: "perim", hl: "x", hh: "x" }
                 ]
@@ -649,7 +649,13 @@
         // ── HELPERS ───────────────────────────────────────────────────────────────────
         function calc(x, r) {
             try {
-                const expr = r.toLowerCase().replace(/\^/g, '**').replace(/x/g, `(${x})`);
+                let s = r.toLowerCase().replace(/\^/g, '**');
+                // Handle implied multiplication: 2x -> 2*x, (x+1)x -> (x+1)*x
+                s = s.replace(/(\d)\s*([a-z\(])/g, '$1*$2');
+                s = s.replace(/([a-z\)])\s*(\d)/g, '$1*$2');
+                s = s.replace(/([a-z\)])\s*([a-z\(])/g, '$1*$2');
+
+                const expr = s.replace(/x/g, `(${x})`);
                 return Function('return ' + expr)();
             } catch (e) { return null; }
         }
@@ -711,6 +717,10 @@
             geomShape.style.width = w + 'px';
             geomShape.style.height = h + 'px';
             geomVal.textContent = '?';
+
+            // Show current value if side is x
+            lblX.textContent = visual.hl === 'x' ? `x=${x}` : visual.hl;
+            lblH.textContent = visual.hh === 'x' ? `x=${x}` : visual.hh;
         }
 
         // ── INJECT ────────────────────────────────────────────────────────────────────
@@ -764,7 +774,10 @@
         function checkGuess() {
             const g = guessIn.value.trim();
             if (!g) { guessIn.focus(); return; }
-            const pts = [-10, -5, 0, 1, 2, 5, 10];
+
+            // Only test positive points for Level 3 (Geometry)
+            const pts = (lvl === 3) ? [1, 2, 3, 4, 5, 8, 10] : [-10, -5, 0, 1, 2, 5, 10];
+
             let ok = true;
             for (const p of pts) {
                 const a = calc(p, rule), u = calc(p, g);
