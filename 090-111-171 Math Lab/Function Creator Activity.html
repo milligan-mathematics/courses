@@ -344,6 +344,26 @@
             transition: all 0.3s;
         }
 
+        .geom-shape.triangle {
+            background: none;
+            border: none;
+            width: 0;
+            height: 0;
+        }
+
+        .geom-shape.triangle svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            fill: rgba(99, 102, 241, 0.18);
+            stroke: var(--primary);
+            stroke-width: 5;
+        }
+
+        .geom-shape.cube {
+            box-shadow: 10px -10px 0 rgba(99, 102, 241, 0.2), 20px -20px 0 rgba(99, 102, 241, 0.1);
+        }
+
         .dim-lbl {
             position: absolute;
             font-size: 0.85rem;
@@ -613,7 +633,11 @@
                 name: "Ultimate", challenges: [
                     { rule: "x * x", title: "Area of a Square", visual: "square", hl: "x", hh: "x" },
                     { rule: "x * 2", title: "Area of a Rectangle (h=2)", visual: "rect", hl: "x", hh: "2" },
-                    { rule: "4 * x", title: "Perimeter of a Square", visual: "perim", hl: "x", hh: "x" }
+                    { rule: "4 * x", title: "Perimeter of a Square", visual: "perim", hl: "x", hh: "x" },
+                    { rule: "3 * x", title: "Perimeter of an Equilateral Triangle", visual: "tri", hl: "x", hh: "x" },
+                    { rule: "2 * x + 6", title: "Perimeter of a Rectangle (h=3)", visual: "rect", hl: "x", hh: "3" },
+                    { rule: "2 * x", title: "Area of a Triangle (h=4)", visual: "tri", hl: "x", hh: "4" },
+                    { rule: "x*x*x", title: "Volume of a Cube", visual: "cube", hl: "x", hh: "x" }
                 ]
             }
         ];
@@ -638,11 +662,11 @@
         const graphSvg = document.getElementById('graph');
         const stdMach = document.getElementById('std-machine');
         const geomWrap = document.getElementById('geom-wrap');
-        const geomShape = document.getElementById('geom-shape');
+        let geomShape = document.getElementById('geom-shape'); // Changed to let
         const geomTitle = document.getElementById('geom-title');
-        const geomVal = document.getElementById('geom-val');
-        const lblX = document.getElementById('lbl-x');
-        const lblH = document.getElementById('lbl-h');
+        let geomVal = document.getElementById('geom-val'); // Changed to let
+        let lblX = document.getElementById('lbl-x'); // Changed to let
+        let lblH = document.getElementById('lbl-h'); // Changed to let
         const outBanner = document.getElementById('out-banner');
         const outVal = document.getElementById('out-val');
 
@@ -679,9 +703,9 @@
                 rule = ch.rule;
                 visual = ch;
                 geomTitle.textContent = ch.title;
-                lblX.textContent = ch.hl;
-                lblH.textContent = ch.hh;
-                setGeomSize(5);
+                // lblX.textContent = ch.hl; // These are now set in setGeomSize
+                // lblH.textContent = ch.hh; // These are now set in setGeomSize
+                setGeomSize(5); // Initial size for geometry
                 stdMach.style.display = 'none';
                 geomWrap.style.display = 'flex';
             } else {
@@ -713,14 +737,41 @@
         function setGeomSize(x) {
             const s = 16;
             const w = Math.min(x * s, 170);
-            const h = visual && visual.visual === 'rect' ? Math.min(2 * s, 170) : w;
+            const h = (visual.visual === 'rect' && visual.hh !== 'x') ? Math.min(parseInt(visual.hh) * s, 170) :
+                ((visual.visual === 'tri' && visual.hh !== 'x') ? Math.min(parseInt(visual.hh) * s, 170) : w);
+
             geomShape.style.width = w + 'px';
             geomShape.style.height = h + 'px';
-            geomVal.textContent = '?';
 
-            // Show current value if side is x
+            // Handle Shape Types
+            geomShape.className = 'geom-shape ' + visual.visual;
+            geomShape.innerHTML = '<span id="geom-val" style="font-size:1.4rem; z-index:5;">?</span>' +
+                '<div class="dim-lbl" id="lbl-x" style="bottom:-22px;">x</div>' +
+                '<div class="dim-lbl" id="lbl-h" style="right:-22px;">h</div>';
+
+            if (visual.visual === 'tri') {
+                geomShape.insertAdjacentHTML('afterbegin', `<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,0 100,100 0,100"/></svg>`);
+            }
+
+            // Refresh DOM refs after innerHTML update
+            lblX = geomShape.querySelector('#lbl-x');
+            lblH = geomShape.querySelector('#lbl-h');
+            geomVal = geomShape.querySelector('#geom-val');
+
             lblX.textContent = visual.hl === 'x' ? `x=${x}` : visual.hl;
             lblH.textContent = visual.hh === 'x' ? `x=${x}` : visual.hh;
+
+            // Adjust label positions for triangle
+            if (visual.visual === 'tri') {
+                lblX.style.bottom = "-10px";
+                lblH.style.right = "-35px";
+                lblH.style.top = "50%";
+            } else {
+                // Reset for other shapes if needed (or ensure default styles handle it)
+                lblX.style.bottom = "-22px";
+                lblH.style.right = "-22px";
+                lblH.style.top = "auto";
+            }
         }
 
         // ── INJECT ────────────────────────────────────────────────────────────────────
@@ -735,7 +786,8 @@
             if (lvl === 3) {
                 setGeomSize(x);
                 setTimeout(() => {
-                    geomVal.textContent = fmt(y);
+                    const v = document.getElementById('geom-val');
+                    if (v) v.textContent = fmt(y);
                     showBanner(fmt(y));
                     addHistory(x, y);
                 }, 400);
