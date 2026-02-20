@@ -168,6 +168,18 @@
             transition: all 0.2s ease;
         }
 
+        /* Hide number spinner arrows */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
         input[id="guess-input"] {
             padding-left: 3.5rem;
         }
@@ -485,7 +497,7 @@
                 <div class="input-group">
                     <label id="input-label">1. Test an Input</label>
                     <div style="display: flex; gap: 0.5rem;">
-                        <input type="text" id="test-input" placeholder="e.g., 5" autofocus>
+                        <input type="number" id="test-input" placeholder="e.g., 5">
                         <button class="btn" id="run-btn" style="width: auto; white-space: nowrap;">Inject</button>
                     </div>
                 </div>
@@ -669,12 +681,7 @@
         }
 
         async function injectNumber() {
-            let xStr = testInput.value.trim();
-            if (!xStr) return;
-            // Support evaluation in the input box itself if they type 5*2
-            let x;
-            try { x = eval(xStr.replace(/x/g, '0')); } catch (e) { x = parseFloat(xStr); }
-
+            const x = parseFloat(testInput.value);
             if (isNaN(x)) return;
             if (currentLevel === 3 && x <= 0) return; // Geometry restricts to positive
 
