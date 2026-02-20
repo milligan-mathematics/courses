@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Function Guessing Game | Math Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --ultimate: #8b5cf6;
+            --success: #10b981;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 16px;
+            --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+        }
+
+        p.intro {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 850px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .level-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .level-btn {
+            font-size: 0.8rem;
+            background: #f1f5f9;
+            padding: 4px 12px;
+            border-radius: 999px;
+            color: var(--text-muted);
+            font-weight: 600;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .level-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .level-btn.level-ultimate.active {
+            background: var(--ultimate);
+            border-color: var(--ultimate);
+        }
+
+        /* Input Styles */
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .math-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .math-prefix {
+            position: absolute;
+            left: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-family: 'Courier New', Courier, monospace;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input[id="guess-input"] {
+            padding-left: 3.5rem;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Machine Visualization */
+        .machine-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f1f5f9;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            min-height: 250px;
+            justify-content: center;
+        }
+
+        .machine-box {
+            width: 200px;
+            height: 120px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 2rem;
+            position: relative;
+            box-shadow: 0 10px 0 #4338ca;
+            z-index: 2;
+        }
+
+        .machine-tube {
+            width: 60px;
+            height: 60px;
+            background: #cbd5e1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tube-top {
+            border-radius: 8px 8px 0 0;
+            margin-bottom: -5px;
+        }
+
+        .tube-bottom {
+            border-radius: 0 0 8px 8px;
+            margin-top: -5px;
+        }
+
+        .ball {
+            width: 40px;
+            height: 40px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            position: absolute;
+            opacity: 0;
+            z-index: 3;
+        }
+
+        @keyframes dropIn {
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            45% {
+                transform: translateY(-20px);
+                opacity: 1;
+            }
+
+            55% {
+                transform: translateY(20px);
+                opacity: 1;
+            }
+
+            80% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+        }
+
+        .animating .ball {
+            animation: dropIn 1.5s ease-in-out forwards;
+        }
+
+        /* Ultimate Visual */
+        #ultimate-visual {
+            display: none;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .geometry-box {
+            background: rgba(99, 102, 241, 0.2);
+            border: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .dim-label {
+            position: absolute;
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .feedback {
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .feedback.correct {
+            display: block;
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .feedback.wrong {
+            display: block;
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .viz-container {
+            position: relative;
+            margin-top: 1rem;
+        }
+
+        .viz-box {
+            height: 300px;
+            width: 100%;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lock-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            backdrop-filter: blur(4px);
+            text-align: center;
+            padding: 2rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .hint-display {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--secondary);
+            font-style: italic;
+            min-height: 1.4rem;
+        }
+
+        .grid-line {
+            stroke: #e2e8f0;
+            stroke-width: 1;
+        }
+
+        .axis {
+            stroke: #64748b;
+            stroke-width: 2;
+        }
+
+        .function-path {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 3;
+            stroke-linecap: round;
+        }
+
+        .point {
+            fill: var(--secondary);
+            stroke: white;
+            stroke-width: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th,
+        td {
+            padding: 0.75rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 700;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Guess My Rule</h1>
+            <p class="intro">Input numbers to see how the machine transforms them. Can you figure out the secret
+                function?</p>
+        </header>
+
+        <div class="main-grid">
+            <div class="card">
+                <div class="card-title">
+                    <span>Secret Machine</span>
+                    <div class="level-selector" id="level-container">
+                        <button class="level-btn active" data-level="0">Easy</button>
+                        <button class="level-btn" data-level="1">Medium</button>
+                        <button class="level-btn" data-level="2">Hard</button>
+                        <button class="level-btn level-ultimate" data-level="3">🚀 Ultimate</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label id="input-label">1. Test an Input</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="number" id="test-input" placeholder="Enter a number">
+                        <button class="btn" id="run-btn" style="width: auto; white-space: nowrap;">Inject</button>
+                    </div>
+                </div>
+
+                <div class="machine-container" id="machine-area">
+                    <!-- Standard Machine -->
+                    <div id="standard-machine" style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="machine-tube tube-top"></div>
+                        <div class="machine-box">?</div>
+                        <div class="machine-tube tube-bottom"></div>
+                        <div class="ball" id="anim-ball"></div>
+                    </div>
+
+                    <!-- Ultimate Geometry Visual -->
+                    <div id="ultimate-visual">
+                        <div style="font-weight: 800; color: var(--ultimate); margin-bottom: 1rem;" id="geom-title">
+                            Shape Challenge</div>
+                        <div class="geometry-box" id="geom-shape">
+                            <span id="shape-area-text">?</span>
+                            <div class="dim-label" id="label-x" style="bottom: -25px;">x</div>
+                            <div class="dim-label" id="label-h" style="right: -25px;">h</div>
+                        </div>
+                        <div style="margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted);"
+                            id="ultimate-prompt">Determine the Area formula.</div>
+                    </div>
+                </div>
+
+                <div class="input-group" style="padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <label>2. Guess the Function</label>
+                    <div class="math-input-wrapper">
+                        <span class="math-prefix">f(x) =</span>
+                        <input type="text" id="guess-input" placeholder="e.g., x + 5">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn" id="guess-btn">Check My Guess</button>
+                    <button class="btn btn-secondary" id="hint-btn" style="width: 40%;">Hint</button>
+                </div>
+
+                <div id="feedback" class="feedback"></div>
+                <button class="btn btn-success" id="next-btn" style="display: none; margin-top: 1rem;">Next Challenge
+                    →</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Evidence & Plot</div>
+
+                <div class="viz-container">
+                    <div id="lock-overlay" class="lock-overlay">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔒</div>
+                        Solve the rule to unlock the function plot!
+                        <div id="hint-display" class="hint-display"></div>
+                    </div>
+                    <div class="viz-box">
+                        <svg id="graph-svg" width="100%" height="100%" viewBox="0 0 400 300"></svg>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <label>Transformation Table</label>
+                    <table id="value-table">
+                        <thead>
+                            <tr>
+                                <th>Input (x)</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const levels = [
+            { name: "Easy", functions: ["x + 2", "x + 5", "x - 3", "x - 10", "x * 2", "x + 1", "x - 1", "x * 3"] },
+            { name: "Medium", functions: ["2*x + 1", "2*x + 5", "3*x - 2", "x / 2", "x / 5", "10 - x", "2*x - 4"] },
+            { name: "Hard", functions: ["x*x", "x*x + 1", "x*x - 2", "2*x + 15", "x*x + x", "3*x + 7"] },
+            {
+                name: "Ultimate",
+                functions: [
+                    { rule: "x * x", title: "Square Area", prompt: "A square with side x.", visual: "square" },
+                    { rule: "x * 2", title: "Rectangle Area (h=2)", prompt: "A rectangle with base x and height 2.", visual: "rect-fixed" },
+                    { rule: "4 * x", title: "Square Perimeter", prompt: "The total distance around a square with side x.", visual: "perim" }
+                ]
+            }
+        ];
+
+        let currentLevel = 0, currentRule = "", currentPrompt = "", currentVisualType = "", history = [], isSolved = false, hintStep = 0;
+
+        const testInput = document.getElementById('test-input');
+        const runBtn = document.getElementById('run-btn');
+        const guessInput = document.getElementById('guess-input');
+        const guessBtn = document.getElementById('guess-btn');
+        const hintBtn = document.getElementById('hint-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const feedback = document.getElementById('feedback');
+        const hintDisplay = document.getElementById('hint-display');
+        const machineArea = document.getElementById('machine-area');
+        const animBall = document.getElementById('anim-ball');
+        const lockOverlay = document.getElementById('lock-overlay');
+        const valueTable = document.querySelector('#value-table tbody');
+        const graphSvg = document.getElementById('graph-svg');
+        const standardMachine = document.getElementById('standard-machine');
+        const ultimateVisual = document.getElementById('ultimate-visual');
+        const geomShape = document.getElementById('geom-shape');
+        const labelH = document.getElementById('label-h');
+        const labelX = document.getElementById('label-x');
+        const geomTitle = document.getElementById('geom-title');
+        const ultimatePrompt = document.getElementById('ultimate-prompt');
+        const shapeAreaText = document.getElementById('shape-area-text');
+
+        function setLevel(idx) {
+            currentLevel = idx;
+            document.querySelectorAll('.level-btn').forEach((btn, i) => btn.classList.toggle('active', i === idx));
+            resetChallenge();
+        }
+
+        function resetChallenge() {
+            const levelData = levels[currentLevel];
+            if (currentLevel === 3) {
+                const challenge = levelData.functions[Math.floor(Math.random() * levelData.functions.length)];
+                currentRule = challenge.rule;
+                currentPrompt = challenge.prompt;
+                currentVisualType = challenge.visual;
+                geomTitle.textContent = challenge.title;
+                ultimatePrompt.textContent = currentPrompt;
+                standardMachine.style.display = "none";
+                ultimateVisual.style.display = "flex";
+                updateUltimateVisual(5); // Initial visual
+            } else {
+                let pool = levelData.functions;
+                let newRule = pool[Math.floor(Math.random() * pool.length)];
+                while (newRule === currentRule) newRule = pool[Math.floor(Math.random() * pool.length)];
+                currentRule = newRule;
+                standardMachine.style.display = "flex";
+                ultimateVisual.style.display = "none";
+            }
+
+            history = []; isSolved = false; hintStep = 0;
+            hintDisplay.textContent = ""; feedback.style.display = "none";
+            lockOverlay.style.display = "flex"; nextBtn.style.display = "none";
+            guessBtn.style.display = "block"; hintBtn.style.display = "block";
+            hintBtn.disabled = false; hintBtn.style.opacity = "1";
+            guessInput.value = "";
+            updateUI();
+        }
+
+        function updateUltimateVisual(x) {
+            const scale = 15;
+            let width = x * scale;
+            let height = 0;
+
+            if (currentVisualType === 'square' || currentVisualType === 'perim') {
+                height = width;
+                labelH.textContent = "x";
+            } else if (currentVisualType === 'rect-fixed') {
+                height = 2 * scale;
+                labelH.textContent = "2";
+            }
+
+            geomShape.style.width = Math.min(width, 180) + "px";
+            geomShape.style.height = Math.min(height, 180) + "px";
+            labelX.textContent = "x=" + x;
+            shapeAreaText.textContent = "?";
+        }
+
+        function evaluate(x, rule) {
+            try {
+                let expr = rule.toLowerCase().replace(/x/g, `(${x})`).replace(/\^/g, '**');
+                return new Function(`return ${expr}`)();
+            } catch (e) { return null; }
+        }
+
+        async function injectNumber() {
+            const x = parseFloat(testInput.value);
+            if (isNaN(x) || x <= 0) return;
+
+            const y = evaluate(x, currentRule);
+
+            if (currentLevel === 3) {
+                updateUltimateVisual(x);
+                setTimeout(() => {
+                    shapeAreaText.textContent = Number.isInteger(y) ? y : y.toFixed(1);
+                    if (!history.some(p => p.x === x)) {
+                        history.push({ x, y });
+                        history.sort((a, b) => a.x - b.x);
+                    }
+                    updateUI();
+                }, 500);
+            } else {
+                machineArea.classList.remove('animating');
+                void machineArea.offsetWidth;
+                animBall.textContent = x;
+                machineArea.classList.add('animating');
+                setTimeout(() => {
+                    animBall.textContent = Number.isInteger(y) ? y : y.toFixed(1);
+                    if (!history.some(p => p.x === x)) {
+                        history.push({ x, y });
+                        history.sort((a, b) => a.x - b.x);
+                    }
+                    updateUI();
+                }, 1000);
+            }
+        }
+
+        function checkGuess() {
+            const guess = guessInput.value.trim();
+            if (!guess) return;
+            const testPoints = [1, 2, 3, 5, 8, 10];
+            let correct = true;
+            try {
+                for (let p of testPoints) {
+                    const actual = evaluate(p, currentRule);
+                    const user = evaluate(p, guess);
+                    if (user === null || Math.abs(actual - user) > 0.0001) { correct = false; break; }
+                }
+            } catch (e) { correct = false; }
+
+            if (correct) {
+                isSolved = true;
+                feedback.textContent = "✨ Correct! You mastered the formula!";
+                feedback.className = "feedback correct";
+                lockOverlay.style.display = "none";
+                nextBtn.style.display = "block";
+                guessBtn.style.display = "none";
+                hintBtn.style.display = "none";
+                updateUI();
+            } else {
+                feedback.textContent = "Not quite. Check the dimensions and try again!";
+                feedback.className = "feedback wrong";
+            }
+        }
+
+        function giveHint() {
+            hintStep++;
+            if (hintStep === 1) {
+                hintDisplay.textContent = "Hint 1: If x = 1, Result = " + evaluate(1, currentRule);
+            } else if (hintStep === 2) {
+                hintDisplay.textContent = "Hint 2: If x = 10, Result = " + evaluate(10, currentRule);
+            } else {
+                hintDisplay.textContent = "Hint 3: Look at how the result changes as x grows!";
+                hintBtn.disabled = true; hintBtn.style.opacity = "0.5";
+            }
+        }
+
+        function updateUI() {
+            valueTable.innerHTML = '';
+            history.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${p.x}</td><td>${Number.isInteger(p.y) ? p.y : p.y.toFixed(2)}</td>`;
+                valueTable.appendChild(tr);
+            });
+            drawGraph();
+        }
+
+        function drawGraph() {
+            const w = 400, h = 300, cx = w / 10, cy = h * 0.9, scale = 20;
+            graphSvg.innerHTML = '';
+
+            for (let i = 0; i <= 20; i++) {
+                const x = cx + i * scale, y = cy - i * scale;
+                const lx = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                lx.setAttribute("x1", x); lx.setAttribute("x2", x); lx.setAttribute("y1", 0); lx.setAttribute("y2", h);
+                lx.classList.add("grid-line"); graphSvg.appendChild(lx);
+                const ly = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                ly.setAttribute("x1", 0); ly.setAttribute("x2", w); ly.setAttribute("y1", y); ly.setAttribute("y2", y);
+                ly.classList.add("grid-line"); graphSvg.appendChild(ly);
+            }
+
+            const xa = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            xa.setAttribute("x1", 0); xa.setAttribute("x2", w); xa.setAttribute("y1", cy); xa.setAttribute("y2", cy); xa.classList.add("axis"); graphSvg.appendChild(xa);
+            const ya = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            ya.setAttribute("x1", cx); ya.setAttribute("x2", cx); ya.setAttribute("y1", 0); ya.setAttribute("y2", h); ya.classList.add("axis"); graphSvg.appendChild(ya);
+
+            if (isSolved) {
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                let d = "";
+                for (let px = 0; px <= 20; px += 0.5) {
+                    const py = evaluate(px, currentRule);
+                    if (py !== null) {
+                        const sx = cx + px * scale, sy = cy - py * scale;
+                        if (sy >= 0 && sy <= h) d += (d === "" ? "M" : "L") + sx + "," + sy;
+                    }
+                }
+                path.setAttribute("d", d); path.classList.add("function-path"); graphSvg.appendChild(path);
+            }
+
+            history.forEach(p => {
+                const sx = cx + p.x * scale, sy = cy - p.y * scale;
+                if (sy >= 0 && sy <= h) {
+                    const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    c.setAttribute("cx", sx); c.setAttribute("cy", sy); c.setAttribute("r", 4);
+                    c.classList.add("point"); graphSvg.appendChild(c);
+                }
+            });
+        }
+
+        document.getElementById('level-container').onclick = e => {
+            if (e.target.classList.contains('level-btn')) setLevel(parseInt(e.target.dataset.level));
+        };
+
+        nextBtn.onclick = resetChallenge;
+        runBtn.onclick = injectNumber;
+        guessBtn.onclick = checkGuess;
+        hintBtn.onclick = giveHint;
+        testInput.onkeypress = e => e.key === 'Enter' && injectNumber();
+        guessInput.onkeypress = e => e.key === 'Enter' && checkGuess();
+
+        setLevel(0);
+    </script>
+</body>
+
+</html>
