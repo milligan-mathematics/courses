@@ -839,6 +839,7 @@
                 solved = true;
                 feedbackEl.textContent = '✨ Correct! The rule was: ' + rule;
                 feedbackEl.className = 'feedback ok';
+                feedbackEl.style.display = 'block';
                 lockEl.style.display = 'none';
                 nextBtn.style.display = 'block';
                 checkBtn.style.display = 'none';
@@ -853,6 +854,7 @@
                     feedbackEl.textContent = '❌ Not quite — keep testing numbers to find the pattern!';
                 }
                 feedbackEl.className = 'feedback bad';
+                feedbackEl.style.display = 'block';
             }
         }
 
@@ -860,6 +862,7 @@
             solved = true;
             feedbackEl.textContent = 'The secret rule was: ' + rule;
             feedbackEl.className = 'feedback ok';
+            feedbackEl.style.display = 'block';
             lockEl.style.display = 'none';
             nextBtn.style.display = 'block';
             checkBtn.style.display = 'none';
