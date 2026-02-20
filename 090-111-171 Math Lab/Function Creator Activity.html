@@ -699,13 +699,13 @@
         // ── RESET ─────────────────────────────────────────────────────────────────────
         function reset() {
             if (lvl === 3) {
-                const ch = LEVELS[3].challenges[Math.floor(Math.random() * LEVELS[3].challenges.length)];
+                const pool = LEVELS[3].challenges;
+                let ch;
+                do { ch = pool[Math.floor(Math.random() * pool.length)]; } while (ch.rule === rule);
                 rule = ch.rule;
                 visual = ch;
                 geomTitle.textContent = ch.title;
-                // lblX.textContent = ch.hl; // These are now set in setGeomSize
-                // lblH.textContent = ch.hh; // These are now set in setGeomSize
-                setGeomSize(5); // Initial size for geometry
+                setGeomSize(5);
                 stdMach.style.display = 'none';
                 geomWrap.style.display = 'flex';
             } else {
@@ -801,6 +801,9 @@
                     addHistory(x, y);
                 }, 1700);
             }
+            // Clear the input box so they don't have to erase it
+            numIn.value = '';
+            numIn.focus();
         }
 
         function addHistory(x, y) {
