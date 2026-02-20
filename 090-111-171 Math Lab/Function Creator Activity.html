@@ -758,8 +758,8 @@
             lblH = geomShape.querySelector('#lbl-h');
             geomVal = geomShape.querySelector('#geom-val');
 
-            lblX.textContent = visual.hl === 'x' ? `x=${x}` : visual.hl;
-            lblH.textContent = visual.hh === 'x' ? `x=${x}` : visual.hh;
+            lblX.textContent = visual.hl;
+            lblH.textContent = visual.hh;
 
             // Adjust label positions for triangle
             if (visual.visual === 'tri') {
