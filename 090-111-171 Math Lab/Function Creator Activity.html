@@ -643,7 +643,7 @@
         ];
 
         // ── STATE ────────────────────────────────────────────────────────────────────
-        let lvl = 0, rule = "", visual = null, history = [], solved = false, hints = 0;
+        let lvl = 0, rule = "", visual = null, history = [], solved = false, hints = 0, attempts = 0;
         let bannerTimer = null;
 
         // ── DOM ───────────────────────────────────────────────────────────────────────
@@ -718,7 +718,7 @@
                 geomWrap.style.display = 'none';
             }
 
-            history = []; solved = false; hints = 0;
+            history = []; solved = false; hints = 0; attempts = 0;
             hintMsg.textContent = '';
             feedbackEl.className = 'feedback';
             feedbackEl.style.display = 'none';
@@ -845,9 +845,26 @@
                 hintBtn.style.display = 'none';
                 drawGraph();
             } else {
-                feedbackEl.textContent = '❌ Not quite — keep testing numbers to find the pattern!';
+                attempts++;
+                if (attempts >= 3) {
+                    feedbackEl.innerHTML = `❌ Not quite. <br><button class="btn" id="reveal-btn" style="margin-top:0.5rem; background:var(--ultimate); font-size:0.9rem; padding:0.5rem;">Reveal Secret Rule</button>`;
+                    document.getElementById('reveal-btn').onclick = revealAnswer;
+                } else {
+                    feedbackEl.textContent = '❌ Not quite — keep testing numbers to find the pattern!';
+                }
                 feedbackEl.className = 'feedback bad';
             }
+        }
+
+        function revealAnswer() {
+            solved = true;
+            feedbackEl.textContent = 'The secret rule was: ' + rule;
+            feedbackEl.className = 'feedback ok';
+            lockEl.style.display = 'none';
+            nextBtn.style.display = 'block';
+            checkBtn.style.display = 'none';
+            hintBtn.style.display = 'none';
+            drawGraph();
         }
 
         // ── HINT ──────────────────────────────────────────────────────────────────────
