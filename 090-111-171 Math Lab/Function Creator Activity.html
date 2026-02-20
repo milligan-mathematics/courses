@@ -228,8 +228,8 @@
         }
 
         .ball {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             background: var(--secondary);
             border-radius: 50%;
             display: flex;
@@ -237,15 +237,16 @@
             justify-content: center;
             color: white;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 1rem;
             position: absolute;
             opacity: 0;
             z-index: 3;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         @keyframes dropIn {
             0% {
-                transform: translateY(-100px);
+                transform: translateY(-120px);
                 opacity: 0;
             }
 
@@ -254,12 +255,12 @@
             }
 
             45% {
-                transform: translateY(-20px);
+                transform: translateY(-30px);
                 opacity: 1;
             }
 
             55% {
-                transform: translateY(20px);
+                transform: translateY(30px);
                 opacity: 1;
             }
 
@@ -268,13 +269,13 @@
             }
 
             100% {
-                transform: translateY(100px);
-                opacity: 0;
+                transform: translateY(120px);
+                opacity: 1;
             }
         }
 
         .animating .ball {
-            animation: dropIn 1.5s ease-in-out forwards;
+            animation: dropIn 2s ease-in-out forwards;
         }
 
         /* Ultimate Visual */
@@ -443,6 +444,21 @@
             font-size: 0.8rem;
             text-transform: uppercase;
         }
+
+        /* Current Result Display */
+        .result-display {
+            background: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 2px solid var(--secondary);
+            font-weight: 800;
+            color: var(--secondary);
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: none;
+        }
     </style>
 </head>
 
@@ -469,7 +485,7 @@
                 <div class="input-group">
                     <label id="input-label">1. Test an Input</label>
                     <div style="display: flex; gap: 0.5rem;">
-                        <input type="number" id="test-input" placeholder="Enter a number">
+                        <input type="text" id="test-input" placeholder="e.g., 5" autofocus>
                         <button class="btn" id="run-btn" style="width: auto; white-space: nowrap;">Inject</button>
                     </div>
                 </div>
@@ -488,12 +504,15 @@
                         <div style="font-weight: 800; color: var(--ultimate); margin-bottom: 1rem;" id="geom-title">
                             Shape Challenge</div>
                         <div class="geometry-box" id="geom-shape">
-                            <span id="shape-area-text">?</span>
+                            <span id="shape-area-text" style="font-size: 1.5rem;">?</span>
                             <div class="dim-label" id="label-x" style="bottom: -25px;">x</div>
                             <div class="dim-label" id="label-h" style="right: -25px;">h</div>
                         </div>
-                        <div style="margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted);"
-                            id="ultimate-prompt">Determine the Area formula.</div>
+                    </div>
+
+                    <!-- Result Panel -->
+                    <div id="last-result-panel" class="result-display">
+                        Output: <span id="last-result-val">?</span>
                     </div>
                 </div>
 
@@ -560,7 +579,7 @@
             }
         ];
 
-        let currentLevel = 0, currentRule = "", currentPrompt = "", currentVisualType = "", history = [], isSolved = false, hintStep = 0;
+        let currentLevel = 0, currentRule = "", currentVisualType = "", history = [], isSolved = false, hintStep = 0;
 
         const testInput = document.getElementById('test-input');
         const runBtn = document.getElementById('run-btn');
@@ -581,8 +600,9 @@
         const labelH = document.getElementById('label-h');
         const labelX = document.getElementById('label-x');
         const geomTitle = document.getElementById('geom-title');
-        const ultimatePrompt = document.getElementById('ultimate-prompt');
         const shapeAreaText = document.getElementById('shape-area-text');
+        const lastResultPanel = document.getElementById('last-result-panel');
+        const lastResultVal = document.getElementById('last-result-val');
 
         function setLevel(idx) {
             currentLevel = idx;
@@ -595,10 +615,8 @@
             if (currentLevel === 3) {
                 const challenge = levelData.functions[Math.floor(Math.random() * levelData.functions.length)];
                 currentRule = challenge.rule;
-                currentPrompt = challenge.prompt;
                 currentVisualType = challenge.visual;
                 geomTitle.textContent = challenge.title;
-                ultimatePrompt.textContent = currentPrompt;
                 standardMachine.style.display = "none";
                 ultimateVisual.style.display = "flex";
                 updateUltimateVisual(5); // Initial visual
@@ -617,6 +635,7 @@
             guessBtn.style.display = "block"; hintBtn.style.display = "block";
             hintBtn.disabled = false; hintBtn.style.opacity = "1";
             guessInput.value = "";
+            lastResultPanel.style.display = "none";
             updateUI();
         }
 
@@ -641,26 +660,38 @@
 
         function evaluate(x, rule) {
             try {
-                let expr = rule.toLowerCase().replace(/x/g, `(${x})`).replace(/\^/g, '**');
+                // Better sanitization for evaluation
+                let cleanRule = rule.toLowerCase().replace(/\^/g, '**');
+                // Use a safe list of allowed math operations if needed, but for students simple injection is okay
+                let expr = cleanRule.replace(/x/g, `(${x})`);
                 return new Function(`return ${expr}`)();
             } catch (e) { return null; }
         }
 
         async function injectNumber() {
-            const x = parseFloat(testInput.value);
-            if (isNaN(x) || x <= 0) return;
+            let xStr = testInput.value.trim();
+            if (!xStr) return;
+            // Support evaluation in the input box itself if they type 5*2
+            let x;
+            try { x = eval(xStr.replace(/x/g, '0')); } catch (e) { x = parseFloat(xStr); }
+
+            if (isNaN(x)) return;
+            if (currentLevel === 3 && x <= 0) return; // Geometry restricts to positive
 
             const y = evaluate(x, currentRule);
+            if (y === null) return;
+
+            // Clear result panel during animation
+            lastResultPanel.style.display = "none";
 
             if (currentLevel === 3) {
                 updateUltimateVisual(x);
                 setTimeout(() => {
-                    shapeAreaText.textContent = Number.isInteger(y) ? y : y.toFixed(1);
-                    if (!history.some(p => p.x === x)) {
-                        history.push({ x, y });
-                        history.sort((a, b) => a.x - b.x);
-                    }
-                    updateUI();
+                    const displayY = Number.isInteger(y) ? y : y.toFixed(2);
+                    shapeAreaText.textContent = displayY;
+                    lastResultVal.textContent = displayY;
+                    lastResultPanel.style.display = "block";
+                    addToHistory(x, y);
                 }, 500);
             } else {
                 machineArea.classList.remove('animating');
@@ -668,23 +699,31 @@
                 animBall.textContent = x;
                 machineArea.classList.add('animating');
                 setTimeout(() => {
-                    animBall.textContent = Number.isInteger(y) ? y : y.toFixed(1);
-                    if (!history.some(p => p.x === x)) {
-                        history.push({ x, y });
-                        history.sort((a, b) => a.x - b.x);
-                    }
-                    updateUI();
-                }, 1000);
+                    const displayY = Number.isInteger(y) ? y : y.toFixed(2);
+                    animBall.textContent = displayY;
+                    lastResultVal.textContent = displayY;
+                    lastResultPanel.style.display = "block";
+                    addToHistory(x, y);
+                }, 1600); // Wait for animation to finish
             }
+        }
+
+        function addToHistory(x, y) {
+            if (!history.some(p => p.x === x)) {
+                history.push({ x, y });
+                history.sort((a, b) => a.x - b.x);
+            }
+            updateUI();
         }
 
         function checkGuess() {
             const guess = guessInput.value.trim();
             if (!guess) return;
-            const testPoints = [1, 2, 3, 5, 8, 10];
+            const testPoints = [0, 1, 2, 3, 5, 8, 10];
             let correct = true;
             try {
                 for (let p of testPoints) {
+                    if (currentLevel === 3 && p <= 0) p = 1; // Geometry check
                     const actual = evaluate(p, currentRule);
                     const user = evaluate(p, guess);
                     if (user === null || Math.abs(actual - user) > 0.0001) { correct = false; break; }
@@ -693,7 +732,7 @@
 
             if (correct) {
                 isSolved = true;
-                feedback.textContent = "✨ Correct! You mastered the formula!";
+                feedback.textContent = "✨ Correct! Rule: " + currentRule;
                 feedback.className = "feedback correct";
                 lockOverlay.style.display = "none";
                 nextBtn.style.display = "block";
@@ -701,7 +740,7 @@
                 hintBtn.style.display = "none";
                 updateUI();
             } else {
-                feedback.textContent = "Not quite. Check the dimensions and try again!";
+                feedback.textContent = "Not quite. Check your pattern!";
                 feedback.className = "feedback wrong";
             }
         }
@@ -709,11 +748,11 @@
         function giveHint() {
             hintStep++;
             if (hintStep === 1) {
-                hintDisplay.textContent = "Hint 1: If x = 1, Result = " + evaluate(1, currentRule);
+                hintDisplay.textContent = "Hint 1: If x = " + (currentLevel == 3 ? 1 : 0) + ", Output = " + evaluate((currentLevel == 3 ? 1 : 0), currentRule);
             } else if (hintStep === 2) {
-                hintDisplay.textContent = "Hint 2: If x = 10, Result = " + evaluate(10, currentRule);
+                hintDisplay.textContent = "Hint 2: If x = 10, Output = " + evaluate(10, currentRule);
             } else {
-                hintDisplay.textContent = "Hint 3: Look at how the result changes as x grows!";
+                hintDisplay.textContent = "Hint 3: Use the table to find the pattern!";
                 hintBtn.disabled = true; hintBtn.style.opacity = "0.5";
             }
         }
@@ -729,19 +768,28 @@
         }
 
         function drawGraph() {
-            const w = 400, h = 300, cx = w / 10, cy = h * 0.9, scale = 20;
+            const w = 400, h = 300, scale = 20;
+            let cx = w / 2, cy = h / 2;
+            if (currentLevel === 3) { cx = w / 10; cy = h * 0.9; } // Geometry quadrant
+
             graphSvg.innerHTML = '';
 
-            for (let i = 0; i <= 20; i++) {
+            // Grid
+            for (let i = -20; i <= 20; i++) {
                 const x = cx + i * scale, y = cy - i * scale;
-                const lx = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                lx.setAttribute("x1", x); lx.setAttribute("x2", x); lx.setAttribute("y1", 0); lx.setAttribute("y2", h);
-                lx.classList.add("grid-line"); graphSvg.appendChild(lx);
-                const ly = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                ly.setAttribute("x1", 0); ly.setAttribute("x2", w); ly.setAttribute("y1", y); ly.setAttribute("y2", y);
-                ly.classList.add("grid-line"); graphSvg.appendChild(ly);
+                if (x >= 0 && x <= w) {
+                    const lx = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    lx.setAttribute("x1", x); lx.setAttribute("x2", x); lx.setAttribute("y1", 0); lx.setAttribute("y2", h);
+                    lx.classList.add("grid-line"); graphSvg.appendChild(lx);
+                }
+                if (y >= 0 && y <= h) {
+                    const ly = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    ly.setAttribute("x1", 0); ly.setAttribute("x2", w); ly.setAttribute("y1", y); ly.setAttribute("y2", y);
+                    ly.classList.add("grid-line"); graphSvg.appendChild(ly);
+                }
             }
 
+            // Axes
             const xa = document.createElementNS("http://www.w3.org/2000/svg", "line");
             xa.setAttribute("x1", 0); xa.setAttribute("x2", w); xa.setAttribute("y1", cy); xa.setAttribute("y2", cy); xa.classList.add("axis"); graphSvg.appendChild(xa);
             const ya = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -750,11 +798,12 @@
             if (isSolved) {
                 const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
                 let d = "";
-                for (let px = 0; px <= 20; px += 0.5) {
+                let start = (currentLevel === 3 ? 0 : -10);
+                for (let px = start; px <= 20; px += 0.5) {
                     const py = evaluate(px, currentRule);
                     if (py !== null) {
                         const sx = cx + px * scale, sy = cy - py * scale;
-                        if (sy >= 0 && sy <= h) d += (d === "" ? "M" : "L") + sx + "," + sy;
+                        if (sy >= 0 && sy <= h && sx >= 0 && sx <= w) d += (d === "" ? "M" : "L") + sx + "," + sy;
                     }
                 }
                 path.setAttribute("d", d); path.classList.add("function-path"); graphSvg.appendChild(path);
@@ -762,7 +811,7 @@
 
             history.forEach(p => {
                 const sx = cx + p.x * scale, sy = cy - p.y * scale;
-                if (sy >= 0 && sy <= h) {
+                if (sy >= 0 && sy <= h && sx >= 0 && sx <= w) {
                     const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                     c.setAttribute("cx", sx); c.setAttribute("cy", sy); c.setAttribute("r", 4);
                     c.classList.add("point"); graphSvg.appendChild(c);
