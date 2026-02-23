@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Dynamical System Demo - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    
+    <!-- MathJax for rendering equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Chart.js for graph visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-box {
+            flex: 1;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .juvenile-stat {
+            background: rgba(249, 160, 27, 0.1); /* Appalachian Sunrise light */
+            border: 2px solid #F9A01B;
+        }
+
+        .adult-stat {
+            background: rgba(0, 156, 222, 0.1); /* Stoele Blue light */
+            border: 2px solid #009CDE;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            font-family: var(--font-primary);
+            margin-top: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .viz-container {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 1rem;
+            min-height: 250px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-content: flex-start;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .bird-icon {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .bird-icon:hover {
+            transform: scale(1.5);
+            z-index: 10;
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+        }
+
+        .btn:hover {
+            background-color: #CD5920; /* Burnt Orange */
+        }
+
+        .btn-secondary {
+            background-color: #A2A2A2; /* Gray */
+        }
+
+        .btn-secondary:hover {
+            background-color: #6E6E6E; /* Mountain Gray */
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 307</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Linear Dynamical System</h1>
+            <p>Interactive model for studying bird population dynamics.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <!-- Introduction Section -->
+        <div class="demo-section">
+            <h3>Matrix Recurrence Model</h3>
+            <p>
+                Consider the evolution of a species of bird. Let \( j_k \) be the number of juvenile females and \( a_k \) be the number of adult females in year \( k \).
+                Based on our reproductive and survival assumptions:
+            </p>
+            <ul>
+                <li>\( j_{k+1} = 2a_k \) (The reproduction rate is 2)</li>
+                <li>\( a_{k+1} = 0.25j_k + 0.5a_k \) (25% of juveniles survive to adulthood, 50% of adults survive to the next year)</li>
+            </ul>
+            <p>
+                We can write this as a matrix recurrence \( \mathbf{v}_{k+1} = A\mathbf{v}_k \):
+            </p>
+            <div style="font-size: 1.2rem; text-align: center; margin: 15px 0;">
+                \[
+                \begin{bmatrix} j_{k+1} \\ a_{k+1} \end{bmatrix} = 
+                \begin{bmatrix} 0 & 2 \\ 0.25 & 0.5 \end{bmatrix}
+                \begin{bmatrix} j_k \\ a_k \end{bmatrix}
+                \]
+            </div>
+            <p>
+                Our initial population consists of 40 juvenile females and 100 adult females, so \( \mathbf{v}_0 = \begin{bmatrix} 40 \\ 100 \end{bmatrix} \).
+            </p>
+        </div>
+
+        <!-- Interactive Dashboard -->
+        <div class="dashboard">
+            <!-- Visualization Panel -->
+            <div class="panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                    <h3 style="margin: 0;">Population Visualization</h3>
+                    <div style="margin-top: 10px;">
+                        <button class="btn" id="next-btn" onclick="nextYear()">Next Year</button>
+                        <button class="btn btn-secondary" id="auto-btn" onclick="toggleAuto()">Auto-play</button>
+                        <button class="btn btn-secondary" onclick="resetSim()">Reset</button>
+                    </div>
+                </div>
+                
+                <p><strong>Year \( k = \) <span id="year-display">0</span></strong></p>
+                
+                <div class="stats-row">
+                    <div class="stat-box juvenile-stat">
+                        <div class="stat-label">Juveniles (\( j_k \))</div>
+                        <div class="stat-value" id="juv-count">40</div>
+                    </div>
+                    <div class="stat-box adult-stat">
+                        <div class="stat-label">Adults (\( a_k \))</div>
+                        <div class="stat-value" id="adult-count">100</div>
+                    </div>
+                </div>
+                
+                <div id="viz-container" class="viz-container">
+                    <!-- SVGs will be inserted here dynamically -->
+                </div>
+            </div>
+            
+            <!-- Graph Panel -->
+            <div class="panel">
+                <h3>Population Graph</h3>
+                <canvas id="popChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Discussion Section -->
+        <div class="demo-section">
+            <h3>Eigenvalues and Eigenvectors</h3>
+            <p>
+                To understand the long-term behavior of the population, we find the eigenvalues and eigenvectors of \( A \).
+                Solving the characteristic equation \( \det(A - \lambda I) = 0 \):
+            </p>
+            <div style="text-align: center; font-size: 1.1rem;">
+                \[
+                \det \begin{bmatrix} -\lambda & 2 \\ 0.25 & 0.5 - \lambda \end{bmatrix} = -\lambda(0.5 - \lambda) - (2)(0.25) = \lambda^2 - 0.5\lambda - 0.5 = 0
+                \]
+            </div>
+            <p>
+                Factoring gives \( (\lambda - 1)(\lambda + 0.5) = 0 \), so the eigenvalues are <strong>\( \lambda_1 = 1 \)</strong> and <strong>\( \lambda_2 = -0.5 \)</strong>.
+            </p>
+            <p>
+                The corresponding eigenvectors are \( \mathbf{w}_1 = \begin{bmatrix} 2 \\ 1 \end{bmatrix} \) and \( \mathbf{w}_2 = \begin{bmatrix} -4 \\ 1 \end{bmatrix} \).
+            </p>
+            <p>
+                Since the initial population is \( \mathbf{v}_0 = \begin{bmatrix} 40 \\ 100 \end{bmatrix} \), we can write it as a linear combination of the eigenvectors:
+            </p>
+            <div style="text-align: center; font-size: 1.1rem;">
+                \[
+                \mathbf{v}_0 = c_1 \mathbf{w}_1 + c_2 \mathbf{w}_2 = \frac{220}{3} \begin{bmatrix} 2 \\ 1 \end{bmatrix} + \frac{80}{3} \begin{bmatrix} -4 \\ 1 \end{bmatrix}
+                \]
+            </div>
+            <p>
+                For any year \( k \), the population is given by:
+            </p>
+            <div style="text-align: center; font-size: 1.1rem;">
+                \[
+                \mathbf{v}_k = A^k \mathbf{v}_0 = c_1 (\lambda_1)^k \mathbf{w}_1 + c_2 (\lambda_2)^k \mathbf{w}_2 = \frac{220}{3} (1)^k \begin{bmatrix} 2 \\ 1 \end{bmatrix} + \frac{80}{3} (-0.5)^k \begin{bmatrix} -4 \\ 1 \end{bmatrix}
+                \]
+            </div>
+            <p>
+                <strong>Conclusion:</strong> As \( k \to \infty \), the term with \( (-0.5)^k \) approaches 0 because its magnitude is less than 1. The dominant eigenvalue is \( \lambda_1 = 1 \). This means that eventually, the population stabilizes and mimics the behavior of the eigenvector \( \mathbf{w}_1 \). The population will approach a ratio of 2 juveniles for every 1 adult, settling at approximately 146.7 juveniles and 73.3 adults.
+            </p>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Milligan University Mathematics</p>
+        </div>
+    </footer>
+
+    <!-- Interactive Script -->
+    <script>
+        // Use SVGs for visuals
+        const adultSVG = `<svg viewBox="0 0 100 100" class="bird-icon adult-icon" title="Adult Bird">
+          <ellipse cx="50" cy="55" rx="30" ry="25" fill="#009CDE" />
+          <circle cx="75" cy="35" r="15" fill="#009CDE" />
+          <polygon points="85,32 100,35 85,38" fill="#F36E24" />
+          <circle cx="80" cy="30" r="3" fill="#000000" />
+          <path d="M 40 50 Q 20 60 30 70 Q 50 65 60 55 Z" fill="#0077A8" />
+        </svg>`;
+
+        const juvSVG = `<svg viewBox="0 0 100 100" class="bird-icon juv-icon" title="Juvenile Bird">
+          <circle cx="50" cy="60" r="20" fill="#F9A01B" />
+          <polygon points="65,58 80,60 65,62" fill="#CD5920" />
+          <circle cx="58" cy="52" r="3" fill="#000000" />
+          <path d="M 40 60 Q 30 70 45 75 Z" fill="#F36E24" />
+        </svg>`;
+
+        // Simulation State
+        let k = 0;
+        let j = 40;
+        let a = 100;
+        let autoInterval = null;
+
+        // Initialize Chart
+        const ctx = document.getElementById('popChart').getContext('2d');
+        let popChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [0],
+                datasets: [
+                    {
+                        label: 'Juveniles',
+                        data: [40],
+                        borderColor: '#F9A01B',
+                        backgroundColor: 'rgba(249, 160, 27, 0.1)',
+                        tension: 0.1,
+                        fill: true
+                    },
+                    {
+                        label: 'Adults',
+                        data: [100],
+                        borderColor: '#009CDE',
+                        backgroundColor: 'rgba(0, 156, 222, 0.1)',
+                        tension: 0.1,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { 
+                        min: 0, 
+                        max: 250,
+                        title: { display: true, text: 'Population' }
+                    },
+                    x: { 
+                        title: { display: true, text: 'Year (k)' } 
+                    }
+                },
+                animation: { duration: 400 }
+            }
+        });
+
+        function updateViz() {
+            document.getElementById('year-display').innerText = k;
+            document.getElementById('juv-count').innerText = j.toFixed(1);
+            document.getElementById('adult-count').innerText = a.toFixed(1);
+            
+            // Generate visual representations
+            // Cap visual elements so we don't break the browser if they get out of hand
+            const displayJ = Math.min(Math.round(j), 500); 
+            const displayA = Math.min(Math.round(a), 500);
+            
+            document.getElementById('viz-container').innerHTML = 
+                juvSVG.repeat(displayJ) + adultSVG.repeat(displayA);
+        }
+
+        function nextYear() {
+            // Apply rules
+            // j_{k+1} = 2a_k
+            // a_{k+1} = 0.25j_k + 0.5a_k
+            let nextJ = 2 * a;
+            let nextA = 0.25 * j + 0.5 * a;
+            
+            j = nextJ;
+            a = nextA;
+            k++;
+            
+            updateViz();
+            
+            // Update chart data
+            popChart.data.labels.push(k);
+            popChart.data.datasets[0].data.push(j);
+            popChart.data.datasets[1].data.push(a);
+            
+            // Dynamically adjust Y axis if population climbs 
+            const maxVal = Math.max(...popChart.data.datasets[0].data, ...popChart.data.datasets[1].data);
+            if (maxVal > popChart.options.scales.y.max - 20) {
+                popChart.options.scales.y.max = Math.ceil(maxVal + 50);
+            }
+
+            popChart.update();
+        }
+
+        function resetSim() {
+            // Reset to default
+            k = 0; 
+            j = 40; 
+            a = 100;
+            
+            if (autoInterval) toggleAuto();
+            
+            // Reset chart
+            popChart.data.labels = [0];
+            popChart.data.datasets[0].data = [40];
+            popChart.data.datasets[1].data = [100];
+            popChart.options.scales.y.max = 250;
+            popChart.update();
+            
+            updateViz();
+        }
+
+        function toggleAuto() {
+            const btn = document.getElementById('auto-btn');
+            if (autoInterval) {
+                // Stop it
+                clearInterval(autoInterval);
+                autoInterval = null;
+                btn.innerText = "Auto-play";
+                btn.classList.remove("btn-danger");
+                btn.classList.add("btn-secondary");
+                document.getElementById('next-btn').disabled = false;
+            } else {
+                // Start it
+                autoInterval = setInterval(nextYear, 1200);
+                btn.innerText = "Stop";
+                btn.classList.remove("btn-secondary");
+                btn.classList.add("btn-danger");
+                document.getElementById('next-btn').disabled = true;
+            }
+        }
+
+        // Run on load
+        window.onload = function() {
+            updateViz();
+        };
+    </script>
+</body>
+
+</html>
