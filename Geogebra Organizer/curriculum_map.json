@@ -1,0 +1,112 @@
+{
+  "courses": {
+    "Math 211 (Calculus I)": [
+      "Chapter 1",
+      "Chapter 2",
+      "Chapter 3",
+      "Chapter 4",
+      "Chapter 5",
+      "Chapter 6"
+    ],
+    "Math 212 (Calculus II)": [
+      "Chapter 7",
+      "Chapter 8",
+      "Chapter 9",
+      "Chapter 10"
+    ],
+    "Math 303 (Linear Algebra)": [
+      "Chapter 11",
+      "Chapter 12",
+      "Chapter 13",
+      "Chapter 14",
+      "Chapter 15"
+    ],
+    "Math 307 (Linear Algebra)": [
+      "Chapter 1",
+      "Chapter 2",
+      "Chapter 3",
+      "Chapter 4",
+      "Chapter 5",
+      "Chapter 8"
+    ],
+    "Math 304 (Modern Geometry)": [
+      "Chapter 0",
+      "Chapter 1",
+      "Chapter 2",
+      "Chapter 3",
+      "Chapter 4",
+      "Chapter 5",
+      "Chapter 6",
+      "Chapter 7"
+    ],
+    "Math 308 (Modern Geometries)": [
+      "Chapter 1",
+      "Chapter 2",
+      "Chapter 3",
+      "Chapter 4",
+      "Chapter 5",
+      "Chapter 6",
+      "Chapter 7",
+      "Chapter 8",
+      "Chapter 9",
+      "Chapter 10",
+      "Chapter 11",
+      "Chapter 12",
+      "Chapter 13",
+      "Chapter 14",
+      "Chapter 15",
+      "Chapter 16",
+      "Chapter 17",
+      "Chapter 18",
+      "Chapter 19",
+      "Chapter 20",
+      "Chapter 21",
+      "Chapter 22",
+      "Chapter 23"
+    ],
+    "Math 153 (Statistics)": [
+      "Chapter 1",
+      "Chapter 2",
+      "Chapter 3",
+      "Chapter 4",
+      "Chapter 5",
+      "Chapter 6",
+      "Chapter 7"
+    ],
+    "Math 253 (Statistics II)": [
+      "Chapter 8",
+      "Chapter 9",
+      "Chapter 10",
+      "Chapter 11",
+      "Chapter 12",
+      "Chapter 13",
+      "Chapter 14",
+      "Chapter 15",
+      "Chapter 16"
+    ],
+    "Math 411 (Real Analysis)": [
+      "Chapter 1",
+      "Chapter 2",
+      "Chapter 3",
+      "Chapter 4",
+      "Chapter 5",
+      "Chapter 6",
+      "Chapter 7",
+      "Chapter 8",
+      "Chapter 9",
+      "Chapter 10",
+      "Chapter 11",
+      "Chapter 12"
+    ],
+    "Math 351 (Math Modeling)": [
+      "Discrete Models",
+      "Continuous Models",
+      "Probabilistic Models"
+    ],
+    "Math Lab": [
+      "General Activities",
+      "Linear Algebra Activities"
+    ]
+  },
+  "mappings": {}
+}

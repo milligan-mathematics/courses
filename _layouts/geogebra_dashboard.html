@@ -1,0 +1,77 @@
+---
+layout: default
+---
+
+<div class="geogebra-dashboard">
+    <h1>GeoGebra Apps Dashboard</h1>
+
+    <div class="dashboard-status"
+        style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #dee2e6;">
+        <h3 style="margin-top: 0;">Sync Status</h3>
+        <p><strong>Last Updated:</strong> {{ site.data.apps.last_updated }}</p>
+        <p><strong>Total Apps:</strong> {{ site.data.apps.count }}</p>
+        {% if site.data.apps.count < 30 %} <p
+            style="color: #856404; background-color: #fff3cd; padding: 5px; border-radius: 4px; display: inline-block;">
+            ⚠️ <strong>Note:</strong> Showing limited results. To sync all apps, please provide your GeoGebra Owner ID
+            to the helper.
+            </p>
+            {% endif %}
+    </div>
+
+    {% assign apps_by_category = site.data.apps.apps | group_by: "category" %}
+
+    {% for category in apps_by_category %}
+    <h2 class="category-title">{{ category.name }}</h2>
+    <div class="apps-grid">
+        {% for app in category.items %}
+        <div class="app-card">
+            <h3>{{ app.title }}</h3>
+            <div id="ggb-element-{{ app.id }}" class="ggb-container"></div>
+            <p><a href="{{ app.url }}" target="_blank">View on GeoGebra</a></p>
+        </div>
+        <script>
+            window.addEventListener("load", function () {
+                var params = {
+                    "appName": "classic",
+                    "width": 600,
+                    "height": 400,
+                    "showToolBar": false,
+                    "borderColor": null,
+                    "showMenuBar": false,
+                    "material_id": "{{ app.id }}",
+                    "preventFocus": true
+                };
+                var applet = new GGBApplet(params, true);
+                applet.inject('ggb-element-{{ app.id }}');
+            });
+        </script>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+
+<script src="https://www.geogebra.org/apps/deployggb.js"></script>
+
+<style>
+    .apps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .app-card {
+        background: #fff;
+        border: 1px solid #eee;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .ggb-container {
+        margin: 1rem 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+</style>
