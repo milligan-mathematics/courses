@@ -1,6 +1,6 @@
 ---
 layout: course
-title: "Math 090, Math 111, Math 171.: Math Lab"
+title: "Math 090, Math 111, Math 171: Math Lab"
 parent: Home
 nav_order: 100
 activities:
