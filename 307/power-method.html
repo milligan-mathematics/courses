@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power Method Demo - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- MathJax for rendering equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: #CD5920;
+            /* Burnt Orange */
+        }
+
+        .btn-secondary {
+            background-color: #A2A2A2;
+            /* Gray */
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #6E6E6E;
+            /* Mountain Gray */
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background-color: #c82333;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .vector-input {
+            display: inline-flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: center;
+            position: relative;
+            padding: 0 10px;
+        }
+
+        .vector-input::before,
+        .vector-input::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 8px;
+            border: 2px solid var(--color-black);
+            pointer-events: none;
+        }
+
+        .vector-input::before {
+            left: 0;
+            border-right: none;
+        }
+
+        .vector-input::after {
+            right: 0;
+            border-left: none;
+        }
+
+        .vector-input input {
+            width: 60px;
+            text-align: center;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th,
+        td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #f1f3f5;
+            font-weight: bold;
+        }
+
+        .vector-cell {
+            display: inline-block;
+            text-align: center;
+        }
+
+        .svg-container {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .axis {
+            stroke: #adb5bd;
+            stroke-width: 0.01;
+        }
+
+        .tick {
+            stroke: #adb5bd;
+            stroke-width: 0.01;
+        }
+
+        .tick-label {
+            font-size: 0.08px;
+            fill: #6c757d;
+            font-family: sans-serif;
+            user-select: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 307</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>The Power Method</h1>
+            <p>Estimating the dominant eigenvalue and eigenvector of a matrix.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <!-- Setup Section -->
+        <div class="demo-section">
+            <h3>Algorithm overview</h3>
+            <p>
+                The power method is a way to estimate the dominant eigenvalue/eigenvector pair of a matrix.
+                Consider the fixed matrix:
+            </p>
+            <div style="font-size: 1.2rem; text-align: center; margin: 15px 0;">
+                \[
+                A = \begin{bmatrix} 6 & 5 \\ 1 & 2 \end{bmatrix}
+                \]
+            </div>
+            <p>
+                <strong>Steps:</strong>
+            </p>
+            <ol>
+                <li>Select an initial "seed" vector \(\mathbf{x}_0\) whose largest entry in absolute value is 1.</li>
+                <li>For each step \( k = 0, 1, 2, \dots \):
+                    <ul>
+                        <li>Compute \( A\mathbf{x}_k \).</li>
+                        <li>Let \( \mu_k \) be an entry in \( A\mathbf{x}_k \) whose absolute value is as large as
+                            possible.</li>
+                        <li>Compute the next scaled vector: \( \mathbf{x}_{k+1} = (1/\mu_k) A\mathbf{x}_k \).</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="input-group" style="margin-top: 20px;">
+                <span style="font-weight: bold;">Initial Seed \( \mathbf{x}_0 = \)</span>
+                <div class="vector-input">
+                    <input type="number" id="x0-val" value="-1" step="0.1">
+                    <input type="number" id="y0-val" value="1" step="0.1">
+                </div>
+                <button class="btn" onclick="startAlgorithm()">Let's Go!</button>
+            </div>
+        </div>
+
+        <!-- Interactive Dashboard -->
+        <div class="dashboard" id="dashboard" style="display: none;">
+
+            <!-- Tracking Table Panel -->
+            <div class="panel" style="grid-column: 1 / -1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="margin: 0;">Computation Table</h3>
+                    <div>
+                        <button class="btn" id="next-btn" onclick="nextStep()">Next Step (\( k \to k+1 \))</button>
+                        <button class="btn btn-secondary" id="auto-btn" onclick="toggleAuto()">Auto-play</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="comp-table">
+                        <thead>
+                            <tr id="row-header">
+                                <th style="width: 80px;">\( k \)</th>
+                                <!-- Headers populated dynamically -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="row-xk">
+                                <td><strong>\( \mathbf{x}_k \)</strong></td>
+                                <!-- x_k values dynamically -->
+                            </tr>
+                            <tr id="row-Axk">
+                                <td><strong>\( A\mathbf{x}_k \)</strong></td>
+                                <!-- Ax_k values dynamically -->
+                            </tr>
+                            <tr id="row-muk">
+                                <td><strong>\( \mu_k \)</strong></td>
+                                <!-- \mu_k values dynamically -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Graph Panel -->
+            <div class="panel" style="grid-column: 1 / -1; max-width: 600px; margin: 0 auto; width: 100%;">
+                <h3 style="text-align: center; margin-top: 0;">Directional Convergence</h3>
+                <p style="text-align: center; font-size: 0.9rem; color: #555;">
+                    Plotting the scaled vectors \( \mathbf{x}_k \). As \( k \) increases, the vectors align with the
+                    dominant eigenspace.
+                </p>
+                <div class="svg-container">
+                    <svg viewBox="-1.2 -1.2 2.4 2.4" id="vector-plot">
+                        <!-- Grid and axes added by JS -->
+                    </svg>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Educational Discussion -->
+        <div class="demo-section">
+            <h3>Why does this work?</h3>
+            <p>
+                Let us examine the true eigenvalues and eigenvectors of \( A = \begin{bmatrix} 6 & 5 \\ 1 & 2
+                \end{bmatrix} \).
+                Solving \( \det(A - \lambda I) = 0 \):
+            </p>
+            <div style="text-align: center; font-size: 1.1rem;">
+                \[
+                (6-\lambda)(2-\lambda) - 5 = \lambda^2 - 8\lambda + 7 = (\lambda - 7)(\lambda - 1) = 0
+                \]
+            </div>
+            <p>
+                The eigenvalues are \( \lambda_1 = 7 \) and \( \lambda_2 = 1 \).
+                The dominant eigenvalue is <strong>7</strong> (since \( |7| > |1| \)).
+            </p>
+            <p>
+                Finding the eigenvector for \( \lambda_1 = 7 \):
+                \( A - 7I = \begin{bmatrix} -1 & 5 \\ 1 & -5 \end{bmatrix} \), which gives the basis eigenvector \(
+                \mathbf{v}_1 = \begin{bmatrix} 5 \\ 1 \end{bmatrix} \).
+            </p>
+            <p>
+                If we scale \( \mathbf{v}_1 \) so that its largest entry is 1, we divide by 5: \( \begin{bmatrix} 1 \\
+                0.2 \end{bmatrix} \).
+            </p>
+            <p>
+                <strong>Conclusion:</strong> For almost all choices of \( \mathbf{x}_0 \), the sequence \( \{ \mu_k \}
+                \) approaches the dominant eigenvalue (7), and the sequence \( \{ \mathbf{x}_k \} \) approaches the
+                scaled dominant eigenvector \( \begin{bmatrix} 1 \\ 0.2 \end{bmatrix} \).
+            </p>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Milligan University Mathematics</p>
+        </div>
+    </footer>
+
+    <!-- Interactive Script -->
+    <script>
+        // Matrix A
+        const A_11 = 6;
+        const A_12 = 5;
+        const A_21 = 1;
+        const A_22 = 2;
+
+        let kState = 0;
+        let x_k = [0, 0];
+        let history = []; // stores objects: {x, Ax, mu}
+        let autoInterval = null;
+
+        const maxSteps = 8; // We'll allow up to 8 columns in the table like the worksheet
+
+        // Colors from branding for the vectors, fading from light blue to dark orange
+        const colors = [
+            '#009CDE', '#008ba8', '#007a82', '#006a6c',
+            '#a16d56', '#b86842', '#d66030', '#F36E24', '#CD5920'
+        ];
+
+        function formatNumber(num) {
+            // Format to 4 decimal places, strip trailing zeros
+            return Number(num.toFixed(4)).toString();
+        }
+
+        function createVectorHTML(v) {
+            return `
+                <div class="vector-cell" style="line-height:1.2;">
+                    <div>${formatNumber(v[0])}</div>
+                    <div>${formatNumber(v[1])}</div>
+                </div>
+            `;
+        }
+
+        function startAlgorithm() {
+            // Read initial vector
+            let x0 = parseFloat(document.getElementById('x0-val').value);
+            let y0 = parseFloat(document.getElementById('y0-val').value);
+
+            if (isNaN(x0) || isNaN(y0) || (x0 === 0 && y0 === 0)) {
+                alert("Please enter a valid non-zero vector.");
+                return;
+            }
+
+            // Scale so largest entry is 1 in absolute value
+            let maxAbs = Math.max(Math.abs(x0), Math.abs(y0));
+            x_k = [x0 / maxAbs, y0 / maxAbs];
+
+            // Re-update inputs to show scaled version nicely
+            document.getElementById('x0-val').value = formatNumber(x_k[0]);
+            document.getElementById('y0-val').value = formatNumber(x_k[1]);
+
+            // Reset state
+            kState = 0;
+            history = [];
+
+            // Initialize history with k=0
+            history.push({
+                x: [...x_k],
+                Ax: null,
+                mu: null
+            });
+
+            document.getElementById('dashboard').style.display = 'grid';
+
+            // Stop auto if running
+            if (autoInterval) toggleAuto();
+
+            updateTable();
+            drawPlotCanvas();
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        function processAxAndMu(kIndex) {
+            const currentX = history[kIndex].x;
+            // Compute Ax_k
+            const Ax_0 = A_11 * currentX[0] + A_12 * currentX[1];
+            const Ax_1 = A_21 * currentX[0] + A_22 * currentX[1];
+            history[kIndex].Ax = [Ax_0, Ax_1];
+
+            // Find mu_k (entry with largest absolute value)
+            let mu = Math.abs(Ax_0) >= Math.abs(Ax_1) ? Ax_0 : Ax_1;
+            history[kIndex].mu = mu;
+
+            return { Ax: [Ax_0, Ax_1], mu: mu };
+        }
+
+        function nextStep() {
+            if (kState >= maxSteps) {
+                if (autoInterval) toggleAuto();
+                return;
+            }
+
+            // 1. Process Ax_k and \mu_k for CURRENT k
+            const { Ax, mu } = processAxAndMu(kState);
+
+            // 2. Compute x_{k+1}
+            x_k = [Ax[0] / mu, Ax[1] / mu];
+
+            kState++;
+
+            // 3. Add new state to history
+            history.push({
+                x: [...x_k],
+                Ax: null,
+                mu: null
+            });
+
+            updateTable();
+            drawPlotCanvas();
+
+            if (kState >= maxSteps) {
+                document.getElementById('next-btn').disabled = true;
+                if (autoInterval) toggleAuto();
+            }
+        }
+
+        function updateTable() {
+            const trHead = document.getElementById('row-header');
+            const trXk = document.getElementById('row-xk');
+            const trAxk = document.getElementById('row-Axk');
+            const trMuk = document.getElementById('row-muk');
+
+            // Reset headers and first columns
+            trHead.innerHTML = '<th style="width: 80px;">\\( k \\)</th>';
+            trXk.innerHTML = '<td><strong>\\( \\mathbf{x}_k \\)</strong></td>';
+            trAxk.innerHTML = '<td><strong>\\( A\\mathbf{x}_k \\)</strong></td>';
+            trMuk.innerHTML = '<td><strong>\\( \\mu_k \\)</strong></td>';
+
+            // Fill all columns up to kState
+            for (let i = 0; i <= kState; i++) {
+                // Header
+                const th = document.createElement('th');
+                th.innerText = i;
+                trHead.appendChild(th);
+
+                // x_k
+                const tdX = document.createElement('td');
+                tdX.innerHTML = createVectorHTML(history[i].x);
+                trXk.appendChild(tdX);
+
+                // Ax_k
+                const tdAx = document.createElement('td');
+                if (history[i].Ax) {
+                    tdAx.innerHTML = createVectorHTML(history[i].Ax);
+                }
+                trAxk.appendChild(tdAx);
+
+                // mu_k
+                const tdMu = document.createElement('td');
+                if (history[i].mu !== null) {
+                    tdMu.innerText = formatNumber(history[i].mu);
+                }
+                trMuk.appendChild(tdMu);
+            }
+
+            if (window.MathJax) {
+                MathJax.typesetPromise([document.getElementById('comp-table')]);
+            }
+        }
+
+        function toggleAuto() {
+            const btn = document.getElementById('auto-btn');
+            if (autoInterval) {
+                clearInterval(autoInterval);
+                autoInterval = null;
+                btn.innerText = "Auto-play";
+                btn.classList.remove("btn-danger");
+                btn.classList.add("btn-secondary");
+                if (kState < maxSteps) {
+                    document.getElementById('next-btn').disabled = false;
+                }
+            } else {
+                if (kState >= maxSteps) return; // done
+                autoInterval = setInterval(nextStep, 1000);
+                btn.innerText = "Stop";
+                btn.classList.remove("btn-secondary");
+                btn.classList.add("btn-danger");
+                document.getElementById('next-btn').disabled = true;
+            }
+        }
+
+        function drawPlotCanvas() {
+            const svg = document.getElementById('vector-plot');
+            svg.innerHTML = '';
+
+            // Draw axes
+            const gAxes = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            gAxes.innerHTML = `
+                <!-- Grid limits are -1.2 to 1.2 -->
+                <line x1="-1.2" y1="0" x2="1.2" y2="0" class="axis" />
+                <line x1="0" y1="-1.2" x2="0" y2="1.2" class="axis" />
+                
+                <!-- Ticks -->
+                <line x1="1" y1="-0.02" x2="1" y2="0.02" class="tick" />
+                <text x="1" y="0.12" class="tick-label" text-anchor="middle" transform="scale(1,-1)">1</text>
+                
+                <line x1="-1" y1="-0.02" x2="-1" y2="0.02" class="tick" />
+                <text x="-1" y="0.12" class="tick-label" text-anchor="middle" transform="scale(1,-1)">-1</text>
+
+                <line x1="-0.02" y1="1" x2="0.02" y2="1" class="tick" />
+                <text x="-0.08" y="-0.97" class="tick-label" text-anchor="end" transform="scale(1,-1)">1</text>
+                
+                <line x1="-0.02" y1="-1" x2="0.02" y2="-1" class="tick" />
+                <text x="-0.08" y="1.03" class="tick-label" text-anchor="end" transform="scale(1,-1)">-1</text>
+                
+                <!-- Eigenspace line y = 0.2x -->
+                <line x1="-1.2" y1="-0.24" x2="1.2" y2="0.24" stroke="#e9ecef" stroke-width="0.02" stroke-dasharray="0.05, 0.05"/>
+            `;
+            // SVG coordinates naturally have +y going DOWN. We must flip it so +y goes UP
+            // We apply a transform to the whole content. We also keep a wrapper so text might be flipped back if needed.
+
+            const groupWrap = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            groupWrap.setAttribute('transform', 'scale(1, -1)');
+            groupWrap.appendChild(gAxes);
+
+            // Draw Vectors
+            history.forEach((state, i) => {
+                const color = colors[Math.min(i, colors.length - 1)];
+                const vx = state.x[0];
+                const vy = state.x[1];
+
+                // Draw line
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', '0');
+                line.setAttribute('y1', '0');
+                line.setAttribute('x2', vx);
+                line.setAttribute('y2', vy);
+                line.setAttribute('stroke', color);
+                line.setAttribute('stroke-width', '0.015');
+
+                // Draw little dot at end
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', vx);
+                circle.setAttribute('cy', vy);
+                circle.setAttribute('r', '0.02');
+                circle.setAttribute('fill', color);
+
+                groupWrap.appendChild(line);
+                groupWrap.appendChild(circle);
+
+                // Add label x_k
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', vx + 0.03);
+                text.setAttribute('y', -(vy + 0.03)); // Note negative y because of scale(1,-1) flip for text readability
+                text.setAttribute('transform', 'scale(1,-1)'); // flip text back to normal
+                text.setAttribute('font-size', '0.06');
+                text.setAttribute('fill', color);
+                text.setAttribute('font-family', 'sans-serif');
+                // Use tspans for subscript
+                text.innerHTML = `x<tspan dy="0.02" font-size="0.04">${i}</tspan>`;
+
+                groupWrap.appendChild(text);
+            });
+
+            svg.appendChild(groupWrap);
+        }
+
+    </script>
+</body>
+
+</html>
