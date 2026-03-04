@@ -13,6 +13,9 @@ activities:
   - title: "Wheel-Of-Names"
     url: "wheel-of-names.html"
     type: "Interactive Demo"
+  - title: "Backpropagation Demo"
+    url: "backprop-demo.html"
+    type: "Interactive Demo"
 ---
 
 # MATH 351: Mathematical Modeling
