@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Regression Demo - MATH 351</title>
+
+    <!-- Scripts: React, Tailwind, Babel, Lucide, MathJax -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        milligan: {
+                            orange: '#F36E24',
+                            black: '#000000',
+                            gray: '#A2A2A2',
+                            darkgray: '#6E6E6E',
+                            burnt: '#CD5920'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Lora', 'serif'],
+                        mono: ['ui-monospace', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,700;1,400&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #faf9f8;
+            color: #1a1a1a;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #F36E24;
+        }
+
+        .math-font {
+            font-family: 'Lora', serif;
+            font-style: italic;
+        }
+        
+        .node-circle {
+            transition: all 0.3s ease;
+        }
+        .active-node {
+            box-shadow: 0 0 15px rgba(243, 110, 36, 0.5);
+            border-color: #F36E24 !important;
+        }
+
+        /* Tooltip container */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 50;
+            bottom: 125%; 
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const Icon = ({ name, size = 20, className = "" }) => {
+            const iconRef = React.useRef(null);
+            useEffect(() => {
+                if (iconRef.current) {
+                    lucide.createIcons({
+                        attrs: {
+                            class: className,
+                            'stroke-width': 2,
+                            width: size,
+                            height: size,
+                        },
+                        nameMap: { [name]: name }
+                    });
+                }
+            }, [name, size, className]);
+            return <i data-lucide={name} ref={iconRef} className={className} style={{ width: size, height: size, display: 'inline-block' }}></i>;
+        };
+
+        const DATA = [
+            { x: 1, y: 3 },
+            { x: 2, y: 5 },
+            { x: 3, y: 7 },
+            { x: 4, y: 9 }
+        ];
+
+        const LOSS_TYPES = {
+            squared: {
+                id: 'squared',
+                name: 'Squared Error',
+                formula: 'L = (ŷ - y)²',
+                calcLoss: (y_hat, y) => Math.pow(y_hat - y, 2),
+                dL_dyhat: (y_hat, y) => 2 * (y_hat - y)
+            },
+            l1: {
+                id: 'l1',
+                name: 'L1 Loss',
+                formula: 'L = |ŷ - y|',
+                calcLoss: (y_hat, y) => Math.abs(y_hat - y),
+                dL_dyhat: (y_hat, y) => Math.sign(y_hat - y)
+            }
+        };
+
+        const formatNum = (num, decimals = 3) => {
+            if (num === undefined || num === null || isNaN(num)) return "";
+            if (num === 0) return "0".padEnd(decimals > 0 ? decimals + 2 : 1, decimals > 0 ? ".000" : "");
+            return Number(num).toFixed(decimals);
+        };
+
+        function generateHistory(loss_type_id, steps = 11) {
+            let lt = LOSS_TYPES[loss_type_id];
+            let alpha = 0.1;
+            let m = 1;
+            let b = 0;
+            let history = [];
+            
+            for(let i = 0; i <= steps; i++) {
+                let d = DATA[i % DATA.length];
+                let x = d.x;
+                let y = d.y;
+                
+                let y_hat = m * x + b;
+                let loss = lt.calcLoss(y_hat, y);
+                
+                let dL_dyhat = lt.dL_dyhat(y_hat, y);
+                let dL_dm = dL_dyhat * x;
+                let dL_db = dL_dyhat;
+                
+                history.push({
+                    step: i,
+                    x, y,
+                    m, b,
+                    y_hat,
+                    dL_dm, dL_db,
+                    loss
+                });
+                
+                m = m - alpha * dL_dm;
+                b = b - alpha * dL_db;
+            }
+            return history;
+        }
+
+        const ScatterPlot = ({ data, stepData }) => {
+            const width = 400;
+            const height = 400;
+            const pad = 40;
+            const scaleX = (x) => pad + (x / 5) * (width - 2 * pad);
+            const scaleY = (y) => height - pad - (y / 10) * (height - 2 * pad);
+
+            return (
+                <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col items-center">
+                    <h3 className="font-bold flex items-center gap-2 mb-2 w-full text-left">
+                        <Icon name="scatter-chart" className="text-milligan-orange" size={18} />
+                        Training Data & Model Fit
+                    </h3>
+                    <svg width={width} height={height} className="block" style={{ overflow: "visible" }}>
+                        {/* Grid lines */}
+                        {Array.from({ length: 6 }, (_, i) => i).map((tick) => (
+                            <line key={`v-${tick}`} x1={scaleX(tick)} y1={scaleY(0)} x2={scaleX(tick)} y2={scaleY(10)} stroke="#e2e8f0" strokeWidth="1" />
+                        ))}
+                        {Array.from({ length: 11 }, (_, i) => i).map((tick) => (
+                            <line key={`h-${tick}`} x1={scaleX(0)} y1={scaleY(tick)} x2={scaleX(5)} y2={scaleY(tick)} stroke="#e2e8f0" strokeWidth="1" />
+                        ))}
+
+                        {/* Axes */}
+                        <line x1={scaleX(0)} y1={scaleY(0)} x2={scaleX(5.2)} y2={scaleY(0)} stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrow-axis)" />
+                        <line x1={scaleX(0)} y1={scaleY(0)} x2={scaleX(0)} y2={scaleY(10.5)} stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrow-axis)" />
+
+                        {/* Ticks & Labels */}
+                        {Array.from({ length: 5 }, (_, i) => i + 1).map((tick) => (
+                            <g key={`xtick-${tick}`}>
+                                <line x1={scaleX(tick)} y1={scaleY(0)} x2={scaleX(tick)} y2={scaleY(0) + 4} stroke="#94a3b8" />
+                                <text x={scaleX(tick)} y={scaleY(0) + 16} fontSize="12" textAnchor="middle" fill="#64748b">{tick}</text>
+                            </g>
+                        ))}
+                        {Array.from({ length: 5 }, (_, i) => (i + 1)*2).map((tick) => (
+                            <g key={`ytick-${tick}`}>
+                                <line x1={scaleX(0) - 4} y1={scaleY(tick)} x2={scaleX(0)} y2={scaleY(tick)} stroke="#94a3b8" />
+                                <text x={scaleX(0) - 8} y={scaleY(tick) + 4} fontSize="12" textAnchor="end" fill="#64748b">{tick}</text>
+                            </g>
+                        ))}
+
+                        <text x={scaleX(5.1)} y={scaleY(0) + 15} fontSize="14" fill="#64748b" fontStyle="italic" fontWeight="bold">x</text>
+                        <text x={scaleX(0) - 15} y={scaleY(10.2)} fontSize="14" fill="#64748b" fontStyle="italic" fontWeight="bold">y</text>
+
+                        {/* Regression Line */}
+                        <line 
+                            x1={scaleX(0)} 
+                            y1={scaleY(stepData.b)} 
+                            x2={scaleX(5)} 
+                            y2={scaleY(stepData.m * 5 + stepData.b)} 
+                            stroke="#cbd5e1" 
+                            strokeWidth="3" 
+                            className="transition-all duration-300" 
+                        />
+
+                        {/* Error highlighting for current point */}
+                        <line 
+                            x1={scaleX(stepData.x)} 
+                            y1={scaleY(stepData.y)} 
+                            x2={scaleX(stepData.x)} 
+                            y2={scaleY(stepData.y_hat)} 
+                            stroke="#F36E24" 
+                            strokeWidth="3" 
+                            strokeDasharray="4 4" 
+                        />
+
+                        {/* Data Points */}
+                        {data.map((d, i) => (
+                            <circle 
+                                key={i} 
+                                cx={scaleX(d.x)} 
+                                cy={scaleY(d.y)} 
+                                r={stepData.x === d.x ? "6" : "5"} 
+                                fill={stepData.x === d.x ? "#F36E24" : "#10b981"} 
+                                stroke="#fff" 
+                                strokeWidth="2" 
+                                className="transition-all duration-300 shadow-xl"
+                            />
+                        ))}
+
+                        {/* Marker Defs */}
+                        <defs>
+                            <marker id="arrow-axis" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8" />
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+            );
+        };
+
+        const ValueBadge = ({ label, value, colorClass = "bg-slate-100 text-slate-700", emphasize = false, tooltip }) => (
+            <div className={`tooltip flex flex-col items-center justify-center p-3 rounded-xl border shadow-sm transition-all ${emphasize ? 'ring-2 ring-milligan-orange border-milligan-orange scale-105' : 'border-slate-200 hover:border-slate-300'} ${colorClass}`}>
+                <span className="text-[10px] uppercase tracking-wider font-bold opacity-70 mb-0.5" dangerouslySetInnerHTML={{__html: label}}></span>
+                <span className={`font-mono font-bold ${emphasize ? 'text-xl' : 'text-lg'}`}>{formatNum(value)}</span>
+                {tooltip && <span className="tooltiptext">{tooltip}</span>}
+            </div>
+        );
+
+        const App = () => {
+            const [selectedDataset, setSelectedDataset] = useState('squared');
+            const [currentStep, setCurrentStep] = useState(0);
+            const [isPlaying, setIsPlaying] = useState(false);
+            const scrollTableRef = useRef(null);
+
+            const maxSteps = 10;
+            const history = useMemo(() => generateHistory(selectedDataset, maxSteps), [selectedDataset]);
+            
+            const stepData = history[currentStep];
+
+            useEffect(() => {
+                let timer;
+                if (isPlaying) {
+                    timer = setTimeout(() => {
+                        if (currentStep < maxSteps) {
+                            setCurrentStep(prev => prev + 1);
+                        } else {
+                            setIsPlaying(false);
+                        }
+                    }, 1500);
+                }
+                return () => clearTimeout(timer);
+            }, [isPlaying, currentStep, maxSteps]);
+
+            useEffect(() => {
+                if (scrollTableRef.current) {
+                    const activeRow = scrollTableRef.current.querySelector('.bg-milligan-orange\\/10');
+                    if (activeRow) {
+                        activeRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                }
+            }, [currentStep, selectedDataset]);
+
+            const handleDatasetChange = (ds) => {
+                setSelectedDataset(ds);
+                setCurrentStep(0);
+                setIsPlaying(false);
+            };
+
+            return (
+                <div className="min-h-screen bg-[#faf9f8] text-slate-800 flex flex-col items-center">
+                    <header className="w-full bg-milligan-black text-white p-4 shadow-md sticky top-0 z-40">
+                        <div className="max-w-7xl mx-auto flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-milligan-orange text-white p-2 rounded-lg">
+                                    <Icon name="bar-chart-2" size={24} />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl font-bold tracking-tight">MATH 351 <span className="text-milligan-gray font-normal">|</span> Linear Regression Demo</h1>
+                                    <p className="text-xs text-milligan-gray">Single Neuron Model Backpropagation</p>
+                                </div>
+                            </div>
+                            <div className="flex bg-white/10 p-1 rounded-lg">
+                                <button 
+                                    onClick={() => handleDatasetChange('squared')}
+                                    className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-all ${selectedDataset === 'squared' ? 'bg-milligan-orange text-white shadow' : 'text-slate-300 hover:bg-white/5'}`}
+                                >
+                                    Squared Error
+                                </button>
+                                <button 
+                                    onClick={() => handleDatasetChange('l1')}
+                                    className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-all ${selectedDataset === 'l1' ? 'bg-milligan-orange text-white shadow' : 'text-slate-300 hover:bg-white/5'}`}
+                                >
+                                    L1 Loss
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="max-w-7xl w-full p-4 md:p-8 grid grid-cols-1 xl:grid-cols-12 gap-8 items-start relative pb-24">
+                        
+                        {/* Left Column: Visualizer & Controls */}
+                        <div className="xl:col-span-12 space-y-6">
+                            
+                            {/* Control Panel */}
+                            <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                                <div>
+                                    <h2 className="text-lg font-bold flex items-center gap-2">
+                                        <Icon name="gauge" className="text-milligan-orange" /> Control Panel
+                                    </h2>
+                                    <p className="text-sm text-slate-500">Step through the forward and backward passes.</p>
+                                </div>
+                                <div className="flex items-center gap-3 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                                    <button 
+                                        onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
+                                        disabled={currentStep === 0}
+                                        className="p-2 rounded-lg hover:bg-white hover:shadow-sm disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+                                    >
+                                        <Icon name="chevron-left" />
+                                    </button>
+                                    
+                                    <div className="flex flex-col items-center min-w-[100px]">
+                                        <span className="text-[10px] uppercase font-bold text-slate-400">Current Step</span>
+                                        <span className="text-2xl font-black text-milligan-black">{currentStep}</span>
+                                    </div>
+                                    
+                                    <button 
+                                        onClick={() => setCurrentStep(Math.min(maxSteps, currentStep + 1))}
+                                        disabled={currentStep === maxSteps}
+                                        className="p-2 rounded-lg hover:bg-white hover:shadow-sm disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+                                    >
+                                        <Icon name="chevron-right" />
+                                    </button>
+
+                                    <div className="w-px h-8 bg-slate-300 mx-2"></div>
+
+                                    <button 
+                                        onClick={() => setIsPlaying(!isPlaying)}
+                                        className={`px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-all ${isPlaying ? 'bg-rose-100 text-rose-700' : 'bg-slate-800 text-white hover:bg-slate-700'}`}
+                                    >
+                                        <Icon name={isPlaying ? "pause" : "play"} size={16} />
+                                        {isPlaying ? "Pause" : "Auto-Play"}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Main Display Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Scatter Plot */}
+                                <ScatterPlot data={DATA} stepData={stepData} />
+
+                                {/* Single Neuron Diagram */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-center">
+                                    <div className="flex flex-col items-center space-y-8">
+                                        
+                                        <div className="text-center font-bold text-slate-400 uppercase tracking-widest text-sm mb-4">
+                                            Single Neuron Prediction
+                                        </div>
+
+                                        <div className="flex items-center gap-8 bg-slate-50 p-6 rounded-xl border border-slate-200 w-full justify-center shadow-inner">
+                                            <div className="text-center">
+                                                <div className="text-xl math-font font-bold mb-2 text-slate-600">x</div>
+                                                <div className="w-16 h-16 rounded-full bg-white border-2 border-slate-300 flex items-center justify-center font-mono font-bold text-lg">{formatNum(stepData.x)}</div>
+                                            </div>
+
+                                            <Icon name="arrow-right" className="text-slate-300" size={32} />
+
+                                            <div className="bg-white border-2 border-milligan-orange rounded-xl p-4 shadow-lg flex flex-col items-center">
+                                                <span className="text-sm font-bold text-slate-400 mb-2">Linear Model</span>
+                                                <span className="text-lg math-font text-slate-700">y&#770; = mx + b</span>
+                                                
+                                                <div className="flex gap-4 mt-4 font-mono text-sm">
+                                                    <div className="flex flex-col items-center tooltip bg-slate-100 px-2 py-1 rounded">
+                                                        <span className="text-xs text-slate-400 font-bold mb-1">m</span>
+                                                        <span>{formatNum(stepData.m)}</span>
+                                                        <span className="tooltiptext">Gradient: ∂L/∂m = {formatNum(stepData.dL_dm)}</span>
+                                                    </div>
+                                                    <div className="flex flex-col items-center tooltip bg-slate-100 px-2 py-1 rounded">
+                                                        <span className="text-xs text-slate-400 font-bold mb-1">b</span>
+                                                        <span>{formatNum(stepData.b)}</span>
+                                                        <span className="tooltiptext">Gradient: ∂L/∂b = {formatNum(stepData.dL_db)}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <Icon name="arrow-right" className="text-slate-300" size={32} />
+
+                                            <div className="text-center">
+                                                <div className="text-xl math-font font-bold mb-2 text-indigo-600">y&#770;</div>
+                                                <div className="px-4 py-3 rounded-md border border-indigo-200 bg-indigo-50 font-mono font-bold text-lg text-indigo-800 ring-2 ring-indigo-300 shadow-sm">{formatNum(stepData.y_hat)}</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="w-full h-px bg-slate-200 my-2"></div>
+
+                                        <div className="flex gap-6 w-full">
+                                            <ValueBadge label="Target <i>y</i>" value={stepData.y} colorClass="bg-slate-50 text-slate-700 flex-1" />
+                                            <ValueBadge label="Computed Loss" value={stepData.loss} colorClass="bg-rose-50 text-rose-800 flex-1" tooltip={LOSS_TYPES[selectedDataset].formula} />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Gradients Row */}
+                            <div className="bg-slate-800 text-white rounded-xl p-4 flex flex-wrap gap-x-12 gap-y-4 shadow-lg text-sm text-center justify-center items-center">
+                                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest text-left">Calculated Gradients</div>
+                                <div className="w-px h-6 bg-slate-600"></div>
+                                <div className="tooltip flex items-center gap-2">
+                                    <span className="math-font text-slate-400">&part;L/&part;m =</span><span className="font-mono font-bold text-lg">{formatNum(stepData.dL_dm)}</span>
+                                </div>
+                                <div className="tooltip flex items-center gap-2">
+                                    <span className="math-font text-slate-400">&part;L/&part;b =</span><span className="font-mono font-bold text-lg">{formatNum(stepData.dL_db)}</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        {/* Full Width Table */}
+                        <div className="xl:col-span-12 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div className="bg-slate-50 p-4 border-b border-slate-200">
+                                <h3 className="font-bold flex items-center gap-2">
+                                    <Icon name="table" className="text-milligan-orange" size={18} />
+                                    Training Log (Steps 0-10)
+                                </h3>
+                                <div className="text-xs text-slate-500 mt-1 flex justify-between">
+                                    <span>Select a row to jump to that step.</span>
+                                    <span className="font-mono bg-white px-2 py-0.5 rounded border border-slate-200">Learning Rate: &alpha; = 0.1</span>
+                                </div>
+                            </div>
+                            
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm text-left whitespace-nowrap">
+                                    <thead className="text-xs text-slate-500 uppercase bg-slate-100/50 shadow-sm border-b border-slate-200">
+                                        <tr>
+                                            <th className="px-4 py-3 text-center border-r border-slate-200">Step</th>
+                                            <th className="px-4 py-3 text-center border-r border-slate-200 bg-slate-100">x</th>
+                                            <th className="px-4 py-3 text-center border-r border-slate-200 math-font">m</th>
+                                            <th className="px-4 py-3 text-center border-r border-slate-200 math-font">&part;L/&part;m</th>
+                                            <th className="px-4 py-3 text-center border-r border-slate-200 math-font">b</th>
+                                            <th className="px-4 py-3 text-center border-r border-slate-800 bg-slate-200 text-slate-800 math-font">&part;L/&part;b</th>
+                                            <th className="px-4 py-3 text-center border-r border-slate-200 math-font">y&#770;</th>
+                                            <th className="px-4 py-3 text-center border-r border-slate-200 bg-slate-100 math-font">y</th>
+                                            <th className="px-4 py-3 text-center font-bold">Loss</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="font-mono">
+                                        {history.map((row) => (
+                                            <tr 
+                                                key={row.step} 
+                                                onClick={() => setCurrentStep(row.step)}
+                                                className={`border-b border-slate-100 cursor-pointer transition-colors hover:bg-slate-50 ${currentStep === row.step ? 'bg-milligan-orange/10 !border-milligan-orange' : ''}`}
+                                            >
+                                                <td className={`px-4 py-2 text-center font-bold border-r border-slate-100 ${currentStep === row.step ? 'text-milligan-orange' : 'text-slate-400'}`}>{row.step}</td>
+                                                <td className="px-4 py-2 text-center bg-slate-50/50 border-r border-slate-100">{formatNum(row.x)}</td>
+                                                <td className="px-4 py-2 text-center border-r border-slate-100 text-indigo-700">{formatNum(row.m)}</td>
+                                                <td className="px-4 py-2 text-center border-r border-slate-100 bg-slate-50/50">{formatNum(row.dL_dm)}</td>
+                                                <td className="px-4 py-2 text-center border-r border-slate-100 text-indigo-700">{formatNum(row.b)}</td>
+                                                <td className="px-4 py-2 text-center border-r border-slate-200 bg-slate-100/50">{formatNum(row.dL_db)}</td>
+                                                <td className="px-4 py-2 text-center border-r border-slate-100 text-blue-600">{formatNum(row.y_hat)}</td>
+                                                <td className="px-4 py-2 text-center bg-slate-50/50 border-r border-slate-100">{formatNum(row.y)}</td>
+                                                <td className={`px-4 py-2 text-center font-bold ${currentStep === row.step ? 'text-rose-600' : 'text-slate-500'}`}>{formatNum(row.loss)}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </main>
+
+                    {/* Bottom fixed bar for mobile */}
+                    <div className="fixed bottom-0 w-full bg-white border-t border-slate-200 p-4 md:hidden z-50 flex justify-between items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+                        <button onClick={() => setCurrentStep(Math.max(0, currentStep - 1))} disabled={currentStep === 0} className="p-2 bg-slate-100 rounded-lg"><Icon name="chevron-left" /></button>
+                        <div className="font-bold text-milligan-orange">Step {currentStep}</div>
+                        <button onClick={() => setCurrentStep(Math.min(maxSteps, currentStep + 1))} disabled={currentStep === maxSteps} className="p-2 bg-slate-100 rounded-lg"><Icon name="chevron-right" /></button>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>
