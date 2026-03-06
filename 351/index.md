@@ -16,6 +16,9 @@ activities:
   - title: "Backpropagation Demo"
     url: "backprop-demo.html"
     type: "Interactive Demo"
+  - title: "Linear Regression Demo"
+    url: "linreg-demo.html"
+    type: "Interactive Demo"
 ---
 
 # MATH 351: Mathematical Modeling
