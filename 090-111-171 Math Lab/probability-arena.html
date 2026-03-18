@@ -92,8 +92,8 @@
                     <span>Tracker</span>
                     <span id="total-rolls" class="text-4xl text-gray-400 font-bold bg-gray-900 px-6 py-2 rounded-xl">Rolls: 0</span>
                 </h2>
-                <div id="graph-container" class="space-y-6 mt-8">
-                    <!-- Bars injected by JS -->
+                <div id="graph-container" class="flex items-end justify-around h-[400px] mt-16 px-4 gap-4 bg-gray-900/40 rounded-3xl border-4 border-gray-700 p-8 pt-16 relative">
+                    <!-- Vertical columns injected by JS -->
                 </div>
             </section>
         </div>
@@ -107,15 +107,15 @@
                     <h2 class="text-5xl font-black text-purple-300 uppercase tracking-widest">Betting Table</h2>
                 </div>
                 
-                <div class="bg-gray-900 p-6 rounded-2xl border-2 border-gray-700 mb-10 shadow-inner flex flex-wrap gap-6 justify-center text-3xl font-bold">
-                    <div class="flex items-center gap-3">
-                        <span class="text-yellow-400 bg-yellow-400/10 px-4 py-2 rounded-lg border border-yellow-500/30">#6 (40% Common): <br/><span class="text-4xl text-white">1.2x</span></span>
+                <div class="bg-gray-900 p-4 rounded-2xl border-2 border-gray-700 mb-8 shadow-inner flex flex-wrap gap-4 justify-center text-2xl font-bold">
+                    <div class="flex items-center gap-2 px-3 py-2 bg-yellow-400/5 rounded-xl border border-yellow-500/20">
+                        <span class="text-yellow-400">#6 (40%):</span> <span class="text-white">1.2x</span>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <span class="text-red-400 bg-red-400/10 px-4 py-2 rounded-lg border border-red-500/30">#2 (5% Rare): <br/><span class="text-4xl text-white">8x</span></span>
+                    <div class="flex items-center gap-2 px-3 py-2 bg-red-400/5 rounded-xl border border-red-500/20">
+                        <span class="text-red-400">#2 (5%):</span> <span class="text-white">8x</span>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <span class="text-blue-300 bg-blue-300/10 px-4 py-2 rounded-lg border border-blue-500/30">Others (13.75%): <br/><span class="text-4xl text-white">4x</span></span>
+                    <div class="flex items-center gap-2 px-3 py-2 bg-blue-400/5 rounded-xl border border-blue-500/20">
+                        <span class="text-blue-300">Others:</span> <span class="text-white">4x</span>
                     </div>
                 </div>
 
@@ -174,17 +174,23 @@
         function initGraph() {
             graphContainer.innerHTML = "";
             for (let i = 1; i <= 6; i++) {
-                // Determine bar base color by type
                 let barColor = i === 6 ? 'bg-yellow-500' : (i === 2 ? 'bg-red-500' : 'bg-blue-500');
                 let numberColor = i === 6 ? 'text-yellow-400' : (i === 2 ? 'text-red-400' : 'text-blue-300');
 
                 graphContainer.innerHTML += `
-                    <div class="flex items-center text-4xl font-extrabold group">
-                        <div class="w-20 mr-4 text-center ${numberColor} bg-gray-900 rounded-xl py-2 border-2 border-gray-700 shadow-inner">${i}</div>
-                        <div class="flex-grow bg-gray-900 h-16 rounded-2xl overflow-hidden border-4 border-gray-700 relative shadow-inner">
-                            <div id="bar-${i}" class="h-full ${barColor} bar-fill shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)]" style="width: 0%"></div>
+                    <div class="flex flex-col items-center flex-1 h-full relative group">
+                        <!-- Count on top -->
+                        <div id="count-${i}" class="absolute mb-2 text-4xl font-black text-white transition-all duration-300" style="bottom: 0%">0</div>
+                        
+                        <!-- Bar -->
+                        <div class="w-full bg-gray-800/30 rounded-t-2xl flex-grow flex flex-col justify-end overflow-hidden border-x-2 border-t-2 border-gray-700/50">
+                            <div id="bar-${i}" class="w-full ${barColor} transition-all duration-300 shadow-[inset_0_4px_10px_rgba(255,255,255,0.4)]" style="height: 0%"></div>
                         </div>
-                        <div id="count-${i}" class="w-24 ml-6 text-right font-black text-white bg-gray-900 rounded-xl py-2 border-2 border-gray-700">0</div>
+
+                        <!-- X-Axis Label -->
+                        <div class="mt-4 text-5xl font-black ${numberColor} bg-gray-900 w-full text-center py-2 rounded-xl border-2 border-gray-700 shadow-md">
+                            ${i}
+                        </div>
                     </div>
                 `;
             }
@@ -194,17 +200,30 @@
         function updateGraph() {
             totalRollsEl.innerText = `Rolls: ${totalRolls}`;
             
-            // To make it look like a histogram that grows rather than shrinks,
-            // we use a scale that only expands when a bar hits the edge.
-            // We'll start with a scale of 10 and expand in increments of 10.
             let highestVal = Math.max(...Object.values(frequencies));
             let currentScale = Math.ceil(highestVal / 10) * 10;
             if (currentScale < 10) currentScale = 10;
             
             for (let i = 1; i <= 6; i++) {
                 let pct = (frequencies[i] / currentScale) * 100;
-                document.getElementById(`bar-${i}`).style.width = pct + '%';
-                document.getElementById(`count-${i}`).innerText = frequencies[i];
+                
+                const bar = document.getElementById(`bar-${i}`);
+                const count = document.getElementById(`count-${i}`);
+                
+                bar.style.height = pct + '%';
+                count.innerText = frequencies[i];
+                
+                // Position count just above the bar
+                // We add a little offset so it's not buried
+                count.style.bottom = `calc(${pct}% + 4px)`;
+                
+                // If the bar is too high, cap the count position so it doesn't fly off screen
+                if (pct > 90) {
+                    count.style.bottom = '90%';
+                    count.classList.add('bg-black/40', 'px-2', 'rounded-md'); // add background for readability at top
+                } else {
+                    count.classList.remove('bg-black/40', 'px-2', 'rounded-md');
+                }
             }
         }
 
