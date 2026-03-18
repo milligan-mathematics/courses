@@ -12,6 +12,10 @@ activities:
     url: "Function Creator Activity.html"
     type: "Interactive Tool"
     description: "A tool to build and visualize mathematical functions through interactive components."
+  - title: "The Probability Arena"
+    url: "probability-arena.html"
+    type: "Game"
+    description: "An interactive betting game that explores weighted probability and frequency tracking."
 ---
 
 # Math Lab
