@@ -179,11 +179,12 @@
 
                 graphContainer.innerHTML += `
                     <div class="flex flex-col items-center flex-1 h-full relative group">
-                        <!-- Count on top -->
-                        <div id="count-${i}" class="absolute mb-2 text-4xl font-black text-white transition-all duration-300" style="bottom: 0%">0</div>
-                        
-                        <!-- Bar -->
-                        <div class="w-full bg-gray-800/30 rounded-t-2xl flex-grow flex flex-col justify-end overflow-hidden border-x-2 border-t-2 border-gray-700/50">
+                        <!-- Bar Container -->
+                        <div class="w-full bg-gray-800/30 rounded-t-2xl flex-grow flex flex-col justify-end overflow-hidden border-x-2 border-t-2 border-gray-700/50 relative">
+                            <!-- Count on top -->
+                            <div id="count-${i}" class="absolute w-full text-center mb-2 text-4xl font-black text-white transition-all duration-300 z-10" style="bottom: 0%">0</div>
+                            
+                            <!-- Bar -->
                             <div id="bar-${i}" class="w-full ${barColor} transition-all duration-300 shadow-[inset_0_4px_10px_rgba(255,255,255,0.4)]" style="height: 0%"></div>
                         </div>
 
