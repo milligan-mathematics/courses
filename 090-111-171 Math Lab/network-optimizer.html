@@ -305,6 +305,30 @@
             <p>The network is fully connected.</p>
             <button onclick="document.getElementById('successModal').style.display='none'" style="margin-top: 1rem; width: 100%;">Continue Optimizing</button>
         </div>
+
+        <!-- Hint Modal: appears after 5 failed attempts -->
+        <div id="hintModal" style="
+            display: none;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(30, 41, 59, 0.97);
+            border: 2px solid rgba(99,102,241,0.6);
+            padding: 2rem 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            z-index: 210;
+            max-width: 360px;
+        ">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🤔</div>
+            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Need a hint?</h2>
+            <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem;">You've tried 5 times without finding the optimal route. Would you like to see the answer?</p>
+            <div style="display: flex; gap: 0.75rem;">
+                <button onclick="showAnswer()" style="flex:1; background:#6366f1; border:none; font-weight:700;">Show Answer</button>
+                <button onclick="keepTrying()" style="flex:1;">Keep Trying</button>
+            </div>
+        </div>
     </div>
 </main>
 
@@ -321,6 +345,7 @@
     let xValue = 25;
     let totalCost = 0;
     let isConnected = false;
+    let nonOptimalAttempts = 0;  // Track failed (non-optimal) connected attempts
 
     // Resizing
     function resize() {
@@ -337,6 +362,7 @@
         nodes = [];
         edges = [];
         isConnected = false;
+        nonOptimalAttempts = 0;
         difficulty = parseInt(document.getElementById('difficultySelect').value);
         
         const nodeCount = difficulty === 1 ? 5 : (difficulty === 2 ? 8 : 10);
@@ -573,25 +599,84 @@
             const text = modal.querySelector('p');
 
             if (totalCost === window.currentOptimal) {
-                modal.style.background = 'rgba(16, 185, 129, 0.95)'; // green
+                // OPTIMAL — reset attempt counter, green modal
+                nonOptimalAttempts = 0;
+                modal.style.background = 'rgba(16, 185, 129, 0.95)';
                 title.innerText = '🎉 OPTIMAL!';
                 title.style.color = 'white';
                 text.innerText = 'You found the cheapest possible connection!';
+                modal.querySelector('button').innerText = 'Generate New Map';
+                modal.querySelector('button').onclick = () => { modal.style.display = 'none'; generateMap(); };
+                modal.style.display = 'block';
             } else {
-                modal.style.background = 'rgba(234, 179, 8, 0.95)'; // amber
+                // NOT OPTIMAL — increment attempt counter
+                nonOptimalAttempts++;
+                modal.style.background = 'rgba(234, 179, 8, 0.95)';
                 title.innerText = '⚠️ Not Quite!';
                 title.style.color = 'white';
-                text.innerText = `All cities are connected, but your cost ($${totalCost}) is higher than the best possible ($${window.currentOptimal}). Try removing some cables!`;
+                text.innerText = `All cities connected, but your cost ($${totalCost}) is higher than optimal ($${window.currentOptimal}). Remove some cables and try again!`;
+                modal.querySelector('button').innerText = 'Keep Trying';
+                modal.querySelector('button').onclick = () => { modal.style.display = 'none'; };
+                modal.style.display = 'block';
+
+                // After 5 failed attempts, offer the hint
+                if (nonOptimalAttempts >= 5) {
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        document.getElementById('hintModal').style.display = 'block';
+                    }, 1800);
+                }
             }
-            modal.style.display = 'block';
         }
 
-        // When they remove an edge and it breaks the connection, hide the "not optimal" modal
+        // When they break the connection, hide modals
         if (!nowConnected && isConnected) {
             document.getElementById('successModal').style.display = 'none';
         }
 
         isConnected = nowConnected;
+    }
+
+    function keepTrying() {
+        document.getElementById('hintModal').style.display = 'none';
+        nonOptimalAttempts = 0; // reset so they get a fresh 5 attempts
+    }
+
+    function showAnswer() {
+        document.getElementById('hintModal').style.display = 'none';
+        nonOptimalAttempts = 0;
+
+        // Deactivate all edges first
+        edges.forEach(e => e.active = false);
+
+        // Run Kruskal's to find the MST and mark those edges
+        const sortedEdges = [...edges].sort((a, b) => {
+            const ca = a.isVariable ? (2 * xValue + 5) : a.cost;
+            const cb = b.isVariable ? (2 * xValue + 5) : b.cost;
+            return ca - cb;
+        });
+        const parent = {};
+        nodes.forEach(n => parent[n.id] = n.id);
+        function find(i) { return parent[i] === i ? i : (parent[i] = find(parent[i])); }
+        function union(i, j) {
+            const ri = find(i), rj = find(j);
+            if (ri === rj) return false;
+            parent[ri] = rj;
+            return true;
+        }
+
+        let mstCount = 0;
+        for (const e of sortedEdges) {
+            if (union(e.n1.id, e.n2.id)) {
+                e.active = true;
+                e.isAnswer = true; // Mark it as the shown answer
+                mstCount++;
+                if (mstCount === nodes.length - 1) break;
+            }
+        }
+
+        updateTotals();
+        render();
     }
 
     function updateTotals() {
@@ -640,16 +725,27 @@
             ctx.moveTo(edge.n1.x, edge.n1.y);
             ctx.lineTo(edge.n2.x, edge.n2.y);
             
-            if (edge.active) {
+            if (edge.isAnswer) {
+                // Gold highlight for shown answer
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 6;
+                ctx.setLineDash([]);
+                // Outer glow
+                ctx.shadowColor = '#f59e0b';
+                ctx.shadowBlur = 12;
+            } else if (edge.active) {
                 ctx.strokeStyle = edge.isVariable ? '#c084fc' : '#6366f1';
                 ctx.lineWidth = 5;
                 ctx.setLineDash([]);
+                ctx.shadowBlur = 0;
             } else {
                 ctx.strokeStyle = 'rgba(255,255,255,0.15)';
                 ctx.lineWidth = 2;
                 ctx.setLineDash([10, 5]);
+                ctx.shadowBlur = 0;
             }
             ctx.stroke();
+            ctx.shadowBlur = 0;
 
             // Label
             const midX = (edge.n1.x + edge.n2.x) / 2;
@@ -662,7 +758,11 @@
             
             // Background for label
             const metrics = ctx.measureText(label);
-            ctx.fillStyle = edge.active ? (edge.isVariable ? '#c084fc' : '#4f46e5') : '#1e293b';
+            if (edge.isAnswer) {
+                ctx.fillStyle = '#92400e'; // Dark amber for answer
+            } else {
+                ctx.fillStyle = edge.active ? (edge.isVariable ? '#c084fc' : '#4f46e5') : '#1e293b';
+            }
             ctx.fillRect(midX - metrics.width/2 - 5, midY - 10, metrics.width + 10, 20);
             
             ctx.fillStyle = '#fff';
