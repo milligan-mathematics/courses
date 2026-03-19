@@ -18,8 +18,8 @@ activities:
     description: "An interactive betting game that explores weighted probability and frequency tracking."
   - title: "The Network Optimizer"
     url: "network-optimizer.html"
-    type: "Interactive Tool"
-    description: "Build, analyze, and optimize graph networks with interactive algorithms."
+    type: "Game"
+    description: "Build cities, lay cables, and optimize your network's cost in this interactive educational game."
 ---
 
 # Math Lab
