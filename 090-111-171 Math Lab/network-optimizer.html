@@ -373,8 +373,8 @@
         const goalEl = document.getElementById('goalText');
         const tipEl = document.getElementById('tipText');
         if (difficulty === 1) {
-            goalEl.innerHTML = '<strong>Goal:</strong> Connect <em>all</em> cities using cables for the <u>lowest total cost</u>.';
-            tipEl.innerHTML = 'Click any dashed cable to add or remove it. You don\'t need loops — just connect every city!';
+            goalEl.innerHTML = '<strong>Goal:</strong> Form a <u>closed loop</u> visiting every city for the <u>lowest total cost</u>.';
+            tipEl.innerHTML = 'Click cables to toggle them. Every city must have exactly 2 connections to form a complete loop!';
         } else if (difficulty === 2) {
             goalEl.innerHTML = '<strong>Goal:</strong> Form a <u>closed loop</u> through all cities while staying under budget.';
             tipEl.innerHTML = 'Each city needs at least 2 connections. Watch the budget — it turns red if you overspend!';
@@ -469,73 +469,44 @@
 
     // Compute true optimal for current map and difficulty
     function calculateOptimalCost() {
-        let optCost = Infinity;
+        // All difficulties now use TSP (closed loop / Hamiltonian cycle)
+        let minCost = Infinity;
+        const n = nodes.length;
 
-        if (difficulty === 1) {
-            // MST via Kruskal's — minimum cost to connect all nodes (no need for loops)
-            const sortedEdges = [...edges].sort((a, b) => a.cost - b.cost);
-            const parent = {};
-            nodes.forEach(n => parent[n.id] = n.id);
-
-            function find(i) { return parent[i] === i ? i : (parent[i] = find(parent[i])); }
-            function union(i, j) {
-                const ri = find(i), rj = find(j);
-                if (ri === rj) return false;
-                parent[ri] = rj;
-                return true;
-            }
-
-            let mstCost = 0;
-            let edgeCount = 0;
-            for (const e of sortedEdges) {
-                if (union(e.n1.id, e.n2.id)) {
-                    mstCost += e.cost;
-                    edgeCount++;
-                    if (edgeCount === nodes.length - 1) break;
+        function solve(curr, visited, cost, startNode, count) {
+            if (count === n) {
+                const ret = edges.find(e =>
+                    (e.n1.id === curr.id && e.n2.id === startNode.id) ||
+                    (e.n2.id === curr.id && e.n1.id === startNode.id)
+                );
+                if (ret) {
+                    const fc = cost + (ret.isVariable ? (2 * xValue + 5) : ret.cost);
+                    minCost = Math.min(minCost, fc);
                 }
+                return;
             }
-            optCost = mstCost;
-        } else {
-            // Hamiltonian Cycle (TSP) for Medium / Hard
-            let minCost = Infinity;
-            const n = nodes.length;
-
-            function solve(curr, visited, cost, startNode, count) {
-                if (count === n) {
-                    const ret = edges.find(e =>
-                        (e.n1.id === curr.id && e.n2.id === startNode.id) ||
-                        (e.n2.id === curr.id && e.n1.id === startNode.id)
-                    );
-                    if (ret) {
-                        const fc = cost + (ret.isVariable ? (2 * xValue + 5) : ret.cost);
-                        minCost = Math.min(minCost, fc);
-                    }
-                    return;
+            if (cost >= minCost) return;
+            edges.forEach(e => {
+                let next = null;
+                if (e.n1.id === curr.id) next = e.n2;
+                else if (e.n2.id === curr.id) next = e.n1;
+                if (next && !visited.has(next.id)) {
+                    visited.add(next.id);
+                    solve(next, visited, cost + (e.isVariable ? (2 * xValue + 5) : e.cost), startNode, count + 1);
+                    visited.delete(next.id);
                 }
-                if (cost >= minCost) return;
-                edges.forEach(e => {
-                    let next = null;
-                    if (e.n1.id === curr.id) next = e.n2;
-                    else if (e.n2.id === curr.id) next = e.n1;
-                    if (next && !visited.has(next.id)) {
-                        visited.add(next.id);
-                        solve(next, visited, cost + (e.isVariable ? (2 * xValue + 5) : e.cost), startNode, count + 1);
-                        visited.delete(next.id);
-                    }
-                });
-            }
-
-            nodes.forEach(start => {
-                const visited = new Set([start.id]);
-                solve(start, visited, 0, start, 1);
             });
-
-            if (minCost === Infinity) { generateMap(); return; }
-            optCost = minCost;
         }
 
-        document.getElementById('targetCostValue').innerText = '$' + optCost;
-        window.currentOptimal = optCost;
+        nodes.forEach(start => {
+            const visited = new Set([start.id]);
+            solve(start, visited, 0, start, 1);
+        });
+
+        if (minCost === Infinity) { generateMap(); return; }
+
+        document.getElementById('targetCostValue').innerText = '$' + minCost;
+        window.currentOptimal = minCost;
     }
 
     function isPotentiallyLoopable() {
@@ -585,8 +556,9 @@
 
         let nowConnected = false;
         if (difficulty === 1) {
-            // Easy: just need all nodes reachable (MST — no loop required)
-            nowConnected = visited.size === nodes.length;
+            // Easy: closed loop required (same as Medium but fewer nodes)
+            const allDegreeTwo = nodes.every(n => adj[n.id].length >= 2);
+            nowConnected = visited.size === nodes.length && allDegreeTwo;
         } else {
             // Medium / Hard: closed loop required (every node degree >= 2)
             const allDegreeTwo = nodes.every(n => adj[n.id].length >= 2);
@@ -619,8 +591,8 @@
                 modal.querySelector('button').onclick = () => { modal.style.display = 'none'; };
                 modal.style.display = 'block';
 
-                // After 5 failed attempts, offer the hint
-                if (nonOptimalAttempts >= 5) {
+                // After 3 failed attempts, offer the hint
+                if (nonOptimalAttempts >= 3) {
                     setTimeout(() => {
                         modal.style.display = 'none';
                         document.getElementById('hintModal').style.display = 'block';
@@ -646,33 +618,48 @@
         document.getElementById('hintModal').style.display = 'none';
         nonOptimalAttempts = 0;
 
-        // Deactivate all edges first
-        edges.forEach(e => e.active = false);
+        // Clear all edges
+        edges.forEach(e => { e.active = false; e.isAnswer = false; });
 
-        // Run Kruskal's to find the MST and mark those edges
-        const sortedEdges = [...edges].sort((a, b) => {
-            const ca = a.isVariable ? (2 * xValue + 5) : a.cost;
-            const cb = b.isVariable ? (2 * xValue + 5) : b.cost;
-            return ca - cb;
-        });
-        const parent = {};
-        nodes.forEach(n => parent[n.id] = n.id);
-        function find(i) { return parent[i] === i ? i : (parent[i] = find(parent[i])); }
-        function union(i, j) {
-            const ri = find(i), rj = find(j);
-            if (ri === rj) return false;
-            parent[ri] = rj;
-            return true;
+        // Find the optimal Hamiltonian cycle (TSP) and track which edges are used
+        let minCost = Infinity;
+        let bestPath = null;
+        const n = nodes.length;
+
+        function solve(curr, visited, cost, startNode, count, path) {
+            if (count === n) {
+                const ret = edges.find(e =>
+                    (e.n1.id === curr.id && e.n2.id === startNode.id) ||
+                    (e.n2.id === curr.id && e.n1.id === startNode.id)
+                );
+                if (ret) {
+                    const fc = cost + (ret.isVariable ? (2 * xValue + 5) : ret.cost);
+                    if (fc < minCost) {
+                        minCost = fc;
+                        bestPath = [...path, ret];
+                    }
+                }
+                return;
+            }
+            if (cost >= minCost) return;
+            edges.forEach(e => {
+                let next = null;
+                if (e.n1.id === curr.id) next = e.n2;
+                else if (e.n2.id === curr.id) next = e.n1;
+                if (next && !visited.has(next.id)) {
+                    visited.add(next.id);
+                    solve(next, visited, cost + (e.isVariable ? (2 * xValue + 5) : e.cost), startNode, count + 1, [...path, e]);
+                    visited.delete(next.id);
+                }
+            });
         }
 
-        let mstCount = 0;
-        for (const e of sortedEdges) {
-            if (union(e.n1.id, e.n2.id)) {
-                e.active = true;
-                e.isAnswer = true; // Mark it as the shown answer
-                mstCount++;
-                if (mstCount === nodes.length - 1) break;
-            }
+        // Start from node 0 (symmetry means any start gives the same result)
+        const visited = new Set([nodes[0].id]);
+        solve(nodes[0], visited, 0, nodes[0], 1, []);
+
+        if (bestPath) {
+            bestPath.forEach(e => { e.active = true; e.isAnswer = true; });
         }
 
         updateTotals();
@@ -719,18 +706,16 @@
     function render() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw Edges
+        // Pass 1: Draw edge lines only
         edges.forEach(edge => {
             ctx.beginPath();
             ctx.moveTo(edge.n1.x, edge.n1.y);
             ctx.lineTo(edge.n2.x, edge.n2.y);
-            
+
             if (edge.isAnswer) {
-                // Gold highlight for shown answer
                 ctx.strokeStyle = '#f59e0b';
                 ctx.lineWidth = 6;
                 ctx.setLineDash([]);
-                // Outer glow
                 ctx.shadowColor = '#f59e0b';
                 ctx.shadowBlur = 12;
             } else if (edge.active) {
@@ -746,30 +731,10 @@
             }
             ctx.stroke();
             ctx.shadowBlur = 0;
-
-            // Label
-            const midX = (edge.n1.x + edge.n2.x) / 2;
-            const midY = (edge.n1.y + edge.n2.y) / 2;
-            
-            ctx.fillStyle = edge.active ? '#fff' : '#94a3b8';
-            ctx.font = 'bold 12px Inter';
-            ctx.textAlign = 'center';
-            let label = edge.isVariable ? `f(${xValue})` : `$${edge.cost}`;
-            
-            // Background for label
-            const metrics = ctx.measureText(label);
-            if (edge.isAnswer) {
-                ctx.fillStyle = '#92400e'; // Dark amber for answer
-            } else {
-                ctx.fillStyle = edge.active ? (edge.isVariable ? '#c084fc' : '#4f46e5') : '#1e293b';
-            }
-            ctx.fillRect(midX - metrics.width/2 - 5, midY - 10, metrics.width + 10, 20);
-            
-            ctx.fillStyle = '#fff';
-            ctx.fillText(label, midX, midY + 4);
+            ctx.setLineDash([]);
         });
 
-        // Draw Nodes
+        // Pass 2: Draw nodes on top of edges
         nodes.forEach(node => {
             ctx.beginPath();
             ctx.arc(node.x, node.y, 22, 0, Math.PI * 2);
@@ -786,6 +751,49 @@
             ctx.font = '700 16px Outfit';
             ctx.textAlign = 'center';
             ctx.fillText(node.name, node.x, node.y + 6);
+        });
+
+        // Pass 3: Draw edge cost labels on top of everything
+        edges.forEach(edge => {
+            const midX = (edge.n1.x + edge.n2.x) / 2;
+            const midY = (edge.n1.y + edge.n2.y) / 2;
+
+            const label = edge.isVariable ? `f(${xValue})` : `$${edge.cost}`;
+            ctx.font = 'bold 12px Inter';
+            ctx.textAlign = 'center';
+
+            const metrics = ctx.measureText(label);
+            const pad = 6;
+            const bw = metrics.width + pad * 2;
+            const bh = 20;
+
+            // Label background
+            if (edge.isAnswer) {
+                ctx.fillStyle = '#92400e';
+            } else if (edge.active) {
+                ctx.fillStyle = edge.isVariable ? '#7e22ce' : '#4f46e5';
+            } else {
+                ctx.fillStyle = '#1e293b';
+            }
+            // Rounded rect manually
+            const rx = midX - bw/2, ry = midY - bh/2;
+            ctx.beginPath();
+            ctx.roundRect(rx, ry, bw, bh, 4);
+            ctx.fill();
+
+            // Border for active/answer
+            if (edge.isAnswer) {
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            } else if (edge.active) {
+                ctx.strokeStyle = edge.isVariable ? '#c084fc' : '#818cf8';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+
+            ctx.fillStyle = '#fff';
+            ctx.fillText(label, midX, midY + 4);
         });
     }
 
