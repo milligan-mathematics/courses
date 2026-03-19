@@ -292,9 +292,9 @@
             </div>
         </div>
 
-        <div class="instruction-box">
-            <p><strong>Goal:</strong> Form a <u>closed loop</u> connecting all cities for the lowest possible cost.</p>
-            <p style="margin-top: 0.5rem;">Click on any dashed edge to toggle it on/off. (Each city must have at least 2 connections!)</p>
+        <div class="instruction-box" id="instructionBox">
+            <p id="goalText"><strong>Goal:</strong> Connect all cities with cables for the lowest possible cost.</p>
+            <p style="margin-top: 0.5rem;" id="tipText">Click any dashed cable to toggle it on/off.</p>
         </div>
     </aside>
 
@@ -336,11 +336,26 @@
     function generateMap() {
         nodes = [];
         edges = [];
+        isConnected = false;
         difficulty = parseInt(document.getElementById('difficultySelect').value);
         
         const nodeCount = difficulty === 1 ? 5 : (difficulty === 2 ? 8 : 10);
         const w = canvas.width;
         const h = canvas.height;
+
+        // Update instructions per tier
+        const goalEl = document.getElementById('goalText');
+        const tipEl = document.getElementById('tipText');
+        if (difficulty === 1) {
+            goalEl.innerHTML = '<strong>Goal:</strong> Connect <em>all</em> cities using cables for the <u>lowest total cost</u>.';
+            tipEl.innerHTML = 'Click any dashed cable to add or remove it. You don\'t need loops — just connect every city!';
+        } else if (difficulty === 2) {
+            goalEl.innerHTML = '<strong>Goal:</strong> Form a <u>closed loop</u> through all cities while staying under budget.';
+            tipEl.innerHTML = 'Each city needs at least 2 connections. Watch the budget — it turns red if you overspend!';
+        } else {
+            goalEl.innerHTML = '<strong>Goal:</strong> Form the cheapest possible <u>closed loop</u> through every city.';
+            tipEl.innerHTML = 'Drag the <span style="color:#c084fc;font-weight:bold;">x slider</span> to change the variable cable cost and find your break-even point.';
+        }
 
         // Reset UI
         document.getElementById('sliderGroup').style.display = difficulty === 3 ? 'block' : 'none';
@@ -348,29 +363,28 @@
         document.getElementById('successModal').style.display = 'none';
 
         if (difficulty === 1) {
-            budget = 50 + Math.floor(Math.random() * 50); // Direct addition focus
-            document.getElementById('budgetValue').innerText = '$' + budget;
+            budget = 0; // No budget cap for Easy — just optimize
+            document.getElementById('budgetContainer').style.display = 'none';
         } else if (difficulty === 2) {
-            budget = 450 + Math.floor(Math.random() * 150); // Increased budget for better playability
+            budget = 450 + Math.floor(Math.random() * 150);
             document.getElementById('budgetValue').innerText = '$' + budget;
         }
 
-        // Geometric Node Generation (ensure distance)
+        // Geometric Node Generation
         for (let i = 0; i < nodeCount; i++) {
             let newNode;
             let attempts = 0;
             while (attempts < 100) {
                 newNode = {
-                    x: 60 + Math.random() * (w - 120),
-                    y: 60 + Math.random() * (h - 120),
+                    x: 80 + Math.random() * (w - 160),
+                    y: 80 + Math.random() * (h - 160),
                     id: i,
-                    name: String.fromCharCode(65 + i)
+                    name: String.fromCharCode(65 + i) // A, B, C...
                 };
-                
-                // Tier 2 Bottleneck Logic: Split into two clusters
+
                 if (difficulty === 2) {
-                    if (i < 4) newNode.x = 60 + Math.random() * (w/2 - 120);
-                    else newNode.x = w/2 + 60 + Math.random() * (w/2 - 120);
+                    if (i < 4) newNode.x = 80 + Math.random() * (w/2 - 160);
+                    else newNode.x = w/2 + 80 + Math.random() * (w/2 - 160);
                 }
 
                 let tooClose = nodes.some(n => Math.hypot(n.x - newNode.x, n.y - newNode.y) < 100);
@@ -382,21 +396,16 @@
 
         // Edge Generation
         if (difficulty === 1) {
-            // Very dense for Easy to ensure multiple paths and loops for comparison
+            // Easy: Connect every pair of nodes so there are many path choices to compare.
+            // Students pick the cheapest subset that still connects all cities (MST concept).
             for (let i = 0; i < nodes.length; i++) {
                 for (let j = i + 1; j < nodes.length; j++) {
-                    const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
-                    if (dist < 450 || Math.random() < 0.6) {
-                        createEdge(nodes[i], nodes[j]);
-                    }
+                    createEdge(nodes[i], nodes[j]);
                 }
             }
         } else if (difficulty === 2) {
-            // Bottleneck clusters
             const left = nodes.filter(n => n.id < 4);
             const right = nodes.filter(n => n.id >= 4);
-            
-            // Connect within clusters
             [left, right].forEach(cluster => {
                 for (let i = 0; i < cluster.length; i++) {
                     for (let j = i + 1; j < cluster.length; j++) {
@@ -404,13 +413,11 @@
                     }
                 }
             });
-            // Bridges: Need at least 2 to form a closed loop crossing clusters
-            const bridgeCount = 2 + Math.floor(Math.random() * 2); 
-            for(let i=0; i<bridgeCount; i++) {
+            const bridgeCount = 2 + Math.floor(Math.random() * 2);
+            for (let i = 0; i < bridgeCount; i++) {
                 createEdge(left[Math.floor(Math.random() * 4)], right[Math.floor(Math.random() * 4)], true);
             }
         } else {
-            // Dense web
             for (let i = 0; i < nodes.length; i++) {
                 for (let j = i + 1; j < nodes.length; j++) {
                     const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
@@ -419,12 +426,11 @@
                     }
                 }
             }
-            // Add Variable Edge
             const varIdx = Math.floor(Math.random() * edges.length);
             edges[varIdx].isVariable = true;
         }
 
-        // Ensure graph is physically solvable for a closed loop (2-edge-connected potential)
+        // Validate and compute optimal
         if (!isPotentiallyLoopable()) {
             generateMap();
             return;
@@ -435,67 +441,92 @@
         render();
     }
 
-    // Solver to find minimum cost meeting the "Closed Loop" criteria (TSP / degree >= 2)
+    // Compute true optimal for current map and difficulty
     function calculateOptimalCost() {
-        // We look for a Hamiltonian Cycle if possible, or min 2-edge connected subgraph
-        // For 5-10 nodes, we can use a recursive search
-        let minCost = Infinity;
-        const n = nodes.length;
-        
-        function solve(curr, visited, cost, startNode, count) {
-            if (count === n) {
-                // Check if we can return to start
-                const returnEdge = edges.find(e => 
-                    (e.n1.id === curr.id && e.n2.id === startNode.id) || 
-                    (e.n2.id === curr.id && e.n1.id === startNode.id)
-                );
-                if (returnEdge) {
-                    const finalCost = cost + (returnEdge.isVariable ? (2*xValue+5) : returnEdge.cost);
-                    minCost = Math.min(minCost, finalCost);
-                }
-                return;
+        let optCost = Infinity;
+
+        if (difficulty === 1) {
+            // MST via Kruskal's — minimum cost to connect all nodes (no need for loops)
+            const sortedEdges = [...edges].sort((a, b) => a.cost - b.cost);
+            const parent = {};
+            nodes.forEach(n => parent[n.id] = n.id);
+
+            function find(i) { return parent[i] === i ? i : (parent[i] = find(parent[i])); }
+            function union(i, j) {
+                const ri = find(i), rj = find(j);
+                if (ri === rj) return false;
+                parent[ri] = rj;
+                return true;
             }
 
-            if (cost >= minCost) return; // Pruning
-
-            edges.forEach(e => {
-                let next = null;
-                if (e.n1.id === curr.id) next = e.n2;
-                else if (e.n2.id === curr.id) next = e.n1;
-
-                if (next && !visited.has(next.id)) {
-                    visited.add(next.id);
-                    solve(next, visited, cost + (e.isVariable ? (2*xValue+5) : e.cost), startNode, count + 1);
-                    visited.delete(next.id);
+            let mstCost = 0;
+            let edgeCount = 0;
+            for (const e of sortedEdges) {
+                if (union(e.n1.id, e.n2.id)) {
+                    mstCost += e.cost;
+                    edgeCount++;
+                    if (edgeCount === nodes.length - 1) break;
                 }
+            }
+            optCost = mstCost;
+        } else {
+            // Hamiltonian Cycle (TSP) for Medium / Hard
+            let minCost = Infinity;
+            const n = nodes.length;
+
+            function solve(curr, visited, cost, startNode, count) {
+                if (count === n) {
+                    const ret = edges.find(e =>
+                        (e.n1.id === curr.id && e.n2.id === startNode.id) ||
+                        (e.n2.id === curr.id && e.n1.id === startNode.id)
+                    );
+                    if (ret) {
+                        const fc = cost + (ret.isVariable ? (2 * xValue + 5) : ret.cost);
+                        minCost = Math.min(minCost, fc);
+                    }
+                    return;
+                }
+                if (cost >= minCost) return;
+                edges.forEach(e => {
+                    let next = null;
+                    if (e.n1.id === curr.id) next = e.n2;
+                    else if (e.n2.id === curr.id) next = e.n1;
+                    if (next && !visited.has(next.id)) {
+                        visited.add(next.id);
+                        solve(next, visited, cost + (e.isVariable ? (2 * xValue + 5) : e.cost), startNode, count + 1);
+                        visited.delete(next.id);
+                    }
+                });
+            }
+
+            nodes.forEach(start => {
+                const visited = new Set([start.id]);
+                solve(start, visited, 0, start, 1);
             });
+
+            if (minCost === Infinity) { generateMap(); return; }
+            optCost = minCost;
         }
 
-        nodes.forEach(start => {
-            const visited = new Set([start.id]);
-            solve(start, visited, 0, start, 1);
-        });
-
-        // Fallback for tricky graphs where Hamiltonian doesn't exist but a loop does
-        if (minCost === Infinity) {
-            // We just set a heuristic target or re-gen
-            generateMap();
-            return;
-        }
-
-        document.getElementById('targetCostValue').innerText = '$' + minCost;
-        window.currentOptimal = minCost;
+        document.getElementById('targetCostValue').innerText = '$' + optCost;
+        window.currentOptimal = optCost;
     }
 
     function isPotentiallyLoopable() {
-        // Can all nodes REACH each other AND does every node have degree >= 2?
         const adj = {};
         nodes.forEach(n => adj[n.id] = []);
         edges.forEach(e => {
             adj[e.n1.id].push(e.n2.id);
             adj[e.n2.id].push(e.n1.id);
         });
-
+        if (difficulty === 1) {
+            // For MST, just ensure graph is connected (reachable)
+            const visited = new Set();
+            const stack = [0];
+            while (stack.length) { const c = stack.pop(); if (!visited.has(c)) { visited.add(c); adj[c].forEach(nb => stack.push(nb)); } }
+            return visited.size === nodes.length;
+        }
+        // For loops, every node must have degree >= 2 potential
         return nodes.every(n => adj[n.id].length >= 2);
     }
 
@@ -504,14 +535,7 @@
         if (difficulty === 1) cost = 1 + Math.floor(Math.random() * 19);
         else if (difficulty === 2) cost = 20 + Math.floor(Math.random() * 80);
         else cost = 15 + Math.floor(Math.random() * 35);
-
-        edges.push({
-            n1, n2,
-            cost,
-            active: false,
-            isVariable: false,
-            isBridge: isBridge
-        });
+        edges.push({ n1, n2, cost, active: false, isVariable: false, isBridge });
     }
 
     function checkConnectivity() {
@@ -524,36 +548,49 @@
         });
 
         const visited = new Set();
-        const stack = [0];
-        while(stack.length) {
+        const stack = [nodes[0].id];
+        while (stack.length) {
             const curr = stack.pop();
-            if(!visited.has(curr)) {
+            if (!visited.has(curr)) {
                 visited.add(curr);
-                adj[curr].forEach(neighbor => stack.push(neighbor));
+                adj[curr].forEach(nb => stack.push(nb));
             }
         }
-        
-        // Win Condition: All nodes connected and have degree >= 2 (forming a closed loop)
-        const allDegreeTwo = nodes.every(n => adj[n.id].length >= 2);
-        
-        const nowConnected = (visited.size === nodes.length) && allDegreeTwo;
-        
+
+        let nowConnected = false;
+        if (difficulty === 1) {
+            // Easy: just need all nodes reachable (MST — no loop required)
+            nowConnected = visited.size === nodes.length;
+        } else {
+            // Medium / Hard: closed loop required (every node degree >= 2)
+            const allDegreeTwo = nodes.every(n => adj[n.id].length >= 2);
+            nowConnected = visited.size === nodes.length && allDegreeTwo;
+        }
+
         if (nowConnected && !isConnected) {
             const modal = document.getElementById('successModal');
             const title = modal.querySelector('h2');
             const text = modal.querySelector('p');
-            
+
             if (totalCost === window.currentOptimal) {
-                title.innerText = "OPTIMAL!";
-                title.style.color = "white";
-                text.innerText = "You found the absolute lowest cost connection!";
+                modal.style.background = 'rgba(16, 185, 129, 0.95)'; // green
+                title.innerText = '🎉 OPTIMAL!';
+                title.style.color = 'white';
+                text.innerText = 'You found the cheapest possible connection!';
             } else {
-                title.innerText = "CONNECTED!";
-                title.style.color = "#fbbf24";
-                text.innerText = `You connected everything for $${totalCost}, but the target is $${window.currentOptimal}. Can you find a cheaper way?`;
+                modal.style.background = 'rgba(234, 179, 8, 0.95)'; // amber
+                title.innerText = '⚠️ Not Quite!';
+                title.style.color = 'white';
+                text.innerText = `All cities are connected, but your cost ($${totalCost}) is higher than the best possible ($${window.currentOptimal}). Try removing some cables!`;
             }
             modal.style.display = 'block';
         }
+
+        // When they remove an edge and it breaks the connection, hide the "not optimal" modal
+        if (!nowConnected && isConnected) {
+            document.getElementById('successModal').style.display = 'none';
+        }
+
         isConnected = nowConnected;
     }
 
