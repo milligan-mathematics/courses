@@ -255,6 +255,10 @@
             <div class="stat-value" id="budgetValue">$0</div>
         </div>
         <div class="stat-item">
+            <div class="stat-label">Target Cost</div>
+            <div class="stat-value" id="targetCostValue" style="color: var(--accent);">$0</div>
+        </div>
+        <div class="stat-item">
             <div class="stat-label">Total Cost</div>
             <div class="stat-value" id="totalCostValue">$0</div>
         </div>
@@ -375,11 +379,11 @@
 
         // Edge Generation
         if (difficulty === 1) {
-            // Sparse: mostly local connections + some sprawl
+            // Denser for Easy: ensure multiple paths and loops exist
             for (let i = 0; i < nodes.length; i++) {
                 for (let j = i + 1; j < nodes.length; j++) {
                     const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
-                    if (dist < 300 || Math.random() < 0.2) {
+                    if (dist < 400 || Math.random() < 0.4) {
                         createEdge(nodes[i], nodes[j]);
                     }
                 }
@@ -397,8 +401,8 @@
                     }
                 }
             });
-            // Bridges
-            const bridgeCount = 1 + Math.floor(Math.random() * 2);
+            // Bridges: Need at least 2 to form a closed loop crossing clusters
+            const bridgeCount = 2 + Math.floor(Math.random() * 2); 
             for(let i=0; i<bridgeCount; i++) {
                 createEdge(left[Math.floor(Math.random() * 4)], right[Math.floor(Math.random() * 4)], true);
             }
@@ -417,15 +421,79 @@
             edges[varIdx].isVariable = true;
         }
 
-        // Ensure graph is physically solvable (at least potential for connectivity)
-        // If not, just redo
-        if (!isPotentiallyConnected()) {
+        // Ensure graph is physically solvable for a closed loop (2-edge-connected potential)
+        if (!isPotentiallyLoopable()) {
             generateMap();
             return;
         }
 
+        calculateOptimalCost();
         updateTotals();
         render();
+    }
+
+    // Solver to find minimum cost meeting the "Closed Loop" criteria (TSP / degree >= 2)
+    function calculateOptimalCost() {
+        // We look for a Hamiltonian Cycle if possible, or min 2-edge connected subgraph
+        // For 5-10 nodes, we can use a recursive search
+        let minCost = Infinity;
+        const n = nodes.length;
+        
+        function solve(curr, visited, cost, startNode, count) {
+            if (count === n) {
+                // Check if we can return to start
+                const returnEdge = edges.find(e => 
+                    (e.n1.id === curr.id && e.n2.id === startNode.id) || 
+                    (e.n2.id === curr.id && e.n1.id === startNode.id)
+                );
+                if (returnEdge) {
+                    const finalCost = cost + (returnEdge.isVariable ? (2*xValue+5) : returnEdge.cost);
+                    minCost = Math.min(minCost, finalCost);
+                }
+                return;
+            }
+
+            if (cost >= minCost) return; // Pruning
+
+            edges.forEach(e => {
+                let next = null;
+                if (e.n1.id === curr.id) next = e.n2;
+                else if (e.n2.id === curr.id) next = e.n1;
+
+                if (next && !visited.has(next.id)) {
+                    visited.add(next.id);
+                    solve(next, visited, cost + (e.isVariable ? (2*xValue+5) : e.cost), startNode, count + 1);
+                    visited.delete(next.id);
+                }
+            });
+        }
+
+        nodes.forEach(start => {
+            const visited = new Set([start.id]);
+            solve(start, visited, 0, start, 1);
+        });
+
+        // Fallback for tricky graphs where Hamiltonian doesn't exist but a loop does
+        if (minCost === Infinity) {
+            // We just set a heuristic target or re-gen
+            generateMap();
+            return;
+        }
+
+        document.getElementById('targetCostValue').innerText = '$' + minCost;
+        window.currentOptimal = minCost;
+    }
+
+    function isPotentiallyLoopable() {
+        // Can all nodes REACH each other AND does every node have degree >= 2?
+        const adj = {};
+        nodes.forEach(n => adj[n.id] = []);
+        edges.forEach(e => {
+            adj[e.n1.id].push(e.n2.id);
+            adj[e.n2.id].push(e.n1.id);
+        });
+
+        return nodes.every(n => adj[n.id].length >= 2);
     }
 
     function createEdge(n1, n2, isBridge = false) {
@@ -441,27 +509,6 @@
             isVariable: false,
             isBridge: isBridge
         });
-    }
-
-    function isPotentiallyConnected() {
-        // Can all nodes REACH each other if ALL edges were active?
-        const adj = {};
-        nodes.forEach(n => adj[n.id] = []);
-        edges.forEach(e => {
-            adj[e.n1.id].push(e.n2.id);
-            adj[e.n2.id].push(e.n1.id);
-        });
-
-        const visited = new Set();
-        const stack = [0];
-        while(stack.length) {
-            const curr = stack.pop();
-            if(!visited.has(curr)) {
-                visited.add(curr);
-                adj[curr].forEach(neighbor => stack.push(neighbor));
-            }
-        }
-        return visited.size === nodes.length;
     }
 
     function checkConnectivity() {
@@ -487,8 +534,22 @@
         const allDegreeTwo = nodes.every(n => adj[n.id].length >= 2);
         
         const nowConnected = (visited.size === nodes.length) && allDegreeTwo;
+        
         if (nowConnected && !isConnected) {
-            document.getElementById('successModal').style.display = 'block';
+            const modal = document.getElementById('successModal');
+            const title = modal.querySelector('h2');
+            const text = modal.querySelector('p');
+            
+            if (totalCost === window.currentOptimal) {
+                title.innerText = "OPTIMAL!";
+                title.style.color = "white";
+                text.innerText = "You found the absolute lowest cost connection!";
+            } else {
+                title.innerText = "CONNECTED!";
+                title.style.color = "#fbbf24";
+                text.innerText = `You connected everything for $${totalCost}, but the target is $${window.currentOptimal}. Can you find a cheaper way?`;
+            }
+            modal.style.display = 'block';
         }
         isConnected = nowConnected;
     }
@@ -508,6 +569,17 @@
         const display = document.getElementById('totalCostValue');
         display.innerText = '$' + totalCost;
         
+        // Target Logic
+        if (isConnected && totalCost === window.currentOptimal) {
+            display.style.color = 'var(--accent)';
+            document.getElementById('successModal').querySelector('h2').innerText = "OPTIMAL!";
+        } else if (isConnected) {
+            display.style.color = '#fbbf24'; // Warning yellow for connected but not optimal
+            document.getElementById('successModal').querySelector('h2').innerText = "SUCCESS!";
+        } else {
+            display.style.color = 'white';
+        }
+
         if (difficulty === 2 && totalCost > budget) {
             display.classList.add('over-budget');
         } else {
