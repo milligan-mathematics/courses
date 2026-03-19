@@ -46,13 +46,14 @@
             z-index: 100;
         }
 
-        .logo-section h1 {
-            font-family: 'Outfit', sans-serif;
+        header h1 {
             font-size: 1.5rem;
+            font-weight: 800;
             background: linear-gradient(135deg, #818cf8, #c084fc);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-weight: 800;
+            letter-spacing: -0.025em;
         }
 
         .stats-display {
@@ -132,7 +133,25 @@
             margin-bottom: 0.25rem;
         }
 
-        select, button {
+        select {
+            padding: 0.75rem;
+            border-radius: 8px;
+            background-color: #334155; /* Slate Grey for visibility */
+            border: 1px solid var(--border);
+            color: #ffffff;
+            outline: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            appearance: none; /* remove default arrow to custom if needed, or just style */
+            transition: all 0.2s;
+        }
+        
+        select option {
+            background-color: #1e293b;
+            color: white;
+        }
+
+        button {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
             color: white;
@@ -247,9 +266,9 @@
         <div class="control-group">
             <h3>Difficulty Tier</h3>
             <select id="difficultySelect">
-                <option value="1">Tier 1: Easy (Pre-Algebra)</option>
-                <option value="2">Tier 2: Medium (Algebra)</option>
-                <option value="3">Tier 3: Hard (Pre-Calculus)</option>
+                <option value="1">Tier 1: Easy</option>
+                <option value="2">Tier 2: Medium</option>
+                <option value="3">Tier 3: Hard</option>
             </select>
         </div>
 
@@ -270,8 +289,8 @@
         </div>
 
         <div class="instruction-box">
-            <p><strong>Goal:</strong> Connect all cities with "cables" for the lowest possible cost.</p>
-            <p style="margin-top: 0.5rem;">Click on any dashed edge to toggle it on/off.</p>
+            <p><strong>Goal:</strong> Form a <u>closed loop</u> connecting all cities for the lowest possible cost.</p>
+            <p style="margin-top: 0.5rem;">Click on any dashed edge to toggle it on/off. (Each city must have at least 2 connections!)</p>
         </div>
     </aside>
 
@@ -325,7 +344,7 @@
         document.getElementById('successModal').style.display = 'none';
 
         if (difficulty === 2) {
-            budget = 150 + Math.floor(Math.random() * 50);
+            budget = 450 + Math.floor(Math.random() * 150); // Increased budget for better playability
             document.getElementById('budgetValue').innerText = '$' + budget;
         }
 
@@ -464,7 +483,10 @@
             }
         }
         
-        const nowConnected = visited.size === nodes.length;
+        // Win Condition: All nodes connected and have degree >= 2 (forming a closed loop)
+        const allDegreeTwo = nodes.every(n => adj[n.id].length >= 2);
+        
+        const nowConnected = (visited.size === nodes.length) && allDegreeTwo;
         if (nowConnected && !isConnected) {
             document.getElementById('successModal').style.display = 'block';
         }
