@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Network Optimizer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0f172a;
+            --bg-glass: rgba(30, 41, 59, 0.7);
+            --primary: #6366f1;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --text-light: #f8fafc;
+            --text-dim: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Header & Layout --- */
+        header {
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo-section h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .stats-display {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .stat-item {
+            text-align: right;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .stat-value.over-budget {
+            color: var(--danger);
+            animation: pulse-red 1.5s infinite;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* --- Main Content --- */
+        main {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        .sidebar {
+            width: 320px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            z-index: 50;
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* --- UI Elements --- */
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        h3 {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        select, button {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        select:hover, button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            border: none;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        /* Slider Styles */
+        .slider-container {
+            background: rgba(0,0,0,0.2);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+            margin: 0.5rem 0;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        /* Success Message */
+        #successModal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(16, 185, 129, 0.95);
+            padding: 2rem 3rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 200;
+            animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes pop-in {
+            from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        #successModal h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Tooltip-like help */
+        .instruction-box {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+            background: rgba(255,255,255,0.02);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .variable-label {
+            color: #c084fc;
+            font-weight: 700;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-section">
+        <h1>THE NETWORK OPTIMIZER</h1>
+    </div>
+    <div class="stats-display">
+        <div class="stat-item" id="budgetContainer" style="display:none;">
+            <div class="stat-label">Budget</div>
+            <div class="stat-value" id="budgetValue">$0</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">Total Cost</div>
+            <div class="stat-value" id="totalCostValue">$0</div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <aside class="sidebar">
+        <div class="control-group">
+            <h3>Difficulty Tier</h3>
+            <select id="difficultySelect">
+                <option value="1">Tier 1: Easy (Pre-Algebra)</option>
+                <option value="2">Tier 2: Medium (Algebra)</option>
+                <option value="3">Tier 3: Hard (Pre-Calculus)</option>
+            </select>
+        </div>
+
+        <button id="newMapBtn" class="btn-primary">Generate New Map</button>
+
+        <div class="control-group" id="sliderGroup" style="display:none;">
+            <h3>Variable Solver (x)</h3>
+            <div class="slider-container">
+                <div class="slider-header">
+                    <span>Value: <span id="xVal">25</span></span>
+                    <span>Range: 0-50</span>
+                </div>
+                <input type="range" id="xSlider" min="0" max="50" value="25">
+                <div style="font-size: 0.75rem; margin-top: 0.5rem; text-align: center;">
+                    <span class="variable-label">f(x) = 2x + 5</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="instruction-box">
+            <p><strong>Goal:</strong> Connect all cities with "cables" for the lowest possible cost.</p>
+            <p style="margin-top: 0.5rem;">Click on any dashed edge to toggle it on/off.</p>
+        </div>
+    </aside>
+
+    <div class="canvas-container" id="canvasWrap">
+        <canvas id="gameCanvas"></canvas>
+        <div id="successModal">
+            <h2>SUCCESS!</h2>
+            <p>The network is fully connected.</p>
+            <button onclick="document.getElementById('successModal').style.display='none'" style="margin-top: 1rem; width: 100%;">Continue Optimizing</button>
+        </div>
+    </div>
+</main>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const wrap = document.getElementById('canvasWrap');
+
+    // State
+    let nodes = [];
+    let edges = [];
+    let difficulty = 1;
+    let budget = 0;
+    let xValue = 25;
+    let totalCost = 0;
+    let isConnected = false;
+
+    // Resizing
+    function resize() {
+        canvas.width = wrap.clientWidth;
+        canvas.height = wrap.clientHeight;
+        render();
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // --- Core Logic ---
+
+    function generateMap() {
+        nodes = [];
+        edges = [];
+        difficulty = parseInt(document.getElementById('difficultySelect').value);
+        
+        const nodeCount = difficulty === 1 ? 5 : (difficulty === 2 ? 8 : 10);
+        const w = canvas.width;
+        const h = canvas.height;
+
+        // Reset UI
+        document.getElementById('sliderGroup').style.display = difficulty === 3 ? 'block' : 'none';
+        document.getElementById('budgetContainer').style.display = difficulty === 2 ? 'block' : 'none';
+        document.getElementById('successModal').style.display = 'none';
+
+        if (difficulty === 2) {
+            budget = 150 + Math.floor(Math.random() * 50);
+            document.getElementById('budgetValue').innerText = '$' + budget;
+        }
+
+        // Geometric Node Generation (ensure distance)
+        for (let i = 0; i < nodeCount; i++) {
+            let newNode;
+            let attempts = 0;
+            while (attempts < 100) {
+                newNode = {
+                    x: 60 + Math.random() * (w - 120),
+                    y: 60 + Math.random() * (h - 120),
+                    id: i,
+                    name: String.fromCharCode(65 + i)
+                };
+                
+                // Tier 2 Bottleneck Logic: Split into two clusters
+                if (difficulty === 2) {
+                    if (i < 4) newNode.x = 60 + Math.random() * (w/2 - 120);
+                    else newNode.x = w/2 + 60 + Math.random() * (w/2 - 120);
+                }
+
+                let tooClose = nodes.some(n => Math.hypot(n.x - newNode.x, n.y - newNode.y) < 100);
+                if (!tooClose) break;
+                attempts++;
+            }
+            nodes.push(newNode);
+        }
+
+        // Edge Generation
+        if (difficulty === 1) {
+            // Sparse: mostly local connections + some sprawl
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+                    if (dist < 300 || Math.random() < 0.2) {
+                        createEdge(nodes[i], nodes[j]);
+                    }
+                }
+            }
+        } else if (difficulty === 2) {
+            // Bottleneck clusters
+            const left = nodes.filter(n => n.id < 4);
+            const right = nodes.filter(n => n.id >= 4);
+            
+            // Connect within clusters
+            [left, right].forEach(cluster => {
+                for (let i = 0; i < cluster.length; i++) {
+                    for (let j = i + 1; j < cluster.length; j++) {
+                        createEdge(cluster[i], cluster[j]);
+                    }
+                }
+            });
+            // Bridges
+            const bridgeCount = 1 + Math.floor(Math.random() * 2);
+            for(let i=0; i<bridgeCount; i++) {
+                createEdge(left[Math.floor(Math.random() * 4)], right[Math.floor(Math.random() * 4)], true);
+            }
+        } else {
+            // Dense web
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+                    if (dist < 400 || Math.random() < 0.3) {
+                        createEdge(nodes[i], nodes[j]);
+                    }
+                }
+            }
+            // Add Variable Edge
+            const varIdx = Math.floor(Math.random() * edges.length);
+            edges[varIdx].isVariable = true;
+        }
+
+        // Ensure graph is physically solvable (at least potential for connectivity)
+        // If not, just redo
+        if (!isPotentiallyConnected()) {
+            generateMap();
+            return;
+        }
+
+        updateTotals();
+        render();
+    }
+
+    function createEdge(n1, n2, isBridge = false) {
+        let cost;
+        if (difficulty === 1) cost = 1 + Math.floor(Math.random() * 19);
+        else if (difficulty === 2) cost = 20 + Math.floor(Math.random() * 80);
+        else cost = 15 + Math.floor(Math.random() * 35);
+
+        edges.push({
+            n1, n2,
+            cost,
+            active: false,
+            isVariable: false,
+            isBridge: isBridge
+        });
+    }
+
+    function isPotentiallyConnected() {
+        // Can all nodes REACH each other if ALL edges were active?
+        const adj = {};
+        nodes.forEach(n => adj[n.id] = []);
+        edges.forEach(e => {
+            adj[e.n1.id].push(e.n2.id);
+            adj[e.n2.id].push(e.n1.id);
+        });
+
+        const visited = new Set();
+        const stack = [0];
+        while(stack.length) {
+            const curr = stack.pop();
+            if(!visited.has(curr)) {
+                visited.add(curr);
+                adj[curr].forEach(neighbor => stack.push(neighbor));
+            }
+        }
+        return visited.size === nodes.length;
+    }
+
+    function checkConnectivity() {
+        const activeEdges = edges.filter(e => e.active);
+        const adj = {};
+        nodes.forEach(n => adj[n.id] = []);
+        activeEdges.forEach(e => {
+            adj[e.n1.id].push(e.n2.id);
+            adj[e.n2.id].push(e.n1.id);
+        });
+
+        const visited = new Set();
+        const stack = [0];
+        while(stack.length) {
+            const curr = stack.pop();
+            if(!visited.has(curr)) {
+                visited.add(curr);
+                adj[curr].forEach(neighbor => stack.push(neighbor));
+            }
+        }
+        
+        const nowConnected = visited.size === nodes.length;
+        if (nowConnected && !isConnected) {
+            document.getElementById('successModal').style.display = 'block';
+        }
+        isConnected = nowConnected;
+    }
+
+    function updateTotals() {
+        totalCost = 0;
+        edges.forEach(e => {
+            if (e.active) {
+                if (e.isVariable) {
+                    totalCost += (2 * xValue + 5);
+                } else {
+                    totalCost += e.cost;
+                }
+            }
+        });
+
+        const display = document.getElementById('totalCostValue');
+        display.innerText = '$' + totalCost;
+        
+        if (difficulty === 2 && totalCost > budget) {
+            display.classList.add('over-budget');
+        } else {
+            display.classList.remove('over-budget');
+        }
+
+        checkConnectivity();
+    }
+
+    // --- Rendering ---
+
+    function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw Edges
+        edges.forEach(edge => {
+            ctx.beginPath();
+            ctx.moveTo(edge.n1.x, edge.n1.y);
+            ctx.lineTo(edge.n2.x, edge.n2.y);
+            
+            if (edge.active) {
+                ctx.strokeStyle = edge.isVariable ? '#c084fc' : '#6366f1';
+                ctx.lineWidth = 5;
+                ctx.setLineDash([]);
+            } else {
+                ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([10, 5]);
+            }
+            ctx.stroke();
+
+            // Label
+            const midX = (edge.n1.x + edge.n2.x) / 2;
+            const midY = (edge.n1.y + edge.n2.y) / 2;
+            
+            ctx.fillStyle = edge.active ? '#fff' : '#94a3b8';
+            ctx.font = 'bold 12px Inter';
+            ctx.textAlign = 'center';
+            let label = edge.isVariable ? `f(${xValue})` : `$${edge.cost}`;
+            
+            // Background for label
+            const metrics = ctx.measureText(label);
+            ctx.fillStyle = edge.active ? (edge.isVariable ? '#c084fc' : '#4f46e5') : '#1e293b';
+            ctx.fillRect(midX - metrics.width/2 - 5, midY - 10, metrics.width + 10, 20);
+            
+            ctx.fillStyle = '#fff';
+            ctx.fillText(label, midX, midY + 4);
+        });
+
+        // Draw Nodes
+        nodes.forEach(node => {
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, 22, 0, Math.PI * 2);
+            const grad = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 22);
+            grad.addColorStop(0, '#1e293b');
+            grad.addColorStop(1, '#0f172a');
+            ctx.fillStyle = grad;
+            ctx.fill();
+            ctx.strokeStyle = isConnected ? '#10b981' : '#334155';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.fillStyle = '#fff';
+            ctx.font = '700 16px Outfit';
+            ctx.textAlign = 'center';
+            ctx.fillText(node.name, node.x, node.y + 6);
+        });
+    }
+
+    // --- Interactions ---
+
+    canvas.addEventListener('mousedown', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+
+        // Click-to-toggle Edge
+        // We find the edge where the midpoint is clicked
+        let clickedEdge = null;
+        edges.forEach(edge => {
+            const midX = (edge.n1.x + edge.n2.x) / 2;
+            const midY = (edge.n1.y + edge.n2.y) / 2;
+            if (Math.hypot(midX - mx, midY - my) < 25) {
+                clickedEdge = edge;
+            }
+        });
+
+        if (clickedEdge) {
+            clickedEdge.active = !clickedEdge.active;
+            updateTotals();
+            render();
+        }
+    });
+
+    document.getElementById('newMapBtn').addEventListener('click', generateMap);
+    
+    document.getElementById('difficultySelect').addEventListener('change', generateMap);
+
+    document.getElementById('xSlider').addEventListener('input', (e) => {
+        xValue = parseInt(e.target.value);
+        document.getElementById('xVal').innerText = xValue;
+        updateTotals();
+        render();
+    });
+
+    // Initial load
+    window.onload = generateMap;
+
+</script>
+
+</body>
+</html>
