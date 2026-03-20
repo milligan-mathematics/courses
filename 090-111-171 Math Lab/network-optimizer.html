@@ -146,6 +146,7 @@
             border: 1px solid var(--border);
         }
         input[type="range"] { width: 100%; accent-color: var(--primary); margin: 0.5rem 0; }
+        input[type="range"]:disabled { opacity: 0.4; cursor: not-allowed; }
         .slider-header { display: flex; justify-content: space-between; font-size: 0.9rem; }
         .variable-label { color: #c084fc; font-weight: 700; }
 
@@ -297,6 +298,7 @@
     let totalCost = 0;
     let isConnected = false;
     let nonOptimalAttempts = 0;
+    let tier3State = 0;
 
     // ─── Resize ─────────────────────────────────────────────────────────────────
     function resize() {
@@ -352,9 +354,16 @@
             goalEl.innerHTML = '<strong>Goal:</strong> Connect all <u>5 cities</u> for the <u>lowest possible total cost</u>.';
             tipEl.innerHTML  = 'You need exactly <strong style="color:#10b981;">4 cables</strong> to span all 5 cities. Extra cables waste money!';
         } else {
-            goalEl.innerHTML = '<strong>Goal:</strong> Connect all <u>6 cities</u>. One cable has a variable cost based on <em>x</em>.';
-            tipEl.innerHTML  = 'Adjust the slider to change <em>x</em>. Find the breakeven point where another path becomes cheaper!';
+            goalEl.innerHTML = '<strong>Phase 1:</strong> Connect all 6 cities. The variable cable is currently locked at x = 0.';
+            tipEl.innerHTML  = 'Find the absolute cheapest route for the current price. Once you connect them, Phase 2 will unlock!';
         }
+
+        // Reset state
+        tier3State = difficulty === 3 ? 1 : 0;
+        xValue = difficulty === 3 ? 0 : 25;
+        document.getElementById('xSlider').value = xValue;
+        document.getElementById('xSlider').disabled = (difficulty === 3);
+        document.getElementById('xVal').innerText = xValue;
 
         // Show / hide UI sections
         document.getElementById('cableCounterGroup').style.display = 'block';
@@ -455,8 +464,27 @@
                 createEdge(allPairs[k][0], allPairs[k][1]);
             }
 
-            const varEdgeIndex = Math.floor(Math.random() * edges.length);
-            edges[varEdgeIndex].isVariable = true;
+            // Ensure we pick a variable edge that starts heavily favored but eventually loses
+            let goodFlip = false;
+            let attempts = 0;
+            while (!goodFlip && attempts < 50) {
+                edges.forEach(e => e.isVariable = false);
+                const varEdge = edges[Math.floor(Math.random() * edges.length)];
+                varEdge.isVariable = true;
+                
+                xValue = 0;
+                const mst0 = kruskalMST(edges).edges;
+                const has0 = mst0.includes(varEdge);
+                
+                xValue = 50;
+                const mst50 = kruskalMST(edges).edges;
+                const has50 = mst50.includes(varEdge);
+                
+                if (has0 && !has50) goodFlip = true;
+                attempts++;
+            }
+            if (!goodFlip) { generateMap(); return; } // retry full map if no flip possible
+            xValue = 0; // reset
             
             document.getElementById('cablesNeeded').innerText = nodes.length - 1;
         }
@@ -524,11 +552,42 @@
             if (totalCost === window.currentOptimal) {
                 // ✅ OPTIMAL
                 nonOptimalAttempts = 0;
-                modal.style.background = 'rgba(16, 185, 129, 0.95)';
-                title.innerText = '🎉 OPTIMAL!';
-                textEl.innerText = `Perfect! You found the Minimum Spanning Tree — all cities connected for just $${totalCost}.`;
-                btn.innerText = 'Generate New Map';
-                btn.onclick = () => { modal.style.display = 'none'; generateMap(); };
+                
+                if (difficulty === 3 && tier3State === 1) {
+                    modal.style.background = 'rgba(56, 189, 248, 0.95)';
+                    title.innerText = 'Phase 1 Complete!';
+                    textEl.innerText = `You found the best route for x=0. But prices change! At what value of x does this cable become too expensive? Unlock the slider, find the exact point it flips, and build the new route.`;
+                    btn.innerText = 'Unlock Phase 2';
+                    btn.onclick = () => {
+                        modal.style.display = 'none';
+                        tier3State = 2;
+                        document.getElementById('xSlider').disabled = false;
+                        document.getElementById('goalText').innerHTML = '<strong>Phase 2:</strong> Drag the slider. Find the breakeven point and build the alternate route!';
+                    };
+                    modal.style.display = 'block';
+                } else if (difficulty === 3 && tier3State === 2) {
+                    const varEdgeActive = edges.some(e => e.isVariable && e.active);
+                    if (varEdgeActive) {
+                        // They are still using the variable edge, so they just found the optimal for some x BEFORE the flip,
+                        // or they went backward implicitly. Let them keep dragging.
+                        isConnected = nowConnected;
+                        return;
+                    } else {
+                        modal.style.background = 'rgba(16, 185, 129, 0.95)';
+                        title.innerText = '🎉 MASTER OPTIMIZER!';
+                        textEl.innerText = `Incredible! You found the breakeven point and correctly adjusted the network for the new market conditions!`;
+                        btn.innerText = 'Generate New Map';
+                        btn.onclick = () => { modal.style.display = 'none'; generateMap(); };
+                        modal.style.display = 'block';
+                    }
+                } else {
+                    modal.style.background = 'rgba(16, 185, 129, 0.95)';
+                    title.innerText = '🎉 OPTIMAL!';
+                    textEl.innerText = `Perfect! You found the Minimum Spanning Tree — all cities connected for just $${totalCost}.`;
+                    btn.innerText = 'Generate New Map';
+                    btn.onclick = () => { modal.style.display = 'none'; generateMap(); };
+                    modal.style.display = 'block';
+                }
             } else {
                 // ⚠️ CONNECTED BUT NOT OPTIMAL
                 nonOptimalAttempts++;
