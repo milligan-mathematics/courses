@@ -16,14 +16,7 @@
             --text-dim: #94a3b8;
             --border: rgba(255, 255, 255, 0.1);
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
             background-color: var(--bg-deep);
             color: var(--text-light);
@@ -33,8 +26,6 @@
             display: flex;
             flex-direction: column;
         }
-
-        /* --- Header & Layout --- */
         header {
             background: var(--bg-glass);
             backdrop-filter: blur(12px);
@@ -45,7 +36,6 @@
             align-items: center;
             z-index: 100;
         }
-
         header h1 {
             font-size: 1.5rem;
             font-weight: 800;
@@ -55,47 +45,14 @@
             -webkit-text-fill-color: transparent;
             letter-spacing: -0.025em;
         }
+        .stats-display { display: flex; gap: 2rem; align-items: center; }
+        .stat-item { text-align: right; }
+        .stat-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+        .stat-value { font-size: 1.8rem; font-weight: 800; font-family: 'Outfit', sans-serif; }
+        .stat-value.over-budget { color: var(--danger); animation: pulse-red 1.5s infinite; }
+        @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
-        .stats-display {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .stat-item {
-            text-align: right;
-        }
-
-        .stat-label {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 800;
-            font-family: 'Outfit', sans-serif;
-        }
-
-        .stat-value.over-budget {
-            color: var(--danger);
-            animation: pulse-red 1.5s infinite;
-        }
-
-        @keyframes pulse-red {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        /* --- Main Content --- */
-        main {
-            display: flex;
-            flex: 1;
-            position: relative;
-        }
-
+        main { display: flex; flex: 1; position: relative; }
         .sidebar {
             width: 320px;
             background: var(--bg-glass);
@@ -107,52 +64,31 @@
             gap: 1.5rem;
             z-index: 50;
         }
-
         .canvas-container {
             flex: 1;
             position: relative;
             background: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
             background-size: 40px 40px;
         }
+        canvas { display: block; }
 
-        canvas {
-            display: block;
-        }
-
-        /* --- UI Elements --- */
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        h3 {
-            font-size: 0.85rem;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            margin-bottom: 0.25rem;
-        }
-
+        .control-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        h3 { font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.25rem; }
         select {
             padding: 0.75rem;
             border-radius: 8px;
-            background-color: #334155; /* Slate Grey for visibility */
+            background-color: #334155;
             border: 1px solid var(--border);
             color: #ffffff;
             outline: none;
             cursor: pointer;
             font-size: 0.95rem;
-            appearance: none; /* remove default arrow to custom if needed, or just style */
+            appearance: none;
             transition: all 0.2s;
         }
-        
-        select option {
-            background-color: #1e293b;
-            color: white;
-        }
-
+        select option { background-color: #1e293b; color: white; }
         button {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255,255,255,0.05);
             border: 1px solid var(--border);
             color: white;
             padding: 0.8rem 1rem;
@@ -162,49 +98,61 @@
             transition: all 0.2s;
             outline: none;
         }
+        select:hover, button:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
+        .btn-primary { background: var(--primary); color: white; font-weight: 600; border: none; }
+        .btn-primary:active { transform: scale(0.98); }
 
-        select:hover, button:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
+        /* Cable Counter */
+        .cable-counter {
+            background: rgba(0,0,0,0.25);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        .cable-counter-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.4rem;
+        }
+        .cable-counter-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1;
+        }
+        .cable-counter-sub { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.3rem; }
+        .cable-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            margin-top: 0.75rem;
+            overflow: hidden;
+        }
+        .cable-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 3px;
+            transition: width 0.3s ease;
         }
 
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            font-weight: 600;
-            border: none;
-        }
-
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
-
-        /* Slider Styles */
+        /* Slider */
         .slider-container {
             background: rgba(0,0,0,0.2);
             padding: 1rem;
             border-radius: 12px;
             border: 1px solid var(--border);
         }
+        input[type="range"] { width: 100%; accent-color: var(--primary); margin: 0.5rem 0; }
+        .slider-header { display: flex; justify-content: space-between; font-size: 0.9rem; }
+        .variable-label { color: #c084fc; font-weight: 700; }
 
-        input[type="range"] {
-            width: 100%;
-            accent-color: var(--primary);
-            margin: 0.5rem 0;
-        }
-
-        .slider-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-        }
-
-        /* Success Message */
+        /* Success Modal */
         #successModal {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            transform: none;
+            top: 20px; left: 20px;
             background: rgba(16, 185, 129, 0.95);
             padding: 1.25rem 1.75rem;
             border-radius: 16px;
@@ -212,36 +160,23 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             display: none;
             z-index: 200;
-            max-width: 280px;
+            max-width: 300px;
             animation: slide-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        @keyframes slide-in { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        #successModal h2 { font-size: 1.6rem; margin-bottom: 0.4rem; }
 
-        @keyframes slide-in {
-            from { transform: translateX(-20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        #successModal h2 {
-            font-size: 1.6rem;
-            margin-bottom: 0.4rem;
-        }
-
-        /* Tooltip-like help */
+        /* Instruction box */
         .instruction-box {
             font-size: 0.85rem;
             color: var(--text-dim);
-            line-height: 1.5;
+            line-height: 1.6;
             background: rgba(255,255,255,0.02);
             padding: 1rem;
             border-radius: 8px;
             border: 1px solid var(--border);
         }
-
-        .variable-label {
-            color: #c084fc;
-            font-weight: 700;
-        }
-
+        .instruction-box strong { color: var(--text-light); }
     </style>
 </head>
 <body>
@@ -256,11 +191,11 @@
             <div class="stat-value" id="budgetValue">$0</div>
         </div>
         <div class="stat-item">
-            <div class="stat-label">Target Cost</div>
+            <div class="stat-label">Optimal Cost</div>
             <div class="stat-value" id="targetCostValue" style="color: var(--accent);">$0</div>
         </div>
         <div class="stat-item">
-            <div class="stat-label">Total Cost</div>
+            <div class="stat-label">Your Cost</div>
             <div class="stat-value" id="totalCostValue">$0</div>
         </div>
     </div>
@@ -279,12 +214,27 @@
 
         <button id="newMapBtn" class="btn-primary">Generate New Map</button>
 
+        <!-- Cable Counter: shown for Easy & Medium (MST modes) -->
+        <div id="cableCounterGroup" style="display:none;">
+            <div class="cable-counter">
+                <div class="cable-counter-label">Cables Placed</div>
+                <div class="cable-counter-value">
+                    <span id="cablesPlaced" style="color: var(--accent);">0</span><span style="color: var(--text-dim); font-size: 1.2rem;"> / </span><span id="cablesNeeded" style="color: var(--text-dim);">3</span>
+                </div>
+                <div class="cable-counter-sub">to connect all cities</div>
+                <div class="cable-bar">
+                    <div class="cable-bar-fill" id="cableBarFill" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Variable Slider: shown for Hard only -->
         <div class="control-group" id="sliderGroup" style="display:none;">
             <h3>Variable Solver (x)</h3>
             <div class="slider-container">
                 <div class="slider-header">
                     <span>Value: <span id="xVal">25</span></span>
-                    <span>Range: 0-50</span>
+                    <span>Range: 0–50</span>
                 </div>
                 <input type="range" id="xSlider" min="0" max="50" value="25">
                 <div style="font-size: 0.75rem; margin-top: 0.5rem; text-align: center;">
@@ -294,20 +244,21 @@
         </div>
 
         <div class="instruction-box" id="instructionBox">
-            <p id="goalText"><strong>Goal:</strong> Connect all cities with cables for the lowest possible cost.</p>
-            <p style="margin-top: 0.5rem;" id="tipText">Click any dashed cable to toggle it on/off.</p>
+            <p id="goalText"><strong>Goal:</strong> Connect all cities with the lowest possible cost.</p>
+            <p style="margin-top: 0.6rem;" id="tipText">Click any dashed cable to toggle it on/off.</p>
         </div>
     </aside>
 
     <div class="canvas-container" id="canvasWrap">
         <canvas id="gameCanvas"></canvas>
+
         <div id="successModal">
             <h2>SUCCESS!</h2>
-            <p>The network is fully connected.</p>
-            <button onclick="document.getElementById('successModal').style.display='none'" style="margin-top: 1rem; width: 100%;">Continue Optimizing</button>
+            <p id="successText">All cities are connected!</p>
+            <button id="successBtn" style="margin-top: 1rem; width: 100%;">Continue Optimizing</button>
         </div>
 
-        <!-- Hint Modal: appears after 5 failed attempts -->
+        <!-- Hint Modal -->
         <div id="hintModal" style="
             display: none;
             position: absolute;
@@ -324,7 +275,7 @@
         ">
             <div style="font-size: 2rem; margin-bottom: 0.5rem;">🤔</div>
             <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Need a hint?</h2>
-            <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem;">You've tried 5 times without finding the optimal route. Would you like to see the answer?</p>
+            <p id="hintText" style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem;">You've tried several times without finding the optimal solution. Would you like to see the answer?</p>
             <div style="display: flex; gap: 0.75rem;">
                 <button onclick="showAnswer()" style="flex:1; background:#6366f1; border:none; font-weight:700;">Show Answer</button>
                 <button onclick="keepTrying()" style="flex:1;">Keep Trying</button>
@@ -338,7 +289,6 @@
     const ctx = canvas.getContext('2d');
     const wrap = document.getElementById('canvasWrap');
 
-    // State
     let nodes = [];
     let edges = [];
     let difficulty = 1;
@@ -346,9 +296,9 @@
     let xValue = 25;
     let totalCost = 0;
     let isConnected = false;
-    let nonOptimalAttempts = 0;  // Track failed (non-optimal) connected attempts
+    let nonOptimalAttempts = 0;
 
-    // Resizing
+    // ─── Resize ─────────────────────────────────────────────────────────────────
     function resize() {
         canvas.width = wrap.clientWidth;
         canvas.height = wrap.clientHeight;
@@ -357,370 +307,423 @@
     window.addEventListener('resize', resize);
     resize();
 
-    // --- Core Logic ---
+    // ─── Kruskal's MST ───────────────────────────────────────────────────────────
+    function kruskalMST(edgeList) {
+        const sorted = [...edgeList].sort((a, b) => {
+            const ca = a.isVariable ? (2 * xValue + 5) : a.cost;
+            const cb = b.isVariable ? (2 * xValue + 5) : b.cost;
+            return ca - cb;
+        });
+        const parent = {};
+        nodes.forEach(n => parent[n.id] = n.id);
+        function find(x) { return parent[x] === x ? x : (parent[x] = find(parent[x])); }
+        function union(x, y) { parent[find(x)] = find(y); }
+        let cost = 0;
+        const mstEdges = [];
+        for (const e of sorted) {
+            if (find(e.n1.id) !== find(e.n2.id)) {
+                union(e.n1.id, e.n2.id);
+                cost += e.isVariable ? (2 * xValue + 5) : e.cost;
+                mstEdges.push(e);
+                if (mstEdges.length === nodes.length - 1) break;
+            }
+        }
+        return { cost, edges: mstEdges };
+    }
 
+    // ─── Generate Map ────────────────────────────────────────────────────────────
     function generateMap() {
         nodes = [];
         edges = [];
         isConnected = false;
         nonOptimalAttempts = 0;
         difficulty = parseInt(document.getElementById('difficultySelect').value);
-        
-        const nodeCount = difficulty === 1 ? 5 : (difficulty === 2 ? 8 : 10);
         const w = canvas.width;
         const h = canvas.height;
 
-        // Update instructions per tier
+        // Update instruction text
         const goalEl = document.getElementById('goalText');
-        const tipEl = document.getElementById('tipText');
+        const tipEl  = document.getElementById('tipText');
+
         if (difficulty === 1) {
-            goalEl.innerHTML = '<strong>Goal:</strong> Form a <u>closed loop</u> visiting every city for the <u>lowest total cost</u>.';
-            tipEl.innerHTML = 'Click cables to toggle them. Every city must have exactly 2 connections to form a complete loop!';
+            goalEl.innerHTML = '<strong>Goal:</strong> Connect all <u>4 cities</u> with the <u>fewest cables</u> at the <u>lowest total cost</u>.';
+            tipEl.innerHTML  = 'You need exactly <strong style="color:#10b981;">3 cables</strong> to link every city. Click a dashed line to toggle a cable on or off.';
         } else if (difficulty === 2) {
-            goalEl.innerHTML = '<strong>Goal:</strong> Form a <u>closed loop</u> through all cities while staying under budget.';
-            tipEl.innerHTML = 'Each city needs at least 2 connections. Watch the budget — it turns red if you overspend!';
+            goalEl.innerHTML = '<strong>Goal:</strong> Connect all <u>5 cities</u> for the <u>lowest possible total cost</u>.';
+            tipEl.innerHTML  = 'You need exactly <strong style="color:#10b981;">4 cables</strong> to span all 5 cities. Extra cables waste money!';
         } else {
-            goalEl.innerHTML = '<strong>Goal:</strong> Form the cheapest possible <u>closed loop</u> through every city.';
-            tipEl.innerHTML = 'Drag the <span style="color:#c084fc;font-weight:bold;">x slider</span> to change the variable cable cost and find your break-even point.';
+            goalEl.innerHTML = '<strong>Goal:</strong> Form a <u>closed loop</u> through every city while staying <u>under budget</u>.';
+            tipEl.innerHTML  = 'Each city needs at least 2 connections to form a loop. Watch the budget — it turns red if you overspend!';
         }
 
-        // Reset UI
-        document.getElementById('sliderGroup').style.display = difficulty === 3 ? 'block' : 'none';
-        document.getElementById('budgetContainer').style.display = (difficulty === 1 || difficulty === 2) ? 'block' : 'none';
-        document.getElementById('successModal').style.display = 'none';
+        // Show / hide UI sections
+        document.getElementById('cableCounterGroup').style.display = difficulty <= 2 ? 'block' : 'none';
+        document.getElementById('sliderGroup').style.display       = 'none';   // reserved for future Hard upgrade
+        document.getElementById('budgetContainer').style.display   = difficulty === 3 ? 'block' : 'none';
+        document.getElementById('successModal').style.display      = 'none';
+        document.getElementById('hintModal').style.display         = 'none';
 
+        // ── EASY: 4 nodes, sparse graph ──
         if (difficulty === 1) {
-            budget = 0; // No budget cap for Easy — just optimize
-            document.getElementById('budgetContainer').style.display = 'none';
+            const cx = w / 2, cy = h / 2;
+            const rx = Math.min(w * 0.32, 230);
+            const ry = Math.min(h * 0.32, 190);
+            for (let i = 0; i < 4; i++) {
+                const angle = (i / 4) * Math.PI * 2 - Math.PI / 4;
+                nodes.push({
+                    x: cx + rx * Math.cos(angle) + (Math.random() - 0.5) * 55,
+                    y: cy + ry * Math.sin(angle) + (Math.random() - 0.5) * 55,
+                    id: i,
+                    name: String.fromCharCode(65 + i)
+                });
+            }
+            // Build a random spanning tree first (guarantees connectivity)
+            const shuffled = [...nodes].sort(() => Math.random() - 0.5);
+            const inTree = [shuffled[0]];
+            while (inTree.length < nodes.length) {
+                const from = inTree[Math.floor(Math.random() * inTree.length)];
+                const next = shuffled[inTree.length];
+                createEdge(from, next);
+                inTree.push(next);
+            }
+            // Add 1–2 extra edges so students have real choices
+            const allPairs = [];
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const exists = edges.some(e =>
+                        (e.n1.id === nodes[i].id && e.n2.id === nodes[j].id) ||
+                        (e.n1.id === nodes[j].id && e.n2.id === nodes[i].id)
+                    );
+                    if (!exists) allPairs.push([nodes[i], nodes[j]]);
+                }
+            }
+            allPairs.sort(() => Math.random() - 0.5);
+            const extras = 1 + Math.floor(Math.random() * 2);
+            for (let k = 0; k < Math.min(extras, allPairs.length); k++) {
+                createEdge(allPairs[k][0], allPairs[k][1]);
+            }
+            document.getElementById('cablesNeeded').innerText = nodes.length - 1;
+
+        // ── MEDIUM: 5 nodes, fully connected ──
         } else if (difficulty === 2) {
+            const nodeCount = 5;
+            for (let i = 0; i < nodeCount; i++) {
+                let newNode, attempts = 0;
+                while (attempts < 100) {
+                    newNode = {
+                        x: 80 + Math.random() * (w - 160),
+                        y: 80 + Math.random() * (h - 160),
+                        id: i,
+                        name: String.fromCharCode(65 + i)
+                    };
+                    if (!nodes.some(n => Math.hypot(n.x - newNode.x, n.y - newNode.y) < 110)) break;
+                    attempts++;
+                }
+                nodes.push(newNode);
+            }
+            for (let i = 0; i < nodes.length; i++)
+                for (let j = i + 1; j < nodes.length; j++)
+                    createEdge(nodes[i], nodes[j]);
+            document.getElementById('cablesNeeded').innerText = nodes.length - 1;
+
+        // ── HARD: 8 nodes, two clusters, closed loop, budget ──
+        } else {
+            const nodeCount = 8;
+            for (let i = 0; i < nodeCount; i++) {
+                let newNode, attempts = 0;
+                while (attempts < 100) {
+                    newNode = {
+                        x: 80 + Math.random() * (w - 160),
+                        y: 80 + Math.random() * (h - 160),
+                        id: i,
+                        name: String.fromCharCode(65 + i)
+                    };
+                    if (i < 4) newNode.x = 80 + Math.random() * (w / 2 - 160);
+                    else       newNode.x = w / 2 + 80 + Math.random() * (w / 2 - 160);
+                    if (!nodes.some(n => Math.hypot(n.x - newNode.x, n.y - newNode.y) < 100)) break;
+                    attempts++;
+                }
+                nodes.push(newNode);
+            }
+            const left  = nodes.filter(n => n.id < 4);
+            const right = nodes.filter(n => n.id >= 4);
+            [left, right].forEach(cluster => {
+                for (let i = 0; i < cluster.length; i++)
+                    for (let j = i + 1; j < cluster.length; j++)
+                        createEdge(cluster[i], cluster[j]);
+            });
+            const bridgeCount = 2 + Math.floor(Math.random() * 2);
+            for (let i = 0; i < bridgeCount; i++)
+                createEdge(left[Math.floor(Math.random() * 4)], right[Math.floor(Math.random() * 4)], true);
+
             budget = 450 + Math.floor(Math.random() * 150);
             document.getElementById('budgetValue').innerText = '$' + budget;
         }
 
-        // Geometric Node Generation
-        for (let i = 0; i < nodeCount; i++) {
-            let newNode;
-            let attempts = 0;
-            while (attempts < 100) {
-                newNode = {
-                    x: 80 + Math.random() * (w - 160),
-                    y: 80 + Math.random() * (h - 160),
-                    id: i,
-                    name: String.fromCharCode(65 + i) // A, B, C...
-                };
-
-                if (difficulty === 2) {
-                    if (i < 4) newNode.x = 80 + Math.random() * (w/2 - 160);
-                    else newNode.x = w/2 + 80 + Math.random() * (w/2 - 160);
-                }
-
-                let tooClose = nodes.some(n => Math.hypot(n.x - newNode.x, n.y - newNode.y) < 100);
-                if (!tooClose) break;
-                attempts++;
-            }
-            nodes.push(newNode);
-        }
-
-        // Edge Generation
-        if (difficulty === 1) {
-            // Easy: Connect every pair of nodes so there are many path choices to compare.
-            // Students pick the cheapest subset that still connects all cities (MST concept).
-            for (let i = 0; i < nodes.length; i++) {
-                for (let j = i + 1; j < nodes.length; j++) {
-                    createEdge(nodes[i], nodes[j]);
-                }
-            }
-        } else if (difficulty === 2) {
-            const left = nodes.filter(n => n.id < 4);
-            const right = nodes.filter(n => n.id >= 4);
-            [left, right].forEach(cluster => {
-                for (let i = 0; i < cluster.length; i++) {
-                    for (let j = i + 1; j < cluster.length; j++) {
-                        createEdge(cluster[i], cluster[j]);
-                    }
-                }
-            });
-            const bridgeCount = 2 + Math.floor(Math.random() * 2);
-            for (let i = 0; i < bridgeCount; i++) {
-                createEdge(left[Math.floor(Math.random() * 4)], right[Math.floor(Math.random() * 4)], true);
-            }
-        } else {
-            for (let i = 0; i < nodes.length; i++) {
-                for (let j = i + 1; j < nodes.length; j++) {
-                    const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
-                    if (dist < 400 || Math.random() < 0.3) {
-                        createEdge(nodes[i], nodes[j]);
-                    }
-                }
-            }
-            const varIdx = Math.floor(Math.random() * edges.length);
-            edges[varIdx].isVariable = true;
-        }
-
-        // Validate and compute optimal
-        if (!isPotentiallyLoopable()) {
-            generateMap();
-            return;
-        }
+        if (!isValidGraph()) { generateMap(); return; }
 
         calculateOptimalCost();
         updateTotals();
         render();
     }
 
-    // Compute true optimal for current map and difficulty
+    // ─── Optimal Cost ────────────────────────────────────────────────────────────
     function calculateOptimalCost() {
-        // All difficulties now use TSP (closed loop / Hamiltonian cycle)
-        let minCost = Infinity;
-        const n = nodes.length;
-
-        function solve(curr, visited, cost, startNode, count) {
-            if (count === n) {
-                const ret = edges.find(e =>
-                    (e.n1.id === curr.id && e.n2.id === startNode.id) ||
-                    (e.n2.id === curr.id && e.n1.id === startNode.id)
-                );
-                if (ret) {
-                    const fc = cost + (ret.isVariable ? (2 * xValue + 5) : ret.cost);
-                    minCost = Math.min(minCost, fc);
+        if (difficulty <= 2) {
+            // MST — Kruskal's
+            const { cost } = kruskalMST(edges);
+            document.getElementById('targetCostValue').innerText = '$' + cost;
+            window.currentOptimal = cost;
+        } else {
+            // TSP — Hamiltonian cycle (brute-force; 8 nodes is fine)
+            let minCost = Infinity;
+            const n = nodes.length;
+            function solve(curr, visited, cost, start, count) {
+                if (count === n) {
+                    const ret = edges.find(e =>
+                        (e.n1.id === curr.id && e.n2.id === start.id) ||
+                        (e.n2.id === curr.id && e.n1.id === start.id)
+                    );
+                    if (ret) minCost = Math.min(minCost, cost + ret.cost);
+                    return;
                 }
-                return;
+                if (cost >= minCost) return;
+                edges.forEach(e => {
+                    let next = null;
+                    if (e.n1.id === curr.id) next = e.n2;
+                    else if (e.n2.id === curr.id) next = e.n1;
+                    if (next && !visited.has(next.id)) {
+                        visited.add(next.id);
+                        solve(next, visited, cost + e.cost, start, count + 1);
+                        visited.delete(next.id);
+                    }
+                });
             }
-            if (cost >= minCost) return;
-            edges.forEach(e => {
-                let next = null;
-                if (e.n1.id === curr.id) next = e.n2;
-                else if (e.n2.id === curr.id) next = e.n1;
-                if (next && !visited.has(next.id)) {
-                    visited.add(next.id);
-                    solve(next, visited, cost + (e.isVariable ? (2 * xValue + 5) : e.cost), startNode, count + 1);
-                    visited.delete(next.id);
-                }
+            nodes.forEach(start => {
+                const v = new Set([start.id]);
+                solve(start, v, 0, start, 1);
             });
+            if (minCost === Infinity) { generateMap(); return; }
+            document.getElementById('targetCostValue').innerText = '$' + minCost;
+            window.currentOptimal = minCost;
         }
-
-        nodes.forEach(start => {
-            const visited = new Set([start.id]);
-            solve(start, visited, 0, start, 1);
-        });
-
-        if (minCost === Infinity) { generateMap(); return; }
-
-        document.getElementById('targetCostValue').innerText = '$' + minCost;
-        window.currentOptimal = minCost;
     }
 
-    function isPotentiallyLoopable() {
+    // ─── Graph Validation ────────────────────────────────────────────────────────
+    function isValidGraph() {
         const adj = {};
         nodes.forEach(n => adj[n.id] = []);
-        edges.forEach(e => {
-            adj[e.n1.id].push(e.n2.id);
-            adj[e.n2.id].push(e.n1.id);
-        });
-        if (difficulty === 1) {
-            // For MST, just ensure graph is connected (reachable)
-            const visited = new Set();
-            const stack = [0];
-            while (stack.length) { const c = stack.pop(); if (!visited.has(c)) { visited.add(c); adj[c].forEach(nb => stack.push(nb)); } }
-            return visited.size === nodes.length;
+        edges.forEach(e => { adj[e.n1.id].push(e.n2.id); adj[e.n2.id].push(e.n1.id); });
+        // Connectivity check
+        const visited = new Set();
+        const stack = [nodes[0].id];
+        while (stack.length) {
+            const c = stack.pop();
+            if (!visited.has(c)) { visited.add(c); adj[c].forEach(nb => stack.push(nb)); }
         }
-        // For loops, every node must have degree >= 2 potential
-        return nodes.every(n => adj[n.id].length >= 2);
+        if (visited.size !== nodes.length) return false;
+        // Hard: each node needs degree >= 2 for a loop to exist
+        if (difficulty === 3) return nodes.every(n => adj[n.id].length >= 2);
+        return true;
     }
 
+    // ─── Create Edge ─────────────────────────────────────────────────────────────
     function createEdge(n1, n2, isBridge = false) {
         let cost;
-        if (difficulty === 1) cost = 1 + Math.floor(Math.random() * 19);
-        else if (difficulty === 2) cost = 20 + Math.floor(Math.random() * 80);
-        else cost = 15 + Math.floor(Math.random() * 35);
-        edges.push({ n1, n2, cost, active: false, isVariable: false, isBridge });
+        if      (difficulty === 1) cost = 1  + Math.floor(Math.random() * 15);  // $1–15
+        else if (difficulty === 2) cost = 1  + Math.floor(Math.random() * 20);  // $1–20
+        else                       cost = 20 + Math.floor(Math.random() * 80);  // $20–99
+        edges.push({ n1, n2, cost, active: false, isVariable: false, isAnswer: false, isBridge });
     }
 
+    // ─── Check Connectivity / Win Condition ──────────────────────────────────────
     function checkConnectivity() {
         const activeEdges = edges.filter(e => e.active);
         const adj = {};
         nodes.forEach(n => adj[n.id] = []);
-        activeEdges.forEach(e => {
-            adj[e.n1.id].push(e.n2.id);
-            adj[e.n2.id].push(e.n1.id);
-        });
+        activeEdges.forEach(e => { adj[e.n1.id].push(e.n2.id); adj[e.n2.id].push(e.n1.id); });
 
         const visited = new Set();
         const stack = [nodes[0].id];
         while (stack.length) {
             const curr = stack.pop();
-            if (!visited.has(curr)) {
-                visited.add(curr);
-                adj[curr].forEach(nb => stack.push(nb));
-            }
+            if (!visited.has(curr)) { visited.add(curr); adj[curr].forEach(nb => stack.push(nb)); }
         }
 
         let nowConnected = false;
-        if (difficulty === 1) {
-            // Easy: closed loop required (same as Medium but fewer nodes)
-            const allDegreeTwo = nodes.every(n => adj[n.id].length >= 2);
-            nowConnected = visited.size === nodes.length && allDegreeTwo;
+        if (difficulty <= 2) {
+            // MST mode: all nodes reachable via active edges
+            nowConnected = visited.size === nodes.length;
         } else {
-            // Medium / Hard: closed loop required (every node degree >= 2)
-            const allDegreeTwo = nodes.every(n => adj[n.id].length >= 2);
-            nowConnected = visited.size === nodes.length && allDegreeTwo;
+            // Loop mode: all reachable + every node degree >= 2
+            nowConnected = visited.size === nodes.length && nodes.every(n => adj[n.id].length >= 2);
         }
 
         if (nowConnected && !isConnected) {
-            const modal = document.getElementById('successModal');
-            const title = modal.querySelector('h2');
-            const text = modal.querySelector('p');
+            const modal   = document.getElementById('successModal');
+            const title   = modal.querySelector('h2');
+            const textEl  = document.getElementById('successText');
+            const btn     = document.getElementById('successBtn');
 
             if (totalCost === window.currentOptimal) {
-                // OPTIMAL — reset attempt counter, green modal
+                // ✅ OPTIMAL
                 nonOptimalAttempts = 0;
                 modal.style.background = 'rgba(16, 185, 129, 0.95)';
                 title.innerText = '🎉 OPTIMAL!';
-                title.style.color = 'white';
-                text.innerText = 'You found the cheapest possible connection!';
-                modal.querySelector('button').innerText = 'Generate New Map';
-                modal.querySelector('button').onclick = () => { modal.style.display = 'none'; generateMap(); };
-                modal.style.display = 'block';
+                if (difficulty <= 2) {
+                    textEl.innerText = `Perfect! You found the Minimum Spanning Tree — all cities connected for just $${totalCost}.`;
+                } else {
+                    textEl.innerText = 'You found the cheapest possible loop through every city!';
+                }
+                btn.innerText = 'Generate New Map';
+                btn.onclick = () => { modal.style.display = 'none'; generateMap(); };
             } else {
-                // NOT OPTIMAL — increment attempt counter
+                // ⚠️ CONNECTED BUT NOT OPTIMAL
                 nonOptimalAttempts++;
                 modal.style.background = 'rgba(234, 179, 8, 0.95)';
                 title.innerText = '⚠️ Not Quite!';
-                title.style.color = 'white';
-                text.innerText = `All cities connected, but your cost ($${totalCost}) is higher than optimal ($${window.currentOptimal}). Remove some cables and try again!`;
-                modal.querySelector('button').innerText = 'Keep Trying';
-                modal.querySelector('button').onclick = () => { modal.style.display = 'none'; };
-                modal.style.display = 'block';
+                const excess = totalCost - window.currentOptimal;
+                if (difficulty <= 2) {
+                    const activeCount = activeEdges.length;
+                    const needed = nodes.length - 1;
+                    if (activeCount > needed) {
+                        textEl.innerText = `You have ${activeCount - needed} extra cable(s) creating redundant connections. You only need ${needed} cables. Remove the most expensive ones!`;
+                    } else {
+                        textEl.innerText = `All cities connected! But your cost ($${totalCost}) is $${excess} more than optimal ($${window.currentOptimal}). Can you swap a cable for a cheaper one?`;
+                    }
+                } else {
+                    textEl.innerText = `Loop complete! Your cost ($${totalCost}) is $${excess} over optimal ($${window.currentOptimal}). Remove some cables and try again!`;
+                }
+                btn.innerText = 'Keep Trying';
+                btn.onclick = () => { modal.style.display = 'none'; };
 
-                // After 3 failed attempts, offer the hint
                 if (nonOptimalAttempts >= 3) {
                     setTimeout(() => {
                         modal.style.display = 'none';
                         document.getElementById('hintModal').style.display = 'block';
-                    }, 1800);
+                    }, 2000);
                 }
             }
+            modal.style.display = 'block';
         }
 
-        // When they break the connection, hide modals
         if (!nowConnected && isConnected) {
             document.getElementById('successModal').style.display = 'none';
         }
-
         isConnected = nowConnected;
     }
 
     function keepTrying() {
         document.getElementById('hintModal').style.display = 'none';
-        nonOptimalAttempts = 0; // reset so they get a fresh 5 attempts
+        nonOptimalAttempts = 0;
     }
 
+    // ─── Show Answer ─────────────────────────────────────────────────────────────
     function showAnswer() {
         document.getElementById('hintModal').style.display = 'none';
         nonOptimalAttempts = 0;
-
-        // Clear all edges
         edges.forEach(e => { e.active = false; e.isAnswer = false; });
 
-        // Find the optimal Hamiltonian cycle (TSP) and track which edges are used
-        let minCost = Infinity;
-        let bestPath = null;
-        const n = nodes.length;
-
-        function solve(curr, visited, cost, startNode, count, path) {
-            if (count === n) {
-                const ret = edges.find(e =>
-                    (e.n1.id === curr.id && e.n2.id === startNode.id) ||
-                    (e.n2.id === curr.id && e.n1.id === startNode.id)
-                );
-                if (ret) {
-                    const fc = cost + (ret.isVariable ? (2 * xValue + 5) : ret.cost);
-                    if (fc < minCost) {
-                        minCost = fc;
+        if (difficulty <= 2) {
+            // MST answer via Kruskal's
+            const { edges: mstEdges } = kruskalMST(edges);
+            mstEdges.forEach(e => { e.active = true; e.isAnswer = true; });
+        } else {
+            // TSP answer (loop)
+            let minCost = Infinity;
+            let bestPath = null;
+            const n = nodes.length;
+            function solve(curr, visited, cost, start, count, path) {
+                if (count === n) {
+                    const ret = edges.find(e =>
+                        (e.n1.id === curr.id && e.n2.id === start.id) ||
+                        (e.n2.id === curr.id && e.n1.id === start.id)
+                    );
+                    if (ret && cost + ret.cost < minCost) {
+                        minCost = cost + ret.cost;
                         bestPath = [...path, ret];
                     }
+                    return;
                 }
-                return;
+                if (cost >= minCost) return;
+                edges.forEach(e => {
+                    let next = null;
+                    if (e.n1.id === curr.id) next = e.n2;
+                    else if (e.n2.id === curr.id) next = e.n1;
+                    if (next && !visited.has(next.id)) {
+                        visited.add(next.id);
+                        solve(next, visited, cost + e.cost, start, count + 1, [...path, e]);
+                        visited.delete(next.id);
+                    }
+                });
             }
-            if (cost >= minCost) return;
-            edges.forEach(e => {
-                let next = null;
-                if (e.n1.id === curr.id) next = e.n2;
-                else if (e.n2.id === curr.id) next = e.n1;
-                if (next && !visited.has(next.id)) {
-                    visited.add(next.id);
-                    solve(next, visited, cost + (e.isVariable ? (2 * xValue + 5) : e.cost), startNode, count + 1, [...path, e]);
-                    visited.delete(next.id);
-                }
-            });
-        }
-
-        // Start from node 0 (symmetry means any start gives the same result)
-        const visited = new Set([nodes[0].id]);
-        solve(nodes[0], visited, 0, nodes[0], 1, []);
-
-        if (bestPath) {
-            bestPath.forEach(e => { e.active = true; e.isAnswer = true; });
+            const v = new Set([nodes[0].id]);
+            solve(nodes[0], v, 0, nodes[0], 1, []);
+            if (bestPath) bestPath.forEach(e => { e.active = true; e.isAnswer = true; });
         }
 
         updateTotals();
         render();
     }
 
+    // ─── Update Totals ───────────────────────────────────────────────────────────
     function updateTotals() {
         totalCost = 0;
         edges.forEach(e => {
-            if (e.active) {
-                if (e.isVariable) {
-                    totalCost += (2 * xValue + 5);
-                } else {
-                    totalCost += e.cost;
-                }
-            }
+            if (e.active) totalCost += e.isVariable ? (2 * xValue + 5) : e.cost;
         });
 
         const display = document.getElementById('totalCostValue');
         display.innerText = '$' + totalCost;
-        
-        // Target Logic
+
         if (isConnected && totalCost === window.currentOptimal) {
             display.style.color = 'var(--accent)';
-            document.getElementById('successModal').querySelector('h2').innerText = "OPTIMAL!";
         } else if (isConnected) {
-            display.style.color = '#fbbf24'; // Warning yellow for connected but not optimal
-            document.getElementById('successModal').querySelector('h2').innerText = "SUCCESS!";
+            display.style.color = '#fbbf24';
         } else {
             display.style.color = 'white';
         }
 
-        if (difficulty === 2 && totalCost > budget) {
+        if (difficulty === 3 && totalCost > budget) {
             display.classList.add('over-budget');
         } else {
             display.classList.remove('over-budget');
         }
 
+        // Update cable counter for MST modes
+        if (difficulty <= 2) {
+            const placed = edges.filter(e => e.active).length;
+            const needed = nodes.length - 1;
+            document.getElementById('cablesPlaced').innerText = placed;
+            const pct = Math.min(100, Math.round((placed / needed) * 100));
+            document.getElementById('cableBarFill').style.width = pct + '%';
+            // Turn bar red if over-cabled
+            document.getElementById('cableBarFill').style.background =
+                placed > needed ? 'var(--danger)' : 'var(--accent)';
+            document.getElementById('cablesPlaced').style.color =
+                placed > needed ? 'var(--danger)' : 'var(--accent)';
+        }
+
         checkConnectivity();
     }
 
-    // --- Rendering ---
-
+    // ─── Render ──────────────────────────────────────────────────────────────────
     function render() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Pass 1: Draw edge lines only
+        // Pass 1: edge lines
         edges.forEach(edge => {
             ctx.beginPath();
             ctx.moveTo(edge.n1.x, edge.n1.y);
             ctx.lineTo(edge.n2.x, edge.n2.y);
-
             if (edge.isAnswer) {
                 ctx.strokeStyle = '#f59e0b';
                 ctx.lineWidth = 6;
                 ctx.setLineDash([]);
                 ctx.shadowColor = '#f59e0b';
-                ctx.shadowBlur = 12;
+                ctx.shadowBlur = 14;
             } else if (edge.active) {
-                ctx.strokeStyle = edge.isVariable ? '#c084fc' : '#6366f1';
+                ctx.strokeStyle = '#6366f1';
                 ctx.lineWidth = 5;
                 ctx.setLineDash([]);
                 ctx.shadowBlur = 0;
@@ -735,7 +738,7 @@
             ctx.setLineDash([]);
         });
 
-        // Pass 2: Draw nodes on top of edges
+        // Pass 2: nodes
         nodes.forEach(node => {
             ctx.beginPath();
             ctx.arc(node.x, node.y, 22, 0, Math.PI * 2);
@@ -747,97 +750,67 @@
             ctx.strokeStyle = isConnected ? '#10b981' : '#334155';
             ctx.lineWidth = 3;
             ctx.stroke();
-
             ctx.fillStyle = '#fff';
             ctx.font = '700 16px Outfit';
             ctx.textAlign = 'center';
             ctx.fillText(node.name, node.x, node.y + 6);
         });
 
-        // Pass 3: Draw edge cost labels on top of everything
+        // Pass 3: cost labels
         edges.forEach(edge => {
             const midX = (edge.n1.x + edge.n2.x) / 2;
             const midY = (edge.n1.y + edge.n2.y) / 2;
-
             const label = edge.isVariable ? `f(${xValue})` : `$${edge.cost}`;
             ctx.font = 'bold 12px Inter';
             ctx.textAlign = 'center';
-
             const metrics = ctx.measureText(label);
-            const pad = 6;
-            const bw = metrics.width + pad * 2;
-            const bh = 20;
-
-            // Label background
-            if (edge.isAnswer) {
-                ctx.fillStyle = '#92400e';
-            } else if (edge.active) {
-                ctx.fillStyle = edge.isVariable ? '#7e22ce' : '#4f46e5';
-            } else {
-                ctx.fillStyle = '#1e293b';
-            }
-            // Rounded rect manually
-            const rx = midX - bw/2, ry = midY - bh/2;
+            const pad = 6, bw = metrics.width + pad * 2, bh = 20;
+            if      (edge.isAnswer) ctx.fillStyle = '#92400e';
+            else if (edge.active)   ctx.fillStyle = '#4f46e5';
+            else                    ctx.fillStyle = '#1e293b';
+            const rx = midX - bw / 2, ry = midY - bh / 2;
             ctx.beginPath();
             ctx.roundRect(rx, ry, bw, bh, 4);
             ctx.fill();
-
-            // Border for active/answer
             if (edge.isAnswer) {
-                ctx.strokeStyle = '#f59e0b';
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
+                ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 1.5; ctx.stroke();
             } else if (edge.active) {
-                ctx.strokeStyle = edge.isVariable ? '#c084fc' : '#818cf8';
-                ctx.lineWidth = 1;
-                ctx.stroke();
+                ctx.strokeStyle = '#818cf8'; ctx.lineWidth = 1; ctx.stroke();
             }
-
             ctx.fillStyle = '#fff';
             ctx.fillText(label, midX, midY + 4);
         });
     }
 
-    // --- Interactions ---
-
-    canvas.addEventListener('mousedown', (e) => {
+    // ─── Interactions ────────────────────────────────────────────────────────────
+    canvas.addEventListener('mousedown', e => {
         const rect = canvas.getBoundingClientRect();
         const mx = e.clientX - rect.left;
         const my = e.clientY - rect.top;
-
-        // Click-to-toggle Edge
-        // We find the edge where the midpoint is clicked
-        let clickedEdge = null;
+        let clicked = null;
         edges.forEach(edge => {
             const midX = (edge.n1.x + edge.n2.x) / 2;
             const midY = (edge.n1.y + edge.n2.y) / 2;
-            if (Math.hypot(midX - mx, midY - my) < 25) {
-                clickedEdge = edge;
-            }
+            if (Math.hypot(midX - mx, midY - my) < 25) clicked = edge;
         });
-
-        if (clickedEdge) {
-            clickedEdge.active = !clickedEdge.active;
+        if (clicked) {
+            clicked.active = !clicked.active;
+            if (clicked.isAnswer) clicked.isAnswer = false;
             updateTotals();
             render();
         }
     });
 
     document.getElementById('newMapBtn').addEventListener('click', generateMap);
-    
     document.getElementById('difficultySelect').addEventListener('change', generateMap);
-
-    document.getElementById('xSlider').addEventListener('input', (e) => {
+    document.getElementById('xSlider').addEventListener('input', e => {
         xValue = parseInt(e.target.value);
         document.getElementById('xVal').innerText = xValue;
         updateTotals();
         render();
     });
 
-    // Initial load
     window.onload = generateMap;
-
 </script>
-
 </body>
 </html>
