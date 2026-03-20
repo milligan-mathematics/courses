@@ -486,6 +486,14 @@
             if (!goodFlip) { generateMap(); return; } // retry full map if no flip possible
             xValue = 0; // reset
             
+            // Calculate exact breakeven
+            const varEdge = edges.find(e => e.isVariable);
+            const mst0 = kruskalMST(edges).cost;
+            const mstWithoutVar = kruskalMST(edges.filter(e => !e.isVariable)).cost;
+            const rivalCost = mstWithoutVar - (mst0 - 5);
+            window.competitorCost = rivalCost;
+            window.breakevenX = (rivalCost - 5) / 2;
+            
             document.getElementById('cablesNeeded').innerText = nodes.length - 1;
         }
 
@@ -523,7 +531,10 @@
         let cost;
         if      (difficulty === 1) cost = 1  + Math.floor(Math.random() * 15);  // $1–15
         else if (difficulty === 2) cost = 1  + Math.floor(Math.random() * 20);  // $1–20
-        else                       cost = 20 + Math.floor(Math.random() * 80);  // $20–99
+        else {
+            cost = 20 + Math.floor(Math.random() * 80);  // $20–99
+            if (cost % 2 === 0) cost += 1; // force odd cost to guarantee whole number breakeven x
+        }
         edges.push({ n1, n2, cost, active: false, isVariable: false, isAnswer: false, isBridge });
     }
 
@@ -556,13 +567,45 @@
                 if (difficulty === 3 && tier3State === 1) {
                     modal.style.background = 'rgba(56, 189, 248, 0.95)';
                     title.innerText = 'Phase 1 Complete!';
-                    textEl.innerText = `You found the best route for x=0. But prices change! At what value of x does this cable become too expensive? Unlock the slider, find the exact point it flips, and build the new route.`;
-                    btn.innerText = 'Unlock Phase 2';
+                    
+                    let attemptsLeft = 2;
+                    textEl.innerHTML = `You found the best route for <strong>x=0</strong>. But prices change!<br><br>
+                        The variable cable costs <code>f(x) = 2x + 5</code>.<br>
+                        The runner-up cable to replace it costs <code>$${window.competitorCost}</code>.<br><br>
+                        At what value of <em>x</em> are they equal? <br>
+                        <div style="display:flex; gap: 10px; align-items:center; margin-top: 10px; margin-bottom: 5px;">
+                            <input type="number" id="mathInput" style="padding:0.5rem; border-radius:4px; border:1px solid #94a3b8; width: 80px; color: #0f172a;" placeholder="x = ?">
+                            <span id="mathFeedback" style="color: #991b1b; font-weight: bold; font-size: 0.85rem;"></span>
+                        </div>
+                    `;
+                    
+                    btn.innerText = 'Check Answer';
                     btn.onclick = () => {
-                        modal.style.display = 'none';
-                        tier3State = 2;
-                        document.getElementById('xSlider').disabled = false;
-                        document.getElementById('goalText').innerHTML = '<strong>Phase 2:</strong> Drag the slider. Find the breakeven point and build the alternate route!';
+                        const userVal = parseInt(document.getElementById('mathInput').value);
+                        if (userVal === window.breakevenX) {
+                            textEl.innerHTML = `<span style="color:#065f46; font-weight:bold;">Correct!</span> The breakeven is x = ${window.breakevenX}.<br><br><strong>Phase 2:</strong> Feel free to drag the slider past ${window.breakevenX} and watch the prices flip. Then build the new cheapest route!`;
+                            btn.innerText = 'Unlock Phase 2';
+                            btn.onclick = () => {
+                                modal.style.display = 'none';
+                                tier3State = 2;
+                                document.getElementById('xSlider').disabled = false;
+                                document.getElementById('goalText').innerHTML = '<strong>Phase 2:</strong> Drag the slider past the breakeven point and build the alternate route!';
+                            };
+                        } else {
+                            attemptsLeft--;
+                            if (attemptsLeft > 0) {
+                                document.getElementById('mathFeedback').innerText = `Not quite. ${attemptsLeft} try left.`;
+                            } else {
+                                textEl.innerHTML = `Out of tries! The breakeven point was <strong>x = ${window.breakevenX}</strong>.<br><br><strong>Phase 2:</strong> Let's unlock the slider so you can verify it yourself! Drag it past ${window.breakevenX} and build the new route.`;
+                                btn.innerText = 'Unlock Phase 2';
+                                btn.onclick = () => {
+                                    modal.style.display = 'none';
+                                    tier3State = 2;
+                                    document.getElementById('xSlider').disabled = false;
+                                    document.getElementById('goalText').innerHTML = '<strong>Phase 2:</strong> Drag the slider past the breakeven point and build the alternate route!';
+                                };
+                            }
+                        }
                     };
                     modal.style.display = 'block';
                 } else if (difficulty === 3 && tier3State === 2) {
@@ -637,6 +680,7 @@
         const { edges: mstEdges } = kruskalMST(edges);
         mstEdges.forEach(e => { e.active = true; e.isAnswer = true; });
 
+        isConnected = false; // ensure modal triggers natively even if already connected previously
         updateTotals();
         render();
     }
@@ -726,28 +770,68 @@
         });
 
         // Pass 3: cost labels
+        const placedLabels = []; // {x, y, w, h}
+        
         edges.forEach(edge => {
-            const midX = (edge.n1.x + edge.n2.x) / 2;
-            const midY = (edge.n1.y + edge.n2.y) / 2;
             const label = edge.isVariable ? `f(${xValue})` : `$${edge.cost}`;
             ctx.font = 'bold 12px Inter';
             ctx.textAlign = 'center';
             const metrics = ctx.measureText(label);
             const pad = 6, bw = metrics.width + pad * 2, bh = 20;
+
+            const dx = edge.n2.x - edge.n1.x;
+            const dy = edge.n2.y - edge.n1.y;
+
+            let rx = 0, ry = 0, finalPx = 0, finalPy = 0;
+            const offsets = [0, 0.1, -0.1, 0.2, -0.2, 0.3, -0.3, 0.35, -0.35];
+            
+            for (let off of offsets) {
+                 const testT = 0.5 + off;
+                 const px = edge.n1.x + dx * testT;
+                 const py = edge.n1.y + dy * testT;
+                 rx = px - bw / 2;
+                 ry = py - bh / 2;
+                 
+                 const buffer = 10; // extra padding to avoid overlap completely
+                 let collides = false;
+                 for (let box of placedLabels) {
+                     if (rx < box.x + box.w + buffer &&
+                         rx + bw + buffer > box.x &&
+                         ry < box.y + box.h + buffer &&
+                         ry + bh + buffer > box.y) {
+                         collides = true;
+                         break;
+                     }
+                 }
+                 if (!collides) {
+                     finalPx = px;
+                     finalPy = py;
+                     break;
+                 }
+            }
+            
+            edge.labelX = finalPx || (edge.n1.x + edge.n2.x)/2;
+            edge.labelY = finalPy || (edge.n1.y + edge.n2.y)/2;
+            rx = edge.labelX - bw/2;
+            ry = edge.labelY - bh/2;
+            placedLabels.push({x: rx, y: ry, w: bw, h: bh});
+
             if      (edge.isAnswer) ctx.fillStyle = '#92400e';
             else if (edge.active)   ctx.fillStyle = '#4f46e5';
             else                    ctx.fillStyle = '#1e293b';
-            const rx = midX - bw / 2, ry = midY - bh / 2;
+            
             ctx.beginPath();
             ctx.roundRect(rx, ry, bw, bh, 4);
             ctx.fill();
+            
             if (edge.isAnswer) {
                 ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 1.5; ctx.stroke();
             } else if (edge.active) {
                 ctx.strokeStyle = '#818cf8'; ctx.lineWidth = 1; ctx.stroke();
             }
+            
             ctx.fillStyle = '#fff';
-            ctx.fillText(label, midX, midY + 4);
+            ctx.fillText(label, edge.labelX, edge.labelY + 4);
         });
     }
 
@@ -758,9 +842,9 @@
         const my = e.clientY - rect.top;
         let clicked = null;
         edges.forEach(edge => {
-            const midX = (edge.n1.x + edge.n2.x) / 2;
-            const midY = (edge.n1.y + edge.n2.y) / 2;
-            if (Math.hypot(midX - mx, midY - my) < 25) clicked = edge;
+            const lx = edge.labelX || (edge.n1.x + edge.n2.x) / 2;
+            const ly = edge.labelY || (edge.n1.y + edge.n2.y) / 2;
+            if (Math.hypot(lx - mx, ly - my) < 25) clicked = edge;
         });
         if (clicked) {
             clicked.active = !clicked.active;
