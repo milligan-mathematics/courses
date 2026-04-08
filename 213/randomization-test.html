@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Randomization Test Simulator</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.2"></script>
+    <style>
+:root {
+    --bg-gradient: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%);
+    --panel-bg: rgba(255, 255, 255, 0.05);
+    --panel-border: rgba(255, 255, 255, 0.1);
+    --text-main: #F8FAFC;
+    --text-muted: #94A3B8;
+    --accent-primary: #3B82F6;
+    --accent-primary-hover: #2563EB;
+    --accent-secondary: #06B6D4;
+    --accent-secondary-hover: #0891B2;
+    --accent-danger: #EF4444;
+    --input-bg: rgba(15, 23, 42, 0.6);
+    --input-border: rgba(255, 255, 255, 0.2);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-gradient);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding: 2rem;
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 3rem;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(to right, #3B82F6, #06B6D4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .grid-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.panel {
+    background: var(--panel-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--panel-border);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    animation: fadeIn 1s ease-out;
+}
+
+.panel h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--panel-border);
+    padding-bottom: 0.5rem;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--panel-border);
+    padding-bottom: 0.5rem;
+}
+
+.panel-header h2 {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+textarea, input[type="number"] {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+textarea:focus, input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.settings-group {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+    text-align: center;
+    width: 100%;
+}
+
+.btn-primary {
+    background: var(--accent-primary);
+    color: #fff;
+    margin-top: 1rem;
+    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
+}
+
+.btn-primary:hover {
+    background: var(--accent-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+}
+
+.btn-secondary {
+    background: var(--accent-secondary);
+    color: #fff;
+    width: auto;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+}
+
+.btn-secondary:hover {
+    background: var(--accent-secondary-hover);
+}
+
+.metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+}
+
+.metric-card h3 {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.metric-value.highlight {
+    color: var(--accent-danger);
+}
+
+.metric-sub {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInDown {
+    from { 
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Randomization Test Simulator</h1>
+            <p>A web-based Permutation Test simulator for exploring statistical significance.</p>
+        </header>
+
+        <main class="grid-layout">
+            <div class="panel input-panel">
+                <div class="panel-header">
+                    <h2>Input Data</h2>
+                    <button id="loadDataBtn" class="btn btn-secondary">Load Sample Data</button>
+                </div>
+                
+                <div class="input-group">
+                    <label for="groupA">Group A Data (Comma-separated)</label>
+                    <textarea id="groupA" rows="4" placeholder="e.g. 10, 12, 14, 15"></textarea>
+                </div>
+                
+                <div class="input-group">
+                    <label for="groupB">Group B Data (Comma-separated)</label>
+                    <textarea id="groupB" rows="4" placeholder="e.g. 7, 8, 9, 11"></textarea>
+                </div>
+
+                <div class="settings-group">
+                    <div class="input-group">
+                        <label for="numShuffles">Number of Shuffles</label>
+                        <input type="number" id="numShuffles" value="100" min="1" max="10000">
+                    </div>
+                </div>
+
+                <button id="runTestBtn" class="btn btn-primary">Run Randomization Test</button>
+            </div>
+
+            <div class="panel results-panel">
+                <h2>Results</h2>
+                
+                <div class="metrics">
+                    <div class="metric-card">
+                        <h3>Observed Mean Difference</h3>
+                        <div class="metric-value" id="obsDiffDisplay">--</div>
+                        <div class="metric-sub">&lpar;&nbsp;x&#772;<sub>A</sub> - x&#772;<sub>B</sub>&nbsp;&rpar;</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Empirical P-Value</h3>
+                        <div class="metric-value highlight" id="pValueDisplay">--</div>
+                        <div class="metric-sub">Proportion &ge; Observed</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="histogramCanvas"></canvas>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+const groupAInput = document.getElementById('groupA');
+const groupBInput = document.getElementById('groupB');
+const numShufflesInput = document.getElementById('numShuffles');
+const loadDataBtn = document.getElementById('loadDataBtn');
+const runTestBtn = document.getElementById('runTestBtn');
+const obsDiffDisplay = document.getElementById('obsDiffDisplay');
+const pValueDisplay = document.getElementById('pValueDisplay');
+const canvas = document.getElementById('histogramCanvas');
+let chartInstance = null;
+
+// Sample Data (Caffeine vs No Caffeine tapping task)
+const sampleData = {
+    groupA: "245, 246, 246, 248, 248, 248, 250, 250, 250, 252",
+    groupB: "242, 242, 242, 244, 244, 245, 246, 246, 246, 248"
+};
+
+loadDataBtn.addEventListener('click', () => {
+    groupAInput.value = sampleData.groupA;
+    groupBInput.value = sampleData.groupB;
+    
+    // Add brief animation to highlight data load
+    groupAInput.style.background = "rgba(59, 130, 246, 0.2)";
+    groupBInput.style.background = "rgba(59, 130, 246, 0.2)";
+    setTimeout(() => {
+        groupAInput.style.background = "";
+        groupBInput.style.background = "";
+    }, 500);
+});
+
+function parseData(str) {
+    return str.split(',')
+              .map(v => parseFloat(v.trim()))
+              .filter(v => !isNaN(v));
+}
+
+function mean(arr) {
+    if (arr.length === 0) return 0;
+    return arr.reduce((a, b) => a + b, 0) / arr.length;
+}
+
+function fisherYatesShuffle(array) {
+    let currentIndex = array.length, randomIndex;
+    while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    }
+    return array;
+}
+
+runTestBtn.addEventListener('click', () => {
+    const dataA = parseData(groupAInput.value);
+    const dataB = parseData(groupBInput.value);
+    const numShuffles = parseInt(numShufflesInput.value);
+
+    if (dataA.length === 0 || dataB.length === 0) {
+        alert("Please enter valid numeric data for both groups.");
+        return;
+    }
+    if (isNaN(numShuffles) || numShuffles < 1 || numShuffles > 100000) {
+        alert("Please enter a valid number of shuffles (1 - 100000).");
+        return;
+    }
+
+    // Changing button state
+    runTestBtn.textContent = "Running...";
+    runTestBtn.disabled = true;
+
+    // Use a small timeout to allow UI update before heavy loop
+    setTimeout(() => {
+        executeSimulation(dataA, dataB, numShuffles);
+        runTestBtn.textContent = "Run Randomization Test";
+        runTestBtn.disabled = false;
+    }, 50);
+});
+
+function executeSimulation(dataA, dataB, numShuffles) {
+    const nA = dataA.length;
+    const meanA = mean(dataA);
+    const meanB = mean(dataB);
+    const obsDiff = meanA - meanB;
+    
+    const pool = dataA.concat(dataB);
+    const diffs = [];
+    let pValueCount = 0;
+
+    for (let i = 0; i < numShuffles; i++) {
+        // Fast copy & shuffle
+        const shuffled = fisherYatesShuffle([...pool]);
+        const newA = shuffled.slice(0, nA);
+        const newB = shuffled.slice(nA);
+        
+        const simDiff = mean(newA) - mean(newB);
+        diffs.push(simDiff);
+        
+        if (simDiff >= obsDiff) {
+            pValueCount++;
+        }
+    }
+
+    const pValue = pValueCount / numShuffles;
+
+    // Update UI
+    obsDiffDisplay.innerHTML = `<strong>${obsDiff.toFixed(3)}</strong>`;
+    pValueDisplay.innerHTML = `<strong>${pValue.toFixed(4)}</strong>`;
+
+    drawHistogram(diffs, obsDiff);
+}
+
+function drawHistogram(diffs, obsDiff) {
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+
+    // Determine limits to center histogram at 0
+    let maxDiff = Math.max(...diffs, obsDiff);
+    let minDiff = Math.min(...diffs, obsDiff);
+    let limit = Math.max(Math.abs(maxDiff), Math.abs(minDiff)) * 1.1; // Add 10% padding
+    if (limit === 0) limit = 1;
+
+    // Create Bins
+    const numBins = 40;
+    const step = (2 * limit) / numBins;
+    const bins = new Array(numBins).fill(0);
+    const binCenters = new Array(numBins).fill(0);
+
+    for (let i = 0; i < numBins; i++) {
+        binCenters[i] = -limit + (i + 0.5) * step;
+    }
+
+    for (let diff of diffs) {
+        let binIndex = Math.floor((diff + limit) / step);
+        if (binIndex < 0) binIndex = 0;
+        if (binIndex >= numBins) binIndex = numBins - 1;
+        bins[binIndex]++;
+    }
+
+    // Colors: P-value area (tail) is red, rest is blue
+    const bgColors = binCenters.map(center => 
+        (center >= obsDiff) ? 'rgba(239, 68, 68, 0.8)' : 'rgba(59, 130, 246, 0.7)'
+    );
+
+    const borderColors = binCenters.map(center => 
+        (center >= obsDiff) ? 'rgba(239, 68, 68, 1)' : 'rgba(59, 130, 246, 1)'
+    );
+
+    // Find the category index for the observed diff annotation
+    let obsDiffIndex = Math.floor((obsDiff + limit) / step);
+
+    const data = {
+        labels: binCenters.map(c => c.toFixed(2)),
+        datasets: [{
+            label: 'Frequency',
+            data: bins,
+            backgroundColor: bgColors,
+            borderColor: borderColors,
+            borderWidth: 1,
+            barPercentage: 1.0,
+            categoryPercentage: 1.0
+        }]
+    };
+
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Difference in Means',
+                        color: '#94A3B8',
+                        font: { size: 14 }
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)'
+                    },
+                    ticks: {
+                        color: '#94A3B8',
+                        maxTicksLimit: 10
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Frequency',
+                        color: '#94A3B8',
+                        font: { size: 14 }
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: '#94A3B8'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            return 'Diff Center: ' + context[0].label;
+                        }
+                    }
+                },
+                annotation: {
+                    annotations: {
+                        line1: {
+                            type: 'line',
+                            xMin: obsDiffIndex,
+                            xMax: obsDiffIndex,
+                            borderColor: '#F1F5F9',
+                            borderWidth: 2,
+                            borderDash: [6, 6],
+                            label: {
+                                display: true,
+                                content: 'Observed Diff',
+                                position: 'start',
+                                backgroundColor: 'rgba(0,0,0,0.7)',
+                                color: 'white'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    chartInstance = new Chart(canvas, config);
+}
+
+// Initial draw with empty data to show nice axes and layout
+drawHistogram([], 0);
+    </script>
+</body>
+</html>

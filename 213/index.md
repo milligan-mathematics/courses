@@ -11,5 +11,5 @@ Welcome to the Statistics course site.
 
 ## Interactive Activities
 
-- [Randomization Test Simulator](randomization-test/index.html){: .demo-item }
+- [Randomization Test Simulator](randomization-test.html){: .demo-item }
 - [Test Activity](test-page.html){: .demo-item }
