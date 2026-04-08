@@ -356,7 +356,15 @@ input:checked + .slider:before {
             <div class="panel input-panel">
                 <div class="panel-header">
                     <h2>Input Data</h2>
-                    <button id="loadDataBtn" class="btn btn-secondary">Load Sample Data</button>
+                    <div class="input-group" style="margin-bottom: 0; min-width: 200px;">
+                        <select id="sampleDataSelect" class="btn-secondary" style="width: 100%; border: 1px solid var(--panel-border);">
+                            <option value="">-- Load Sample Scenario --</option>
+                            <option value="significant">Clearly Significant (P < 0.01)</option>
+                            <option value="marginal">Marginally Significant (P ≈ 0.04)</option>
+                            <option value="insignificant">Not Significant (P ≈ 0.45)</option>
+                            <option value="negative">Negative Difference (B > A)</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <div class="input-group">
@@ -372,7 +380,7 @@ input:checked + .slider:before {
                 <div class="settings-group">
                     <div class="input-group">
                         <label for="numShuffles">Number of Shuffles</label>
-                        <input type="number" id="numShuffles" value="100" min="1" max="10000">
+                        <input type="number" id="numShuffles" value="1000" min="1" max="10000">
                     </div>
                 </div>
 
@@ -420,7 +428,7 @@ input:checked + .slider:before {
 const groupAInput = document.getElementById('groupA');
 const groupBInput = document.getElementById('groupB');
 const numShufflesInput = document.getElementById('numShuffles');
-const loadDataBtn = document.getElementById('loadDataBtn');
+const sampleDataSelect = document.getElementById('sampleDataSelect');
 const runTestBtn = document.getElementById('runTestBtn');
 const obsDiffDisplay = document.getElementById('obsDiffDisplay');
 const pValueDisplay = document.getElementById('pValueDisplay');
@@ -430,26 +438,42 @@ const interpretationText = document.getElementById('interpretationText');
 const canvas = document.getElementById('histogramCanvas');
 let chartInstance = null;
 
-// Sample Data (Slightly more overlap so P-value isn't always 0)
-const sampleData = {
-    groupA: "28, 32, 35, 39, 41, 44, 45, 48, 52, 55",
-    groupB: "22, 25, 29, 34, 38, 40, 42, 45, 47, 50"
+const scenarios = {
+    significant: {
+        A: "45, 48, 52, 55, 58, 60, 62, 65, 68, 70",
+        B: "35, 38, 40, 42, 45, 46, 48, 50, 52, 55"
+    },
+    marginal: {
+        A: "50, 52, 54, 56, 58, 60, 62, 64, 66, 68",
+        B: "45, 48, 51, 53, 55, 57, 60, 62, 65, 67"
+    },
+    insignificant: {
+        A: "50, 55, 60, 65, 70, 75, 80",
+        B: "48, 54, 62, 68, 72, 78, 82"
+    },
+    negative: {
+        A: "20, 22, 25, 28, 30",
+        B: "25, 28, 32, 35, 38"
+    }
 };
+
+sampleDataSelect.addEventListener('change', () => {
+    const val = sampleDataSelect.value;
+    if (scenarios[val]) {
+        groupAInput.value = scenarios[val].A;
+        groupBInput.value = scenarios[val].B;
+        
+        groupAInput.style.background = "rgba(59, 130, 246, 0.2)";
+        groupBInput.style.background = "rgba(59, 130, 246, 0.2)";
+        setTimeout(() => {
+            groupAInput.style.background = "";
+            groupBInput.style.background = "";
+        }, 500);
+    }
+});
 
 twoTailedToggle.addEventListener('change', () => {
     pValueLabel.innerText = twoTailedToggle.checked ? "Proportion |diff| \u2265 |observed|" : "Proportion \u2265 Observed";
-});
-
-loadDataBtn.addEventListener('click', () => {
-    groupAInput.value = sampleData.groupA;
-    groupBInput.value = sampleData.groupB;
-    
-    groupAInput.style.background = "rgba(59, 130, 246, 0.2)";
-    groupBInput.style.background = "rgba(59, 130, 246, 0.2)";
-    setTimeout(() => {
-        groupAInput.style.background = "";
-        groupBInput.style.background = "";
-    }, 500);
 });
 
 function parseData(str) {
@@ -528,18 +552,18 @@ function executeSimulation(dataA, dataB, numShuffles) {
     obsDiffDisplay.innerHTML = `<strong>${obsDiff.toFixed(2)}</strong>`;
     pValueDisplay.innerHTML = `<strong>${pValue.toFixed(4)}</strong>`;
 
-    updateInterpretation(pValue, obsDiff);
+    updateInterpretation(pValue, obsDiff, isTwoTailed);
     drawHistogram(diffs, obsDiff, isTwoTailed);
 }
 
-function updateInterpretation(p, diff) {
+function updateInterpretation(p, diff, isTwoTailed) {
     let msg = "";
-    if (p < 0.01) {
-        msg = `A P-value of ${p.toFixed(4)} is very low! This means the observed difference of ${diff.toFixed(2)} almost never happens by sheer luck. We have strong evidence of a real difference between the groups.`;
-    } else if (p < 0.05) {
-        msg = `A P-value of ${p.toFixed(4)} is low (below 0.05). This suggests the difference is "statistically significant"—it's unlikely to be just a lucky shuffle.`;
+    const tailText = isTwoTailed ? "In this two-tailed test, we are looking at both directions: how often we see a gap this large in EITHER direction (A > B or B > A). " : "This is a one-tailed test, meaning we only care if Group A is specifically higher than Group B by this much. ";
+
+    if (p < 0.05) {
+        msg = tailText + `Since the P-value (${p.toFixed(4)}) is low, we conclude that the observed difference of ${diff.toFixed(2)} is very unlikely to happen by chance. We have significant evidence that the groups are actually different.`;
     } else {
-        msg = `A P-value of ${p.toFixed(4)} is relatively high. This means a difference like ${diff.toFixed(2)} happens fairly often just by random chance. We don't have enough evidence to say the groups are different.`;
+        msg = tailText + `Since the P-value (${p.toFixed(4)}) is high, a difference like ${diff.toFixed(2)} happens fairly often just due to random variation. We don't have enough evidence to claim the groups are different.`;
     }
     interpretationText.innerText = msg;
 }
@@ -621,6 +645,7 @@ function drawHistogram(diffs, obsDiff, isTwoTailed) {
         }
     });
 }
+
 
 // Initial draw with empty data to show nice axes and layout
 drawHistogram([], 0);
