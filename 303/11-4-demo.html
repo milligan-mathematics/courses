@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cross Product Explorer - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- MathJax for rendering equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .scene-wrap {
+            position: relative;
+        }
+
+        canvas#scene {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        canvas#scene:active {
+            cursor: grabbing;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .control-block {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .control-block:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .control-block h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .triple-input {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .triple-input label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .triple-input input {
+            width: 56px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #A2A2A2;
+        }
+
+        .btn-secondary:hover {
+            background-color: #6E6E6E;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .output-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+            min-height: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .output-box .final {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .output-box .note {
+            color: var(--color-accent-green, #008552);
+            font-weight: bold;
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Cross Product Explorer</h1>
+            <p>&sect;11.4 &mdash; build the perpendicular vector, the parallelogram it measures, and the
+                parallelepiped it can grow into, all in one rotatable 3D scene.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Set two vectors <strong>u</strong> and <strong>v</strong> below and hit "Compute u &times; v" to see
+                the perpendicular vector, the parallelogram it spans, and a curved arrow showing the right-hand-rule
+                curl from <strong>u</strong> to <strong>v</strong>. Drag inside the scene to orbit, scroll to zoom.
+                Add a third vector <strong>w</strong> to grow the parallelogram into a full parallelepiped and see
+                its volume.
+            </p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel scene-wrap">
+                <canvas id="scene" width="600" height="600"></canvas>
+                <div class="scene-hint">Drag to rotate &middot; scroll to zoom</div>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#F36E24;"></span>u</div>
+                    <div><span class="swatch" style="background:#009CDE;"></span>v</div>
+                    <div><span class="swatch" style="background:#008552;"></span>u &times; v</div>
+                    <div><span class="swatch" style="background:#6E6E6E;"></span>w</div>
+                </div>
+                <div class="checkbox-row" style="margin-top: 1rem;">
+                    <input type="checkbox" id="show-parallelogram" checked>
+                    <label for="show-parallelogram">Show parallelogram spanned by u, v</label>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="show-curl" checked>
+                    <label for="show-curl">Show right-hand-rule curl (u &rarr; v)</label>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="show-parallelepiped">
+                    <label for="show-parallelepiped">Show parallelepiped (adds w)</label>
+                </div>
+                <button class="btn btn-secondary" onclick="resetView()">Reset View</button>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <h4>Vector u</h4>
+                    <div class="triple-input">
+                        <label>u&#8321;</label><input type="number" id="u-x" value="-2" step="0.5">
+                        <label>u&#8322;</label><input type="number" id="u-y" value="5" step="0.5">
+                        <label>u&#8323;</label><input type="number" id="u-z" value="1" step="0.5">
+                    </div>
+                    <h4>Vector v</h4>
+                    <div class="triple-input">
+                        <label>v&#8321;</label><input type="number" id="v-x" value="1" step="0.5">
+                        <label>v&#8322;</label><input type="number" id="v-y" value="3" step="0.5">
+                        <label>v&#8323;</label><input type="number" id="v-z" value="-1" step="0.5">
+                    </div>
+                    <button class="btn" onclick="computeCross()">Compute u &times; v</button>
+                    <div class="output-box" id="cross-output">Set u and v, then click "Compute u &times; v."</div>
+                </div>
+
+                <div class="control-block">
+                    <h4>Vector w (for volume)</h4>
+                    <p class="hint">Check "Show parallelepiped" above, then compute the volume of the box spanned
+                        by u, v, and w.</p>
+                    <div class="triple-input">
+                        <label>w&#8321;</label><input type="number" id="w-x" value="0" step="0.5">
+                        <label>w&#8322;</label><input type="number" id="w-y" value="0" step="0.5">
+                        <label>w&#8323;</label><input type="number" id="w-z" value="3" step="0.5">
+                    </div>
+                    <button class="btn" onclick="computeVolume()">Compute Volume</button>
+                    <div class="output-box" id="volume-output">Set w, then click "Compute Volume."</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('scene');
+        const ctx = canvas.getContext('2d');
+
+        const AXIS_LIMIT = 8;
+        let theta = -0.7;
+        let phi = 0.35;
+        let scale = 26;
+
+        let dragging = false;
+        let lastX = 0, lastY = 0;
+
+        let uVec = { x: -2, y: 5, z: 1 };
+        let vVec = { x: 1, y: 3, z: -1 };
+        let wVec = { x: 0, y: 0, z: 3 };
+        let crossVec = null;
+
+        function resetView() {
+            theta = -0.7;
+            phi = 0.35;
+            scale = 26;
+            draw();
+        }
+
+        canvas.addEventListener('pointerdown', (e) => {
+            dragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+        });
+        window.addEventListener('pointerup', () => dragging = false);
+        window.addEventListener('pointermove', (e) => {
+            if (!dragging) return;
+            const dx = e.clientX - lastX;
+            const dy = e.clientY - lastY;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            theta += dx * 0.006;
+            phi = Math.max(-1.45, Math.min(1.45, phi - dy * 0.006));
+            draw();
+        });
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            scale = Math.max(8, Math.min(70, scale - e.deltaY * 0.03));
+            draw();
+        }, { passive: false });
+
+        document.getElementById('show-parallelogram').addEventListener('change', draw);
+        document.getElementById('show-curl').addEventListener('change', draw);
+        document.getElementById('show-parallelepiped').addEventListener('change', draw);
+
+        // ---- vector math helpers ----
+        function cross(a, b) {
+            return {
+                x: a.y * b.z - a.z * b.y,
+                y: a.z * b.x - a.x * b.z,
+                z: a.x * b.y - a.y * b.x
+            };
+        }
+        function dot(a, b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+        function mag(a) { return Math.sqrt(dot(a, a)); }
+        function add(a, b) { return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z }; }
+        function scaleVec(a, s) { return { x: a.x * s, y: a.y * s, z: a.z * s }; }
+        function normalize(a) {
+            const m = mag(a);
+            if (m < 1e-9) return { x: 0, y: 0, z: 0 };
+            return scaleVec(a, 1 / m);
+        }
+        function fmt(n) {
+            const r = Math.round(n * 1000) / 1000;
+            return Object.is(r, -0) ? '0' : String(r);
+        }
+
+        // ---- projection ----
+        function project(x, y, z) {
+            const ct = Math.cos(theta), st = Math.sin(theta);
+            const x1 = x * ct - y * st;
+            const y1 = x * st + y * ct;
+            const z1 = z;
+
+            const cp = Math.cos(phi), sp = Math.sin(phi);
+            const y2 = y1 * cp - z1 * sp;
+            const z2 = y1 * sp + z1 * cp;
+            const x2 = x1;
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            return {
+                sx: cx + x2 * scale,
+                sy: cy - z2 * scale,
+                depth: y2
+            };
+        }
+
+        function line3d(a, b, color, width) {
+            const pa = project(a[0], a[1], a[2]);
+            const pb = project(b[0], b[1], b[2]);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width || 1;
+            ctx.beginPath();
+            ctx.moveTo(pa.sx, pa.sy);
+            ctx.lineTo(pb.sx, pb.sy);
+            ctx.stroke();
+        }
+
+        function drawAxes() {
+            const L = AXIS_LIMIT;
+            ctx.globalAlpha = 0.25;
+            for (let i = -L; i <= L; i += 2) {
+                line3d([i, -L, 0], [i, L, 0], '#ccc');
+                line3d([-L, i, 0], [L, i, 0], '#ccc');
+            }
+            ctx.globalAlpha = 1;
+
+            line3d([-L, 0, 0], [L, 0, 0], '#333', 1.5);
+            line3d([0, -L, 0], [0, L, 0], '#333', 1.5);
+            line3d([0, 0, -L], [0, 0, L], '#333', 1.5);
+
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 14px sans-serif';
+            const labels = [[[L + 0.5, 0, 0], 'x'], [[0, L + 0.5, 0], 'y'], [[0, 0, L + 0.5], 'z']];
+            labels.forEach(([p, txt]) => {
+                const pr = project(p[0], p[1], p[2]);
+                ctx.fillText(txt, pr.sx, pr.sy);
+            });
+        }
+
+        // Draw an arrow from the origin to vector v, with a screen-space arrowhead.
+        function drawArrow(v, color, label) {
+            const o = project(0, 0, 0);
+            const p = project(v.x, v.y, v.z);
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(o.sx, o.sy);
+            ctx.lineTo(p.sx, p.sy);
+            ctx.stroke();
+
+            const dx = p.sx - o.sx, dy = p.sy - o.sy;
+            const len = Math.hypot(dx, dy) || 1;
+            const ux = dx / len, uy = dy / len;
+            const revx = -ux, revy = -uy;
+            const headLen = 11, ang = 0.45;
+            const cosA = Math.cos(ang), sinA = Math.sin(ang);
+            const wing1x = revx * cosA - revy * sinA;
+            const wing1y = revx * sinA + revy * cosA;
+            const wing2x = revx * cosA + revy * sinA;
+            const wing2y = -revx * sinA + revy * cosA;
+
+            ctx.beginPath();
+            ctx.moveTo(p.sx, p.sy);
+            ctx.lineTo(p.sx + headLen * wing1x, p.sy + headLen * wing1y);
+            ctx.lineTo(p.sx + headLen * wing2x, p.sy + headLen * wing2y);
+            ctx.closePath();
+            ctx.fill();
+
+            if (label) {
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 13px sans-serif';
+                ctx.fillText(label, p.sx + 8, p.sy - 8);
+            }
+        }
+
+        function fillPolygon3d(pts, color, alpha) {
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            pts.forEach((p, i) => {
+                const pr = project(p.x, p.y, p.z);
+                if (i === 0) ctx.moveTo(pr.sx, pr.sy); else ctx.lineTo(pr.sx, pr.sy);
+            });
+            ctx.closePath();
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        }
+
+        function drawParallelogram(u, v) {
+            const O = { x: 0, y: 0, z: 0 };
+            const UV = add(u, v);
+            fillPolygon3d([O, u, UV, v], '#009CDE', 0.18);
+            ctx.strokeStyle = 'rgba(0,156,222,0.5)';
+            ctx.lineWidth = 1.5;
+            [[O, u], [u, UV], [UV, v], [v, O]].forEach(([a, b]) => {
+                line3d([a.x, a.y, a.z], [b.x, b.y, b.z], 'rgba(0,156,222,0.5)', 1.5);
+            });
+        }
+
+        function drawParallelepiped(u, v, w) {
+            const O = { x: 0, y: 0, z: 0 };
+            const UV = add(u, v), UW = add(u, w), VW = add(v, w), UVW = add(UV, w);
+            const edges = [
+                [O, u], [O, v], [O, w],
+                [u, UV], [u, UW],
+                [v, UV], [v, VW],
+                [w, UW], [w, VW],
+                [UV, UVW], [UW, UVW], [VW, UVW]
+            ];
+            edges.forEach(([a, b]) => line3d([a.x, a.y, a.z], [b.x, b.y, b.z], 'rgba(110,110,110,0.7)', 1.5));
+        }
+
+        // Curved arc from direction of a to direction of b (spherical interpolation), showing the
+        // right-hand-rule curl. Colored to match the cross product vector.
+        function drawCurlArc(a, b, color) {
+            const na = normalize(a), nb = normalize(b);
+            const cosOmega = Math.max(-1, Math.min(1, dot(na, nb)));
+            const omega = Math.acos(cosOmega);
+            if (omega < 1e-3 || omega > Math.PI - 1e-3) return; // parallel/antiparallel: no well-defined curl
+
+            const radius = 1.4;
+            const segs = 24;
+            const sinOmega = Math.sin(omega);
+            const pts = [];
+            for (let i = 0; i <= segs; i++) {
+                const t = i / segs;
+                const c1 = Math.sin((1 - t) * omega) / sinOmega;
+                const c2 = Math.sin(t * omega) / sinOmega;
+                pts.push({
+                    x: radius * (c1 * na.x + c2 * nb.x),
+                    y: radius * (c1 * na.y + c2 * nb.y),
+                    z: radius * (c1 * na.z + c2 * nb.z)
+                });
+            }
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            pts.forEach((p, i) => {
+                const pr = project(p.x, p.y, p.z);
+                if (i === 0) ctx.moveTo(pr.sx, pr.sy); else ctx.lineTo(pr.sx, pr.sy);
+            });
+            ctx.stroke();
+
+            // small arrowhead near the v end, pointing along the arc's tangent
+            const pTip = project(pts[segs].x, pts[segs].y, pts[segs].z);
+            const pPrev = project(pts[segs - 1].x, pts[segs - 1].y, pts[segs - 1].z);
+            const ddx = pTip.sx - pPrev.sx, ddy = pTip.sy - pPrev.sy;
+            const dlen = Math.hypot(ddx, ddy) || 1;
+            const uux = ddx / dlen, uuy = ddy / dlen;
+            const revx = -uux, revy = -uuy;
+            const ang = 0.5, headLen = 9;
+            const cosA = Math.cos(ang), sinA = Math.sin(ang);
+            const wing1x = revx * cosA - revy * sinA, wing1y = revx * sinA + revy * cosA;
+            const wing2x = revx * cosA + revy * sinA, wing2y = -revx * sinA + revy * cosA;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(pTip.sx, pTip.sy);
+            ctx.lineTo(pTip.sx + headLen * wing1x, pTip.sy + headLen * wing1y);
+            ctx.lineTo(pTip.sx + headLen * wing2x, pTip.sy + headLen * wing2y);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawAxes();
+
+            const showPara = document.getElementById('show-parallelogram').checked;
+            const showCurl = document.getElementById('show-curl').checked;
+            const showPiped = document.getElementById('show-parallelepiped').checked;
+
+            if (showPara) drawParallelogram(uVec, vVec);
+            if (showPiped) drawParallelepiped(uVec, vVec, wVec);
+
+            drawArrow(uVec, '#F36E24', 'u');
+            drawArrow(vVec, '#009CDE', 'v');
+            if (showPiped) drawArrow(wVec, '#6E6E6E', 'w');
+
+            if (showCurl) drawCurlArc(uVec, vVec, '#008552');
+
+            if (crossVec) drawArrow(crossVec, '#008552', 'u × v');
+        }
+
+        function readVec(prefix) {
+            const x = parseFloat(document.getElementById(prefix + '-x').value);
+            const y = parseFloat(document.getElementById(prefix + '-y').value);
+            const z = parseFloat(document.getElementById(prefix + '-z').value);
+            if ([x, y, z].some(isNaN)) return null;
+            return { x, y, z };
+        }
+
+        function computeCross() {
+            const u = readVec('u');
+            const v = readVec('v');
+            if (!u || !v) return;
+            uVec = u;
+            vVec = v;
+            crossVec = cross(u, v);
+
+            const area = mag(crossVec);
+            const dotU = dot(u, crossVec);
+            const dotV = dot(v, crossVec);
+
+            const out = document.getElementById('cross-output');
+            out.innerHTML = `
+                \\[\\mathbf{u} \\times \\mathbf{v} = \\begin{vmatrix} \\mathbf{i} & \\mathbf{j} & \\mathbf{k} \\\\ ${fmt(u.x)} & ${fmt(u.y)} & ${fmt(u.z)} \\\\ ${fmt(v.x)} & ${fmt(v.y)} & ${fmt(v.z)} \\end{vmatrix} = \\langle ${fmt(crossVec.x)}, ${fmt(crossVec.y)}, ${fmt(crossVec.z)} \\rangle\\]
+                <p class="final">u &times; v = &lang;${fmt(crossVec.x)}, ${fmt(crossVec.y)}, ${fmt(crossVec.z)}&rang;</p>
+                <p>&lVert u &times; v &rVert &asymp; ${area.toFixed(4)} &mdash; the area of the parallelogram shown</p>
+                <p class="note">Orthogonality check: u&middot;(u&times;v) = ${fmt(dotU)}, v&middot;(u&times;v) = ${fmt(dotV)}</p>
+            `;
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise([out]);
+            }
+            draw();
+        }
+
+        function computeVolume() {
+            const w = readVec('w');
+            if (!w) return;
+            wVec = w;
+            document.getElementById('show-parallelepiped').checked = true;
+
+            const u = uVec, v = vVec;
+            const vCrossW = cross(v, w);
+            const triple = dot(u, vCrossW);
+            const volume = Math.abs(triple);
+
+            const out = document.getElementById('volume-output');
+            out.innerHTML = `
+                \\[\\mathbf{u}\\cdot(\\mathbf{v}\\times\\mathbf{w}) = \\begin{vmatrix} ${fmt(u.x)} & ${fmt(u.y)} & ${fmt(u.z)} \\\\ ${fmt(v.x)} & ${fmt(v.y)} & ${fmt(v.z)} \\\\ ${fmt(w.x)} & ${fmt(w.y)} & ${fmt(w.z)} \\end{vmatrix} = ${fmt(triple)}\\]
+                <p class="final">Volume = ${volume.toFixed(4)} cubic units</p>
+                ${Math.abs(triple) < 1e-6 ? '<p class="note">Triple product is 0 &mdash; u, v, and w are coplanar (the box is flattened)!</p>' : ''}
+            `;
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise([out]);
+            }
+            draw();
+        }
+
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.width;
+            draw();
+        }
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('load', resizeCanvas);
+
+        // Seed with the initial cross product so the scene isn't empty on load.
+        crossVec = cross(uVec, vVec);
+        draw();
+    </script>
+</body>
+
+</html>

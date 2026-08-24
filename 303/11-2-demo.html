@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vector Playground - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- MathJax for rendering equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .scene-wrap {
+            position: relative;
+        }
+
+        canvas#scene {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        canvas#scene:active {
+            cursor: grabbing;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 1.25rem;
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .swatch {
+            width: 14px;
+            height: 4px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+        .control-block {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-block h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .triple-input {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .triple-input label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .triple-input input[type="number"] {
+            width: 56px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #A2A2A2;
+        }
+
+        .btn-secondary:hover {
+            background-color: #6E6E6E;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+        }
+
+        .slider-row .slider-value {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+            min-width: 2.5rem;
+            text-align: right;
+        }
+
+        .output-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .output-box p {
+            margin: 0.35rem 0;
+        }
+
+        .output-box .final {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Vector Playground</h1>
+            <p>§11.2 &mdash; drag two vectors around the plane and watch their sum, difference, scalar multiples,
+                and unit vectors update live.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Drag the orange or blue arrowhead to change <strong>u</strong> or <strong>v</strong>, or type exact
+                components on the right. Turn on the checkboxes to see the triangle/parallelogram construction for
+                <strong>u + v</strong>, the tip-to-tip picture for <strong>u &minus; v</strong>, a scalar multiple
+                of <strong>u</strong>, or the unit vector in the direction of either vector.
+            </p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel scene-wrap">
+                <canvas id="scene" width="600" height="600"></canvas>
+                <div class="scene-hint">Drag an arrowhead to change that vector &middot; scroll to zoom</div>
+                <div class="legend">
+                    <span><span class="swatch" style="background:#F36E24;"></span> u</span>
+                    <span><span class="swatch" style="background:#009CDE;"></span> v</span>
+                    <span><span class="swatch" style="background:#008552;"></span> u + v</span>
+                    <span><span class="swatch" style="background:#F9A01B;"></span> u &minus; v</span>
+                    <span><span class="swatch" style="background:#CD5920;"></span> c&middot;u</span>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <button class="btn btn-secondary" onclick="loadExample()">Load Textbook Example</button>
+                    <button class="btn btn-secondary" onclick="resetScene()">Reset</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <h4>Vector u</h4>
+                    <div class="triple-input">
+                        <label>x</label><input type="number" id="u-x" value="4" step="0.5">
+                        <label>y</label><input type="number" id="u-y" value="2" step="0.5">
+                        <button class="btn" onclick="setFromInputs()">Set</button>
+                    </div>
+                    <h4>Vector v</h4>
+                    <div class="triple-input">
+                        <label>x</label><input type="number" id="v-x" value="-2" step="0.5">
+                        <label>y</label><input type="number" id="v-y" value="3" step="0.5">
+                        <button class="btn" onclick="setFromInputs()">Set</button>
+                    </div>
+                </div>
+
+                <div class="control-block">
+                    <h4>Show constructions</h4>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="show-sum">
+                        <label for="show-sum">u + v (triangle / parallelogram rule)</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="show-diff">
+                        <label for="show-diff">u &minus; v (tip-to-tip rule)</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="show-unit-u">
+                        <label for="show-unit-u">unit vector in direction of u</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="show-unit-v">
+                        <label for="show-unit-v">unit vector in direction of v</label>
+                    </div>
+                </div>
+
+                <div class="control-block">
+                    <h4>Scalar multiple c&middot;u</h4>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="show-scalar">
+                        <label for="show-scalar">show c&middot;u</label>
+                    </div>
+                    <div class="slider-row">
+                        <label>c =</label>
+                        <input type="range" id="scalar-c" min="-3" max="3" step="0.5" value="2">
+                        <span class="slider-value" id="scalar-c-value">2</span>
+                    </div>
+                </div>
+
+                <div class="control-block">
+                    <h4>Live readout</h4>
+                    <div class="output-box" id="readout"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('scene');
+        const ctx = canvas.getContext('2d');
+
+        const AXIS_LIMIT = 6;
+        let scale = 45;
+        let dragging = null; // 'u' | 'v' | null
+
+        let u = { x: 4, y: 2 };
+        let v = { x: -2, y: 3 };
+
+        function project(x, y) {
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            return { sx: cx + x * scale, sy: cy - y * scale };
+        }
+
+        function pointerWorld(e) {
+            const rect = canvas.getBoundingClientRect();
+            const sx = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const sy = (e.clientY - rect.top) * (canvas.height / rect.height);
+            return {
+                sx, sy,
+                wx: (sx - canvas.width / 2) / scale,
+                wy: -(sy - canvas.height / 2) / scale
+            };
+        }
+
+        function drawGrid() {
+            const L = AXIS_LIMIT;
+            ctx.strokeStyle = '#e3e3e3';
+            ctx.lineWidth = 1;
+            for (let i = -L; i <= L; i++) {
+                let p1 = project(i, -L), p2 = project(i, L);
+                ctx.beginPath(); ctx.moveTo(p1.sx, p1.sy); ctx.lineTo(p2.sx, p2.sy); ctx.stroke();
+                p1 = project(-L, i); p2 = project(L, i);
+                ctx.beginPath(); ctx.moveTo(p1.sx, p1.sy); ctx.lineTo(p2.sx, p2.sy); ctx.stroke();
+            }
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1.5;
+            let a = project(-L, 0), b = project(L, 0);
+            ctx.beginPath(); ctx.moveTo(a.sx, a.sy); ctx.lineTo(b.sx, b.sy); ctx.stroke();
+            a = project(0, -L); b = project(0, L);
+            ctx.beginPath(); ctx.moveTo(a.sx, a.sy); ctx.lineTo(b.sx, b.sy); ctx.stroke();
+
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 13px sans-serif';
+            let lx = project(L + 0.3, 0); ctx.fillText('x', lx.sx, lx.sy);
+            let ly = project(0, L + 0.3); ctx.fillText('y', ly.sx - 4, ly.sy);
+        }
+
+        function drawVector(fx, fy, tx, ty, color, label, width, dashed) {
+            const p1 = project(fx, fy), p2 = project(tx, ty);
+            ctx.save();
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = width || 2;
+            ctx.setLineDash(dashed ? [6, 4] : []);
+            ctx.beginPath();
+            ctx.moveTo(p1.sx, p1.sy);
+            ctx.lineTo(p2.sx, p2.sy);
+            ctx.stroke();
+
+            const ang = Math.atan2(p2.sy - p1.sy, p2.sx - p1.sx);
+            const headLen = 9;
+            ctx.setLineDash([]);
+            ctx.beginPath();
+            ctx.moveTo(p2.sx, p2.sy);
+            ctx.lineTo(p2.sx - headLen * Math.cos(ang - Math.PI / 6), p2.sy - headLen * Math.sin(ang - Math.PI / 6));
+            ctx.lineTo(p2.sx - headLen * Math.cos(ang + Math.PI / 6), p2.sy - headLen * Math.sin(ang + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+
+            if (label) {
+                ctx.font = 'bold 13px sans-serif';
+                ctx.fillText(label, p2.sx + 8, p2.sy - 8);
+            }
+            ctx.restore();
+        }
+
+        function drawHandle(x, y, color) {
+            const p = project(x, y);
+            ctx.save();
+            ctx.fillStyle = '#fff';
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(p.sx, p.sy, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawGrid();
+
+            if (document.getElementById('show-sum').checked) {
+                drawVector(u.x, u.y, u.x + v.x, u.y + v.y, '#009CDE', null, 1.25, true);
+                drawVector(v.x, v.y, u.x + v.x, u.y + v.y, '#F36E24', null, 1.25, true);
+                drawVector(0, 0, u.x + v.x, u.y + v.y, '#008552', 'u+v', 2.5, false);
+            }
+
+            if (document.getElementById('show-diff').checked) {
+                drawVector(v.x, v.y, u.x, u.y, '#6E6E6E', null, 1.25, true);
+                drawVector(0, 0, u.x - v.x, u.y - v.y, '#F9A01B', 'u−v', 2.5, false);
+            }
+
+            if (document.getElementById('show-scalar').checked) {
+                const c = parseFloat(document.getElementById('scalar-c').value);
+                drawVector(0, 0, c * u.x, c * u.y, '#CD5920', 'c·u', 2, true);
+            }
+
+            if (document.getElementById('show-unit-u').checked) {
+                const m = Math.hypot(u.x, u.y) || 1;
+                drawVector(0, 0, u.x / m, u.y / m, '#F36E24', 'û', 1.5, true);
+            }
+
+            if (document.getElementById('show-unit-v').checked) {
+                const m = Math.hypot(v.x, v.y) || 1;
+                drawVector(0, 0, v.x / m, v.y / m, '#009CDE', 'v̂', 1.5, true);
+            }
+
+            drawVector(0, 0, u.x, u.y, '#F36E24', 'u', 3, false);
+            drawVector(0, 0, v.x, v.y, '#009CDE', 'v', 3, false);
+            drawHandle(u.x, u.y, '#F36E24');
+            drawHandle(v.x, v.y, '#009CDE');
+        }
+
+        function fmt(n) {
+            return Math.round(n * 100) / 100;
+        }
+
+        function updateOutput() {
+            const out = document.getElementById('readout');
+            const magU = Math.hypot(u.x, u.y);
+            const magV = Math.hypot(v.x, v.y);
+            const c = parseFloat(document.getElementById('scalar-c').value);
+
+            let html = '';
+            html += `<p>\\(\\mathbf{u} = \\langle ${fmt(u.x)}, ${fmt(u.y)} \\rangle, \\quad \\lVert \\mathbf{u} \\rVert = ${fmt(magU)}\\)</p>`;
+            html += `<p>\\(\\mathbf{v} = \\langle ${fmt(v.x)}, ${fmt(v.y)} \\rangle, \\quad \\lVert \\mathbf{v} \\rVert = ${fmt(magV)}\\)</p>`;
+
+            if (document.getElementById('show-sum').checked) {
+                html += `<p class="final" style="color:#008552;">\\(\\mathbf{u}+\\mathbf{v} = \\langle ${fmt(u.x + v.x)}, ${fmt(u.y + v.y)} \\rangle\\)</p>`;
+            }
+            if (document.getElementById('show-diff').checked) {
+                html += `<p class="final" style="color:#c07d00;">\\(\\mathbf{u}-\\mathbf{v} = \\langle ${fmt(u.x - v.x)}, ${fmt(u.y - v.y)} \\rangle\\)</p>`;
+            }
+            if (document.getElementById('show-scalar').checked) {
+                html += `<p class="final" style="color:#CD5920;">\\(${fmt(c)}\\mathbf{u} = \\langle ${fmt(c * u.x)}, ${fmt(c * u.y)} \\rangle\\)</p>`;
+            }
+            if (document.getElementById('show-unit-u').checked) {
+                const m = magU || 1;
+                html += `<p class="final" style="color:#F36E24;">\\(\\hat{\\mathbf{u}} = \\langle ${fmt(u.x / m)}, ${fmt(u.y / m)} \\rangle\\)</p>`;
+            }
+            if (document.getElementById('show-unit-v').checked) {
+                const m = magV || 1;
+                html += `<p class="final" style="color:#009CDE;">\\(\\hat{\\mathbf{v}} = \\langle ${fmt(v.x / m)}, ${fmt(v.y / m)} \\rangle\\)</p>`;
+            }
+
+            out.innerHTML = html;
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise([out]);
+            }
+        }
+
+        function setFromInputs() {
+            u.x = parseFloat(document.getElementById('u-x').value) || 0;
+            u.y = parseFloat(document.getElementById('u-y').value) || 0;
+            v.x = parseFloat(document.getElementById('v-x').value) || 0;
+            v.y = parseFloat(document.getElementById('v-y').value) || 0;
+            draw();
+            updateOutput();
+        }
+
+        function syncInputs() {
+            document.getElementById('u-x').value = fmt(u.x);
+            document.getElementById('u-y').value = fmt(u.y);
+            document.getElementById('v-x').value = fmt(v.x);
+            document.getElementById('v-y').value = fmt(v.y);
+        }
+
+        function loadExample() {
+            // Values from the section notes' worked example on graphing vector sums.
+            u = { x: 5, y: -2 };
+            v = { x: -1, y: 2 };
+            syncInputs();
+            draw();
+            updateOutput();
+        }
+
+        function resetScene() {
+            u = { x: 4, y: 2 };
+            v = { x: -2, y: 3 };
+            document.getElementById('show-sum').checked = false;
+            document.getElementById('show-diff').checked = false;
+            document.getElementById('show-scalar').checked = false;
+            document.getElementById('show-unit-u').checked = false;
+            document.getElementById('show-unit-v').checked = false;
+            document.getElementById('scalar-c').value = 2;
+            document.getElementById('scalar-c-value').textContent = '2';
+            syncInputs();
+            draw();
+            updateOutput();
+        }
+
+        canvas.addEventListener('pointerdown', (e) => {
+            const p = pointerWorld(e);
+            const pu = project(u.x, u.y), pv = project(v.x, v.y);
+            const du = Math.hypot(p.sx - pu.sx, p.sy - pu.sy);
+            const dv = Math.hypot(p.sx - pv.sx, p.sy - pv.sy);
+            if (du < 16 && du <= dv) dragging = 'u';
+            else if (dv < 16) dragging = 'v';
+        });
+        window.addEventListener('pointerup', () => dragging = null);
+        window.addEventListener('pointermove', (e) => {
+            if (!dragging) return;
+            const p = pointerWorld(e);
+            let wx = Math.max(-AXIS_LIMIT, Math.min(AXIS_LIMIT, Math.round(p.wx * 10) / 10));
+            let wy = Math.max(-AXIS_LIMIT, Math.min(AXIS_LIMIT, Math.round(p.wy * 10) / 10));
+            if (dragging === 'u') { u.x = wx; u.y = wy; } else { v.x = wx; v.y = wy; }
+            syncInputs();
+            draw();
+            updateOutput();
+        });
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            scale = Math.max(20, Math.min(80, scale - e.deltaY * 0.03));
+            draw();
+        }, { passive: false });
+
+        ['show-sum', 'show-diff', 'show-scalar', 'show-unit-u', 'show-unit-v'].forEach(id => {
+            document.getElementById(id).addEventListener('change', () => { draw(); updateOutput(); });
+        });
+        document.getElementById('scalar-c').addEventListener('input', (e) => {
+            document.getElementById('scalar-c-value').textContent = e.target.value;
+            draw();
+            updateOutput();
+        });
+
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.width;
+            draw();
+        }
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('load', resizeCanvas);
+
+        draw();
+        updateOutput();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dot Product Playground - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- MathJax for rendering equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .scene-wrap {
+            position: relative;
+        }
+
+        canvas#scene {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        canvas#scene:active {
+            cursor: grabbing;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .swatch {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+        }
+
+        .control-block {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-block h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .triple-input {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .triple-input label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .triple-input input {
+            width: 64px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #A2A2A2;
+        }
+
+        .btn-secondary:hover {
+            background-color: #6E6E6E;
+        }
+
+        .btn-accent {
+            background-color: var(--color-accent-green, #008552);
+        }
+
+        .btn-accent:hover {
+            background-color: #026b40;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .output-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+            min-height: 1.5rem;
+        }
+
+        .output-box .final {
+            font-weight: bold;
+        }
+
+        .output-box p {
+            margin: 0.35rem 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Dot Product Playground</h1>
+            <p>&sect;11.3 &mdash; drag two vectors around and watch their dot product, angle, and projection update
+                live.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Drag the tip of either arrow to change <strong>u</strong> (orange) or <strong>v</strong> (blue), or
+                type exact components below. The scene shows the angle between them, the "shadow" that
+                <strong>u</strong> casts onto <strong>v</strong> (its projection), and the running arithmetic in the
+                panel on the right. Watch what happens to the dot product &mdash; and the color of the angle arc
+                &mdash; as you rotate one vector past perpendicular.
+            </p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel scene-wrap">
+                <canvas id="scene" width="600" height="600"></canvas>
+                <div class="scene-hint">Drag an arrow tip to change that vector</div>
+                <div class="legend">
+                    <span><span class="swatch" style="background:#F36E24;"></span> u</span>
+                    <span><span class="swatch" style="background:#009CDE;"></span> v</span>
+                    <span><span class="swatch" style="background:#008552;"></span> proj<sub>v</sub> u</span>
+                    <span><span class="swatch" style="background:#999;"></span> perpendicular "light ray"</span>
+                </div>
+                <div class="checkbox-row" style="margin-top: 1rem;">
+                    <input type="checkbox" id="show-projection" checked>
+                    <label for="show-projection">Show projection of u onto v</label>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="show-arc" checked>
+                    <label for="show-arc">Show angle arc</label>
+                </div>
+                <button class="btn btn-secondary" onclick="resetVectors()">Reset</button>
+                <button class="btn btn-secondary" onclick="randomizeVectors()">Randomize</button>
+                <button class="btn btn-accent" onclick="snapOrthogonal()">Snap v &perp; u</button>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <h4>Vector u</h4>
+                    <div class="triple-input">
+                        <label>x</label><input type="number" id="u-x" value="4" step="0.5">
+                        <label>y</label><input type="number" id="u-y" value="1" step="0.5">
+                        <button class="btn" onclick="applyInputs()">Set</button>
+                    </div>
+                    <h4>Vector v</h4>
+                    <div class="triple-input">
+                        <label>x</label><input type="number" id="v-x" value="1" step="0.5">
+                        <label>y</label><input type="number" id="v-y" value="3" step="0.5">
+                        <button class="btn" onclick="applyInputs()">Set</button>
+                    </div>
+                </div>
+
+                <div class="control-block">
+                    <h4>Live computation</h4>
+                    <div class="output-box" id="output"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('scene');
+        const ctx = canvas.getContext('2d');
+
+        const AXIS_LIMIT = 6;
+
+        let u = { x: 4, y: 1 };
+        let v = { x: 1, y: 3 };
+        let dragTarget = null; // 'u' | 'v' | null
+
+        function getScale() {
+            return canvas.width / (2 * (AXIS_LIMIT + 1));
+        }
+
+        function toScreen(x, y) {
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const s = getScale();
+            return { sx: cx + x * s, sy: cy - y * s };
+        }
+
+        function toMath(px, py) {
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const s = getScale();
+            return { x: (px - cx) / s, y: (cy - py) / s };
+        }
+
+        function getCanvasCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                px: (e.clientX - rect.left) * (canvas.width / rect.width),
+                py: (e.clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
+        function drawGrid() {
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            for (let i = -AXIS_LIMIT; i <= AXIS_LIMIT; i++) {
+                const a = toScreen(i, -AXIS_LIMIT);
+                const b = toScreen(i, AXIS_LIMIT);
+                ctx.beginPath();
+                ctx.moveTo(a.sx, a.sy);
+                ctx.lineTo(b.sx, b.sy);
+                ctx.stroke();
+
+                const c = toScreen(-AXIS_LIMIT, i);
+                const d = toScreen(AXIS_LIMIT, i);
+                ctx.beginPath();
+                ctx.moveTo(c.sx, c.sy);
+                ctx.lineTo(d.sx, d.sy);
+                ctx.stroke();
+            }
+
+            // Main axes
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1.5;
+            const xa = toScreen(-AXIS_LIMIT, 0), xb = toScreen(AXIS_LIMIT, 0);
+            ctx.beginPath(); ctx.moveTo(xa.sx, xa.sy); ctx.lineTo(xb.sx, xb.sy); ctx.stroke();
+            const ya = toScreen(0, -AXIS_LIMIT), yb = toScreen(0, AXIS_LIMIT);
+            ctx.beginPath(); ctx.moveTo(ya.sx, ya.sy); ctx.lineTo(yb.sx, yb.sy); ctx.stroke();
+
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 13px sans-serif';
+            const xl = toScreen(AXIS_LIMIT + 0.3, 0);
+            const yl = toScreen(0, AXIS_LIMIT + 0.3);
+            ctx.fillText('x', xl.sx, xl.sy);
+            ctx.fillText('y', yl.sx, yl.sy);
+        }
+
+        function drawArrow(x, y, color, label, dashed) {
+            const p0 = toScreen(0, 0);
+            const p1 = toScreen(x, y);
+            ctx.save();
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 2.5;
+            if (dashed) ctx.setLineDash([5, 4]); else ctx.setLineDash([]);
+            ctx.beginPath();
+            ctx.moveTo(p0.sx, p0.sy);
+            ctx.lineTo(p1.sx, p1.sy);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            const angle = Math.atan2(p1.sy - p0.sy, p1.sx - p0.sx);
+            const headLen = 10;
+            ctx.beginPath();
+            ctx.moveTo(p1.sx, p1.sy);
+            ctx.lineTo(p1.sx - headLen * Math.cos(angle - Math.PI / 6), p1.sy - headLen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(p1.sx - headLen * Math.cos(angle + Math.PI / 6), p1.sy - headLen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+
+            if (label) {
+                ctx.font = 'bold 14px sans-serif';
+                ctx.fillText(label, p1.sx + 8, p1.sy - 8);
+            }
+            ctx.restore();
+        }
+
+        function drawHandle(x, y, color) {
+            const p = toScreen(x, y);
+            ctx.beginPath();
+            ctx.arc(p.sx, p.sy, 7, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#fff';
+            ctx.stroke();
+        }
+
+        function classify(dot) {
+            if (Math.abs(dot) < 0.03) return { label: 'Right angle — u and v are orthogonal!', color: '#008552' };
+            if (dot > 0) return { label: 'Acute angle', color: '#009CDE' };
+            return { label: 'Obtuse angle', color: '#F36E24' };
+        }
+
+        function drawAngleArc(color) {
+            const angleU = Math.atan2(u.y, u.x);
+            const angleV = Math.atan2(v.y, v.x);
+            let diff = angleV - angleU;
+            while (diff > Math.PI) diff -= 2 * Math.PI;
+            while (diff < -Math.PI) diff += 2 * Math.PI;
+
+            const R = 1.1;
+            const steps = 24;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const ang = angleU + t * diff;
+                const p = toScreen(R * Math.cos(ang), R * Math.sin(ang));
+                if (i === 0) ctx.moveTo(p.sx, p.sy); else ctx.lineTo(p.sx, p.sy);
+            }
+            ctx.stroke();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawGrid();
+
+            const dot = u.x * v.x + u.y * v.y;
+            const vLenSq = v.x * v.x + v.y * v.y;
+
+            if (document.getElementById('show-projection').checked && vLenSq > 1e-9) {
+                const t = dot / vLenSq;
+                const proj = { x: t * v.x, y: t * v.y };
+                // proj_v u, drawn along v
+                drawArrow(proj.x, proj.y, '#008552', null, true);
+                // perpendicular "light ray" from tip of u to the foot of the projection
+                const pu = toScreen(u.x, u.y);
+                const pp = toScreen(proj.x, proj.y);
+                ctx.save();
+                ctx.strokeStyle = '#999';
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.moveTo(pu.sx, pu.sy);
+                ctx.lineTo(pp.sx, pp.sy);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            if (document.getElementById('show-arc').checked) {
+                drawAngleArc(classify(dot).color);
+            }
+
+            drawArrow(v.x, v.y, '#009CDE', 'v');
+            drawArrow(u.x, u.y, '#F36E24', 'u');
+            drawHandle(u.x, u.y, '#F36E24');
+            drawHandle(v.x, v.y, '#009CDE');
+        }
+
+        function fmt(n) {
+            return Math.round(n * 1000) / 1000;
+        }
+
+        function updateOutput() {
+            const dot = u.x * v.x + u.y * v.y;
+            const magU = Math.sqrt(u.x * u.x + u.y * u.y);
+            const magV = Math.sqrt(v.x * v.x + v.y * v.y);
+            const out = document.getElementById('output');
+
+            if (magU < 1e-9 || magV < 1e-9) {
+                out.innerHTML = '<p>Both vectors need to be nonzero to compute an angle.</p>';
+                return;
+            }
+
+            let cosTheta = dot / (magU * magV);
+            cosTheta = Math.max(-1, Math.min(1, cosTheta));
+            const thetaDeg = Math.acos(cosTheta) * 180 / Math.PI;
+            const info = classify(dot);
+
+            const compVU = dot / magV;
+            const t = dot / (v.x * v.x + v.y * v.y);
+            const projX = t * v.x, projY = t * v.y;
+
+            out.innerHTML = `
+                \\[\\mathbf{u}\\cdot\\mathbf{v} = (${fmt(u.x)})(${fmt(v.x)}) + (${fmt(u.y)})(${fmt(v.y)}) = ${fmt(dot)}\\]
+                \\[\\lVert\\mathbf{u}\\rVert = ${fmt(magU)} \\qquad \\lVert\\mathbf{v}\\rVert = ${fmt(magV)}\\]
+                \\[\\cos\\theta = \\frac{${fmt(dot)}}{(${fmt(magU)})(${fmt(magV)})} \\approx ${fmt(cosTheta)}\\]
+                <p class="final" style="color:${info.color};">&theta; &approx; ${fmt(thetaDeg)}&deg; &mdash; ${info.label}</p>
+                <p><strong>comp<sub>v</sub> u</strong> = ${fmt(compVU)}</p>
+                \\[\\text{proj}_{\\mathbf{v}}\\mathbf{u} = \\langle ${fmt(projX)},\\ ${fmt(projY)} \\rangle\\]
+            `;
+
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise([out]);
+            }
+        }
+
+        function refresh() {
+            document.getElementById('u-x').value = fmt(u.x);
+            document.getElementById('u-y').value = fmt(u.y);
+            document.getElementById('v-x').value = fmt(v.x);
+            document.getElementById('v-y').value = fmt(v.y);
+            draw();
+            updateOutput();
+        }
+
+        function applyInputs() {
+            const ux = parseFloat(document.getElementById('u-x').value);
+            const uy = parseFloat(document.getElementById('u-y').value);
+            const vx = parseFloat(document.getElementById('v-x').value);
+            const vy = parseFloat(document.getElementById('v-y').value);
+            if ([ux, uy, vx, vy].some(isNaN)) return;
+            u = { x: ux, y: uy };
+            v = { x: vx, y: vy };
+            draw();
+            updateOutput();
+        }
+
+        function resetVectors() {
+            u = { x: 4, y: 1 };
+            v = { x: 1, y: 3 };
+            refresh();
+        }
+
+        function randomizeVectors() {
+            const rand = () => Math.round((Math.random() * 10 - 5) * 2) / 2;
+            let nu, nv;
+            do { nu = { x: rand(), y: rand() }; } while (Math.hypot(nu.x, nu.y) < 0.5);
+            do { nv = { x: rand(), y: rand() }; } while (Math.hypot(nv.x, nv.y) < 0.5);
+            u = nu; v = nv;
+            refresh();
+        }
+
+        function snapOrthogonal() {
+            const magU = Math.hypot(u.x, u.y);
+            const magV = Math.hypot(v.x, v.y) || 1;
+            if (magU < 1e-9) return;
+            const uhx = u.x / magU, uhy = u.y / magU;
+            // rotate u's direction by 90 degrees, scale to v's current length
+            v = { x: -uhy * magV, y: uhx * magV };
+            refresh();
+        }
+
+        canvas.addEventListener('pointerdown', (e) => {
+            const { px, py } = getCanvasCoords(e);
+            const pu = toScreen(u.x, u.y);
+            const pv = toScreen(v.x, v.y);
+            const du = Math.hypot(px - pu.sx, py - pu.sy);
+            const dv = Math.hypot(px - pv.sx, py - pv.sy);
+            const threshold = 18;
+            if (du <= threshold && du <= dv) {
+                dragTarget = 'u';
+            } else if (dv <= threshold) {
+                dragTarget = 'v';
+            } else {
+                dragTarget = null;
+            }
+        });
+
+        window.addEventListener('pointerup', () => {
+            dragTarget = null;
+            // keep the numeric inputs in sync once a drag ends
+            document.getElementById('u-x').value = fmt(u.x);
+            document.getElementById('u-y').value = fmt(u.y);
+            document.getElementById('v-x').value = fmt(v.x);
+            document.getElementById('v-y').value = fmt(v.y);
+        });
+
+        window.addEventListener('pointermove', (e) => {
+            if (!dragTarget) return;
+            const { px, py } = getCanvasCoords(e);
+            const m = toMath(px, py);
+            const snapped = { x: Math.round(m.x * 10) / 10, y: Math.round(m.y * 10) / 10 };
+            if (dragTarget === 'u') u = snapped; else v = snapped;
+            draw();
+            updateOutput();
+        });
+
+        document.getElementById('show-projection').addEventListener('change', draw);
+        document.getElementById('show-arc').addEventListener('change', draw);
+
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.width;
+            draw();
+            updateOutput();
+        }
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('load', resizeCanvas);
+        draw();
+        updateOutput();
+    </script>
+</body>
+
+</html>
