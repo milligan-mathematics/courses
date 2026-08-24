@@ -15,3 +15,7 @@ _site/
 .sass-cache/
 .jekyll-cache/
 .jekyll-metadata
+
+# Copyrighted textbook problem sets kept locally for authoring reference only
+# (this repo is public - don't commit publisher-owned PDFs)
+**/_source/problem-sets/

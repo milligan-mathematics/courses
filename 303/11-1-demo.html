@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Coordinate Explorer - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- MathJax for rendering equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .scene-wrap {
+            position: relative;
+        }
+
+        canvas#scene {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        canvas#scene:active {
+            cursor: grabbing;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .control-block {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-block h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .triple-input {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .triple-input label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .triple-input input {
+            width: 56px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #A2A2A2;
+        }
+
+        .btn-secondary:hover {
+            background-color: #6E6E6E;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .point-list {
+            list-style: none;
+            margin-top: 0.5rem;
+        }
+
+        .point-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+
+        .point-list button {
+            background: none;
+            border: none;
+            color: #c82333;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .output-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+            min-height: 1.5rem;
+        }
+
+        .output-box .final {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>3D Coordinate Explorer</h1>
+            <p>§11.1 &mdash; plot points, build spheres, and see the distance formula at work in a rotatable
+                3D scene.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Drag inside the scene to orbit the view, and scroll to zoom. Use the panels on the right to
+                plot points, compute the distance between two points (with the construction from the notes
+                drawn for you), or build a sphere and watch its equation update.
+            </p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel scene-wrap">
+                <canvas id="scene" width="600" height="600"></canvas>
+                <div class="scene-hint">Drag to rotate &middot; scroll to zoom</div>
+                <div class="checkbox-row" style="margin-top: 1rem;">
+                    <input type="checkbox" id="show-grid" checked>
+                    <label for="show-grid">Show grid planes</label>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="show-octant">
+                    <label for="show-octant">Highlight first octant</label>
+                </div>
+                <button class="btn btn-secondary" onclick="resetView()">Reset View</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear Everything</button>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <h4>Plot a Point</h4>
+                    <div class="triple-input">
+                        <label>x</label><input type="number" id="pt-x" value="1" step="0.5">
+                        <label>y</label><input type="number" id="pt-y" value="2" step="0.5">
+                        <label>z</label><input type="number" id="pt-z" value="3" step="0.5">
+                        <button class="btn" onclick="plotPoint()">Plot</button>
+                    </div>
+                    <ul class="point-list" id="point-list"></ul>
+                </div>
+
+                <div class="control-block">
+                    <h4>Distance Between Two Points</h4>
+                    <div class="triple-input">
+                        <strong style="width: 24px;">P&#8321;</strong>
+                        <label>x</label><input type="number" id="d1-x" value="-2" step="0.5">
+                        <label>y</label><input type="number" id="d1-y" value="5" step="0.5">
+                        <label>z</label><input type="number" id="d1-z" value="1" step="0.5">
+                    </div>
+                    <div class="triple-input">
+                        <strong style="width: 24px;">P&#8322;</strong>
+                        <label>x</label><input type="number" id="d2-x" value="3" step="0.5">
+                        <label>y</label><input type="number" id="d2-y" value="0" step="0.5">
+                        <label>z</label><input type="number" id="d2-z" value="-1" step="0.5">
+                    </div>
+                    <button class="btn" onclick="calculateDistance()">Calculate Distance</button>
+                    <button class="btn btn-secondary" onclick="clearDistance()">Clear</button>
+                    <div class="output-box" id="distance-output">Fill in two points and click "Calculate
+                        Distance."</div>
+                </div>
+
+                <div class="control-block">
+                    <h4>Sphere Builder</h4>
+                    <div class="triple-input">
+                        <strong style="width: 55px;">Center</strong>
+                        <label>a</label><input type="number" id="sp-a" value="2" step="0.5">
+                        <label>b</label><input type="number" id="sp-b" value="3" step="0.5">
+                        <label>c</label><input type="number" id="sp-c" value="-1" step="0.5">
+                    </div>
+                    <div class="triple-input">
+                        <strong style="width: 55px;">Radius</strong>
+                        <input type="number" id="sp-r" value="2" step="0.5" min="0.5">
+                    </div>
+                    <button class="btn" onclick="buildSphere()">Build Sphere</button>
+                    <button class="btn btn-secondary" onclick="removeSphere()">Remove Sphere</button>
+                    <div class="output-box" id="sphere-output">Set a center and radius, then click "Build
+                        Sphere."</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('scene');
+        const ctx = canvas.getContext('2d');
+
+        const AXIS_LIMIT = 6;
+        let theta = -0.7;   // azimuth (rotation about z)
+        let phi = 0.35;     // elevation
+        let scale = 32;
+
+        let dragging = false;
+        let lastX = 0, lastY = 0;
+
+        let points = [];      // {x,y,z,label,color}
+        let pointCounter = 0;
+        let distancePair = null;   // {p1, p2}
+        let sphere = null;         // {a,b,c,r}
+
+        function resetView() {
+            theta = -0.7;
+            phi = 0.35;
+            scale = 32;
+            draw();
+        }
+
+        function clearAll() {
+            points = [];
+            pointCounter = 0;
+            distancePair = null;
+            sphere = null;
+            document.getElementById('point-list').innerHTML = '';
+            document.getElementById('distance-output').textContent = 'Fill in two points and click "Calculate Distance."';
+            document.getElementById('sphere-output').textContent = 'Set a center and radius, then click "Build Sphere."';
+            draw();
+        }
+
+        canvas.addEventListener('pointerdown', (e) => {
+            dragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+        });
+        window.addEventListener('pointerup', () => dragging = false);
+        window.addEventListener('pointermove', (e) => {
+            if (!dragging) return;
+            const dx = e.clientX - lastX;
+            const dy = e.clientY - lastY;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            theta += dx * 0.006;
+            phi = Math.max(-1.45, Math.min(1.45, phi - dy * 0.006));
+            draw();
+        });
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            scale = Math.max(10, Math.min(80, scale - e.deltaY * 0.03));
+            draw();
+        }, { passive: false });
+
+        document.getElementById('show-grid').addEventListener('change', draw);
+        document.getElementById('show-octant').addEventListener('change', draw);
+
+        // Rotate world point (x,y,z) into camera space, return {sx, sy, depth}
+        function project(x, y, z) {
+            const ct = Math.cos(theta), st = Math.sin(theta);
+            const x1 = x * ct - y * st;
+            const y1 = x * st + y * ct;
+            const z1 = z;
+
+            const cp = Math.cos(phi), sp = Math.sin(phi);
+            const y2 = y1 * cp - z1 * sp;
+            const z2 = y1 * sp + z1 * cp;
+            const x2 = x1;
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            return {
+                sx: cx + x2 * scale,
+                sy: cy - z2 * scale,
+                depth: y2
+            };
+        }
+
+        function line3d(a, b, color, width) {
+            const pa = project(a[0], a[1], a[2]);
+            const pb = project(b[0], b[1], b[2]);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width || 1;
+            ctx.beginPath();
+            ctx.moveTo(pa.sx, pa.sy);
+            ctx.lineTo(pb.sx, pb.sy);
+            ctx.stroke();
+        }
+
+        function drawAxes() {
+            const L = AXIS_LIMIT;
+            // Grid planes (drawn first, behind axes)
+            if (document.getElementById('show-grid').checked) {
+                ctx.globalAlpha = 0.25;
+                for (let i = -L; i <= L; i++) {
+                    line3d([i, -L, 0], [i, L, 0], '#ccc');
+                    line3d([-L, i, 0], [L, i, 0], '#ccc');
+                }
+                ctx.globalAlpha = 1;
+            }
+
+            if (document.getElementById('show-octant').checked) {
+                ctx.globalAlpha = 0.12;
+                ctx.fillStyle = '#009CDE';
+                for (const plane of [
+                    [[0, 0, 0], [L, 0, 0], [L, L, 0], [0, L, 0]],
+                    [[0, 0, 0], [L, 0, 0], [L, 0, L], [0, 0, L]],
+                    [[0, 0, 0], [0, L, 0], [0, L, L], [0, 0, L]]
+                ]) {
+                    ctx.beginPath();
+                    plane.forEach((p, i) => {
+                        const pr = project(p[0], p[1], p[2]);
+                        if (i === 0) ctx.moveTo(pr.sx, pr.sy); else ctx.lineTo(pr.sx, pr.sy);
+                    });
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+            }
+
+            line3d([-L, 0, 0], [L, 0, 0], '#333', 1.5);
+            line3d([0, -L, 0], [0, L, 0], '#333', 1.5);
+            line3d([0, 0, -L], [0, 0, L], '#333', 1.5);
+
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 14px sans-serif';
+            const labels = [[[L + 0.5, 0, 0], 'x'], [[0, L + 0.5, 0], 'y'], [[0, 0, L + 0.5], 'z']];
+            labels.forEach(([p, txt]) => {
+                const pr = project(p[0], p[1], p[2]);
+                ctx.fillText(txt, pr.sx, pr.sy);
+            });
+        }
+
+        function drawPointMarker(x, y, z, color, label) {
+            const p = project(x, y, z);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(p.sx, p.sy, 5, 0, Math.PI * 2);
+            ctx.fill();
+            if (label) {
+                ctx.fillStyle = '#000';
+                ctx.font = '12px sans-serif';
+                ctx.fillText(`${label} (${x}, ${y}, ${z})`, p.sx + 8, p.sy - 8);
+            }
+        }
+
+        function drawSphereWire(a, b, c, r) {
+            const segs = 24;
+            ctx.strokeStyle = 'rgba(0, 133, 82, 0.6)';
+            ctx.lineWidth = 1;
+            // Latitude circles (varying z)
+            for (let i = 1; i < 6; i++) {
+                const phiLat = Math.PI * i / 6;
+                const zz = c + r * Math.cos(phiLat);
+                const rr = r * Math.sin(phiLat);
+                ctx.beginPath();
+                for (let j = 0; j <= segs; j++) {
+                    const ang = 2 * Math.PI * j / segs;
+                    const p = project(a + rr * Math.cos(ang), b + rr * Math.sin(ang), zz);
+                    if (j === 0) ctx.moveTo(p.sx, p.sy); else ctx.lineTo(p.sx, p.sy);
+                }
+                ctx.stroke();
+            }
+            // Longitude circles (varying azimuth)
+            for (let i = 0; i < 6; i++) {
+                const ang0 = Math.PI * i / 6;
+                ctx.beginPath();
+                for (let j = 0; j <= segs; j++) {
+                    const t = Math.PI * j / segs;
+                    const xx = a + r * Math.sin(t) * Math.cos(ang0);
+                    const yy = b + r * Math.sin(t) * Math.sin(ang0);
+                    const zz = c + r * Math.cos(t);
+                    const p = project(xx, yy, zz);
+                    if (j === 0) ctx.moveTo(p.sx, p.sy); else ctx.lineTo(p.sx, p.sy);
+                }
+                ctx.stroke();
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawAxes();
+
+            if (sphere) {
+                drawSphereWire(sphere.a, sphere.b, sphere.c, sphere.r);
+            }
+
+            points.forEach(pt => drawPointMarker(pt.x, pt.y, pt.z, pt.color, pt.label));
+
+            if (distancePair) {
+                const { p1, p2 } = distancePair;
+                const corner = [p2.x, p2.y, p1.z];
+                line3d([p1.x, p1.y, p1.z], corner, '#009CDE', 1.5);
+                line3d(corner, [p2.x, p2.y, p2.z], '#009CDE', 1.5);
+                ctx.setLineDash([4, 4]);
+                line3d([p1.x, p1.y, p1.z], [p2.x, p2.y, p2.z], '#F36E24', 2);
+                ctx.setLineDash([]);
+                drawPointMarker(p1.x, p1.y, p1.z, '#F36E24', 'P₁');
+                drawPointMarker(p2.x, p2.y, p2.z, '#F36E24', 'P₂');
+            }
+        }
+
+        function plotPoint() {
+            const x = parseFloat(document.getElementById('pt-x').value);
+            const y = parseFloat(document.getElementById('pt-y').value);
+            const z = parseFloat(document.getElementById('pt-z').value);
+            if ([x, y, z].some(isNaN)) return;
+
+            pointCounter++;
+            const label = `P${pointCounter}`;
+            const colors = ['#F36E24', '#009CDE', '#008552', '#CD5920', '#6E6E6E'];
+            const color = colors[(pointCounter - 1) % colors.length];
+            points.push({ x, y, z, label, color });
+
+            const li = document.createElement('li');
+            li.innerHTML = `<span>${label}: (${x}, ${y}, ${z})</span>`;
+            const btn = document.createElement('button');
+            btn.textContent = '✕';
+            btn.onclick = () => {
+                points = points.filter(p => p.label !== label);
+                li.remove();
+                draw();
+            };
+            li.appendChild(btn);
+            document.getElementById('point-list').appendChild(li);
+
+            draw();
+        }
+
+        function simplifyRadical(n) {
+            // n assumed a non-negative integer; return [coefficient, radicand]
+            let coeff = 1;
+            let radicand = n;
+            for (let k = Math.floor(Math.sqrt(n)); k >= 2; k--) {
+                if (n % (k * k) === 0) {
+                    coeff = k;
+                    radicand = n / (k * k);
+                    break;
+                }
+            }
+            return [coeff, radicand];
+        }
+
+        function calculateDistance() {
+            const p1 = {
+                x: parseFloat(document.getElementById('d1-x').value),
+                y: parseFloat(document.getElementById('d1-y').value),
+                z: parseFloat(document.getElementById('d1-z').value)
+            };
+            const p2 = {
+                x: parseFloat(document.getElementById('d2-x').value),
+                y: parseFloat(document.getElementById('d2-y').value),
+                z: parseFloat(document.getElementById('d2-z').value)
+            };
+            if ([p1.x, p1.y, p1.z, p2.x, p2.y, p2.z].some(isNaN)) return;
+
+            distancePair = { p1, p2 };
+
+            const dx = p2.x - p1.x, dy = p2.y - p1.y, dz = p2.z - p1.z;
+            const sq = dx * dx + dy * dy + dz * dz;
+            const d = Math.sqrt(sq);
+
+            let simplifiedStr = '';
+            if (Number.isInteger(sq)) {
+                const [coeff, radicand] = simplifyRadical(sq);
+                if (radicand === 1) {
+                    simplifiedStr = `\\(d = ${coeff}\\)`;
+                } else if (coeff > 1) {
+                    simplifiedStr = `\\(d = ${coeff}\\sqrt{${radicand}}\\)`;
+                } else {
+                    simplifiedStr = `\\(d = \\sqrt{${radicand}}\\)`;
+                }
+            }
+
+            const out = document.getElementById('distance-output');
+            out.innerHTML = `
+                \\[d = \\sqrt{(${p2.x}-(${p1.x}))^2 + (${p2.y}-(${p1.y}))^2 + (${p2.z}-(${p1.z}))^2}\\]
+                \\[d = \\sqrt{${dx * dx} + ${dy * dy} + ${dz * dz}} = \\sqrt{${sq}}\\]
+                ${simplifiedStr ? `<p>${simplifiedStr}</p>` : ''}
+                <p class="final">d ≈ ${d.toFixed(4)}</p>
+            `;
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise([out]);
+            }
+            draw();
+        }
+
+        function clearDistance() {
+            distancePair = null;
+            document.getElementById('distance-output').textContent = 'Fill in two points and click "Calculate Distance."';
+            draw();
+        }
+
+        function buildSphere() {
+            const a = parseFloat(document.getElementById('sp-a').value);
+            const b = parseFloat(document.getElementById('sp-b').value);
+            const c = parseFloat(document.getElementById('sp-c').value);
+            const r = parseFloat(document.getElementById('sp-r').value);
+            if ([a, b, c, r].some(isNaN) || r <= 0) return;
+
+            sphere = { a, b, c, r };
+
+            const signStr = (v) => (v >= 0 ? `- ${v}` : `+ ${Math.abs(v)}`);
+            const out = document.getElementById('sphere-output');
+            out.innerHTML = `
+                \\[(x ${signStr(a)})^2 + (y ${signStr(b)})^2 + (z ${signStr(c)})^2 = ${r * r}\\]
+                <p class="final">center (${a}, ${b}, ${c}), radius ${r}</p>
+            `;
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise([out]);
+            }
+            draw();
+        }
+
+        function removeSphere() {
+            sphere = null;
+            document.getElementById('sphere-output').textContent = 'Set a center and radius, then click "Build Sphere."';
+            draw();
+        }
+
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.width;
+            draw();
+        }
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('load', resizeCanvas);
+        draw();
+    </script>
+</body>
+
+</html>

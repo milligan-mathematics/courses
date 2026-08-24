@@ -1,0 +1,27 @@
+---
+layout: default
+---
+
+<div class="container page-content">
+    <a href="{{ page.course_url | relative_url }}" style="font-size: 0.9rem;">&larr; Back to {{ page.course_title | default: "Course" }}</a>
+
+    <div class="content-wrapper section-content">
+        {{ content }}
+
+        {% if page.activities %}
+        <h2 style="margin-top: var(--spacing-xl);">Interactive Resources</h2>
+        <div class="resource-grid">
+            {% for activity in page.activities %}
+            <a href="{{ activity.url }}" class="resource-card">
+                <div class="resource-meta" style="color: var(--color-accent-blue);">{{ activity.type | default:
+                    'Activity' }}</div>
+                <h4>{{ activity.title }}</h4>
+                {% if activity.description %}
+                <p class="resource-desc">{{ activity.description }}</p>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
