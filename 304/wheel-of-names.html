@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Wheel of Names - Math 304</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --accent-color: #2c5282;
+            --text-color: #2d3748;
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --wheel-colors: #e53e3e, #3182ce, #38a169, #d69e2e, #805ad5, #e53e3e;
+            /* Simplified list */
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            width: 100%;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #setup-screen,
+        #wheel-screen {
+            max-width: 800px;
+            width: 90%;
+            background: var(--card-bg);
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        #wheel-screen {
+            display: none;
+            max-width: 1200px;
+            width: 95%;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #wheel-screen.active {
+            display: flex;
+        }
+
+        @media (min-width: 900px) {
+            #wheel-screen.active {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 3rem;
+                margin-top: 1rem;
+            }
+
+            .wheel-main-area {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .probability-display {
+                width: 300px;
+                margin-top: 2rem !important;
+            }
+        }
+
+        .attendance-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            text-align: left;
+            margin: 2rem 0;
+        }
+
+        .student-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .student-option:hover {
+            background: #edf2f7;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: var(--accent-color);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Wheel Styles */
+        #wheel-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 2rem auto;
+        }
+
+        #wheel-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
+        }
+
+        #pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #e53e3e;
+            z-index: 10;
+        }
+
+        .probability-display {
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .prob-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .winner-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            text-align: center;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .winner-popup.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .winner-popup h2 {
+            font-size: 3rem;
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 90;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: white;
+            opacity: 0.8;
+            margin-right: auto;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        /* Round tracking */
+        .round-banner {
+            background: #edf2f7;
+            border-left: 4px solid var(--primary-color);
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        .round-banner strong {
+            color: var(--primary-color);
+        }
+
+        .roster-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .roster-group h4 {
+            margin: 0 0 0.5rem;
+            font-size: 0.8rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #718096;
+        }
+
+        .name-chip {
+            display: inline-block;
+            padding: 0.3rem 0.7rem;
+            margin: 0 0.35rem 0.35rem 0;
+            border-radius: 999px;
+            font-size: 0.95rem;
+            background: #e2e8f0;
+            color: var(--text-color);
+        }
+
+        .name-chip.called {
+            background: #f7fafc;
+            color: #a0aec0;
+            text-decoration: line-through;
+        }
+
+        .roster-empty {
+            color: #a0aec0;
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+
+        .secondary-button {
+            background: transparent;
+            color: var(--accent-color);
+            border: 1px solid #cbd5e0;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .secondary-button:hover {
+            background: #edf2f7;
+            color: var(--primary-color);
+        }
+
+        #spin-button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    <header style="display: flex; align-items: center; justify-content: center;">
+        <a href="index.html" class="back-link" style="position: absolute; left: 1.5rem;">&larr; Hub</a>
+        <h1 style="margin: 0;">Math 304: Student Wheel</h1>
+    </header>
+
+    <div id="setup-screen">
+        <h2>Attendance</h2>
+        <p>Who is present today?</p>
+        <div class="attendance-list" id="student-list">
+            <!-- Populated by JS -->
+        </div>
+        <button onclick="startApp()">Start Class</button>
+    </div>
+
+    <div id="wheel-screen">
+        <div class="wheel-main-area">
+            <div id="wheel-container">
+                <div id="pointer"></div>
+                <canvas id="wheel-canvas" width="800" height="800"></canvas>
+            </div>
+            <button id="spin-button" onclick="spin()">Spin Wheel</button>
+        </div>
+
+        <div class="probability-display">
+            <div class="round-banner" id="round-banner"></div>
+
+            <div class="roster-group">
+                <h4>Still to come</h4>
+                <div id="remaining-list"></div>
+            </div>
+
+            <div class="roster-group">
+                <h4>Called this round</h4>
+                <div id="called-list"></div>
+            </div>
+
+            <button class="secondary-button" onclick="startOver()">Start Over</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="winner-popup" id="winner-popup">
+        <p>The student is...</p>
+        <h2 id="winner-name"></h2>
+        <button onclick="closePopup()" style="margin-top: 2rem;">Got it!</button>
+    </div>
+
+    <script>
+        // MATH 304: Modern Geometry - Fall 2026 roster (first names).
+        const allStudents = ["Jacob", "Shelby", "Joao", "Brayden"];
+
+        // One colour per student so no two adjacent slices ever match, at any round size.
+        const colors = ["#e53e3e", "#3182ce", "#38a169", "#d69e2e", "#805ad5", "#319795", "#ed64a6", "#718096", "#dd6b20", "#4c51bf"];
+
+        let presentStudents = [];   // everyone marked present at setup
+        let remaining = [];         // present students not yet called this round - this is what the wheel shows
+        let calledThisRound = [];   // present students already called this round
+        let roundNumber = 1;
+        let currentRotation = 0;
+        let isSpinning = false;
+
+        // Build the attendance checklist
+        const listEl = document.getElementById('student-list');
+        allStudents.forEach((name, i) => {
+            const div = document.createElement('div');
+            div.className = 'student-option';
+            div.innerHTML =
+                '<input type="checkbox" checked id="check-' + i + '"> <label for="check-' + i + '">' + name + '</label>';
+            listEl.appendChild(div);
+        });
+
+        function startApp() {
+            presentStudents = allStudents.filter((name, i) => document.getElementById('check-' + i).checked);
+
+            if (presentStudents.length === 0) {
+                alert("Please select at least one student.");
+                return;
+            }
+
+            roundNumber = 1;
+            beginRound();
+
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('wheel-screen').classList.add('active');
+        }
+
+        // A "round" is one full pass through everyone present. The wheel only ever holds
+        // students who have not been called yet this round, so nobody can be picked twice
+        // before everybody has been picked once.
+        function beginRound() {
+            remaining = shuffle(presentStudents.slice());
+            calledThisRound = [];
+            render();
+        }
+
+        function shuffle(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                const tmp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = tmp;
+            }
+            return arr;
+        }
+
+        function startOver() {
+            if (isSpinning) return;
+
+            const wheel = document.getElementById('wheel-canvas');
+            currentRotation = 0;
+            wheel.style.transition = 'none';
+            wheel.style.transform = 'rotate(0deg)';
+            void wheel.offsetWidth; // flush the reset before re-enabling the animation
+            wheel.style.transition = 'transform 4s cubic-bezier(0.15, 0, 0.15, 1)';
+
+            roundNumber = 1;
+            document.getElementById('wheel-screen').classList.remove('active');
+            document.getElementById('setup-screen').style.display = 'block';
+        }
+
+        function render() {
+            drawWheel();
+            updateRoster();
+        }
+
+        function drawWheel() {
+            const canvas = document.getElementById('wheel-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const sliceAngle = (2 * Math.PI) / remaining.length;
+            let currentAngle = 0;
+
+            remaining.forEach((name, i) => {
+                ctx.beginPath();
+                ctx.moveTo(400, 400);
+                ctx.arc(400, 400, 380, currentAngle, currentAngle + sliceAngle);
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.fill();
+                ctx.stroke();
+
+                // Draw label
+                ctx.save();
+                ctx.translate(400, 400);
+                ctx.rotate(currentAngle + sliceAngle / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "white";
+                ctx.font = "bold 32px Inter";
+                ctx.fillText(name, 350, 10);
+                ctx.restore();
+
+                currentAngle += sliceAngle;
+            });
+        }
+
+        function updateRoster() {
+            const odds = (100 / remaining.length).toFixed(1);
+            document.getElementById('round-banner').innerHTML =
+                '<strong>Round ' + roundNumber + '</strong> &middot; ' +
+                calledThisRound.length + ' of ' + presentStudents.length + ' called' +
+                '<br>Each name on the wheel: <strong>' + odds + '%</strong>';
+
+            document.getElementById('remaining-list').innerHTML =
+                remaining.map(n => '<span class="name-chip">' + n + '</span>').join('');
+
+            document.getElementById('called-list').innerHTML = calledThisRound.length
+                ? calledThisRound.map(n => '<span class="name-chip called">' + n + '</span>').join('')
+                : '<span class="roster-empty">Nobody yet.</span>';
+        }
+
+        function spin() {
+            if (isSpinning) return;
+            isSpinning = true;
+            document.getElementById('spin-button').disabled = true;
+
+            const spinRotation = 1440 + Math.random() * 360; // At least 4 full spins
+            currentRotation += spinRotation;
+            document.getElementById('wheel-canvas').style.transform = 'rotate(' + currentRotation + 'deg)';
+
+            setTimeout(() => {
+                isSpinning = false;
+                document.getElementById('spin-button').disabled = false;
+                calculateWinner();
+            }, 4000);
+        }
+
+        function calculateWinner() {
+            // The pointer sits at the top of the wheel. CSS rotates the canvas clockwise,
+            // so undo that rotation to find which slice ended up under the pointer.
+            const normalizedRotation = (360 - (currentRotation % 360)) % 360;
+            const targetAngle = (normalizedRotation - 90 + 360) % 360;
+            const sliceDegrees = 360 / remaining.length;
+            const index = Math.min(Math.floor(targetAngle / sliceDegrees), remaining.length - 1);
+
+            showWinner(remaining[index], index);
+        }
+
+        function showWinner(name, index) {
+            document.getElementById('winner-name').innerText = name;
+            document.getElementById('winner-popup').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+
+            // Take the winner off the wheel for the rest of this round.
+            remaining.splice(index, 1);
+            calledThisRound.push(name);
+
+            // Everyone present has now had a turn - start the next pass with a fresh shuffle.
+            if (remaining.length === 0) {
+                roundNumber++;
+                beginRound();
+            } else {
+                render();
+            }
+        }
+
+        function closePopup() {
+            document.getElementById('winner-popup').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+    </script>
+</body>
+
+</html>
