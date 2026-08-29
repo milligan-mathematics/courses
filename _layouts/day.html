@@ -1,0 +1,65 @@
+---
+layout: default
+---
+
+<link rel="stylesheet" href="{{ site.baseurl }}/assets/css/math411.css">
+
+{% comment %}
+Must load BEFORE {{ content }}: each day page carries an inline <script> that calls
+M411 helpers at parse time, so the library has to already be defined. Loading it at
+the end of the body left M411 undefined and silently killed every widget below the
+first one that touched it.
+{% endcomment %}
+<script src="{{ site.baseurl }}/assets/js/math411.js"></script>
+
+<div class="container page-content">
+    <a href="{{ site.baseurl }}/411/" style="font-size: 0.9rem;">&larr; Back to MATH 411: Real Analysis</a>
+
+    <div class="content-wrapper day-page">
+
+        <header class="day-header">
+            <div class="day-eyebrow">
+                <span class="day-badge">Day {{ page.day }}</span>
+                <span class="day-chapter">Chapter {{ page.chapter_number }} &middot; {{ page.chapter }}</span>
+            </div>
+            <h1>{{ page.day_title }}</h1>
+            {% if page.blurb %}<p class="day-blurb">{{ page.blurb }}</p>{% endif %}
+        </header>
+
+        {% if page.reading %}
+        <div class="day-reading-note">
+            <strong>Before you dig in:</strong> this page is a companion to the reading in your Canvas assignment for
+            Day {{ page.day }} &mdash; {{ page.reading }}. Read that first, then come here to push on it. Nothing on
+            this page answers an assigned problem for you.
+        </div>
+        {% endif %}
+
+        {{ content }}
+
+        {% comment %}
+        Only link a neighbouring day if that page actually exists - days are being
+        built out gradually, so a blind {{ day | minus: 1 }} link would 404.
+        {% endcomment %}
+        {% assign prev = page.day | minus: 1 %}
+        {% assign next = page.day | plus: 1 %}
+        {% capture prev_url %}/411/day-{% if prev < 10 %}0{% endif %}{{ prev }}.html{% endcapture %}
+        {% capture next_url %}/411/day-{% if next < 10 %}0{% endif %}{{ next }}.html{% endcapture %}
+        {% assign prev_page = site.pages | where: "url", prev_url | first %}
+        {% assign next_page = site.pages | where: "url", next_url | first %}
+
+        <nav class="day-nav">
+            {% if prev_page %}
+            <a class="day-nav-prev" href="{{ prev_url | prepend: site.baseurl }}">&larr; Day {{ prev }}: {{
+                prev_page.day_title }}</a>
+            {% else %}<span></span>{% endif %}
+
+            <a class="day-nav-index" href="{{ site.baseurl }}/411/">All days</a>
+
+            {% if next_page %}
+            <a class="day-nav-next" href="{{ next_url | prepend: site.baseurl }}">Day {{ next }}: {{ next_page.day_title
+                }} &rarr;</a>
+            {% else %}<span></span>{% endif %}
+        </nav>
+
+    </div>
+</div>

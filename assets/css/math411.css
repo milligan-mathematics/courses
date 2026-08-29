@@ -1,0 +1,874 @@
+/* MATH 411 Real Analysis - daily companion pages
+   Namespaced under .day-page / .act so nothing here leaks into other courses. */
+
+:root {
+  --a411-explore: #009CDE;
+  /* Stoele Blue     - build intuition by moving something */
+  --a411-scaffold: #008552;
+  /* Anglin Field    - walk a proof one committed guess at a time */
+  --a411-check: #F36E24;
+  /* Milligan Orange - test yourself */
+  --a411-flaw: #8B5CF6;
+  /* violet          - historical argument with a crack in it */
+  --a411-line: #e4e6ea;
+}
+
+.day-page {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+/* ---------- Header ---------- */
+
+.day-header {
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.day-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.day-badge {
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-primary);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.day-chapter {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.day-page h1 {
+  font-size: 2.1rem;
+  border: none;
+  padding: 0;
+  display: block;
+  line-height: 1.2;
+}
+
+.day-blurb {
+  margin-top: 10px;
+  font-size: 1.08rem;
+  color: var(--text-muted);
+}
+
+.day-reading-note {
+  background: #fff8f3;
+  border: 1px solid #f7d9c4;
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 0.95rem;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* ---------- Activity cards ---------- */
+
+.act {
+  background: var(--bg-card);
+  border: 1px solid var(--a411-line);
+  border-left: 5px solid var(--color-gray);
+  border-radius: 10px;
+  padding: 22px 26px;
+  margin: var(--spacing-lg) 0;
+  box-shadow: var(--shadow-card);
+}
+
+.act.explore {
+  border-left-color: var(--a411-explore);
+}
+
+.act.scaffold {
+  border-left-color: var(--a411-scaffold);
+}
+
+.act.check {
+  border-left-color: var(--a411-check);
+}
+
+.act.flaw {
+  border-left-color: var(--a411-flaw);
+}
+
+.act-type {
+  font-family: var(--font-primary);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.act.explore .act-type {
+  color: var(--a411-explore);
+}
+
+.act.scaffold .act-type {
+  color: var(--a411-scaffold);
+}
+
+.act.check .act-type {
+  color: var(--a411-check);
+}
+
+.act.flaw .act-type {
+  color: var(--a411-flaw);
+}
+
+.act h2 {
+  font-size: 1.35rem;
+  margin: 4px 0 10px;
+}
+
+.act h3 {
+  font-size: 1.05rem;
+  margin: var(--spacing-md) 0 6px;
+}
+
+.act p {
+  margin-bottom: 0.85rem;
+}
+
+.act p:last-child {
+  margin-bottom: 0;
+}
+
+/* The site-wide reset zeroes list margins, which runs a list straight into
+   whatever paragraph follows it. Put them back inside activity cards. */
+.act ul,
+.act ol,
+.readout ul,
+.readout ol,
+.sstep-body ul,
+.sstep-body ol,
+.flaw-verdict ul,
+.flaw-verdict ol {
+  margin: 0 0 0.85rem 22px;
+}
+
+.act li,
+.readout li,
+.sstep-body li,
+.flaw-verdict li {
+  margin-bottom: 6px;
+}
+
+.act ul:last-child,
+.act ol:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------- Generic controls ---------- */
+
+.ctl-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin: var(--spacing-md) 0;
+}
+
+.ctl {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+}
+
+.ctl label {
+  font-family: var(--font-primary);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.72rem;
+}
+
+.ctl input[type="range"] {
+  width: 200px;
+  accent-color: var(--color-primary);
+}
+
+.ctl input[type="number"],
+.ctl input[type="text"],
+.ctl select {
+  border: 1px solid #ccd0d5;
+  border-radius: 6px;
+  padding: 6px 9px;
+  font: inherit;
+  font-size: 0.95rem;
+  width: 130px;
+}
+
+.btn411 {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn411:hover {
+  background: var(--color-primary-dark);
+}
+
+.btn411.ghost {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.btn411.ghost:hover {
+  background: #fff2ea;
+}
+
+/* Selected state for buttons used as a toggle group */
+.btn411.ghost.on {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.btn411:disabled {
+  background: #d3d6da;
+  cursor: default;
+}
+
+.readout {
+  background: #f8f9fa;
+  border: 1px solid var(--a411-line);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: var(--spacing-md) 0;
+  font-size: 0.97rem;
+}
+
+.readout .big {
+  font-size: 1.15rem;
+}
+
+canvas.plot {
+  width: 100%;
+  max-width: 100%;
+  border: 1px solid var(--a411-line);
+  border-radius: 8px;
+  background: #fff;
+  display: block;
+  margin: var(--spacing-md) 0;
+}
+
+/* ---------- Multiple-choice self-check ---------- */
+
+.mc {
+  margin: var(--spacing-md) 0;
+}
+
+.mc+.mc {
+  border-top: 1px solid var(--a411-line);
+  padding-top: var(--spacing-md);
+}
+
+.mc-q {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.mc-opt {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #ccd0d5;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.mc-opt:hover {
+  border-color: var(--color-primary);
+  background: #fffaf6;
+}
+
+.mc-opt.correct {
+  border-color: var(--a411-scaffold);
+  background: #eefaf4;
+}
+
+.mc-opt.wrong {
+  border-color: #d9534f;
+  background: #fdf1f0;
+}
+
+.mc-opt.dim {
+  opacity: 0.55;
+}
+
+.mc-fb {
+  display: none;
+  border-left: 3px solid var(--color-gray);
+  padding: 8px 0 8px 14px;
+  margin: 4px 0 12px;
+  font-size: 0.93rem;
+  color: var(--text-muted);
+}
+
+.mc-fb.shown {
+  display: block;
+}
+
+.mc-fb.good {
+  border-left-color: var(--a411-scaffold);
+  color: var(--text-main);
+}
+
+.mc-fb.bad {
+  border-left-color: #d9534f;
+}
+
+/* ---------- Proof scaffold ---------- */
+
+.scaffold-steps {
+  list-style: none;
+  counter-reset: sstep;
+  margin: var(--spacing-md) 0 0;
+}
+
+.sstep {
+  counter-increment: sstep;
+  position: relative;
+  padding: 0 0 var(--spacing-md) 34px;
+  border-left: 2px solid var(--a411-line);
+  margin-left: 11px;
+}
+
+.sstep:last-child {
+  border-left-color: transparent;
+  padding-bottom: 0;
+}
+
+.sstep::before {
+  content: counter(sstep);
+  position: absolute;
+  left: -12px;
+  top: 0;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--a411-line);
+  color: var(--text-muted);
+  font-family: var(--font-primary);
+  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sstep.open::before {
+  background: var(--a411-scaffold);
+  border-color: var(--a411-scaffold);
+  color: #fff;
+}
+
+.sstep-prompt {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.sstep-body {
+  display: none;
+  border-radius: 8px;
+  background: #f6fbf8;
+  border: 1px solid #d6ece1;
+  padding: 12px 16px;
+  margin-top: 8px;
+}
+
+.sstep.open .sstep-body {
+  display: block;
+}
+
+.sstep-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------- Spot the flaw ---------- */
+
+.flawlist {
+  counter-reset: fline;
+  margin: var(--spacing-md) 0;
+  border: 1px solid var(--a411-line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.fline {
+  counter-increment: fline;
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: none;
+  border-bottom: 1px solid var(--a411-line);
+  padding: 12px 16px 12px 46px;
+  position: relative;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.fline:last-child {
+  border-bottom: none;
+}
+
+.fline::before {
+  content: "(" counter(fline) ")";
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-family: var(--font-primary);
+}
+
+.fline:hover {
+  background: #faf7ff;
+}
+
+.fline.is-flaw {
+  background: #f5efff;
+  box-shadow: inset 4px 0 0 var(--a411-flaw);
+}
+
+.fline.not-flaw {
+  background: #f8f9fa;
+  opacity: 0.6;
+}
+
+.flaw-verdict {
+  display: none;
+  margin-top: var(--spacing-md);
+  border-left: 3px solid var(--a411-flaw);
+  padding: 10px 0 10px 14px;
+  font-size: 0.95rem;
+}
+
+.flaw-verdict.shown {
+  display: block;
+}
+
+/* ---------- Hints & reflection ---------- */
+
+details.hint {
+  border: 1px dashed #ccd0d5;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: var(--spacing-md) 0;
+  background: #fcfcfd;
+}
+
+details.hint>summary {
+  cursor: pointer;
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  list-style: none;
+}
+
+details.hint>summary::-webkit-details-marker {
+  display: none;
+}
+
+details.hint>summary::before {
+  content: "\25B8\00a0";
+}
+
+details.hint[open]>summary::before {
+  content: "\25BE\00a0";
+}
+
+details.hint>summary+* {
+  margin-top: 10px;
+}
+
+.bring-to-class {
+  background: #f8f9fa;
+  border: 1px solid var(--a411-line);
+  border-radius: 10px;
+  padding: 22px 26px;
+  margin: var(--spacing-lg) 0;
+}
+
+.bring-to-class h2 {
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+}
+
+.bring-to-class ol {
+  margin-left: 20px;
+}
+
+.bring-to-class li {
+  margin-bottom: 10px;
+}
+
+blockquote.source {
+  border-left: 3px solid var(--color-gray);
+  padding: 4px 0 4px 16px;
+  margin: var(--spacing-md) 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+blockquote.source cite {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  font-style: normal;
+}
+
+/* ---------- Continuity certificate (Day 26) ---------- */
+
+.certlist {
+  list-style: none;
+  counter-reset: cert;
+  margin: var(--spacing-md) 0;
+  border: 1px solid var(--a411-line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cert {
+  counter-increment: cert;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  align-items: baseline;
+  padding: 10px 16px 10px 44px;
+  position: relative;
+  border-bottom: 1px solid var(--a411-line);
+  background: #fff;
+}
+
+.cert:last-child {
+  border-bottom: none;
+}
+
+.cert::before {
+  content: counter(cert);
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-family: var(--font-primary);
+}
+
+.cert.leaf {
+  background: #f6fbf8;
+  box-shadow: inset 3px 0 0 var(--a411-scaffold);
+}
+
+.cert.check {
+  background: #fff8f3;
+  box-shadow: inset 3px 0 0 var(--a411-check);
+}
+
+.cert-claim {
+  flex: 1 1 260px;
+  font-weight: 600;
+}
+
+.cert-why {
+  flex: 1 1 240px;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+/* ---------- Numeric result grid (Day 2's Fermat table) ---------- */
+
+.numgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
+  gap: 6px;
+  margin: var(--spacing-md) 0;
+}
+
+.numcell {
+  border-radius: 6px;
+  padding: 6px 4px;
+  text-align: center;
+  font-size: 0.85rem;
+  border: 1px solid var(--a411-line);
+  line-height: 1.25;
+}
+
+.numcell.good {
+  background: #eefaf4;
+  border-color: #b6e3ce;
+}
+
+.numcell.bad {
+  background: #fdf1f0;
+  border-color: #f0c9c7;
+}
+
+.numcell .nlab {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.numcell .nval {
+  display: block;
+  font-weight: 600;
+  font-family: "SFMono-Regular", Consolas, monospace;
+}
+
+/* ---------- Pascal's triangle ---------- */
+
+.pascal {
+  margin: var(--spacing-md) 0;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.prow {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 3px;
+  min-width: 640px;
+}
+
+.prow.focus {
+  background: #fff6ee;
+  border-radius: 6px;
+  padding: 3px 0;
+  box-shadow: inset 0 0 0 1px #f7d9c4;
+}
+
+.pcell {
+  flex: 0 0 44px;
+  text-align: center;
+  font-size: 0.72rem;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  color: var(--text-muted);
+  padding: 2px 0;
+  border-radius: 4px;
+}
+
+.pcell.div {
+  background: var(--a411-scaffold);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ---------- Selectable chips (Day 1's "what is a number?") ---------- */
+
+.chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: var(--spacing-md) 0;
+}
+
+.chip {
+  background: #fff;
+  border: 1px solid #ccd0d5;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chip:hover {
+  border-color: var(--color-primary);
+  background: #fffaf6;
+}
+
+.chip.on {
+  border-color: var(--a411-explore);
+  background: #eaf7fd;
+  box-shadow: inset 0 0 0 1px var(--a411-explore);
+}
+
+.notelist {
+  margin: var(--spacing-md) 0;
+}
+
+.noteitem {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--a411-line);
+}
+
+.noteitem:last-child {
+  border-bottom: none;
+}
+
+.noteitem.picked {
+  background: #f4fbfe;
+  border-left: 3px solid var(--a411-explore);
+}
+
+.notesym {
+  flex: 0 0 130px;
+  text-align: right;
+}
+
+.notetext {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+  .noteitem {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .notesym {
+    flex: none;
+    text-align: left;
+  }
+}
+
+/* ---------- Prev / next day navigation ---------- */
+
+.day-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--a411-line);
+  font-size: 0.9rem;
+}
+
+.day-nav a {
+  text-decoration: none;
+  color: var(--color-primary);
+  max-width: 40%;
+}
+
+.day-nav a:hover {
+  text-decoration: underline;
+}
+
+.day-nav-next {
+  text-align: right;
+}
+
+.day-nav-index {
+  color: var(--text-muted) !important;
+  font-family: var(--font-primary);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+/* Inline monospace readouts next to sliders */
+.mono {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+/* ---------- Day index grid on 411/index.md ----------
+   The site-wide reset zeroes heading and paragraph margins, which runs the
+   chapter headings straight into the text above them. Restore spacing for the
+   course index only - on day pages this content lives inside .act cards, which
+   have their own rules, and .day-page is excluded so they aren't touched. */
+
+.content-wrapper:not(.day-page)>h1 {
+  margin-bottom: var(--spacing-md);
+}
+
+.content-wrapper:not(.day-page)>p {
+  margin-bottom: var(--spacing-md);
+}
+
+.content-wrapper:not(.day-page)>h2 {
+  margin-top: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--a411-line);
+  font-size: 1.35rem;
+}
+
+
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
+  margin: var(--spacing-md) 0 var(--spacing-lg);
+}
+
+.day-card {
+  display: block;
+  background: var(--bg-card);
+  border: 1px solid var(--a411-line);
+  border-radius: 8px;
+  padding: 14px 16px;
+  text-decoration: none;
+  color: var(--text-main);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.day-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--color-primary);
+}
+
+.day-card .n {
+  font-family: var(--font-primary);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.day-card .t {
+  display: block;
+  margin-top: 4px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.day-card.pending {
+  opacity: 0.5;
+  pointer-events: none;
+  border-style: dashed;
+}
+
+@media (max-width: 640px) {
+  .act {
+    padding: 18px 16px;
+  }
+
+  .ctl input[type="range"] {
+    width: 100%;
+  }
+}
