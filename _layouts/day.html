@@ -2,18 +2,30 @@
 layout: default
 ---
 
+{% comment %}
+Shared layout for the per-class-day companion pages. The MATH 411 pages predate the
+`course` front-matter key, so it defaults to 411 and none of those pages need editing.
+{% endcomment %}
+{% assign course = page.course | default: 411 %}
+{% assign course_title = page.course_title | default: "MATH 411: Real Analysis" %}
+
 <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/math411.css">
 
 {% comment %}
 Must load BEFORE {{ content }}: each day page carries an inline <script> that calls
-M411 helpers at parse time, so the library has to already be defined. Loading it at
-the end of the body left M411 undefined and silently killed every widget below the
-first one that touched it.
+M411 / G304 helpers at parse time, so the libraries have to already be defined.
+Loading them at the end of the body left the globals undefined and silently killed
+every widget below the first one that touched them.
 {% endcomment %}
 <script src="{{ site.baseurl }}/assets/js/math411.js"></script>
 
+{% if course == 304 %}
+<link rel="stylesheet" href="{{ site.baseurl }}/assets/css/geom304.css">
+<script src="{{ site.baseurl }}/assets/js/geom304.js"></script>
+{% endif %}
+
 <div class="container page-content">
-    <a href="{{ site.baseurl }}/411/" style="font-size: 0.9rem;">&larr; Back to MATH 411: Real Analysis</a>
+    <a href="{{ site.baseurl }}/{{ course }}/" style="font-size: 0.9rem;">&larr; Back to {{ course_title }}</a>
 
     <div class="content-wrapper day-page">
 
@@ -42,8 +54,8 @@ first one that touched it.
         {% endcomment %}
         {% assign prev = page.day | minus: 1 %}
         {% assign next = page.day | plus: 1 %}
-        {% capture prev_url %}/411/day-{% if prev < 10 %}0{% endif %}{{ prev }}.html{% endcapture %}
-        {% capture next_url %}/411/day-{% if next < 10 %}0{% endif %}{{ next }}.html{% endcapture %}
+        {% capture prev_url %}/{{ course }}/day-{% if prev < 10 %}0{% endif %}{{ prev }}.html{% endcapture %}
+        {% capture next_url %}/{{ course }}/day-{% if next < 10 %}0{% endif %}{{ next }}.html{% endcapture %}
         {% assign prev_page = site.pages | where: "url", prev_url | first %}
         {% assign next_page = site.pages | where: "url", next_url | first %}
 
@@ -53,7 +65,7 @@ first one that touched it.
                 prev_page.day_title }}</a>
             {% else %}<span></span>{% endif %}
 
-            <a class="day-nav-index" href="{{ site.baseurl }}/411/">All days</a>
+            <a class="day-nav-index" href="{{ site.baseurl }}/{{ course }}/">All days</a>
 
             {% if next_page %}
             <a class="day-nav-next" href="{{ next_url | prepend: site.baseurl }}">Day {{ next }}: {{ next_page.day_title

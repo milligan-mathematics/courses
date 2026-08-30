@@ -1,0 +1,246 @@
+/* MATH 304 Modern Geometry - additions for the direct-manipulation geometry
+   widgets. Loaded only on 304 day pages, on top of math411.css, which supplies
+   the .act / .mc / .proof-scaffold / .flaw-widget chrome these pages share. */
+
+:root {
+  --g304-blue: #009CDE;
+  /* the input - the thing you drag */
+  --g304-orange: #F36E24;
+  /* the image under the map */
+  --g304-green: #008552;
+  /* the structure: circle of inversion, fixed points */
+  --g304-violet: #8B5CF6;
+  --g304-line: #e4e6ea;
+}
+
+/* A canvas you can grab things on needs to say so. `touch-action: none` is
+   load-bearing: without it a drag on a phone scrolls the page instead of
+   moving the point, and the widget looks broken rather than inert. */
+canvas.plot.g304 {
+  touch-action: none;
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+canvas.plot.g304.over-handle {
+  cursor: grab;
+}
+
+canvas.plot.g304.dragging {
+  cursor: grabbing;
+}
+
+.drag-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: -6px 0 var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.drag-hint::before {
+  content: "\261D";
+  /* pointing hand */
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+/* ---------- Legend chips ---------- */
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: var(--spacing-md) 0;
+  font-size: 0.85rem;
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+}
+
+.legend span::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+.legend .blue {
+  color: var(--g304-blue);
+}
+
+.legend .orange {
+  color: var(--g304-orange);
+}
+
+.legend .green {
+  color: var(--g304-green);
+}
+
+.legend .violet {
+  color: var(--g304-violet);
+}
+
+.legend .muted {
+  color: #8a9199;
+}
+
+/* A dashed swatch, for the type II clines and other dashed families. */
+.legend span.dashed::before {
+  border-radius: 0;
+  height: 0;
+  width: 18px;
+  background: none;
+  border-top: 2px dashed currentColor;
+}
+
+/* ---------- Readouts laid out as a row of quantities ---------- */
+
+.readout.cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px 22px;
+}
+
+.readout .q {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.readout .q b {
+  font-family: var(--font-primary);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.readout .q span {
+  font-size: 1.02rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.readout .q.hit span {
+  color: var(--g304-green);
+  font-weight: 600;
+}
+
+.readout .q.miss span {
+  color: var(--text-muted);
+}
+
+/* ---------- Two planes side by side: domain and image ---------- */
+
+.plane-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: var(--spacing-md) 0;
+}
+
+.plane-pair .pane {
+  min-width: 0;
+}
+
+.plane-pair canvas.plot {
+  margin: 0 0 6px;
+}
+
+.plane-pair .cap {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.plane-trio {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: var(--spacing-md) 0;
+}
+
+.plane-trio .pane {
+  min-width: 0;
+}
+
+.plane-trio canvas.plot {
+  margin: 0 0 6px;
+}
+
+.plane-trio .cap {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.35;
+}
+
+.plane-trio .cap b {
+  display: block;
+  color: var(--text-color);
+  font-family: var(--font-primary);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 700px) {
+
+  .plane-pair,
+  .plane-trio {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Toggle group for switching what a widget shows ---------- */
+
+.toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: var(--spacing-md) 0;
+}
+
+/* ---------- Figure caption under a canvas ---------- */
+
+.figcap {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: -6px 0 var(--spacing-md);
+  text-align: center;
+}
+
+/* ---------- A short table of worked values ---------- */
+
+.act table.vals {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--spacing-md) 0;
+  font-size: 0.92rem;
+}
+
+.act table.vals th,
+.act table.vals td {
+  border-bottom: 1px solid var(--g304-line);
+  padding: 7px 10px;
+  text-align: left;
+}
+
+.act table.vals th {
+  font-family: var(--font-primary);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.act table.vals td {
+  font-variant-numeric: tabular-nums;
+}
