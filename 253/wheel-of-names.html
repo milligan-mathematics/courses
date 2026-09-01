@@ -281,8 +281,44 @@
         }
 
         #spin-button:disabled {
+
             background: #cbd5e0;
             cursor: not-allowed;
+        }
+
+        .sound-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #edf2f7;
+        }
+
+        .sound-control label {
+            font-size: 0.8rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #718096;
+        }
+
+        .sound-control select {
+            flex: 1;
+            max-width: 60%;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            padding: 0.4rem 0.5rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .sound-control select:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 1px;
         }
     </style>
 </head>
@@ -324,6 +360,15 @@
                 <div id="called-list"></div>
             </div>
 
+            <div class="sound-control">
+                <label for="sound-select">Sound</label>
+                <select id="sound-select">
+                    <option value="classic">Classic wheel</option>
+                    <option value="arcade">Arcade</option>
+                    <option value="gameshow">Game show</option>
+                    <option value="off">Off</option>
+                </select>
+            </div>
             <button class="secondary-button" onclick="startOver()">Start Over</button>
         </div>
     </div>
@@ -342,6 +387,164 @@
         // One colour per student so no two adjacent slices ever match, at any round size.
         const colors = ["#e53e3e", "#3182ce", "#38a169", "#d69e2e", "#805ad5", "#319795", "#ed64a6", "#718096", "#dd6b20", "#4c51bf"];
 
+
+        // -------------------------------------------------------------------
+        // Sound effects. Every sound here is synthesised with the Web Audio API,
+        // so there are no audio files to host, nothing to load over the network,
+        // and it all works offline in a classroom.
+        // -------------------------------------------------------------------
+        const SOUND_THEMES = ['classic', 'arcade', 'gameshow', 'off'];
+        const SOUND_STORAGE_KEY = 'wheel-sound-theme';
+        const SPIN_MS = 4000; // must match the canvas transition duration in the CSS
+
+        let soundTheme = 'classic';
+        let audioCtx = null;
+        let masterGain = null;
+
+        // Built lazily on a click so browser autoplay policies are satisfied, and
+        // returns null anywhere Web Audio is unavailable so every caller no-ops.
+        function getCtx() {
+            if (soundTheme === 'off') return null;
+            if (typeof window === 'undefined') return null;
+            const Ctor = window.AudioContext || window.webkitAudioContext;
+            if (!Ctor) return null;
+            if (!audioCtx) {
+                audioCtx = new Ctor();
+                masterGain = audioCtx.createGain();
+                masterGain.gain.value = 0.6;
+                masterGain.connect(audioCtx.destination);
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function tone(opts) {
+            const ctx = getCtx();
+            if (!ctx) return;
+            const t0 = ctx.currentTime + (opts.delay || 0);
+            const dur = opts.dur || 0.08;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = opts.type || 'sine';
+            osc.frequency.setValueAtTime(opts.freq, t0);
+            if (opts.to) osc.frequency.exponentialRampToValueAtTime(opts.to, t0 + dur);
+            gain.gain.setValueAtTime(0.0001, t0);
+            gain.gain.exponentialRampToValueAtTime(opts.gain || 0.2, t0 + 0.006);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+            osc.connect(gain);
+            gain.connect(masterGain);
+            osc.start(t0);
+            osc.stop(t0 + dur + 0.02);
+        }
+
+        // Short filtered noise burst - the mechanical peg-against-flapper click.
+        function noiseClick(level, freq) {
+            const ctx = getCtx();
+            if (!ctx) return;
+            const len = Math.floor(ctx.sampleRate * 0.03);
+            const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+            const src = ctx.createBufferSource();
+            src.buffer = buf;
+            const bp = ctx.createBiquadFilter();
+            bp.type = 'bandpass';
+            bp.frequency.value = freq;
+            bp.Q.value = 1.6;
+            const g = ctx.createGain();
+            g.gain.value = level;
+            src.connect(bp);
+            bp.connect(g);
+            g.connect(masterGain);
+            src.start();
+        }
+
+        // One click each time a slice boundary passes the pointer.
+        function playTick() {
+            if (soundTheme === 'classic') noiseClick(0.5, 1800);
+            else if (soundTheme === 'arcade') tone({ freq: 1200, type: 'square', dur: 0.025, gain: 0.12 });
+            else if (soundTheme === 'gameshow') tone({ freq: 900, type: 'triangle', dur: 0.04, gain: 0.15 });
+        }
+
+        function playWinner() {
+            if (soundTheme === 'classic') {
+                [523.25, 659.25, 783.99].forEach((f, i) =>
+                    tone({ freq: f, type: 'sine', dur: 0.5, gain: 0.22, delay: i * 0.09 }));
+            } else if (soundTheme === 'arcade') {
+                [523.25, 659.25, 783.99, 1046.5].forEach((f, i) =>
+                    tone({ freq: f, type: 'square', dur: 0.12, gain: 0.14, delay: i * 0.07 }));
+                tone({ freq: 1046.5, type: 'square', dur: 0.35, gain: 0.14, delay: 0.3 });
+            } else if (soundTheme === 'gameshow') {
+                [392, 523.25, 659.25].forEach((f, i) =>
+                    tone({ freq: f, type: 'triangle', dur: 0.7, gain: 0.18, delay: i * 0.05 }));
+                tone({ freq: 783.99, type: 'triangle', dur: 0.85, gain: 0.2, delay: 0.18 });
+            }
+        }
+
+        // Softer flourish when the wheel refills for a new round.
+        function playRoundComplete() {
+            if (soundTheme === 'off') return;
+            const wave = soundTheme === 'arcade' ? 'square' : 'sine';
+            [440, 554.37, 659.25, 880].forEach((f, i) =>
+                tone({ freq: f, type: wave, dur: 0.18, gain: 0.1, delay: i * 0.06 }));
+        }
+
+        // Mirrors the CSS cubic-bezier(0.15, 0, 0.15, 1) so the ticks stay in step
+        // with the slice actually passing under the pointer as the wheel slows.
+        function cubicBezierEase(p1x, p1y, p2x, p2y, x) {
+            const cx = 3 * p1x, bx = 3 * (p2x - p1x) - cx, ax = 1 - cx - bx;
+            const cy = 3 * p1y, by = 3 * (p2y - p1y) - cy, ay = 1 - cy - by;
+            const sampleX = t => ((ax * t + bx) * t + cx) * t;
+            const slopeX = t => (3 * ax * t + 2 * bx) * t + cx;
+            let t = x;
+            for (let i = 0; i < 8; i++) { // Newton-Raphson: invert x(t) to recover t
+                const err = sampleX(t) - x;
+                if (Math.abs(err) < 1e-6) break;
+                const d = slopeX(t);
+                if (Math.abs(d) < 1e-6) break;
+                t -= err / d;
+            }
+            t = Math.min(1, Math.max(0, t));
+            return ((ay * t + by) * t + cy) * t;
+        }
+
+        function runTickLoop(fromRotation, toRotation, sliceCount) {
+            if (soundTheme === 'off') return;
+            if (typeof requestAnimationFrame === 'undefined') return;
+            const sliceDeg = 360 / sliceCount;
+            const t0 = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+            let lastIndex = Math.floor(fromRotation / sliceDeg);
+
+            function frame(now) {
+                const p = Math.min(1, (now - t0) / SPIN_MS);
+                const rot = fromRotation + (toRotation - fromRotation) * cubicBezierEase(0.15, 0, 0.15, 1, p);
+                const idx = Math.floor(rot / sliceDeg);
+                // At most one click per frame: early on the wheel can sweep past
+                // several slices between frames, and stacked clicks just sound like one.
+                if (idx > lastIndex) {
+                    lastIndex = idx;
+                    playTick();
+                }
+                if (p < 1) requestAnimationFrame(frame);
+            }
+            requestAnimationFrame(frame);
+        }
+
+        function initSoundControl() {
+            try {
+                const saved = window.localStorage.getItem(SOUND_STORAGE_KEY);
+                if (saved && SOUND_THEMES.indexOf(saved) !== -1) soundTheme = saved;
+            } catch (e) { /* storage blocked or unavailable - keep the default */ }
+
+            const sel = document.getElementById('sound-select');
+            if (!sel || !sel.addEventListener) return;
+            sel.value = soundTheme;
+            sel.addEventListener('change', () => {
+                soundTheme = sel.value;
+                try { window.localStorage.setItem(SOUND_STORAGE_KEY, soundTheme); } catch (e) { }
+                playTick(); // preview the newly chosen theme
+            });
+        }
         let presentStudents = [];   // everyone marked present at setup
         let remaining = [];         // present students not yet called this round - this is what the wheel shows
         let calledThisRound = [];   // present students already called this round
@@ -358,6 +561,8 @@
                 '<input type="checkbox" checked id="check-' + i + '"> <label for="check-' + i + '">' + name + '</label>';
             listEl.appendChild(div);
         });
+
+        initSoundControl();
 
         function startApp() {
             presentStudents = allStudents.filter((name, i) => document.getElementById('check-' + i).checked);
@@ -463,9 +668,13 @@
             isSpinning = true;
             document.getElementById('spin-button').disabled = true;
 
+            getCtx(); // unlock the audio context while we are inside a user gesture
+
             const spinRotation = 1440 + Math.random() * 360; // At least 4 full spins
+            const fromRotation = currentRotation;
             currentRotation += spinRotation;
             document.getElementById('wheel-canvas').style.transform = 'rotate(' + currentRotation + 'deg)';
+            runTickLoop(fromRotation, currentRotation, remaining.length);
 
             setTimeout(() => {
                 isSpinning = false;
@@ -489,6 +698,7 @@
             document.getElementById('winner-name').innerText = name;
             document.getElementById('winner-popup').classList.add('active');
             document.getElementById('overlay').classList.add('active');
+            playWinner();
 
             // Take the winner off the wheel for the rest of this round.
             remaining.splice(index, 1);
@@ -498,6 +708,7 @@
             if (remaining.length === 0) {
                 roundNumber++;
                 beginRound();
+                setTimeout(playRoundComplete, 900); // let the winner fanfare land first
             } else {
                 render();
             }
