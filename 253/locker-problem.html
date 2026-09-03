@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Locker Problem - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        .prompt-box {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .prompt-box h3 {
+            margin-top: 0;
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+
+        .panel h3 {
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--color-mountain-gray, #6E6E6E);
+            margin: 1.5rem 0 0.6rem;
+        }
+
+        .panel h3:first-child {
+            margin-top: 0;
+        }
+
+        /* ---------- controls ---------- */
+        .control-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem 1.5rem;
+            align-items: flex-end;
+            margin-bottom: 1.25rem;
+        }
+
+        .control {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .control label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        select,
+        input[type="number"] {
+            font: inherit;
+            padding: 0.45rem 0.6rem;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        input[type="number"] {
+            width: 6.5rem;
+        }
+
+        input[type="range"] {
+            width: 9rem;
+        }
+
+        button {
+            font: inherit;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--color-primary, #F36E24);
+            background: var(--color-primary, #F36E24);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        button:hover:not(:disabled) {
+            background: var(--color-primary-dark, #CD5920);
+            border-color: var(--color-primary-dark, #CD5920);
+        }
+
+        button.secondary {
+            background: #fff;
+            color: var(--color-black, #000);
+            border-color: #ced4da;
+        }
+
+        button.secondary:hover:not(:disabled) {
+            background: #f1f3f5;
+            color: var(--color-black, #000);
+            border-color: #adb5bd;
+        }
+
+        button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            align-items: center;
+        }
+
+        /* ---------- status ---------- */
+        .status {
+            background: #fff8f3;
+            border: 1px solid #f7d4bb;
+            border-radius: 6px;
+            padding: 0.8rem 1rem;
+            margin: 1.25rem 0;
+            min-height: 3.4rem;
+        }
+
+        .status .who {
+            font-weight: 700;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .tallies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 1rem 0 0.25rem;
+        }
+
+        .tally {
+            flex: 1 1 8rem;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 0.6rem 0.8rem;
+        }
+
+        .tally .num {
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .tally .lab {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        /* ---------- locker grid ---------- */
+        .grid-wrap {
+            max-height: 560px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 0.6rem;
+            background: #fbfbfb;
+        }
+
+        .locker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(var(--cell, 44px), 1fr));
+            gap: 4px;
+        }
+
+        .locker {
+            position: relative;
+            aspect-ratio: 4 / 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font: inherit;
+            font-size: var(--cell-font, 0.8rem);
+            font-weight: 600;
+            padding: 0;
+            border-radius: 4px;
+            border: 1px solid #adb5bd;
+            background: #e9ecef;
+            color: #495057;
+            cursor: pointer;
+            transition: background 0.12s ease, color 0.12s ease;
+        }
+
+        .locker::after {
+            content: "";
+            position: absolute;
+            right: 12%;
+            top: 38%;
+            width: 12%;
+            height: 24%;
+            border-radius: 1px;
+            background: rgba(0, 0, 0, 0.22);
+        }
+
+        /* the handle competes with the digits once the doors get small, or
+           in the heat-map view where the number fills the door */
+        .locker-grid.view-touches .locker::after,
+        .locker-grid.tight .locker::after {
+            display: none;
+        }
+
+        .locker:hover {
+            border-color: var(--color-black, #000);
+            background: #dee2e6;
+            color: #495057;
+        }
+
+        .locker.is-open {
+            background: var(--color-primary, #F36E24);
+            border-color: var(--color-primary-dark, #CD5920);
+            color: #fff;
+        }
+
+        .locker.is-open::after {
+            background: rgba(255, 255, 255, 0.75);
+        }
+
+        .locker.is-open:hover {
+            background: var(--color-primary-dark, #CD5920);
+            color: #fff;
+        }
+
+        .locker.touched-now {
+            outline: 3px solid var(--color-accent-blue, #009CDE);
+            outline-offset: 1px;
+            z-index: 1;
+        }
+
+        .locker.inspected {
+            box-shadow: 0 0 0 3px var(--color-accent-green, #008552);
+            z-index: 2;
+        }
+
+        /* an underline rather than a corner mark, so it stays clear of the
+           digits even in the 27px cells a 1,000-locker school needs */
+        .locker.square-hint::before {
+            content: "";
+            position: absolute;
+            left: 15%;
+            right: 15%;
+            bottom: 8%;
+            height: 3px;
+            border-radius: 2px;
+            background: var(--color-accent-green, #008552);
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.8rem;
+            font-size: 0.85rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        /* display:flex above would otherwise beat the UA's [hidden] rule */
+        .legend[hidden],
+        .legend span[hidden] {
+            display: none;
+        }
+
+        .legend span {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .swatch {
+            width: 0.9rem;
+            height: 1.1rem;
+            border-radius: 3px;
+            border: 1px solid #adb5bd;
+            display: inline-block;
+        }
+
+        .swatch.open {
+            background: var(--color-primary, #F36E24);
+            border-color: var(--color-primary-dark, #CD5920);
+        }
+
+        .swatch.closed {
+            background: #e9ecef;
+        }
+
+        .swatch.now {
+            background: #fff;
+            border: 3px solid var(--color-accent-blue, #009CDE);
+        }
+
+        .open-list {
+            font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+            font-size: 0.9rem;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 0.7rem 0.9rem;
+            word-spacing: 0.15rem;
+            line-height: 1.7;
+        }
+
+        /* ---------- inspector ---------- */
+        .inspect-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .inspect-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+        }
+
+        .chip {
+            font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+            font-size: 0.85rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            border: 1px dashed #adb5bd;
+            background: #fff;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .chip.gone {
+            border-style: solid;
+            border-color: var(--color-accent-blue, #009CDE);
+            background: #e8f7fd;
+            color: #05688f;
+        }
+
+        .pair-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        .pair-table td {
+            padding: 0.35rem 0.5rem;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .pair-table td:first-child {
+            font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+            white-space: nowrap;
+        }
+
+        .pair-table tr.self td {
+            background: #eefaf3;
+            font-weight: 700;
+            border-bottom: 1px solid #cdead9;
+        }
+
+        .verdict {
+            border-radius: 6px;
+            padding: 0.8rem 1rem;
+            margin-top: 1rem;
+            border: 1px solid;
+        }
+
+        .verdict.open {
+            background: #fff4ec;
+            border-color: #f7c9a9;
+        }
+
+        .verdict.closed {
+            background: #f1f3f5;
+            border-color: #dee2e6;
+        }
+
+        .verdict strong {
+            font-size: 1.05rem;
+        }
+
+        .pf {
+            font-size: 1.15rem;
+            font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+        }
+
+        .formula {
+            font-size: 1.05rem;
+            font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 0.7rem 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* ---------- details / reveals ---------- */
+        details {
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+            background: #fff;
+        }
+
+        details[open] {
+            background: #fbfbfb;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        summary:hover {
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        details p:last-child {
+            margin-bottom: 0;
+        }
+
+        .questions li {
+            margin-bottom: 0.5rem;
+        }
+
+        .note {
+            font-size: 0.85rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .linkish {
+            background: none;
+            border: none;
+            padding: 0;
+            color: var(--color-primary-dark, #CD5920);
+            text-decoration: underline;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .linkish:hover {
+            background: none;
+            color: var(--color-primary, #F36E24);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 253</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>The Locker Problem</h1>
+            <p>Ch. 8 &mdash; send the students down the hall, watch the doors, and pick one locker apart until you
+                can say <em>why</em>.</p>
+        </div>
+    </header>
+
+    <main class="container page-content">
+
+        <div class="prompt-box">
+            <h3>The problem</h3>
+            <p>A school has 1,000 lockers, numbered 1 through 1,000, and all of them start <strong>closed</strong>.
+                Then 1,000 students walk down the hall in order:</p>
+            <ul>
+                <li>Student 1 opens every locker.</li>
+                <li>Student 2 changes every 2nd locker &mdash; closing the ones that are open, opening the ones that
+                    are closed.</li>
+                <li>Student 3 changes every 3rd locker.</li>
+                <li>&hellip; and so on, through Student 1,000, who changes only locker 1,000.</li>
+            </ul>
+            <p><strong>After all 1,000 students have gone by, which lockers are open?</strong></p>
+            <p class="note">Before you press a single button: what do you notice, and what do you wonder? Make a
+                prediction you are willing to be wrong about.</p>
+        </div>
+
+        <!-- ============ 1. SIMULATION ============ -->
+        <section class="panel">
+            <h2>1. Send the students down the hall</h2>
+
+            <div class="control-row">
+                <div class="control">
+                    <label for="n-lockers">How many lockers</label>
+                    <select id="n-lockers">
+                        <option value="12">12</option>
+                        <option value="24">24</option>
+                        <option value="48">48</option>
+                        <option value="100" selected>100</option>
+                        <option value="200">200</option>
+                        <option value="500">500</option>
+                        <option value="1000">1,000</option>
+                    </select>
+                </div>
+                <div class="control">
+                    <label for="rule">Rule</label>
+                    <select id="rule">
+                        <option value="all">Every student walks (classic)</option>
+                        <option value="primes">Only prime-numbered students touch anything</option>
+                    </select>
+                </div>
+                <div class="control">
+                    <label for="view">Show me</label>
+                    <select id="view">
+                        <option value="state">Open / closed</option>
+                        <option value="touches">How many times touched</option>
+                    </select>
+                </div>
+                <div class="control">
+                    <label for="speed">Speed <span id="speed-label" class="note">6/sec</span></label>
+                    <input type="range" id="speed" min="1" max="40" value="6">
+                </div>
+            </div>
+
+            <div class="button-row">
+                <button id="btn-step">Next student &rarr;</button>
+                <button id="btn-play">Play</button>
+                <button id="btn-finish" class="secondary">Send them all through</button>
+                <button id="btn-reset" class="secondary">Reset</button>
+                <span style="flex-basis:100%"></span>
+                <div class="control" style="flex-direction:row; align-items:center; gap:0.5rem;">
+                    <label for="jump" style="text-transform:none; letter-spacing:0; font-size:0.9rem;">Jump to
+                        student</label>
+                    <input type="number" id="jump" min="0" value="36">
+                    <button id="btn-jump" class="secondary">Go</button>
+                </div>
+            </div>
+
+            <div class="status" id="status">
+                <span class="who">Nobody has walked yet.</span> All lockers are closed. Press
+                <em>Next student</em> to send Student 1 down the hall.
+            </div>
+
+            <div class="tallies">
+                <div class="tally">
+                    <div class="num" id="t-student">0</div>
+                    <div class="lab">Students finished</div>
+                </div>
+                <div class="tally">
+                    <div class="num" id="t-open">0</div>
+                    <div class="lab">Lockers open now</div>
+                </div>
+                <div class="tally">
+                    <div class="num" id="t-closed">100</div>
+                    <div class="lab">Lockers closed now</div>
+                </div>
+                <div class="tally">
+                    <div class="num" id="t-touch">0</div>
+                    <div class="lab">Doors changed so far</div>
+                </div>
+            </div>
+
+            <h3>The lockers</h3>
+            <div class="grid-wrap">
+                <div class="locker-grid" id="grid"></div>
+            </div>
+            <div class="legend" id="legend-state">
+                <span><i class="swatch closed"></i> closed</span>
+                <span><i class="swatch open"></i> open</span>
+                <span><i class="swatch now"></i> the student who just walked touched this one</span>
+                <span class="sq-note" hidden><i class="swatch" style="background:#fff;border-bottom:3px solid var(--color-accent-green,#008552)"></i> perfect square</span>
+                <span>Click any locker to take it apart below.</span>
+            </div>
+            <div class="legend" id="legend-touches" hidden>
+                <span><i class="swatch" style="background:#f1f3f5"></i> never touched</span>
+                <span><i class="swatch" style="background:hsl(29,85%,68%)"></i> touched a few times</span>
+                <span><i class="swatch" style="background:hsl(22,85%,42%)"></i> touched the most</span>
+                <span class="sq-note" hidden><i class="swatch" style="background:#fff;border-bottom:3px solid var(--color-accent-green,#008552)"></i> perfect square</span>
+                <span>Each door shows its running touch count. Click any locker to take it apart below.</span>
+            </div>
+
+            <h3>Open lockers right now</h3>
+            <div class="open-list" id="open-list">none &mdash; they all start closed</div>
+        </section>
+
+        <!-- ============ 2. ONE LOCKER ============ -->
+        <section class="panel">
+            <h2>2. Take one locker apart</h2>
+            <p>Pick a locker and list <em>every</em> student who touches it. Then ask the question that cracks this
+                problem open: what do those student numbers have to do with the locker number?</p>
+
+            <div class="control-row">
+                <div class="control">
+                    <label for="inspect-n">Locker number</label>
+                    <input type="number" id="inspect-n" min="1" max="1000" value="36">
+                </div>
+                <div class="control">
+                    <label>&nbsp;</label>
+                    <div class="button-row">
+                        <button id="btn-inspect" class="secondary">Look at it</button>
+                        <button id="btn-rand" class="secondary">Surprise me</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="inspect-grid">
+                <div>
+                    <h3>Students who touch locker <span id="ins-n1">36</span></h3>
+                    <div class="chips" id="ins-chips"></div>
+                    <p class="note" style="margin-top:0.6rem;">Solid blue = that student has already walked past.
+                        Dashed = still coming.</p>
+                    <div class="verdict" id="ins-verdict"></div>
+                </div>
+                <div>
+                    <h3>Written as factor pairs</h3>
+                    <table class="pair-table" id="ins-pairs"></table>
+                    <p class="note" style="margin-top:0.6rem;">Every factor has a partner it multiplies with to give
+                        the locker number. Watch for a factor that is its own partner.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ 3. CHAPTER 8 ============ -->
+        <section class="panel">
+            <h2>3. Count the factors without listing them</h2>
+            <p>Chapter 8 gives you a second route to the same answer. Break the locker number into primes, and the
+                number of factors falls out of the exponents.</p>
+
+            <p>Locker <strong><span id="pf-n">36</span></strong> factors as</p>
+            <p class="pf" id="pf-expr">36 = 2<sup>2</sup> &middot; 3<sup>2</sup></p>
+            <div class="formula" id="pf-formula"></div>
+            <p class="note" style="margin-top:0.6rem;">Any factor of 2<sup>a</sup>&middot;3<sup>b</sup>&middot;&hellip;
+                is built by choosing an exponent for each prime, so the choices multiply.</p>
+
+            <h3>Try it on your own</h3>
+            <p>Without listing them: how many factors does 2<sup>5</sup> &middot; 3<sup>2</sup> have?</p>
+            <details>
+                <summary>I have an answer &mdash; check it</summary>
+                <p>(5 + 1)(2 + 1) = <strong>18</strong> factors. Any factor looks like 2<sup>a</sup> &middot;
+                    3<sup>b</sup> with 0 &le; a &le; 5 and 0 &le; b &le; 2 &mdash; six choices for <em>a</em>, three
+                    for <em>b</em>.</p>
+                <p>2<sup>5</sup> &middot; 3<sup>2</sup> = 288, so
+                    <button class="linkish" data-inspect="288">open locker 288 above</button> and count the chips.
+                </p>
+            </details>
+        </section>
+
+        <!-- ============ 4. NOW CONVINCE US ============ -->
+        <section class="panel">
+            <h2>4. Now convince us</h2>
+            <p>The pattern is easy to spot and genuinely hard to justify. That gap is the whole point of the
+                activity, so write your conjecture down before you open anything below.</p>
+            <ol class="questions">
+                <li><strong>Say it in one sentence.</strong> Which lockers are open, and how would you describe them
+                    to someone who never saw the simulation?</li>
+                <li><strong>Say why it has to keep working.</strong> Not just for the lockers you tested &mdash; all
+                    the way to 1,000. Use the words <em>factor</em> and <em>factor pair</em>.</li>
+                <li><strong>Say it a second way.</strong> Now argue it from a prime factorization instead of from a
+                    list of factors.</li>
+            </ol>
+
+            <details>
+                <summary>My conjecture is written down. Show me which lockers are open.</summary>
+                <p>
+                    <label><input type="checkbox" id="chk-squares"> Mark the perfect squares in the grid above</label>
+                </p>
+                <p class="note">Turn this on, then send all the students through and compare.</p>
+            </details>
+
+            <details>
+                <summary>Why does an odd number of factors force a perfect square?</summary>
+                <p>Student <em>k</em> touches locker <em>n</em> exactly when <em>k</em> divides <em>n</em>, so locker
+                    <em>n</em> gets toggled once per factor of <em>n</em>. It starts closed, so it ends open exactly
+                    when <em>n</em> has an <strong>odd</strong> number of factors.
+                </p>
+                <p>Factors come in pairs: if <em>a</em> divides <em>n</em>, so does <em>n</em> &divide; <em>a</em>, and
+                    the two multiply to <em>n</em>. Listing the factors as pairs (1, <em>n</em>), (2, <em>n</em>/2),
+                    &hellip; accounts for all of them two at a time &mdash; so the count is even, <em>unless</em> some
+                    factor is its own partner: <em>a</em> = <em>n</em> &divide; <em>a</em>, that is, <em>a</em><sup>2</sup>
+                    = <em>n</em>. That happens exactly when <em>n</em> is a perfect square, and then the middle factor
+                    is counted once instead of twice, making the total odd.</p>
+                <p>Check it on 36: 1&times;36, 2&times;18, 3&times;12, 4&times;9, 6&times;6 &mdash; four pairs plus the
+                    unpaired 6, giving 9 factors.</p>
+            </details>
+
+            <details>
+                <summary>The same argument from prime factorizations</summary>
+                <p>If <em>n</em> = <em>p</em><sub>1</sub><sup>a<sub>1</sub></sup> &middot;
+                    <em>p</em><sub>2</sub><sup>a<sub>2</sub></sup> &ctdot;
+                    <em>p</em><sub>k</sub><sup>a<sub>k</sub></sup>, then <em>n</em> has
+                    (a<sub>1</sub>+1)(a<sub>2</sub>+1)&ctdot;(a<sub>k</sub>+1) factors.
+                </p>
+                <p>A product of whole numbers is odd only when <strong>every</strong> factor in it is odd &mdash; so
+                    every a<sub>i</sub> + 1 must be odd, so every a<sub>i</sub> must be even. And <em>n</em> has all
+                    even exponents exactly when <em>n</em> is a perfect square, since then
+                    <em>n</em> = (<em>p</em><sub>1</sub><sup>a<sub>1</sub>/2</sup> &ctdot;
+                    <em>p</em><sub>k</sub><sup>a<sub>k</sub>/2</sup>)<sup>2</sup>.
+                </p>
+                <p>That is the same &ldquo;even number of each prime&rdquo; structure we used to show &radic;2 is
+                    irrational. The locker problem and the irrationality of &radic;2 are the same observation wearing
+                    different clothes.</p>
+            </details>
+        </section>
+
+        <!-- ============ 5. GOING FURTHER ============ -->
+        <section class="panel">
+            <h2>5. Going further</h2>
+
+            <details>
+                <summary>Which locker gets touched the most times?</summary>
+                <p>Switch <em>Show me</em> to <strong>How many times touched</strong>, send everyone through, and hunt
+                    for the darkest door.</p>
+                <p id="most-touched">&nbsp;</p>
+                <p><button class="linkish" id="btn-show-most">Take me to it</button></p>
+            </details>
+
+            <details>
+                <summary>What if the school had 1,000,000 lockers and 1,000,000 students?</summary>
+                <p>The perfect squares up to 1,000,000 are 1<sup>2</sup> through 1000<sup>2</sup>, so
+                    <strong>1,000</strong> lockers would be open. In general, for <em>N</em> lockers the answer is
+                    &lfloor;&radic;<em>N</em>&rfloor;.
+                </p>
+                <p class="note">Try it: set the simulation to 500 lockers and predict the count before you run it.</p>
+            </details>
+
+            <details>
+                <summary>Change the rule: only prime-numbered students touch anything</summary>
+                <p>Set <em>Rule</em> to <strong>Only prime-numbered students</strong> and run it again. Now which
+                    lockers are open? <button class="linkish" id="btn-primes">Switch the rule for me</button></p>
+                <p>Locker <em>n</em> is now toggled once per <em>distinct prime factor</em> of <em>n</em>, so it ends
+                    open when <em>n</em> has an odd number of distinct primes &mdash; 2, 4, 8 (one prime) and
+                    30 = 2&middot;3&middot;5 (three primes) are open, while 6, 12, and 100 (two primes) are closed.
+                    Locker 1 has no prime factors at all, so nobody ever touches it and it stays closed.</p>
+            </details>
+        </section>
+
+        <p class="note">Companion to the Ch. 8 Locker Problem handout &mdash; MATH 253, Fundamental Concepts II.</p>
+
+    </main>
+
+    <script>
+        // ---------- state ----------
+        var MAX = 1000;
+        var N = 100;
+        var rule = 'all';
+        var viewMode = 'state';
+        var isOpen = [];      // 1..N
+        var touches = [];     // 1..N
+        var stepCount = 0;    // students who have finished walking
+        var totalToggles = 0;
+        var lastTouched = [];
+        var inspected = 36;
+        var showSquares = false;
+        var timer = null;
+        var cells = [];       // cells[n] = button element
+
+        // ---------- number theory helpers ----------
+        function isPrime(k) {
+            if (k < 2) return false;
+            if (k % 2 === 0) return k === 2;
+            for (var d = 3; d * d <= k; d += 2) if (k % d === 0) return false;
+            return true;
+        }
+
+        function divisors(n) {
+            var small = [], big = [];
+            for (var a = 1; a * a <= n; a++) {
+                if (n % a === 0) {
+                    small.push(a);
+                    if (a !== n / a) big.push(n / a);
+                }
+            }
+            big.reverse();
+            return small.concat(big);
+        }
+
+        function factorPairs(n) {
+            var out = [];
+            for (var a = 1; a * a <= n; a++) {
+                if (n % a === 0) out.push([a, n / a]);
+            }
+            return out;
+        }
+
+        function factorize(n) {
+            var out = [], m = n;
+            for (var p = 2; p * p <= m; p++) {
+                var e = 0;
+                while (m % p === 0) { m /= p; e++; }
+                if (e > 0) out.push([p, e]);
+            }
+            if (m > 1) out.push([m, 1]);
+            return out;
+        }
+
+        function divisorCount(n) {
+            var c = 1, f = factorize(n);
+            for (var i = 0; i < f.length; i++) c *= f[i][1] + 1;
+            return c;
+        }
+
+        function touchers(n) {
+            // student numbers that touch locker n under the active rule
+            var d = divisors(n);
+            if (rule === 'primes') return d.filter(isPrime);
+            return d;
+        }
+
+        // ---------- grid ----------
+        function cellMetrics() {
+            if (N <= 24) return ['70px', '1.05rem'];
+            if (N <= 60) return ['54px', '0.95rem'];
+            if (N <= 150) return ['44px', '0.85rem'];
+            if (N <= 400) return ['34px', '0.7rem'];
+            return ['27px', '0.58rem'];
+        }
+
+        function buildGrid() {
+            var grid = document.getElementById('grid');
+            var m = cellMetrics();
+            grid.style.setProperty('--cell', m[0]);
+            grid.style.setProperty('--cell-font', m[1]);
+            grid.classList.toggle('tight', N > 400);
+            grid.innerHTML = '';
+            cells = [null];
+            for (var n = 1; n <= N; n++) {
+                var b = document.createElement('button');
+                b.className = 'locker';
+                b.textContent = n;
+                b.setAttribute('data-n', n);
+                b.title = 'Locker ' + n;
+                grid.appendChild(b);
+                cells.push(b);
+            }
+        }
+
+        function heatColor(t, maxT) {
+            if (t === 0) return '#f1f3f5';
+            var f = maxT > 1 ? (t - 1) / (maxT - 1) : 1;
+            // pale sand -> Milligan orange -> deep rust
+            var light = 94 - 52 * f;
+            return 'hsl(' + (32 - 10 * f) + ', 85%, ' + light + '%)';
+        }
+
+        var prevNow = [];
+        var prevInspected = 0;
+
+        function updateCell(n, maxT, nowSet) {
+            var c = cells[n];
+            if (!c) return;
+            var cls = 'locker';
+            if (viewMode === 'state' && isOpen[n]) cls += ' is-open';
+            if (nowSet[n]) cls += ' touched-now';
+            if (n === inspected) cls += ' inspected';
+            var r = Math.round(Math.sqrt(n));
+            if (showSquares && r * r === n) cls += ' square-hint';
+            c.className = cls;
+            if (viewMode === 'touches') {
+                c.style.background = heatColor(touches[n], maxT);
+                c.style.color = touches[n] > maxT * 0.62 ? '#fff' : '#495057';
+                c.textContent = touches[n];
+                c.title = 'Locker ' + n + ' - touched ' + touches[n] + (touches[n] === 1 ? ' time' : ' times');
+            } else {
+                c.style.background = '';
+                c.style.color = '';
+                c.textContent = n;
+                c.title = 'Locker ' + n + ' - ' + (isOpen[n] ? 'open' : 'closed');
+            }
+        }
+
+        // full === false repaints only the doors that could have changed, so a
+        // 1,000-locker run does not touch 1,000 elements on every single step.
+        function renderGrid(full) {
+            var maxT = 1, i;
+            var heat = viewMode === 'touches';
+            document.getElementById('grid').classList.toggle('view-touches', heat);
+            document.getElementById('legend-state').hidden = heat;
+            document.getElementById('legend-touches').hidden = !heat;
+            document.querySelectorAll('.sq-note').forEach(function (el) { el.hidden = !showSquares; });
+            if (viewMode === 'touches') {
+                full = true;
+                for (i = 1; i <= N; i++) if (touches[i] > maxT) maxT = touches[i];
+            }
+            var nowSet = {};
+            for (i = 0; i < lastTouched.length; i++) nowSet[lastTouched[i]] = true;
+
+            if (full) {
+                for (var n = 1; n <= N; n++) updateCell(n, maxT, nowSet);
+            } else {
+                var list = prevNow.concat(lastTouched, [prevInspected, inspected]);
+                var seen = {};
+                for (i = 0; i < list.length; i++) {
+                    var k = list[i];
+                    if (k >= 1 && k <= N && !seen[k]) { seen[k] = true; updateCell(k, maxT, nowSet); }
+                }
+            }
+            prevNow = lastTouched.slice();
+            prevInspected = inspected;
+        }
+
+        // ---------- simulation ----------
+        function reset(rebuild) {
+            stop();
+            isOpen = new Array(N + 1).fill(false);
+            touches = new Array(N + 1).fill(0);
+            stepCount = 0;
+            totalToggles = 0;
+            lastTouched = [];
+            document.getElementById('jump').max = N;
+            if (rebuild) buildGrid();
+            renderGrid(true);
+            renderTallies();
+            renderOpenList();
+            document.getElementById('status').innerHTML =
+                '<span class="who">Nobody has walked yet.</span> All ' + fmt(N) +
+                ' lockers are closed. Press <em>Next student</em> to send Student 1 down the hall.';
+            syncButtons();
+            renderInspector();
+        }
+
+        function stepOnce() {
+            if (stepCount >= N) return false;
+            stepCount++;
+            var s = stepCount;
+            lastTouched = [];
+            var acts = (rule === 'all') || isPrime(s);
+            if (acts) {
+                for (var m = s; m <= N; m += s) {
+                    isOpen[m] = !isOpen[m];
+                    touches[m]++;
+                    totalToggles++;
+                    lastTouched.push(m);
+                }
+            }
+            return true;
+        }
+
+        function describeStep() {
+            var s = stepCount;
+            var st = document.getElementById('status');
+            if (s === 0) return;
+            var who = 'Student ' + fmt(s) + ' just walked.';
+            if (lastTouched.length === 0) {
+                st.innerHTML = '<span class="who">' + who + '</span> ' + s +
+                    ' is not prime, so this student changes nothing at all.';
+                return;
+            }
+            var shown = lastTouched.slice(0, 8).map(fmt).join(', ');
+            if (lastTouched.length > 8) shown += ', &hellip;';
+            var opened = 0;
+            for (var i = 0; i < lastTouched.length; i++) if (isOpen[lastTouched[i]]) opened++;
+            st.innerHTML = '<span class="who">' + who + '</span> Changed every ' + ordinal(s) +
+                ' locker &mdash; ' + shown + ' (' + fmt(lastTouched.length) +
+                (lastTouched.length === 1 ? ' door' : ' doors') + '): ' +
+                fmt(opened) + ' pulled open, ' + fmt(lastTouched.length - opened) + ' pushed closed.' +
+                (stepCount >= N ? ' <strong>That was the last student.</strong>' : '');
+        }
+
+        function renderTallies() {
+            var openCount = 0;
+            for (var n = 1; n <= N; n++) if (isOpen[n]) openCount++;
+            document.getElementById('t-student').textContent = fmt(stepCount) + (stepCount >= N ? ' (all)' : '');
+            document.getElementById('t-open').textContent = fmt(openCount);
+            document.getElementById('t-closed').textContent = fmt(N - openCount);
+            document.getElementById('t-touch').textContent = fmt(totalToggles);
+        }
+
+        function renderOpenList() {
+            var list = [];
+            for (var n = 1; n <= N; n++) if (isOpen[n]) list.push(n);
+            var el = document.getElementById('open-list');
+            if (list.length === 0) {
+                el.innerHTML = stepCount === 0
+                    ? 'none &mdash; they all start closed'
+                    : 'none are open right now';
+                return;
+            }
+            var shown = list.slice(0, 240).map(fmt).join('  ');
+            if (list.length > 240) shown += '  &hellip; (' + fmt(list.length - 240) + ' more)';
+            el.innerHTML = shown;
+        }
+
+        function syncButtons() {
+            var done = stepCount >= N;
+            document.getElementById('btn-step').disabled = done;
+            document.getElementById('btn-finish').disabled = done;
+            document.getElementById('btn-play').disabled = done;
+            document.getElementById('btn-play').textContent = timer ? 'Pause' : 'Play';
+        }
+
+        function afterStep() {
+            renderGrid(false);
+            renderTallies();
+            renderOpenList();
+            describeStep();
+            renderInspector();
+            syncButtons();
+        }
+
+        function play() {
+            if (timer) return;
+            var ms = 1000 / Number(document.getElementById('speed').value);
+            timer = setInterval(function () {
+                if (!stepOnce()) { stop(); afterStep(); return; }
+                afterStep();
+            }, ms);
+            syncButtons();
+        }
+
+        function stop() {
+            if (timer) { clearInterval(timer); timer = null; }
+            var b = document.getElementById('btn-play');
+            if (b) b.textContent = 'Play';
+        }
+
+        function runTo(target) {
+            stop();
+            if (target < stepCount) {
+                // rewind: start over and replay
+                isOpen = new Array(N + 1).fill(false);
+                touches = new Array(N + 1).fill(0);
+                stepCount = 0;
+                totalToggles = 0;
+                lastTouched = [];
+            }
+            while (stepCount < target && stepOnce()) { /* run */ }
+            if (target === 0) lastTouched = [];
+            afterStep();
+            if (target === 0) {
+                document.getElementById('status').innerHTML =
+                    '<span class="who">Nobody has walked yet.</span> All ' + fmt(N) + ' lockers are closed.';
+            }
+        }
+
+        // ---------- inspector ----------
+        function renderInspector() {
+            var n = inspected;
+            document.getElementById('ins-n1').textContent = fmt(n);
+            document.getElementById('inspect-n').value = n;
+
+            var who = touchers(n);
+            var chips = document.getElementById('ins-chips');
+            chips.innerHTML = '';
+            if (who.length === 0) {
+                chips.innerHTML = '<span class="chip">nobody</span>';
+            } else {
+                for (var i = 0; i < who.length; i++) {
+                    var s = document.createElement('span');
+                    s.className = 'chip' + (who[i] <= stepCount && who[i] <= N ? ' gone' : '');
+                    s.textContent = who[i];
+                    chips.appendChild(s);
+                }
+            }
+
+            var count = who.length;
+            var odd = count % 2 === 1;
+            var v = document.getElementById('ins-verdict');
+            v.className = 'verdict ' + (odd ? 'open' : 'closed');
+            var soFar = who.filter(function (k) { return k <= stepCount; }).length;
+            v.innerHTML = '<strong>' + fmt(count) + ' student' + (count === 1 ? '' : 's') +
+                ' touch' + (count === 1 ? 'es' : '') + ' locker ' + fmt(n) + '</strong> &mdash; that is an ' +
+                (odd ? 'odd' : 'even') + ' number, so it ends up <strong>' + (odd ? 'OPEN' : 'CLOSED') +
+                '</strong>.' +
+                (n <= N ? '<br><span class="note">' + fmt(soFar) + ' of them ' +
+                    (soFar === 1 ? 'has' : 'have') + ' walked so far, and the door is ' +
+                    (isOpen[n] ? 'open' : 'closed') + ' at the moment.</span>'
+                    : '<br><span class="note">Locker ' + fmt(n) +
+                    ' is past the end of the current simulation, but the factors do not care.</span>');
+
+            // factor pairs
+            var pairs = factorPairs(n);
+            var t = document.getElementById('ins-pairs');
+            t.innerHTML = '';
+            for (var j = 0; j < pairs.length; j++) {
+                var a = pairs[j][0], b = pairs[j][1];
+                var tr = document.createElement('tr');
+                var self = (a === b);
+                if (self) tr.className = 'self';
+                var td1 = document.createElement('td');
+                td1.innerHTML = a + ' × ' + b + ' = ' + n;
+                var td2 = document.createElement('td');
+                td2.innerHTML = self
+                    ? 'this factor is its own partner &mdash; it only gets counted once'
+                    : 'two different factors';
+                tr.appendChild(td1); tr.appendChild(td2);
+                t.appendChild(tr);
+            }
+            var totalRow = document.createElement('tr');
+            var nPairs = pairs.length;
+            var hasSelf = pairs.length > 0 && pairs[pairs.length - 1][0] === pairs[pairs.length - 1][1];
+            var td = document.createElement('td');
+            td.setAttribute('colspan', '2');
+            td.innerHTML = hasSelf
+                ? '<strong>' + fmt(nPairs - 1) + ' full pair' + (nPairs - 1 === 1 ? '' : 's') +
+                ' plus 1 unpaired factor = ' + fmt(2 * (nPairs - 1) + 1) + ' factors</strong>'
+                : '<strong>' + fmt(nPairs) + ' full pair' + (nPairs === 1 ? '' : 's') +
+                ', nothing left over = ' + fmt(2 * nPairs) + ' factors</strong>';
+            totalRow.appendChild(td);
+            t.appendChild(totalRow);
+
+            renderPrimeSection(n);
+        }
+
+        function renderPrimeSection(n) {
+            document.getElementById('pf-n').textContent = fmt(n);
+            var f = factorize(n);
+            var expr, formula;
+            if (n === 1) {
+                expr = '1 is the empty product &mdash; it has no prime factors at all.';
+                formula = '1 has exactly 1 factor (itself). 1 is odd, and 1 = 1².';
+            } else {
+                var parts = f.map(function (pe) {
+                    return pe[1] === 1 ? String(pe[0]) : pe[0] + '<sup>' + pe[1] + '</sup>';
+                });
+                expr = fmt(n) + ' = ' + parts.join(' · ');
+                var lhs = f.map(function (pe) { return '(' + pe[1] + ' + 1)'; }).join('');
+                var mid = f.map(function (pe) { return pe[1] + 1; }).join(' · ');
+                var d = divisorCount(n);
+                formula = 'number of factors = ' + lhs + ' = ' + mid + ' = <strong>' + d + '</strong>' +
+                    ' &nbsp;(' + (d % 2 === 1 ? 'odd → open' : 'even → closed') + ')';
+                var allEven = f.every(function (pe) { return pe[1] % 2 === 0; });
+                formula += '<br><span class="note">Exponents ' +
+                    f.map(function (pe) { return pe[1]; }).join(', ') + ' &mdash; ' +
+                    (allEven ? 'all even, so ' + fmt(n) + ' = ' + Math.round(Math.sqrt(n)) + '².'
+                        : 'not all even, so ' + fmt(n) + ' is not a perfect square.') + '</span>';
+            }
+            document.getElementById('pf-expr').innerHTML = expr;
+            document.getElementById('pf-formula').innerHTML = formula;
+        }
+
+        function inspect(n) {
+            n = Math.max(1, Math.min(MAX, Math.round(n || 1)));
+            inspected = n;
+            renderGrid(false);
+            renderInspector();
+        }
+
+        // ---------- misc helpers ----------
+        function fmt(x) { return Number(x).toLocaleString('en-US'); }
+
+        function ordinal(k) {
+            var s = ['th', 'st', 'nd', 'rd'], v = k % 100;
+            return fmt(k) + (s[(v - 20) % 10] || s[v] || s[0]);
+        }
+
+        function updateMostTouched() {
+            var best = 1, bestC = 0;
+            for (var n = 1; n <= N; n++) {
+                var c = (rule === 'primes') ? factorize(n).length : divisorCount(n);
+                if (c > bestC) { bestC = c; best = n; }
+            }
+            var f = factorize(best).map(function (pe) {
+                return pe[1] === 1 ? String(pe[0]) : pe[0] + '<sup>' + pe[1] + '</sup>';
+            }).join(' · ');
+            document.getElementById('most-touched').innerHTML =
+                'With ' + fmt(N) + ' lockers the winner is <strong>locker ' + fmt(best) +
+                '</strong> = ' + f + ', touched <strong>' + fmt(bestC) + '</strong> times' +
+                (rule === 'primes' ? ' (one per distinct prime).' : ' &mdash; one per factor.');
+            document.getElementById('btn-show-most').setAttribute('data-n', best);
+        }
+
+        // ---------- wiring ----------
+        document.getElementById('btn-step').addEventListener('click', function () {
+            stop();
+            if (stepOnce()) afterStep();
+        });
+
+        document.getElementById('btn-play').addEventListener('click', function () {
+            if (timer) { stop(); syncButtons(); } else play();
+        });
+
+        document.getElementById('btn-finish').addEventListener('click', function () { runTo(N); });
+        document.getElementById('btn-reset').addEventListener('click', function () { reset(false); });
+
+        document.getElementById('btn-jump').addEventListener('click', function () {
+            var v = Number(document.getElementById('jump').value);
+            if (isNaN(v)) return;
+            runTo(Math.max(0, Math.min(N, Math.round(v))));
+        });
+
+        document.getElementById('speed').addEventListener('input', function (e) {
+            document.getElementById('speed-label').textContent = e.target.value + '/sec';
+            if (timer) { stop(); play(); }
+        });
+
+        document.getElementById('n-lockers').addEventListener('change', function (e) {
+            N = Number(e.target.value);
+            reset(true);
+            updateMostTouched();
+        });
+
+        document.getElementById('rule').addEventListener('change', function (e) {
+            rule = e.target.value;
+            reset(false);
+            updateMostTouched();
+        });
+
+        document.getElementById('view').addEventListener('change', function (e) {
+            viewMode = e.target.value;
+            renderGrid(true);
+        });
+
+        document.getElementById('grid').addEventListener('click', function (e) {
+            var b = e.target.closest('.locker');
+            if (!b) return;
+            inspect(Number(b.getAttribute('data-n')));
+        });
+
+        document.getElementById('btn-inspect').addEventListener('click', function () {
+            inspect(Number(document.getElementById('inspect-n').value));
+        });
+
+        document.getElementById('inspect-n').addEventListener('change', function () {
+            inspect(Number(document.getElementById('inspect-n').value));
+        });
+
+        document.getElementById('btn-rand').addEventListener('click', function () {
+            inspect(1 + Math.floor(Math.random() * N));
+        });
+
+        document.getElementById('chk-squares').addEventListener('change', function (e) {
+            showSquares = e.target.checked;
+            renderGrid(true);
+        });
+
+        document.getElementById('btn-primes').addEventListener('click', function () {
+            document.getElementById('rule').value = 'primes';
+            rule = 'primes';
+            reset(false);
+            updateMostTouched();
+            document.getElementById('grid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+
+        document.getElementById('btn-show-most').addEventListener('click', function (e) {
+            var n = Number(e.target.getAttribute('data-n'));
+            if (!n) return;
+            runTo(N);
+            document.getElementById('view').value = 'touches';
+            viewMode = 'touches';
+            inspect(n);
+            if (cells[n]) cells[n].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+
+        document.querySelectorAll('[data-inspect]').forEach(function (b) {
+            b.addEventListener('click', function () {
+                inspect(Number(b.getAttribute('data-inspect')));
+                document.getElementById('inspect-n').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        });
+
+        // ---------- go ----------
+        reset(true);
+        updateMostTouched();
+    </script>
+</body>
+
+</html>
