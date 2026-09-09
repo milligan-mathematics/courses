@@ -615,13 +615,15 @@ Each entry says what the applet shows and suggests a few things to look for. **W
 </div>
 
 <div class="gg-item">
-  <h4 class="gg-name"><a href="https://www.geogebra.org/classic/akgsfrgk" target="_blank" rel="noopener">Example 2 workspace</a><span class="gg-app">Classic</span></h4>
+  <h4 class="gg-name"><a href="https://www.geogebra.org/classic/akgsfrgk" target="_blank" rel="noopener">Symbolic partial derivatives (Example 2)</a><span class="gg-app">Classic</span></h4>
   <p class="gg-meta">saved as &ldquo;13.3 Ex 2&rdquo; &middot; linked from p.&nbsp;2 of the &sect;13.3 notes</p>
-  <p class="gg-what">An empty GeoGebra Classic canvas — the blank workspace used to build Example 2 live during class rather than a prepared construction.</p>
+  <p class="gg-what">GeoGebra's CAS doing the differentiation for you: three cells take $f(x,y,z) = x^2\sin(yz^3) - \ln(xyz)$ and return $f_x$, $f_y$ and $f_z$ symbolically, so you can check a messy three-variable computation against a machine.</p>
   <p class="gg-try-h">Things to try</p>
   <ul class="gg-try">
-    <li>Use it to rebuild Example 2 yourself: enter the function, then plot the two trace curves through your point.</li>
-    <li>Nothing here is pre-made, which makes it a good place to test whether you can set the picture up unaided.</li>
+    <li>Work all three partials out by hand first, then compare. The $-\ln(xyz)$ term is the one most people fumble.</li>
+    <li>Why does differentiating $\ln(xyz)$ with respect to $x$ give just $1/x$, with no $y$ or $z$ left in it?</li>
+    <li>In $f_z$ the chain rule bites hardest — check that you get $3x^2yz^2\cos(yz^3)$ and can say where each factor came from.</li>
+    <li>Type in your own function and let the CAS confirm your work. <code>Derivative(f, x)</code> is the command.</li>
   </ul>
 </div>
 
@@ -839,14 +841,16 @@ Each entry says what the applet shows and suggests a few things to look for. **W
 </div>
 
 <div class="gg-item">
-  <h4 class="gg-name"><a href="https://www.geogebra.org/3d/jdbfneky" target="_blank" rel="noopener">Second derivative test on a constrained problem (Example 6)</a><span class="gg-app">3D</span></h4>
+  <h4 class="gg-name"><a href="https://www.geogebra.org/3d/jdbfneky" target="_blank" rel="noopener">Box volume by substitution (Example 6)</a><span class="gg-app">3D</span></h4>
   <p class="gg-meta">saved as &ldquo;13.7 Example 6 2nd derivative test&rdquo; &middot; linked from p.&nbsp;8 of the &sect;13.7 notes</p>
-  <p class="gg-what">$h(y,z)=84yz-2y^2z-2yz^2$ over the triangular region $x+y \le 42$ with $x,y>0$, and the candidate point $(14,14)$ marked.</p>
+  <p class="gg-what">The box-volume problem with the constraint already substituted in. Solving $x+2y+2z=84$ for $x$ and putting it into $V=xyz$ leaves the two-variable function $h(y,z)=84yz-2y^2z-2yz^2$, plotted over the triangle $y+z \le 42$ with the critical point $(14,14)$ marked.</p>
   <p class="gg-try-h">Things to try</p>
   <ul class="gg-try">
-    <li>Verify that $(14,14)$ is a critical point of $h$, then classify it.</li>
-    <li>The domain is a triangle, so the boundary matters too. Where else would you have to check?</li>
-    <li>This is the same box problem attacked without Lagrange multipliers — compare the effort with §13.8.</li>
+    <li>Do the substitution yourself and confirm you get this $h$. That step is what turns a constrained problem into an unconstrained one.</li>
+    <li>Verify $(14,14)$ is a critical point, then classify it with the second derivative test.</li>
+    <li>Back out the full answer: $y=z=14$ gives what $x$, and what volume?</li>
+    <li>The domain is a triangle, so the boundary matters too. Why can you rule it out here?</li>
+    <li>Section 13.8 solves this exact problem again with Lagrange multipliers and no substitution — compare the two routes.</li>
   </ul>
 </div>
 
@@ -878,14 +882,16 @@ Each entry says what the applet shows and suggests a few things to look for. **W
 </div>
 
 <div class="gg-item">
-  <h4 class="gg-name"><a href="https://www.geogebra.org/3d/z6t97efr" target="_blank" rel="noopener">Box in a plane: volume optimization (Example 6)</a><span class="gg-app">3D</span></h4>
+  <h4 class="gg-name"><a href="https://www.geogebra.org/3d/z6t97efr" target="_blank" rel="noopener">The same box, now with Lagrange multipliers (Example 6 revisited)</a><span class="gg-app">3D</span></h4>
   <p class="gg-meta">saved as &ldquo;13.7 Ex 6&rdquo; &middot; linked from p.&nbsp;3 of the &sect;13.8 notes</p>
-  <p class="gg-what">A rectangular box with one corner sliding on the plane $x+2y+2z=84$, its volume $V=xyz$ displayed, together with the level surfaces of the volume function and both gradients $\nabla V = \langle yz,xz,xy\rangle$ and $\nabla g = \langle 1,2,2\rangle$.</p>
+  <p class="gg-what">The §13.7 box problem attacked a second way. A rectangular box has one corner sliding on the plane $x+2y+2z=84$, with the volume $V=xyz$ displayed alongside the level surfaces of $V$ and both gradients $\nabla V = \langle yz,xz,xy\rangle$ and $\nabla g = \langle 1,2,2\rangle$.</p>
   <p class="gg-try-h">Things to try</p>
   <ul class="gg-try">
     <li>Drag the corner to hunt for the largest volume by eye, then read off the coordinates.</li>
     <li>At the best position the two gradients are parallel. That is the Lagrange condition — check it numerically.</li>
-    <li>Watch the volume level surface become tangent to the plane exactly at the optimum. Why tangency?</li>
+    <li>Solve $\nabla V = \lambda\nabla g$ with the constraint and confirm the maximum volume is $5488$.</li>
+    <li>Watch the volume level surface become tangent to the plane exactly at the optimum. Why must tangency be the condition?</li>
+    <li>Compare with the §13.7 version, which substituted the constraint away instead. Which approach would you rather do by hand here?</li>
   </ul>
 </div>
 
@@ -908,13 +914,16 @@ Each entry says what the applet shows and suggests a few things to look for. **W
 </div>
 
 <div class="gg-item">
-  <h4 class="gg-name"><a href="https://www.geogebra.org/classic/aswvav89" target="_blank" rel="noopener">§14.1 notes, p. 2 — Classic companion</a><span class="gg-app">Classic</span></h4>
+  <h4 class="gg-name"><a href="https://www.geogebra.org/m/aswvav89" target="_blank" rel="noopener">Fubini's Theorem</a><span class="gg-app">Classic</span></h4>
   <p class="gg-meta">linked from p.&nbsp;2 of the &sect;14.1 notes</p>
-  <p class="gg-note">This one is not publicly listed on GeoGebra, so its contents are not catalogued here &mdash; open it to check it still works for students.</p>
-  <p class="gg-what">Linked from page 2 of the §14.1 notes alongside the Example 2 solid, in GeoGebra Classic rather than the 3D app.</p>
+  <p class="gg-note">Adapted by Dr. Lundholm from <a href="https://www.geogebra.org/m/sgsapd6t" target="_blank" rel="noopener">Fubini&rsquo;s Theorem</a> by GeoGebra user alessandrogaio.</p>
+  <p class="gg-what">Why you may integrate in either order. A slice plane sweeps across the region of integration; the cross-section it cuts from the solid has area $A$, and the double integral is recovered either as $\int A(x)\,dx$ or as $\int A(y)\,dy$ — the same volume accumulated two different ways.</p>
   <p class="gg-try-h">Things to try</p>
   <ul class="gg-try">
-    <li>Open it alongside the Example 2 solid above and compare the flat and solid views of the same region.</li>
+    <li>Sweep the slice in the $x$-direction and watch the cross-sectional area change. That area is the <em>inner</em> integral.</li>
+    <li>Now switch to slicing the other way. The individual cross-sections look nothing alike — but the total is identical.</li>
+    <li>Write out both iterated integrals and confirm they give the same number.</li>
+    <li>Over a rectangle the order never matters. Look ahead to §14.2: what changes once the region has curved edges?</li>
   </ul>
 </div>
 
@@ -957,13 +966,15 @@ Each entry says what the applet shows and suggests a few things to look for. **W
 </div>
 
 <div class="gg-item">
-  <h4 class="gg-name"><a href="https://www.geogebra.org/3d/ub9c85sx" target="_blank" rel="noopener">§14.2 notes, p. 2 — 3D companion</a><span class="gg-app">3D</span></h4>
-  <p class="gg-meta">linked from p.&nbsp;2 of the &sect;14.2 notes</p>
-  <p class="gg-note">This one is not publicly listed on GeoGebra, so its contents are not catalogued here &mdash; open it to check it still works for students.</p>
-  <p class="gg-what">Linked from page 2 of the §14.2 notes, in the GeoGebra 3D app.</p>
+  <h4 class="gg-name"><a href="https://www.geogebra.org/m/ub9c85sx" target="_blank" rel="noopener">Center of mass of a plate (Example 3)</a><span class="gg-app">3D</span></h4>
+  <p class="gg-meta">saved as &ldquo;14.2 Ex 3&rdquo; &middot; linked from p.&nbsp;2 of the &sect;14.2 notes</p>
+  <p class="gg-what">A triangular plate bounded by $y=0$, $x=1$ and $y=x$ carrying the variable density $\rho(x,y)=x^2+y$. The applet reports the mass, both moments, and plots the resulting center of mass.</p>
   <p class="gg-try-h">Things to try</p>
   <ul class="gg-try">
-    <li>Open it alongside the Examples 1–2 region above while you work through the §14.2 notes.</li>
+    <li>Compute the mass $M=\iint \rho\,dA$ yourself. The applet gets $\tfrac{5}{12}$.</li>
+    <li>Recover the center of mass from the moments: $\bar x = M_y/M$ and $\bar y = M_x/M$. You should land on $\left(\tfrac{39}{50}, \tfrac{11}{25}\right)$.</li>
+    <li>The center of mass sits toward the heavy corner, not at the triangle's centroid. Which corner is densest, and does the plotted point agree?</li>
+    <li>Replace the density with a constant. Where does the center of mass move to, and what is that point called?</li>
   </ul>
 </div>
 
