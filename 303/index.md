@@ -7,6 +7,16 @@ nav_order: 303
 
 # MATH 303: Multivariable Calculus
 
+## GeoGebra Interactives
+
+<div class="resource-grid">
+  <a href="interactives.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-green);">All chapters &middot; 81 applets</div>
+    <h4>GeoGebra Interactives Index</h4>
+    <p class="resource-desc">Every GeoGebra applet from the lecture notes, organized by section, with a description of each one and questions to explore while you play with it.</p>
+  </a>
+</div>
+
 ## Chapter 11: Vectors and the Geometry of Space
 
 <div class="resource-grid">
@@ -37,3 +47,13 @@ nav_order: 303
 </div>
 
 More sections are on the way.
+
+## Review Games
+
+<div class="resource-grid">
+  <a href="../review-game/host.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-green);">Live Game (Host)</div>
+    <h4>Chapter 11 Review</h4>
+    <p class="resource-desc">Start a live, Kahoot-style review game for the class — students join on their own devices.</p>
+  </a>
+</div>
