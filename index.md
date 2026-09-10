@@ -27,3 +27,4 @@ Welcome to the Milligan University Mathematics course repository.
 - [MATH 351: Mathematical Modeling](351/)
 - [MATH 411: Real Analysis](411/)
 - [MATH 494: Capstone Seminar](494/)
+- [MATH 499: Mentored Research](499/)

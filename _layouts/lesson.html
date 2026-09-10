@@ -1,0 +1,65 @@
+---
+layout: default
+---
+
+{% comment %}
+Companion pages for a multi-session unit that lives in a term subfolder
+(e.g. /499/fall-2026/logistic-01.html).
+
+Deliberately NOT `layout: day`: that layout derives its prev/next links
+arithmetically from `day-NN.html` in the course root, which cannot address a
+term subfolder. Here the neighbours are named explicitly in front matter, so a
+unit can be any length and live anywhere.
+
+Reuses math411.css and math411.js so the .act / .mc / .proof-scaffold widgets
+behave identically to the MATH 411 pages.
+{% endcomment %}
+
+<link rel="stylesheet" href="{{ site.baseurl }}/assets/css/math411.css">
+
+{% comment %}
+Both scripts must load BEFORE {{ content }}: lesson pages call M411.* and
+LR499.* from inline scripts at parse time.
+{% endcomment %}
+<script src="{{ site.baseurl }}/assets/js/math411.js"></script>
+{% if page.needs_logreg %}
+<script src="{{ site.baseurl }}/assets/js/logreg499.js"></script>
+{% endif %}
+
+<div class="container page-content">
+    <a href="{{ page.index_url | prepend: site.baseurl }}" style="font-size: 0.9rem;">&larr; Back to {{
+        page.index_title }}</a>
+
+    <div class="content-wrapper day-page">
+
+        <header class="day-header">
+            <div class="day-eyebrow">
+                <span class="day-badge">Session {{ page.lesson }}</span>
+                <span class="day-chapter">{{ page.unit }}</span>
+            </div>
+            <h1>{{ page.lesson_title }}</h1>
+            {% if page.blurb %}<p class="day-blurb">{{ page.blurb }}</p>{% endif %}
+        </header>
+
+        {% if page.prereq %}
+        <div class="day-reading-note">
+            <strong>Before you start:</strong> {{ page.prereq }}
+        </div>
+        {% endif %}
+
+        {{ content }}
+
+        <nav class="day-nav">
+            {% if page.prev %}
+            <a class="day-nav-prev" href="{{ page.prev | prepend: site.baseurl }}">&larr; {{ page.prev_title }}</a>
+            {% else %}<span></span>{% endif %}
+
+            <a class="day-nav-index" href="{{ page.index_url | prepend: site.baseurl }}">All sessions</a>
+
+            {% if page.next %}
+            <a class="day-nav-next" href="{{ page.next | prepend: site.baseurl }}">{{ page.next_title }} &rarr;</a>
+            {% else %}<span></span>{% endif %}
+        </nav>
+
+    </div>
+</div>
