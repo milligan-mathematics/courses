@@ -3,13 +3,15 @@ layout: course
 title: "MATH 499 · Fall 2026: Logistic Regression"
 parent: Home
 nav_order: 4991
+hide_from_home: true
 ---
 
 <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/math411.css">
 
-<a href="{{ site.baseurl }}/499/" style="font-size: 0.9rem;">&larr; Back to MATH 499: Mentored Research</a>
-
 # Logistic Regression for Financial Distress
+
+<p style="font-size:0.9rem;color:#6E6E6E;margin-top:-0.5rem">Part of
+<a href="{{ site.baseurl }}/499/">MATH 499: Mentored Research</a> &middot; Fall 2026</p>
 
 <p class="day-blurb">Four working sessions. By the end you should be able to build, diagnose, and defend a
 logistic regression baseline on imbalanced financial data — and explain every choice you made.</p>

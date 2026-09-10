@@ -11,9 +11,15 @@ layout: default
 
 <div class="container">
     <div class="course-grid">
+        {% comment %}
+        Every `layout: course` page becomes a card here. A page that is a
+        sub-index *within* a course - e.g. a term subfolder like
+        499/fall-2026/ - wants the course wrapper but not a top-level card,
+        and sets `hide_from_home: true` to opt out.
+        {% endcomment %}
         {% assign items = site.pages | sort: "nav_order" %}
         {% for item in items %}
-        {% if item.layout == "course" %}
+        {% if item.layout == "course" and item.hide_from_home != true %}
         <div class="course-card">
             <div class="course-number">
                 {% assign title_parts = item.title | split: ": " %}
