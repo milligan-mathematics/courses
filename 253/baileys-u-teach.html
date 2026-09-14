@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bailey's U-Teach - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        :root {
+            --esc-mono: "Consolas", "Nanum Gothic Coding", "Courier New", ui-monospace, monospace;
+            --esc-ink: #14110f;
+            --esc-cream: #FBFAF3;
+            --esc-peach: #F3C49B;
+            --esc-mint: #B7DDD3;
+            --esc-sky: #BEE0F0;
+            --esc-alarm: #EF3B5B;
+            --esc-loop: #6BF178;
+            --esc-master: #F3ACF5;
+        }
+
+        /* ---------- the hallway the sheet sits in ---------- */
+        .esc-stage {
+            background-color: #E7E7ED;
+            background-image:
+                repeating-linear-gradient(90deg,
+                    rgba(255, 255, 255, .55) 0 10px,
+                    rgba(0, 0, 0, 0) 10px 132px),
+                linear-gradient(200deg, rgba(0, 156, 222, .07), rgba(243, 110, 36, .07)),
+                linear-gradient(180deg, #F1F1F6, #E2E2E9);
+            border-radius: 18px;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .esc-sheet {
+            max-width: 880px;
+            margin: 0 auto;
+            background: var(--esc-cream);
+            border-radius: 26px;
+            padding: 2rem 1.6rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .10);
+        }
+
+        .esc-box {
+            border: 3px dashed var(--esc-ink);
+            border-radius: 8px;
+            padding: 1.35rem 1.4rem 1.5rem;
+            margin-bottom: 1.7rem;
+        }
+
+        .esc-box:last-child {
+            margin-bottom: 0;
+        }
+
+        .esc-chip {
+            display: inline-block;
+            font-family: var(--esc-mono);
+            font-weight: 700;
+            font-size: 1.12rem;
+            letter-spacing: .01em;
+            padding: .42rem 1.05rem;
+            border-radius: 7px;
+            margin: 0 0 .9rem;
+            color: var(--esc-ink);
+        }
+
+        .esc-titlebox {
+            text-align: center;
+            border: 0;
+            padding: 0;
+            margin-bottom: 1.6rem;
+        }
+
+        .esc-titlebox .esc-chip {
+            font-size: 1.35rem;
+            background: var(--esc-peach);
+            margin-bottom: .5rem;
+        }
+
+        .esc-titlebox p {
+            margin: 0;
+            color: #5c564f;
+            font-size: .95rem;
+        }
+
+        .chip-brief {
+            background: var(--esc-mint);
+        }
+
+        .chip-1 {
+            background: var(--esc-sky);
+        }
+
+        .chip-2 {
+            background: var(--esc-alarm);
+            color: #fff;
+        }
+
+        .chip-3 {
+            background: var(--esc-loop);
+        }
+
+        .chip-4 {
+            background: var(--esc-master);
+        }
+
+        .esc-box p,
+        .esc-box li {
+            font-size: 1rem;
+            line-height: 1.55;
+            color: #241f1b;
+        }
+
+        .esc-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .esc-step {
+            font-weight: 700;
+        }
+
+        /* ---------- progress rail ---------- */
+        .esc-rail {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 0 auto 1.2rem;
+            padding: 0;
+            list-style: none;
+            max-width: 880px;
+        }
+
+        .esc-rail li {
+            font-family: var(--esc-mono);
+            font-size: .85rem;
+            font-weight: 700;
+            border: 2px solid #c9c4b6;
+            background: #fff;
+            color: #8a8377;
+            border-radius: 999px;
+            padding: .3rem .95rem;
+        }
+
+        .esc-rail li.done {
+            border-color: var(--esc-ink);
+            background: var(--esc-ink);
+            color: var(--esc-loop);
+        }
+
+        /* ---------- equations ---------- */
+        .eq-display {
+            font-family: var(--esc-mono);
+            font-size: 1.45rem;
+            font-weight: 700;
+            text-align: center;
+            padding: .9rem .5rem;
+            color: var(--esc-ink);
+            word-break: break-word;
+        }
+
+        .clue-eq {
+            font-family: var(--esc-mono);
+            font-weight: 700;
+        }
+
+        /* ---------- balance lab ---------- */
+        .lab {
+            background: #fff;
+            border: 1px solid #e3ded0;
+            border-radius: 10px;
+            padding: 1rem 1rem 1.1rem;
+            margin: 1rem 0 1.1rem;
+        }
+
+        .lab-head {
+            font-family: var(--esc-mono);
+            font-size: .78rem;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+            color: #8a8377;
+            margin-bottom: .2rem;
+        }
+
+        .lab-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .45rem;
+            align-items: center;
+            justify-content: center;
+            margin-top: .4rem;
+        }
+
+        .lab-controls select,
+        .lab-controls input,
+        .esc-box input[type="text"] {
+            font-family: var(--esc-mono);
+            font-size: .95rem;
+            padding: .42rem .6rem;
+            border: 1px solid #cfc9ba;
+            border-radius: 6px;
+            background: #fff;
+            color: var(--esc-ink);
+        }
+
+        .lab-controls input {
+            width: 7rem;
+        }
+
+        .esc-btn {
+            font-family: var(--esc-mono);
+            font-size: .88rem;
+            font-weight: 700;
+            padding: .45rem 1rem;
+            border: 2px solid var(--esc-ink);
+            border-radius: 6px;
+            background: var(--esc-ink);
+            color: #fff;
+            cursor: pointer;
+            transition: background .12s ease, color .12s ease;
+        }
+
+        .esc-btn:hover {
+            background: var(--color-primary, #F36E24);
+            border-color: var(--color-primary, #F36E24);
+        }
+
+        .esc-btn.ghost {
+            background: #fff;
+            color: var(--esc-ink);
+        }
+
+        .esc-btn.ghost:hover {
+            background: #f1ede1;
+            color: var(--esc-ink);
+            border-color: var(--esc-ink);
+        }
+
+        .esc-btn:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+        }
+
+        .lab-hist {
+            list-style: none;
+            margin: .7rem 0 0;
+            padding: .6rem 0 0;
+            font-family: var(--esc-mono);
+            color: #6b655c;
+            border-top: 1px dashed #d9d3c4;
+        }
+
+        .lab-hist:empty {
+            display: none;
+        }
+
+        .lab-hist li {
+            padding: .16rem 0;
+            font-size: .88rem;
+            line-height: 1.45;
+        }
+
+        .lab-hist .mv {
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        /* ---------- feedback ---------- */
+        .fb {
+            font-family: var(--esc-mono);
+            font-size: .9rem;
+            line-height: 1.5;
+            margin-top: .55rem;
+            padding: .5rem .75rem;
+            border-radius: 6px;
+            border-left: 4px solid #cfc9ba;
+            background: #f4f1e6;
+            color: #3d3830;
+        }
+
+        .fb:empty {
+            display: none;
+        }
+
+        .fb.ok {
+            border-left-color: var(--color-accent-green, #008552);
+            background: #eefaf3;
+            color: #14532d;
+        }
+
+        .fb.no {
+            border-left-color: var(--esc-alarm);
+            background: #fdeef1;
+            color: #7f1d2e;
+        }
+
+        .fb.info {
+            border-left-color: var(--color-accent-blue, #009CDE);
+            background: #e8f7fd;
+            color: #0b4a63;
+        }
+
+        /* ---------- answer rows ---------- */
+        .ans-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: .5rem;
+            margin: .6rem 0 .2rem;
+        }
+
+        .ans-row label {
+            font-weight: 700;
+        }
+
+        .choice-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .45rem;
+            margin: .55rem 0 .2rem;
+        }
+
+        .choice {
+            font-family: var(--esc-mono);
+            font-size: .85rem;
+            padding: .45rem .85rem;
+            border: 2px solid #cfc9ba;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+            color: #3d3830;
+        }
+
+        .choice:hover {
+            border-color: var(--esc-ink);
+        }
+
+        .choice.picked {
+            background: var(--esc-ink);
+            border-color: var(--esc-ink);
+            color: #fff;
+        }
+
+        textarea.esc-write {
+            width: 100%;
+            min-height: 4.2rem;
+            font-family: inherit;
+            font-size: .95rem;
+            line-height: 1.5;
+            padding: .6rem .7rem;
+            border: 1px solid #cfc9ba;
+            border-radius: 6px;
+            background: #fffdf6;
+            color: #241f1b;
+            resize: vertical;
+        }
+
+        .write-label {
+            display: block;
+            font-weight: 700;
+            margin: .8rem 0 .3rem;
+        }
+
+        /* ---------- lock code ---------- */
+        .lockline {
+            margin-top: 1.1rem;
+            padding-top: .85rem;
+            border-top: 2px dashed #d9d3c4;
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            flex-wrap: wrap;
+        }
+
+        .lockline .lbl {
+            font-family: var(--esc-mono);
+            font-weight: 700;
+            font-size: .95rem;
+        }
+
+        .lockcode {
+            font-family: var(--esc-mono);
+            font-weight: 700;
+            font-size: 1.15rem;
+            letter-spacing: .12em;
+            background: var(--esc-ink);
+            color: #6b655c;
+            padding: .35rem 1.1rem;
+            border-radius: 6px;
+        }
+
+        .lockcode.open {
+            color: var(--esc-loop);
+        }
+
+        /* ---------- final ---------- */
+        .final-box {
+            text-align: center;
+        }
+
+        .final-box h2 {
+            font-family: var(--esc-mono);
+            font-size: 1.9rem;
+            margin: .2rem 0 1rem;
+            letter-spacing: .02em;
+        }
+
+        .code-slots {
+            display: flex;
+            justify-content: center;
+            gap: .7rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        /* these two out-specify the shared .esc-box input / p rules above */
+        .final-box .code-slots input[type="text"] {
+            width: 3.6rem;
+            height: 4rem;
+            text-align: center;
+            font-family: var(--esc-mono);
+            font-size: 2rem;
+            font-weight: 700;
+            border: 0;
+            border-bottom: 4px solid var(--esc-ink);
+            border-radius: 0;
+            background: transparent;
+            color: var(--esc-ink);
+        }
+
+        .final-box .code-slots input[type="text"]:focus {
+            outline: none;
+            background: #fff6e8;
+        }
+
+        .final-box p.escape-q {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: var(--esc-mono);
+            margin: 1rem 0 0;
+            line-height: 1.2;
+        }
+
+        .escape-q .r {
+            color: var(--esc-alarm);
+        }
+
+        .escape-q .g {
+            color: #24C04A;
+        }
+
+        .escape-q .m {
+            color: #E45BE8;
+        }
+
+        .escaped-banner {
+            margin-top: 1rem;
+            padding: 1rem;
+            border: 3px solid var(--color-accent-green, #008552);
+            border-radius: 10px;
+            background: #eefaf3;
+            font-family: var(--esc-mono);
+            font-weight: 700;
+            color: #14532d;
+            animation: pop .4s ease;
+        }
+
+        @keyframes pop {
+            from {
+                transform: scale(.94);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* ---------- teacher notes ---------- */
+        .notes {
+            max-width: 880px;
+            margin: 0 auto;
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem 1.3rem;
+        }
+
+        .notes summary {
+            cursor: pointer;
+            font-weight: 700;
+            font-family: var(--esc-mono);
+            font-size: .95rem;
+        }
+
+        .notes table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: .8rem 0;
+            font-size: .93rem;
+        }
+
+        .notes th,
+        .notes td {
+            text-align: left;
+            padding: .45rem .6rem;
+            border-bottom: 1px solid #eceae2;
+        }
+
+        .notes th {
+            font-family: var(--esc-mono);
+            font-size: .78rem;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            color: #6E6E6E;
+        }
+
+        .notes code {
+            font-family: var(--esc-mono);
+            background: #f4f1e6;
+            padding: .1rem .3rem;
+            border-radius: 3px;
+        }
+
+        .toolbar {
+            max-width: 880px;
+            margin: 0 auto 1rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 640px) {
+            .esc-sheet {
+                padding: 1.2rem .85rem;
+                border-radius: 16px;
+            }
+
+            .esc-box {
+                padding: 1rem .85rem 1.1rem;
+            }
+
+            .eq-display {
+                font-size: 1.15rem;
+            }
+
+            .final-box p.escape-q {
+                font-size: 1.4rem;
+            }
+
+            .final-box .code-slots input[type="text"] {
+                width: 2.9rem;
+                height: 3.3rem;
+                font-size: 1.6rem;
+            }
+        }
+
+        @media print {
+
+            .navbar,
+            .toolbar,
+            .esc-btn,
+            .notes {
+                display: none !important;
+            }
+
+            .esc-stage {
+                background: none;
+                padding: 0;
+            }
+
+            .esc-sheet {
+                box-shadow: none;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 253</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Bailey's U-Teach</h1>
+            <p>Ch. 9 &mdash; four locks stand between us and the door. Solve the equation, then say <em>why</em> your
+                answer works.</p>
+        </div>
+    </header>
+
+    <main class="container page-content">
+
+        <ul class="esc-rail" id="rail">
+            <li data-rail="1">LOCK 1</li>
+            <li data-rail="2">LOCK 2</li>
+            <li data-rail="3">LOCK 3</li>
+            <li data-rail="4">LOCK 4</li>
+        </ul>
+
+        <div class="toolbar">
+            <button class="esc-btn ghost" id="reset-all" type="button">Clear my work</button>
+        </div>
+
+        <div class="esc-stage">
+            <div class="esc-sheet">
+
+                <div class="esc-titlebox">
+                    <span class="esc-chip">The Great Algebra Escape: Mission Impossible?</span>
+                    <p>Companion to Bailey's handout &mdash; your written work still goes on the paper.</p>
+                </div>
+
+                <!-- ===================== MISSION BRIEF ===================== -->
+                <section class="esc-box">
+                    <span class="esc-chip chip-brief">Mission Brief:</span>
+                    <p>We are trapped inside the Algebra Lab! Four locks stand between us and freedom. Work through each
+                        clue in order. Your goal is not only to find an answer, but to explain <strong>WHY</strong> your
+                        answer works. Start with Lock 1. Read the clue card carefully. Solve or analyze the equation.
+                        Explain your reasoning. When the class agrees, move to the next lock. The final lock requires
+                        you to create and test your own equations.</p>
+                    <p class="fb info">Every move you make in the lab below gets applied to <strong>both sides</strong>.
+                        That is the only rule the lab enforces &mdash; it will never tell you which move to make.</p>
+                </section>
+
+                <!-- ===================== CLUE I ===================== -->
+                <section class="esc-box" id="lock1">
+                    <span class="esc-chip chip-1">Clue I: Find The Code</span>
+                    <p>The first door needs a number. <strong>Clue: <span class="clue-eq">7x &minus; 15 = 3x + 9</span></strong></p>
+
+                    <label class="write-label" for="l1-step1">Step 1: What operation can you undo first?</label>
+                    <textarea class="esc-write" id="l1-step1" rows="2"
+                        placeholder="Say what you want to undo and why that move is legal."></textarea>
+
+                    <p class="write-label" style="margin-bottom:0">Step 2: Show your work.</p>
+
+                    <div class="lab" data-lab="1" data-left="7x - 15" data-right="3x + 9" data-simplify="no"></div>
+
+                    <div class="ans-row">
+                        <label for="l1-x">Step 3: What is x?</label>
+                        <input type="text" id="l1-x" inputmode="text" placeholder="x = ?" style="width:6rem">
+                        <button class="esc-btn" type="button" data-check="l1">Check</button>
+                    </div>
+                    <div class="fb" id="l1-fb"></div>
+
+                    <p class="write-label" style="margin-bottom:.2rem">Step 4: Check your answer in the original
+                        equation.</p>
+                    <div class="fb" id="l1-sub"></div>
+
+                    <label class="write-label" for="l1-why">Explain: How do you know your value makes the equation
+                        true?</label>
+                    <textarea class="esc-write" id="l1-why" rows="3"></textarea>
+
+                    <div class="lockline">
+                        <span class="lbl">Lock 1 Code:</span>
+                        <span class="lockcode" id="code1">&#9646;</span>
+                        <span class="fb" style="margin:0;border:0;background:none;padding:0">the value of x</span>
+                    </div>
+                </section>
+
+                <!-- ===================== CLUE II ===================== -->
+                <section class="esc-box" id="lock2">
+                    <span class="esc-chip chip-2">Clue II: FALSE ALARM</span>
+                    <p>The computer claims there is a value of x that will open the next door.
+                        <strong>Clue: <span class="clue-eq">2(3x + 5) + 4x = 10x + 18</span></strong></p>
+
+                    <div class="lab" data-lab="2" data-left="2(3x + 5) + 4x" data-right="10x + 18"
+                        data-simplify="yes"></div>
+
+                    <p class="esc-step" style="margin-bottom:.2rem">Step 1: Is the statement true or false?</p>
+                    <div class="choice-row" data-pick="l2-tf">
+                        <button class="choice" type="button" data-val="true">True</button>
+                        <button class="choice" type="button" data-val="false">False</button>
+                    </div>
+
+                    <p class="esc-step" style="margin-bottom:.2rem">Step 2: Is there <strong>ANY</strong> value of x
+                        that can make the original equation true?</p>
+                    <div class="choice-row" data-pick="l2-any">
+                        <button class="choice" type="button" data-val="yes">Yes</button>
+                        <button class="choice" type="button" data-val="no">No</button>
+                    </div>
+
+                    <p class="esc-step" style="margin-bottom:.2rem">Step 3: Classify the equation.</p>
+                    <div class="choice-row" data-pick="l2-class">
+                        <button class="choice" type="button" data-val="one">Exactly one solution</button>
+                        <button class="choice" type="button" data-val="none">No solution</button>
+                        <button class="choice" type="button" data-val="all">Infinitely many solutions</button>
+                    </div>
+                    <div class="ans-row">
+                        <button class="esc-btn" type="button" data-check="l2">Check all three</button>
+                    </div>
+                    <div class="fb" id="l2-fb"></div>
+
+                    <label class="write-label" for="l2-why">Why?</label>
+                    <textarea class="esc-write" id="l2-why" rows="3"></textarea>
+
+                    <div class="lockline">
+                        <span class="lbl">Lock 2 Code:</span>
+                        <span class="lockcode" id="code2">&#9646;</span>
+                        <span class="fb" style="margin:0;border:0;background:none;padding:0">how many solutions this
+                            equation has</span>
+                    </div>
+                </section>
+
+                <!-- ===================== CLUE III ===================== -->
+                <section class="esc-box" id="lock3">
+                    <span class="esc-chip chip-3">Clue III: The Infinite Loop</span>
+                    <p>The computer is stuck in a loop. It says the equation is always true.
+                        <strong>Clue: <span class="clue-eq">3(2x + 4) &minus; 2x = 4x + 12</span></strong></p>
+
+                    <div class="lab" data-lab="3" data-left="3(2x + 4) - 2x" data-right="4x + 12"
+                        data-simplify="yes"></div>
+
+                    <div class="ans-row">
+                        <label for="l3-stmt">Step 1: What statement remains?</label>
+                        <input type="text" id="l3-stmt" placeholder="e.g. 5 = 5" style="width:9rem">
+                    </div>
+
+                    <p class="esc-step" style="margin-bottom:.2rem">Step 2: Is that statement true or false?</p>
+                    <div class="choice-row" data-pick="l3-tf">
+                        <button class="choice" type="button" data-val="true">True</button>
+                        <button class="choice" type="button" data-val="false">False</button>
+                    </div>
+
+                    <p class="esc-step" style="margin-bottom:.2rem">Step 3: What does this tell you about the number of
+                        solutions?</p>
+                    <div class="choice-row" data-pick="l3-class">
+                        <button class="choice" type="button" data-val="one">Exactly one solution</button>
+                        <button class="choice" type="button" data-val="none">No solution</button>
+                        <button class="choice" type="button" data-val="all">Infinitely many solutions</button>
+                    </div>
+                    <div class="ans-row">
+                        <button class="esc-btn" type="button" data-check="l3">Check</button>
+                    </div>
+                    <div class="fb" id="l3-fb"></div>
+
+                    <p class="write-label" style="margin-bottom:.3rem">Try it yourself: pick any number for x and watch
+                        both sides.</p>
+                    <div class="ans-row">
+                        <label for="l3-try">x =</label>
+                        <input type="text" id="l3-try" placeholder="any number" style="width:7rem">
+                        <button class="esc-btn ghost" type="button" data-check="l3try">Test it</button>
+                        <button class="esc-btn ghost" type="button" data-check="l3rand">Surprise me</button>
+                    </div>
+                    <div class="fb" id="l3-tryfb"></div>
+
+                    <label class="write-label" for="l3-why">Explain why:</label>
+                    <textarea class="esc-write" id="l3-why" rows="3"></textarea>
+
+                    <div class="lockline">
+                        <span class="lbl">Lock 3 Code:</span>
+                        <span class="lockcode" id="code3">&#9646;</span>
+                        <span class="fb" style="margin:0;border:0;background:none;padding:0">the infinity symbol,
+                            tipped over</span>
+                    </div>
+                </section>
+
+                <!-- ===================== CLUE IV ===================== -->
+                <section class="esc-box" id="lock4">
+                    <span class="esc-chip chip-4">Clue IV: The Master Lock</span>
+                    <p>HOME STRETCH &mdash;&gt; We made it to the final door! This time, the computer does
+                        <strong>NOT</strong> give us the equations. You <strong>MUST</strong> design them (Make them
+                        challenging!).</p>
+
+                    <p class="fb info">Type a whole equation, including the equals sign. The lock will simplify both
+                        sides and report what it finds &mdash; it checks your equation, it does not write it for you.</p>
+
+                    <div class="lab-build" data-build="A" data-want="one"></div>
+                    <div class="lab-build" data-build="B" data-want="none"></div>
+                    <div class="lab-build" data-build="C" data-want="all"></div>
+
+                    <p class="write-label" style="margin-bottom:.3rem">Swap with a partner. Have them classify all
+                        <strong>three</strong> of your equations and explain their reasoning.</p>
+                    <label class="write-label" for="l4-partner">What did your partner say? Did they agree with
+                        you?</label>
+                    <textarea class="esc-write" id="l4-partner" rows="3"></textarea>
+
+                    <div class="lockline">
+                        <span class="lbl">Lock 4 Code:</span>
+                        <span class="lockcode" id="code4">&#9646;</span>
+                        <span class="fb" style="margin:0;border:0;background:none;padding:0">all three equations
+                            work</span>
+                    </div>
+                </section>
+
+                <!-- ===================== FINAL ===================== -->
+                <section class="esc-box final-box" id="final">
+                    <h2>FINAL CODE:</h2>
+                    <div class="code-slots">
+                        <input type="text" id="f1" maxlength="1" inputmode="numeric" aria-label="Lock 1 code">
+                        <input type="text" id="f2" maxlength="1" inputmode="numeric" aria-label="Lock 2 code">
+                        <input type="text" id="f3" maxlength="1" inputmode="numeric" aria-label="Lock 3 code">
+                        <input type="text" id="f4" maxlength="1" inputmode="numeric" aria-label="Lock 4 code">
+                    </div>
+                    <button class="esc-btn" type="button" data-check="final">Enter the code</button>
+                    <div class="fb" id="final-fb" style="text-align:left"></div>
+                    <p class="escape-q"><span class="r">DID</span> <span class="g">WE</span> <span class="m">ESCAPE?!</span>
+                    </p>
+                    <div id="escaped" hidden></div>
+                </section>
+
+            </div>
+        </div>
+
+        <details class="notes">
+            <summary>Teacher notes &amp; answer key</summary>
+
+            <p>Bailey's handout is the record of student work; this page is the shared screen. Everything below matches
+                the PDF, in the same order.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Lock</th>
+                        <th>Equation</th>
+                        <th>What happens</th>
+                        <th>Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><code>7x &minus; 15 = 3x + 9</code></td>
+                        <td>4x = 24, so x = 6. One solution.</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><code>2(3x + 5) + 4x = 10x + 18</code></td>
+                        <td>10x + 10 = 10x + 18, so 10 = 18. False &mdash; no solution.</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><code>3(2x + 4) &minus; 2x = 4x + 12</code></td>
+                        <td>4x + 12 = 4x + 12, so 12 = 12. True &mdash; infinitely many.</td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>student-designed</td>
+                        <td>One solution, no solution, all values &mdash; each verified by the checker.</td>
+                        <td>3</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p><strong>Final code: 6083.</strong> The codes follow a rule students can state out loud: Lock 1 is the
+                value of x, Lock 2 is the number of solutions, Lock 3 is the infinity symbol tipped on its side, and
+                Lock 4 is the 3 the handout asks for. To change any code, edit the <code>CODES</code> object at the top
+                of the script in this file.</p>
+
+            <p><strong>Where the page helps and where it stays quiet.</strong> The balance lab applies whatever move a
+                student names to both sides and simplifies &mdash; it never suggests a move, so the choice of what to
+                undo first is still theirs. Locks 2 and 3 will not confirm a classification until the true/false
+                question underneath it is also right, so a lucky guess on the classification does not open the lock.</p>
+
+            <p><strong>Lock 4 is the one to project.</strong> The checker accepts any linear equation, so
+                <code>2x + 1 = 2x + 7</code> and <code>5(x &minus; 3) = 5x &minus; 15</code> both get read the same way
+                the class reads them. Good discussion equations to try together if the room stalls: <code>x + 1 = x +
+                    1</code> (all values), then <code>x + 1 = x + 2</code> (none) &mdash; one symbol apart.</p>
+
+            <p><strong>Student work is saved in this browser only.</strong> Typed answers persist through a reload on
+                the same device; "Clear my work" wipes them. Nothing is submitted anywhere, so the handout is still what
+                gets turned in.</p>
+        </details>
+
+    </main>
+
+    <script>
+        (function () {
+            'use strict';
+
+            /* ---------------- codes ---------------- */
+            var CODES = { 1: '6', 2: '0', 3: '8', 4: '3' };
+            var FINAL = CODES[1] + CODES[2] + CODES[3] + CODES[4];
+
+            var MINUS = '−';
+            var EPS = 1e-9;
+            var STORE = 'bailey-escape:';
+
+            /* ---------------- linear expression algebra ----------------
+               every expression is kept as {a, b} meaning a*x + b          */
+            function L(a, b) { return { a: a, b: b }; }
+            function add(u, v) { return L(u.a + v.a, u.b + v.b); }
+            function sub(u, v) { return L(u.a - v.a, u.b - v.b); }
+
+            function mul(u, v) {
+                if (Math.abs(u.a) < EPS) return L(u.b * v.a, u.b * v.b);
+                if (Math.abs(v.a) < EPS) return L(u.a * v.b, u.b * v.b);
+                throw new Error('That multiplies x by x. Keep every term linear.');
+            }
+
+            function div(u, v) {
+                if (Math.abs(v.a) > EPS) throw new Error('You can only divide by a number, not by an expression with x.');
+                if (Math.abs(v.b) < EPS) throw new Error('You cannot divide by zero.');
+                return L(u.a / v.b, u.b / v.b);
+            }
+
+            function tokenize(s) {
+                s = String(s)
+                    .replace(/−/g, '-').replace(/–/g, '-').replace(/—/g, '-')
+                    .replace(/×/g, '*').replace(/÷/g, '/')
+                    .replace(/\s+/g, '');
+                var t = [], i = 0;
+                while (i < s.length) {
+                    var c = s.charAt(i);
+                    if (/[0-9.]/.test(c)) {
+                        var j = i;
+                        while (j < s.length && /[0-9.]/.test(s.charAt(j))) j++;
+                        var n = parseFloat(s.slice(i, j));
+                        if (isNaN(n)) throw new Error('I could not read the number "' + s.slice(i, j) + '".');
+                        t.push({ k: 'num', v: n });
+                        i = j;
+                    } else if (c === 'x' || c === 'X') {
+                        t.push({ k: 'x' }); i++;
+                    } else if ('+-*/()'.indexOf(c) >= 0) {
+                        t.push({ k: c }); i++;
+                    } else {
+                        throw new Error('I do not recognize "' + c + '". Use numbers, x, + - * / and parentheses.');
+                    }
+                }
+                return t;
+            }
+
+            function parseLinear(str) {
+                if (!str || !String(str).trim()) throw new Error('There is nothing here to read.');
+                var t = tokenize(str), p = 0;
+
+                function peek() { return t[p]; }
+                function eat(k) { if (t[p] && t[p].k === k) { p++; return true; } return false; }
+                function startsPrimary(tk) { return !!tk && (tk.k === 'num' || tk.k === 'x' || tk.k === '('); }
+
+                function primary() {
+                    var tk = t[p];
+                    if (!tk) throw new Error('The expression stops too soon.');
+                    if (tk.k === 'num') { p++; return L(0, tk.v); }
+                    if (tk.k === 'x') { p++; return L(1, 0); }
+                    if (tk.k === '(') {
+                        p++;
+                        var e = expr();
+                        if (!eat(')')) throw new Error('A closing parenthesis is missing.');
+                        return e;
+                    }
+                    throw new Error('I got stuck at "' + tk.k + '".');
+                }
+
+                function unary() {
+                    if (eat('-')) return sub(L(0, 0), unary());
+                    if (eat('+')) return unary();
+                    return primary();
+                }
+
+                function term() {
+                    var v = unary();
+                    for (; ;) {
+                        if (eat('*')) v = mul(v, unary());
+                        else if (eat('/')) v = div(v, unary());
+                        else if (startsPrimary(peek())) v = mul(v, unary());
+                        else break;
+                    }
+                    return v;
+                }
+
+                function expr() {
+                    var v = term();
+                    for (; ;) {
+                        if (eat('+')) v = add(v, term());
+                        else if (eat('-')) v = sub(v, term());
+                        else break;
+                    }
+                    return v;
+                }
+
+                var out = expr();
+                if (p < t.length) throw new Error('I got stuck reading this. Check for a stray symbol.');
+                return out;
+            }
+
+            /* ---------------- number formatting ---------------- */
+            function toFraction(n) {
+                var a = Math.abs(n);
+                for (var d = 2; d <= 64; d++) {
+                    var num = a * d;
+                    if (Math.abs(num - Math.round(num)) < 1e-9) {
+                        return (n < 0 ? '-' : '') + Math.round(num) + '/' + d;
+                    }
+                }
+                return null;
+            }
+
+            function fmtNum(n) {
+                if (Math.abs(n - Math.round(n)) < EPS) return String(Math.round(n));
+                var f = toFraction(n);
+                if (f) return f;
+                return String(Math.round(n * 10000) / 10000);
+            }
+
+            function pretty(s) { return s.replace(/-/g, MINUS); }
+
+            function fmtSide(e) {
+                var parts = [];
+                if (Math.abs(e.a) > EPS) {
+                    var m = Math.abs(e.a), coef;
+                    if (Math.abs(m - 1) < EPS) coef = '';
+                    else {
+                        coef = fmtNum(m);
+                        if (coef.indexOf('/') >= 0) coef = '(' + coef + ')';
+                    }
+                    parts.push((e.a < 0 ? '-' : '') + coef + 'x');
+                }
+                if (Math.abs(e.b) > EPS || parts.length === 0) {
+                    if (parts.length === 0) parts.push(fmtNum(e.b));
+                    else parts.push((e.b < 0 ? '- ' : '+ ') + fmtNum(Math.abs(e.b)));
+                }
+                return pretty(parts.join(' '));
+            }
+
+            function fmtEq(left, right) { return fmtSide(left) + ' = ' + fmtSide(right); }
+
+            function evalAt(e, x) { return e.a * x + e.b; }
+
+            /* classify: returns {type:'one'|'none'|'all', x:number|null} */
+            function classify(left, right) {
+                var a = left.a - right.a, b = right.b - left.b;
+                if (Math.abs(a) > EPS) return { type: 'one', x: b / a };
+                if (Math.abs(b) < EPS) return { type: 'all', x: null };
+                return { type: 'none', x: null };
+            }
+
+            var TYPE_WORD = {
+                one: 'exactly one solution',
+                none: 'no solution',
+                all: 'infinitely many solutions'
+            };
+
+            /* ---------------- tiny helpers ---------------- */
+            function $(id) { return document.getElementById(id); }
+
+            function say(el, msg, kind) {
+                if (!el) return;
+                el.className = 'fb' + (kind ? ' ' + kind : '');
+                el.innerHTML = msg;
+            }
+
+            function save(key, val) {
+                try { localStorage.setItem(STORE + key, val); } catch (e) { /* private mode */ }
+            }
+
+            function load(key) {
+                try { return localStorage.getItem(STORE + key); } catch (e) { return null; }
+            }
+
+            function drop(key) {
+                try { localStorage.removeItem(STORE + key); } catch (e) { /* ignore */ }
+            }
+
+            /* ---------------- balance lab ---------------- */
+            function buildLab(root) {
+                var id = root.getAttribute('data-lab');
+                var rawL = root.getAttribute('data-left');
+                var rawR = root.getAttribute('data-right');
+                var needsSimplify = root.getAttribute('data-simplify') === 'yes';
+
+                var start = { left: parseLinear(rawL), right: parseLinear(rawR) };
+                var history = [];
+                var simplified = !needsSimplify;
+
+                root.innerHTML =
+                    '<p class="lab-head">Equation Balance Lab</p>' +
+                    '<div class="eq-display" id="lab-eq-' + id + '"></div>' +
+                    '<div class="lab-controls">' +
+                    (needsSimplify ? '<button class="esc-btn" type="button" data-act="simp">Distribute &amp; combine like terms</button>' : '') +
+                    '<select aria-label="operation"><option value="+">add</option><option value="-">subtract</option>' +
+                    '<option value="*">multiply by</option><option value="/">divide by</option></select>' +
+                    '<input type="text" placeholder="3x or 15" aria-label="amount">' +
+                    '<button class="esc-btn" type="button" data-act="apply">Do it to both sides</button>' +
+                    '<button class="esc-btn ghost" type="button" data-act="undo">Undo</button>' +
+                    '<button class="esc-btn ghost" type="button" data-act="reset">Start over</button>' +
+                    '</div>' +
+                    '<div class="fb" id="lab-fb-' + id + '"></div>' +
+                    '<ul class="lab-hist" id="lab-hist-' + id + '"></ul>';
+
+                var eqEl = $('lab-eq-' + id);
+                var fbEl = $('lab-fb-' + id);
+                var histEl = $('lab-hist-' + id);
+                var opSel = root.querySelector('select');
+                var amtEl = root.querySelector('input');
+                var simpBtn = root.querySelector('[data-act="simp"]');
+
+                function current() {
+                    return history.length ? history[history.length - 1] : { left: start.left, right: start.right, note: '' };
+                }
+
+                function render() {
+                    var c = current();
+                    if (!simplified) {
+                        eqEl.textContent = pretty(rawL) + ' = ' + pretty(rawR);
+                    } else {
+                        eqEl.textContent = fmtEq(c.left, c.right);
+                    }
+                    histEl.innerHTML = history.map(function (h) {
+                        return '<li><span class="mv">' + h.note + '</span> &rarr; ' + fmtEq(h.left, h.right) + '</li>';
+                    }).join('');
+                    if (simpBtn) simpBtn.disabled = simplified;
+                }
+
+                function lock(msg) {
+                    say(fbEl, msg, 'info');
+                }
+
+                root.addEventListener('click', function (ev) {
+                    var btn = ev.target.closest('button[data-act]');
+                    if (!btn) return;
+                    var act = btn.getAttribute('data-act');
+
+                    if (act === 'simp') {
+                        simplified = true;
+                        say(fbEl, 'Both sides are distributed and combined. Now the two sides are lined up so you can compare them.', 'info');
+                        render();
+                        return;
+                    }
+
+                    if (act === 'undo') {
+                        if (!history.length) { lock('There is nothing to undo yet.'); return; }
+                        history.pop();
+                        say(fbEl, '', '');
+                        render();
+                        return;
+                    }
+
+                    if (act === 'reset') {
+                        history = [];
+                        simplified = !needsSimplify;
+                        amtEl.value = '';
+                        say(fbEl, '', '');
+                        render();
+                        return;
+                    }
+
+                    if (act !== 'apply') return;
+
+                    if (!simplified) {
+                        lock('Distribute and combine like terms first &mdash; the parentheses are hiding what is really on each side.');
+                        return;
+                    }
+
+                    var op = opSel.value;
+                    var raw = amtEl.value;
+                    if (!raw || !raw.trim()) { lock('Type what you want to add, subtract, multiply, or divide by.'); return; }
+
+                    var amount;
+                    try { amount = parseLinear(raw); }
+                    catch (e) { say(fbEl, e.message, 'no'); return; }
+
+                    var c = current(), nl, nr, note;
+                    try {
+                        if (op === '+') { nl = add(c.left, amount); nr = add(c.right, amount); note = 'add ' + fmtSide(amount) + ' to both sides'; }
+                        else if (op === '-') { nl = sub(c.left, amount); nr = sub(c.right, amount); note = 'subtract ' + fmtSide(amount) + ' from both sides'; }
+                        else if (op === '*') { nl = mul(c.left, amount); nr = mul(c.right, amount); note = 'multiply both sides by ' + fmtSide(amount); }
+                        else { nl = div(c.left, amount); nr = div(c.right, amount); note = 'divide both sides by ' + fmtSide(amount); }
+                    } catch (e) {
+                        say(fbEl, e.message, 'no');
+                        return;
+                    }
+
+                    history.push({ left: nl, right: nr, note: note });
+                    amtEl.value = '';
+                    render();
+
+                    /* describe the state without naming the next move */
+                    if (Math.abs(nl.a) < EPS && Math.abs(nr.a) < EPS) {
+                        say(fbEl, 'Every x is gone. What is left is just a statement about numbers &mdash; read it and decide whether it is true.', 'info');
+                    } else if (Math.abs(nl.a - 1) < EPS && Math.abs(nl.b) < EPS && Math.abs(nr.a) < EPS) {
+                        say(fbEl, 'x now stands alone. Whatever is on the right is the value that makes the original equation true.', 'ok');
+                    } else {
+                        say(fbEl, 'Both sides changed the same way, so the equation still says the same thing.', '');
+                    }
+                });
+
+                amtEl.addEventListener('keydown', function (ev) {
+                    if (ev.key === 'Enter') { ev.preventDefault(); root.querySelector('[data-act="apply"]').click(); }
+                });
+
+                render();
+            }
+
+            /* ---------------- lock 4 equation builders ---------------- */
+            var BUILD_TEXT = {
+                A: { title: 'Challenge A', ask: 'Create an equation that has exactly <strong>ONE</strong> solution.', extra: null },
+                B: { title: 'Challenge B', ask: 'Create an equation that has <strong>NO</strong> solution.', extra: 'What happens when you simplify?' },
+                C: { title: 'Challenge C', ask: 'Create an equation that is true for <strong>EVERY</strong> value of x.', extra: 'What happens when you simplify?' }
+            };
+
+            var builtOK = { A: false, B: false, C: false };
+            var challengeTests = {};
+
+            function buildChallenge(root) {
+                var key = root.getAttribute('data-build');
+                var want = root.getAttribute('data-want');
+                var t = BUILD_TEXT[key];
+
+                root.className = 'lab';
+                root.innerHTML =
+                    '<p class="lab-head">' + t.title + '</p>' +
+                    '<p style="margin:.2rem 0 .6rem">' + t.ask + '</p>' +
+                    '<div class="ans-row">' +
+                    '<label for="eqin-' + key + '">Equation:</label>' +
+                    '<input type="text" id="eqin-' + key + '" placeholder="your equation, with an = sign" style="flex:1;min-width:14rem">' +
+                    '<button class="esc-btn" type="button" data-test="' + key + '">Test it</button>' +
+                    '</div>' +
+                    '<div class="fb" id="eqfb-' + key + '"></div>' +
+                    (t.extra ? '<label class="write-label" for="eqwhy-' + key + '">' + t.extra + '</label>' +
+                        '<textarea class="esc-write" id="eqwhy-' + key + '" rows="2"></textarea>' : '');
+
+                var input = $('eqin-' + key);
+                var fb = $('eqfb-' + key);
+
+                function test() {
+                    var raw = input.value;
+                    if (!raw || !raw.trim()) { say(fb, 'Type an equation first, including the equals sign.', 'info'); return; }
+                    var halves = raw.split('=');
+                    if (halves.length !== 2) {
+                        say(fb, 'An equation needs exactly one equals sign. Yours has ' + (halves.length - 1) + '.', 'no');
+                        builtOK[key] = false; updateCodes(); return;
+                    }
+                    var left, right;
+                    try {
+                        left = parseLinear(halves[0]);
+                        right = parseLinear(halves[1]);
+                    } catch (e) {
+                        say(fb, e.message, 'no');
+                        builtOK[key] = false; updateCodes(); return;
+                    }
+
+                    var r = classify(left, right);
+                    var simp = fmtEq(left, right);
+                    var line = 'Simplified, your equation says <strong>' + simp + '</strong>.<br>';
+
+                    if (r.type === 'one') {
+                        line += 'The x terms do not match, so one value survives: x = ' + pretty(fmtNum(r.x)) + '. That is <strong>' + TYPE_WORD.one + '</strong>.';
+                    } else if (r.type === 'all') {
+                        line += 'Both sides are identical, so the statement is true no matter what x is: <strong>' + TYPE_WORD.all + '</strong>.';
+                    } else {
+                        line += 'The x terms match but the numbers do not, so it reduces to a false statement: <strong>' + TYPE_WORD.none + '</strong>.';
+                    }
+
+                    if (r.type === want) {
+                        builtOK[key] = true;
+                        say(fb, line + '<br>That is what ' + t.title + ' asked for.', 'ok');
+                    } else {
+                        builtOK[key] = false;
+                        say(fb, line + '<br>' + t.title + ' asked for ' + TYPE_WORD[want] + '. Adjust it and test again.', 'no');
+                    }
+                    save('built-' + key, builtOK[key] ? '1' : '');
+                    updateCodes();
+                }
+
+                challengeTests[key] = test;
+                root.querySelector('[data-test]').addEventListener('click', test);
+                input.addEventListener('keydown', function (ev) {
+                    if (ev.key === 'Enter') { ev.preventDefault(); test(); }
+                });
+            }
+
+            /* ---------------- lock state ---------------- */
+            var solved = { 1: false, 2: false, 3: false, 4: false };
+
+            function updateCodes() {
+                solved[4] = builtOK.A && builtOK.B && builtOK.C;
+                for (var n = 1; n <= 4; n++) {
+                    var el = $('code' + n);
+                    if (el) {
+                        el.textContent = solved[n] ? CODES[n] : '▮';
+                        el.className = 'lockcode' + (solved[n] ? ' open' : '');
+                    }
+                    var pill = document.querySelector('[data-rail="' + n + '"]');
+                    if (pill) pill.className = solved[n] ? 'done' : '';
+                    save('solved' + n, solved[n] ? '1' : '');
+                }
+            }
+
+            /* ---------------- choice buttons ---------------- */
+            var picks = {};
+
+            document.querySelectorAll('[data-pick]').forEach(function (row) {
+                var name = row.getAttribute('data-pick');
+                row.addEventListener('click', function (ev) {
+                    var b = ev.target.closest('button[data-val]');
+                    if (!b) return;
+                    picks[name] = b.getAttribute('data-val');
+                    row.querySelectorAll('button').forEach(function (x) { x.className = 'choice'; });
+                    b.className = 'choice picked';
+                    save('pick-' + name, picks[name]);
+                });
+            });
+
+            function restorePick(name) {
+                var v = load('pick-' + name);
+                if (!v) return;
+                var row = document.querySelector('[data-pick="' + name + '"]');
+                if (!row) return;
+                var b = row.querySelector('[data-val="' + v + '"]');
+                if (!b) return;
+                picks[name] = v;
+                b.className = 'choice picked';
+            }
+
+            /* ---------------- checkers ---------------- */
+            var L1 = { left: parseLinear('7x - 15'), right: parseLinear('3x + 9') };
+            var L3 = { left: parseLinear('3(2x + 4) - 2x'), right: parseLinear('4x + 12') };
+
+            function checkLock1() {
+                var fb = $('l1-fb'), sub = $('l1-sub');
+                var raw = ($('l1-x').value || '').replace(/^\s*x\s*=\s*/i, '');
+                if (!raw.trim()) { say(fb, 'Put a value for x in the box first.', 'info'); say(sub, '', ''); return; }
+
+                var v;
+                try { v = parseLinear(raw); }
+                catch (e) { say(fb, e.message, 'no'); return; }
+                if (Math.abs(v.a) > EPS) { say(fb, 'Lock 1 wants a number, not an expression with x in it.', 'no'); return; }
+
+                var x = v.b;
+                var lv = evalAt(L1.left, x), rv = evalAt(L1.right, x);
+                var shown = pretty(fmtNum(x));
+
+                say(sub,
+                    'Left side: 7(' + shown + ') ' + MINUS + ' 15 = ' + pretty(fmtNum(lv)) + '<br>' +
+                    'Right side: 3(' + shown + ') + 9 = ' + pretty(fmtNum(rv)) + '<br>' +
+                    (Math.abs(lv - rv) < EPS
+                        ? 'The two sides match, so x = ' + shown + ' really does make the equation true.'
+                        : 'The two sides do not match, so x = ' + shown + ' does not make the equation true.'),
+                    Math.abs(lv - rv) < EPS ? 'ok' : 'no');
+
+                if (Math.abs(lv - rv) < EPS) {
+                    solved[1] = true;
+                    say(fb, 'Lock 1 opens. Your value checks out in the original equation &mdash; that is the proof, not the answer key.', 'ok');
+                } else {
+                    solved[1] = false;
+                    say(fb, 'Not yet. Look at the substitution below: the two sides land on different numbers.', 'no');
+                }
+                updateCodes();
+            }
+
+            function checkLock2() {
+                var fb = $('l2-fb');
+                var tf = picks['l2-tf'], any = picks['l2-any'], cls = picks['l2-class'];
+                if (!tf || !any || !cls) { say(fb, 'Answer all three steps, then check.', 'info'); return; }
+
+                var msgs = [];
+                var allRight = true;
+                if (tf !== 'false') { allRight = false; msgs.push('Step 1: simplify all the way down in the lab. Both sides end with 10x, and what is left over is 10 = 18.'); }
+                if (any !== 'no') { allRight = false; msgs.push('Step 2: if 10 = 18 is false, no choice of x can rescue it. Try a few values and see.'); }
+                if (cls !== 'none') { allRight = false; msgs.push('Step 3: an equation no value of x can satisfy is classified by how many solutions it has.'); }
+
+                if (allRight) {
+                    solved[2] = true;
+                    say(fb, 'Lock 2 opens. The false alarm was real: the x terms cancel and leave 10 = 18, which is never true, so the equation has no solution.', 'ok');
+                } else {
+                    solved[2] = false;
+                    say(fb, msgs.join('<br>'), 'no');
+                }
+                updateCodes();
+            }
+
+            function checkLock3() {
+                var fb = $('l3-fb');
+                var stmt = ($('l3-stmt').value || '').replace(/\s/g, '');
+                var tf = picks['l3-tf'], cls = picks['l3-class'];
+                if (!stmt || !tf || !cls) { say(fb, 'Fill in all three steps, then check.', 'info'); return; }
+
+                var msgs = [], allRight = true;
+                if (!/^12=12$/.test(stmt.replace(/−/g, '-'))) {
+                    allRight = false;
+                    msgs.push('Step 1: keep going in the lab until every x is gone. Write down exactly the statement that is left.');
+                }
+                if (tf !== 'true') { allRight = false; msgs.push('Step 2: is the leftover statement a true one or a false one?'); }
+                if (cls !== 'all') { allRight = false; msgs.push('Step 3: if the statement is true without x appearing at all, think about how many values of x are allowed.'); }
+
+                if (allRight) {
+                    solved[3] = true;
+                    say(fb, 'Lock 3 opens. Both sides were the same expression in disguise, so 12 = 12 is left. That is true regardless of x, so every value of x is a solution.', 'ok');
+                } else {
+                    solved[3] = false;
+                    say(fb, msgs.join('<br>'), 'no');
+                }
+                updateCodes();
+            }
+
+            function tryLock3(x) {
+                var fb = $('l3-tryfb');
+                var lv = evalAt(L3.left, x), rv = evalAt(L3.right, x);
+                var s = pretty(fmtNum(x));
+                say(fb,
+                    'x = ' + s + '<br>' +
+                    'Left: 3(2&middot;' + s + ' + 4) ' + MINUS + ' 2&middot;' + s + ' = ' + pretty(fmtNum(lv)) + '<br>' +
+                    'Right: 4&middot;' + s + ' + 12 = ' + pretty(fmtNum(rv)) + '<br>' +
+                    (Math.abs(lv - rv) < EPS ? 'Equal again. Try to find one that is not.' : 'These do not match.'),
+                    Math.abs(lv - rv) < EPS ? 'ok' : 'no');
+            }
+
+            function checkFinal() {
+                var fb = $('final-fb');
+                var entered = ['f1', 'f2', 'f3', 'f4'].map(function (i) { return ($(i).value || '').trim(); }).join('');
+                if (entered.length < 4) { say(fb, 'All four digits, please.', 'info'); return; }
+
+                if (entered === FINAL) {
+                    say(fb, '', '');
+                    $('escaped').hidden = false;
+                    $('escaped').innerHTML =
+                        '<div class="escaped-banner">WE ESCAPED.<br><br>' +
+                        'One solution, no solution, infinitely many &mdash; you did not just solve three equations, ' +
+                        'you sorted them. Every linear equation you will ever meet lands in one of those three rooms.</div>';
+                    $('escaped').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    $('escaped').hidden = true;
+                    var open = [1, 2, 3, 4].filter(function (n) { return solved[n]; });
+                    say(fb, 'The door does not budge. ' +
+                        (open.length ? 'Locks open so far: ' + open.join(', ') + '. Work the ones that are still dark.'
+                            : 'No locks are open yet &mdash; start with Clue I.'), 'no');
+                }
+            }
+
+            document.querySelectorAll('[data-check]').forEach(function (b) {
+                b.addEventListener('click', function () {
+                    var k = b.getAttribute('data-check');
+                    if (k === 'l1') checkLock1();
+                    else if (k === 'l2') checkLock2();
+                    else if (k === 'l3') checkLock3();
+                    else if (k === 'final') checkFinal();
+                    else if (k === 'l3try') {
+                        var raw = $('l3-try').value;
+                        try {
+                            var v = parseLinear(raw);
+                            if (Math.abs(v.a) > EPS) { say($('l3-tryfb'), 'Pick a number, not an expression with x.', 'no'); return; }
+                            tryLock3(v.b);
+                        } catch (e) { say($('l3-tryfb'), e.message, 'no'); }
+                    } else if (k === 'l3rand') {
+                        var r = Math.floor(Math.random() * 201) - 100;
+                        $('l3-try').value = String(r);
+                        tryLock3(r);
+                    }
+                });
+            });
+
+            /* advance through the four final-code boxes as you type */
+            ['f1', 'f2', 'f3', 'f4'].forEach(function (id, i, arr) {
+                $(id).addEventListener('input', function () {
+                    if ($(id).value && i < arr.length - 1) $(arr[i + 1]).focus();
+                });
+            });
+
+            /* ---------------- start up ---------------- */
+            /* the labs and the Lock 4 builders write their own markup, so they are
+               built before anything goes looking for the fields inside them */
+            document.querySelectorAll('.lab[data-lab]').forEach(buildLab);
+            document.querySelectorAll('.lab-build').forEach(buildChallenge);
+            ['l2-tf', 'l2-any', 'l2-class', 'l3-tf', 'l3-class'].forEach(restorePick);
+
+            for (var n = 1; n <= 4; n++) solved[n] = load('solved' + n) === '1';
+            ['A', 'B', 'C'].forEach(function (k) { builtOK[k] = load('built-' + k) === '1'; });
+
+            /* ---------------- typed answers persist ---------------- */
+            var typed = document.querySelectorAll('textarea.esc-write, .esc-box input[type="text"], .code-slots input');
+            typed.forEach(function (el) {
+                if (!el.id) return;
+                var v = load('t-' + el.id);
+                if (v !== null) el.value = v;
+                el.addEventListener('input', function () { save('t-' + el.id, el.value); });
+            });
+
+            /* a restored Lock 4 equation gets re-tested so its verdict comes back too */
+            ['A', 'B', 'C'].forEach(function (k) {
+                var el = $('eqin-' + k);
+                if (el && el.value.trim() && challengeTests[k]) challengeTests[k]();
+            });
+
+            updateCodes();
+
+            $('reset-all').addEventListener('click', function () {
+                if (!window.confirm('Clear every answer you have typed on this page?')) return;
+                typed.forEach(function (el) { if (el.id) { drop('t-' + el.id); el.value = ''; } });
+                ['l2-tf', 'l2-any', 'l2-class', 'l3-tf', 'l3-class'].forEach(function (nm) {
+                    drop('pick-' + nm);
+                    delete picks[nm];
+                    var row = document.querySelector('[data-pick="' + nm + '"]');
+                    if (row) row.querySelectorAll('button').forEach(function (x) { x.className = 'choice'; });
+                });
+                ['A', 'B', 'C'].forEach(function (k) { drop('built-' + k); builtOK[k] = false; });
+                for (var i = 1; i <= 4; i++) { drop('solved' + i); solved[i] = false; }
+                document.querySelectorAll('.fb').forEach(function (f) { f.className = 'fb'; f.innerHTML = ''; });
+                document.querySelectorAll('.lab[data-lab] [data-act="reset"]').forEach(function (b) { b.click(); });
+                $('escaped').hidden = true;
+                updateCodes();
+            });
+        })();
+    </script>
+</body>
+
+</html>
