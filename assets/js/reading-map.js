@@ -1,7 +1,7 @@
 /* ============================================================
    reading-map.js
    Reader controls, line guide, and the pattern -> strategy
-   matching for 499/fall-2026/reading-map.html.
+   matching for resources/dyslexia-and-studying.html.
 
    All state is per-browser (localStorage). Nothing is sent
    anywhere: a student's answers about their own reading stay
@@ -152,7 +152,7 @@
     if (!yes.length && !some.length) {
       summary.textContent = "Mark some patterns above and a description will be written here.";
     } else {
-      var parts = ["I'm an engineering student and I'd like to talk about how I read."];
+      var parts = ["I'm a university student and I'd like to talk about how I read."];
       if (yes.length) {
         parts.push("These describe me consistently: " +
           yes.map(function (k) { return SENT[k]; }).join("; ") + ".");

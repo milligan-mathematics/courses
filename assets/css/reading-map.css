@@ -1,6 +1,6 @@
 /* ============================================================
    reading-map.css
-   Scoped styles for the dyslexia reading-patterns page.
+   Scoped styles for resources/dyslexia-and-studying.html.
    Everything lives under .rm so it cannot leak into the rest
    of the site. The site-wide reset zeroes all margins, so all
    spacing here is set explicitly via flex gap.
