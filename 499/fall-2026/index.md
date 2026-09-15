@@ -44,6 +44,16 @@ foundation.
   <a class="day-card" href="logistic-04.html"><span class="n">Session 4</span><span class="t">Judging a Rare-Event Model</span></a>
 </div>
 
+## Study support
+
+<div class="day-grid">
+  <a class="day-card" href="reading-map.html"><span class="n">Reading</span><span class="t">The Engineer's Reading Map</span></a>
+</div>
+
+<p style="font-size:0.95rem;color:#6E6E6E">Not about logistic regression. Dyslexia is not one thing — it comes
+in patterns, and which pattern you have changes which study techniques actually help. Eight short self-checks,
+then strategies aimed at the specific problems dense technical reading creates. Open to anyone who wants it.</p>
+
 ## Capstone
 
 Write up the careful baseline — data handling, model specification, diagnostics, metric justification,
