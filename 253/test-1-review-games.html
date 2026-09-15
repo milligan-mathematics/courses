@@ -1,0 +1,2057 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test 1 Review Games - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        /* ---------- shell ---------- */
+        .prompt-box {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .prompt-box h3 {
+            margin-top: 0;
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+
+        .note {
+            color: var(--color-mountain-gray, #6E6E6E);
+            font-size: 0.92rem;
+        }
+
+        button {
+            font: inherit;
+            font-weight: 600;
+            padding: 0.55rem 1.15rem;
+            border-radius: 6px;
+            border: 1px solid var(--color-primary, #F36E24);
+            background: var(--color-primary, #F36E24);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+        }
+
+        button:hover:not(:disabled) {
+            background: var(--color-primary-dark, #CD5920);
+            border-color: var(--color-primary-dark, #CD5920);
+        }
+
+        button:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
+
+        button.ghost {
+            background: #fff;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        button.ghost:hover:not(:disabled) {
+            background: #fff5ef;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        /* ---------- scoreboard ---------- */
+        .scorebar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 2rem;
+            align-items: center;
+            padding: 0.9rem 1.25rem;
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
+        }
+
+        .stat .k {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .stat .v {
+            font-size: 1.35rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat .v.hot {
+            color: var(--color-primary, #F36E24);
+        }
+
+        .bar-wrap {
+            flex: 1 1 160px;
+            min-width: 140px;
+        }
+
+        .bar {
+            height: 10px;
+            border-radius: 999px;
+            background: #eceef1;
+            overflow: hidden;
+        }
+
+        .bar > span {
+            display: block;
+            height: 100%;
+            width: 0;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #F9A01B, #F36E24);
+            transition: width 0.35s ease;
+        }
+
+        /* ---------- stage map ---------- */
+        .map {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .stage {
+            text-align: left;
+            padding: 1rem 1.1rem;
+            border-radius: 8px;
+            border: 1px solid #e3e6ea;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+        }
+
+        .stage:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.09);
+            border-color: var(--color-primary, #F36E24);
+            background: #fff;
+        }
+
+        .stage .badge {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .stage .nm {
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        .stage .sub {
+            font-size: 0.85rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .stage .res {
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-top: 0.2rem;
+        }
+
+        .stage.done {
+            border-color: var(--color-accent-green, #008552);
+            background: #f4fbf7;
+        }
+
+        .stage.done .res {
+            color: var(--color-accent-green, #008552);
+        }
+
+        .stage.current {
+            border-color: var(--color-primary, #F36E24);
+            box-shadow: 0 0 0 3px rgba(243, 110, 36, 0.14);
+        }
+
+        /* ---------- question card ---------- */
+        .qhead {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .qhead .rnd {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: var(--color-primary, #F36E24);
+        }
+
+        .qhead .cnt {
+            font-size: 0.8rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .qtext {
+            font-size: 1.12rem;
+            line-height: 1.55;
+            margin: 0.35rem 0 1.1rem;
+        }
+
+        .qtext code {
+            background: #f2f4f6;
+            padding: 0.08em 0.35em;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        .figbox {
+            margin: 0 0 1.2rem;
+            padding: 1rem;
+            background: #fafbfc;
+            border: 1px solid #eceef1;
+            border-radius: 8px;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .figbox svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* choices */
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .choice {
+            text-align: left;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #dde1e6;
+            background: #fff;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            line-height: 1.5;
+            transition: border-color 0.12s ease, background 0.12s ease;
+        }
+
+        .choice:hover:not(:disabled) {
+            border-color: var(--color-primary, #F36E24);
+            background: #fffaf6;
+        }
+
+        .choice .ltr {
+            flex: 0 0 auto;
+            width: 1.6rem;
+            height: 1.6rem;
+            border-radius: 50%;
+            background: #eceef1;
+            color: #444;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: grid;
+            place-items: center;
+        }
+
+        .choice.sel {
+            border-color: var(--color-primary, #F36E24);
+            background: #fff3ea;
+        }
+
+        .choice.sel .ltr {
+            background: var(--color-primary, #F36E24);
+            color: #fff;
+        }
+
+        .choice.right {
+            border-color: var(--color-accent-green, #008552);
+            background: #f0faf5;
+        }
+
+        .choice.right .ltr {
+            background: var(--color-accent-green, #008552);
+            color: #fff;
+        }
+
+        .choice.wrong {
+            border-color: #c0392b;
+            background: #fdf3f2;
+        }
+
+        .choice.wrong .ltr {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        /* numeric inputs */
+        .fields {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .field label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .field input {
+            font: inherit;
+            font-size: 1.1rem;
+            padding: 0.5rem 0.7rem;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            width: 9rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .field input:focus {
+            outline: 2px solid rgba(243, 110, 36, 0.35);
+            border-color: var(--color-primary, #F36E24);
+        }
+
+        .field input.right {
+            border-color: var(--color-accent-green, #008552);
+            background: #f0faf5;
+        }
+
+        .field input.wrong {
+            border-color: #c0392b;
+            background: #fdf3f2;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            align-items: center;
+        }
+
+        /* feedback */
+        .fb {
+            margin-top: 1.2rem;
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            border-left: 4px solid #ccc;
+            background: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        .fb.good {
+            border-left-color: var(--color-accent-green, #008552);
+            background: #f2faf6;
+        }
+
+        .fb.bad {
+            border-left-color: #c0392b;
+            background: #fdf4f3;
+        }
+
+        .fb.near {
+            border-left-color: var(--color-accent-sunrise, #F9A01B);
+            background: #fffaf0;
+        }
+
+        .fb .hd {
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .fb p {
+            margin: 0.5rem 0 0;
+        }
+
+        .fb .why {
+            margin-top: 0.7rem;
+            padding-top: 0.7rem;
+            border-top: 1px dashed #d8dce1;
+            font-size: 0.95rem;
+        }
+
+        .pts {
+            font-weight: 700;
+            color: var(--color-accent-green, #008552);
+            white-space: nowrap;
+        }
+
+        /* results */
+        .resultgrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.9rem;
+            margin: 1.2rem 0 1.5rem;
+        }
+
+        .rcard {
+            border: 1px solid #e3e6ea;
+            border-radius: 8px;
+            padding: 0.9rem 1rem;
+            background: #fff;
+        }
+
+        .rcard .nm {
+            font-weight: 700;
+            margin-bottom: 0.15rem;
+        }
+
+        .rcard .sc {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .rcard .tip {
+            font-size: 0.85rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+            margin-top: 0.3rem;
+        }
+
+        .rcard.weak {
+            border-color: var(--color-accent-sunrise, #F9A01B);
+            background: #fffaf0;
+        }
+
+        .bigscore {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--color-primary, #F36E24);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 560px) {
+            .scorebar {
+                position: static;
+                gap: 0.6rem 1.25rem;
+            }
+
+            .field input {
+                width: 7rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 253</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Test 1 Review Games</h1>
+            <p>Six stages, Chapters 8 &amp; 9 &mdash; factors, divisibility, decimals, patterns, equations, and
+                strip diagrams. Every run builds new problems, so you can take it as many times as you like.</p>
+        </div>
+    </header>
+
+    <main class="container page-content">
+
+        <div class="prompt-box" id="intro">
+            <h3>How this works</h3>
+            <ul>
+                <li>Six stages, 22 questions. Each stage drills one thing Test 1 will ask you to do.</li>
+                <li>You get <strong>two tries</strong> per question &mdash; 100 points on the first, 50 on the
+                    second.</li>
+                <li>Answer three in a row and your <strong>streak bonus</strong> starts stacking.</li>
+                <li>After every question you get the reasoning, not just the answer. That is the part that shows
+                    up on the test.</li>
+            </ul>
+            <p class="note">Nothing is saved or sent anywhere &mdash; refresh and you get a brand new set of
+                problems.</p>
+        </div>
+
+        <!-- scoreboard -->
+        <div class="scorebar" id="scorebar">
+            <div class="stat">
+                <span class="k">Score</span>
+                <span class="v" id="s-score">0</span>
+            </div>
+            <div class="stat">
+                <span class="k">Streak</span>
+                <span class="v" id="s-streak">0</span>
+            </div>
+            <div class="stat">
+                <span class="k">Correct</span>
+                <span class="v" id="s-correct">0 / 0</span>
+            </div>
+            <div class="bar-wrap">
+                <span class="k" style="font-size:0.7rem;font-weight:700;letter-spacing:0.08em;
+                    text-transform:uppercase;color:#6E6E6E;">Progress</span>
+                <div class="bar"><span id="s-bar"></span></div>
+            </div>
+        </div>
+
+        <!-- stage map -->
+        <section class="panel" id="mapPanel">
+            <h2>Pick a stage</h2>
+            <p class="note">Work straight through, or jump to whatever you feel shakiest on.</p>
+            <div class="map" id="map"></div>
+            <div class="actions">
+                <button id="btn-start">Start from the beginning</button>
+                <button class="ghost" id="btn-reset">New problem set</button>
+            </div>
+        </section>
+
+        <!-- question -->
+        <section class="panel hidden" id="qPanel">
+            <div class="qhead">
+                <span class="rnd" id="q-round"></span>
+                <span class="cnt" id="q-count"></span>
+            </div>
+            <div class="qtext" id="q-text"></div>
+            <div id="q-fig"></div>
+            <div id="q-body"></div>
+            <div class="actions">
+                <button id="btn-check">Check answer</button>
+                <button class="ghost hidden" id="btn-next">Next question</button>
+                <button class="ghost" id="btn-quit">Back to the map</button>
+            </div>
+            <div id="q-fb"></div>
+        </section>
+
+        <!-- results -->
+        <section class="panel hidden" id="rPanel">
+            <h2 id="r-title">Run complete</h2>
+            <div class="bigscore" id="r-score">0</div>
+            <p class="note" id="r-line"></p>
+            <div class="resultgrid" id="r-grid"></div>
+            <div id="r-advice"></div>
+            <div class="actions">
+                <button id="btn-again">Play again with new problems</button>
+                <button class="ghost" id="btn-map">Back to the map</button>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        'use strict';
+
+        /* =======================================================
+           small helpers
+           ======================================================= */
+        function ri(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+        function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+        function shuffle(a) {
+            a = a.slice();
+            for (var i = a.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var t = a[i]; a[i] = a[j]; a[j] = t;
+            }
+            return a;
+        }
+        function gcd(a, b) { while (b) { var t = b; b = a % b; a = t; } return a; }
+        function lcm(a, b) { return a / gcd(a, b) * b; }
+
+        function factorize(n) {
+            var out = [], d = 2;
+            while (d * d <= n) {
+                var e = 0;
+                while (n % d === 0) { n /= d; e++; }
+                if (e) out.push([d, e]);
+                d++;
+            }
+            if (n > 1) out.push([n, 1]);
+            return out;
+        }
+
+        /* renders [[2,3],[3,1]] as 2<sup>3</sup> &middot; 3 */
+        function facStr(pairs) {
+            return pairs.map(function (p) {
+                return p[1] === 1 ? String(p[0]) : p[0] + '<sup>' + p[1] + '</sup>';
+            }).join(' &middot; ');
+        }
+
+        function facFromMap(m) {
+            return facStr(Object.keys(m).map(Number).sort(function (a, b) { return a - b; })
+                .filter(function (p) { return m[p] > 0; })
+                .map(function (p) { return [p, m[p]]; }));
+        }
+
+        function valFromMap(m) {
+            var v = 1;
+            Object.keys(m).forEach(function (p) { v *= Math.pow(Number(p), m[p]); });
+            return v;
+        }
+
+        /* signed term helpers so equations read like a textbook, never "+ -3" */
+        function pm(k) { return (k < 0 ? ' &minus; ' : ' + ') + Math.abs(k); }
+        function coefX(c) {
+            if (c === 1) return 'x';
+            if (c === -1) return '&minus;x';
+            return (c < 0 ? '&minus;' : '') + Math.abs(c) + 'x';
+        }
+        function linear(a, b) {            /* ax + b */
+            if (a === 0) return String(b);
+            return coefX(a) + (b === 0 ? '' : pm(b));
+        }
+        function paren(a, b) {             /* (x + b) scaled by a: a(x + b) */
+            var inner = 'x' + (b === 0 ? '' : pm(b));
+            return (a === 1 ? '' : (a === -1 ? '&minus;' : a)) + '(' + inner + ')';
+        }
+
+        /* =======================================================
+           figure families for the pattern stage
+           Every family here has an ODD total for every n, which is
+           what makes the even/odd argument the shortcut it is.
+           ======================================================= */
+        var FAMILIES = [
+            {
+                key: 'cross',
+                a: 4, b: 1,                                  /* 4n + 1 */
+                name: 'plus sign',
+                cells: function (n) {
+                    var c = [[0, 0, 1]];
+                    for (var i = 1; i <= n; i++) {
+                        c.push([i, 0, 0]); c.push([-i, 0, 0]);
+                        c.push([0, i, 0]); c.push([0, -i, 0]);
+                    }
+                    return c;
+                },
+                build: 'one center square plus 4 arms, and in the <em>n</em>th figure each arm is ' +
+                    '<em>n</em> squares long',
+                pairing: 'the arms pair up &mdash; left with right, top with bottom &mdash; so the arms ' +
+                    'always use an even number of squares, and the single center square is left over'
+            },
+            {
+                key: 'ibeam',
+                a: 4, b: -1,                                 /* 4n - 1 */
+                name: 'I-beam',
+                cells: function (n) {
+                    var c = [[0, 0, 1]];
+                    for (var i = -(n - 1); i <= n - 1; i++) {
+                        c.push([i, -1, i === 0 ? 1 : 0]);
+                        c.push([i, 1, i === 0 ? 1 : 0]);
+                    }
+                    return c;
+                },
+                build: 'a top bar and a bottom bar, each 2<em>n</em> &minus; 1 squares wide, joined by a ' +
+                    'single square in the middle',
+                pairing: 'match each square in the top bar with the square directly below it in the bottom ' +
+                    'bar &mdash; they pair off exactly, and the one connecting square in the middle is left over'
+            },
+            {
+                key: 'stair',
+                a: 2, b: 1,                                  /* 2n + 1 */
+                name: 'two-row stack',
+                cells: function (n) {
+                    var c = [];
+                    for (var i = 0; i < n; i++) c.push([i, 0, 0]);
+                    for (var j = 0; j < n + 1; j++) c.push([j, 1, j === n ? 1 : 0]);
+                    return c;
+                },
+                build: 'a top row of <em>n</em> squares sitting on a bottom row of <em>n</em> + 1 squares',
+                pairing: 'pair every top square with the one directly beneath it &mdash; they match up ' +
+                    'perfectly, and the extra square on the end of the bottom row has no partner'
+            }
+        ];
+
+        function figureSVG(fam, ns) {
+            var S = 18, GAP = 26, PAD = 8;
+            var blocks = ns.map(function (n) {
+                var cells = fam.cells(n);
+                var xs = cells.map(function (c) { return c[0]; });
+                var ys = cells.map(function (c) { return c[1]; });
+                var minx = Math.min.apply(null, xs), maxx = Math.max.apply(null, xs);
+                var miny = Math.min.apply(null, ys), maxy = Math.max.apply(null, ys);
+                return {
+                    n: n, cells: cells, minx: minx, miny: miny,
+                    w: (maxx - minx + 1) * S, h: (maxy - miny + 1) * S
+                };
+            });
+            var totalW = blocks.reduce(function (s, b) { return s + b.w; }, 0) + GAP * (blocks.length - 1);
+            var maxH = Math.max.apply(null, blocks.map(function (b) { return b.h; }));
+            var W = totalW + PAD * 2, H = maxH + PAD * 2 + 20;
+
+            var out = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + Math.min(W, 640) +
+                '" role="img" aria-label="sequence of figures made of small squares">';
+            var x = PAD;
+            blocks.forEach(function (b) {
+                var offY = PAD + (maxH - b.h) / 2;
+                b.cells.forEach(function (c) {
+                    var cx = x + (c[0] - b.minx) * S;
+                    var cy = offY + (c[1] - b.miny) * S;
+                    out += '<rect x="' + cx + '" y="' + cy + '" width="' + S + '" height="' + S +
+                        '" fill="' + (c[2] ? '#f2f2f2' : '#bfbfbf') +
+                        '" stroke="#111" stroke-width="1.4"/>';
+                });
+                out += '<text x="' + (x + b.w / 2) + '" y="' + (PAD + maxH + 15) +
+                    '" text-anchor="middle" font-size="11" fill="#6E6E6E">' +
+                    ordinal(b.n) + '</text>';
+                x += b.w + GAP;
+            });
+            return out + '</svg>';
+        }
+
+        function ordinal(n) {
+            var s = ['th', 'st', 'nd', 'rd'], v = n % 100;
+            return n + (s[(v - 20) % 10] || s[v] || s[0]);
+        }
+
+        /* =======================================================
+           repeating-decimal helper: long division, exactly the way
+           the chapter does it
+           ======================================================= */
+        function decimalInfo(num, den) {
+            var seen = {}, digits = [], r = num % den, pos = 0, startRepeat = -1;
+            while (r !== 0) {
+                if (seen[r] !== undefined) { startRepeat = seen[r]; break; }
+                seen[r] = pos;
+                r *= 10;
+                digits.push(Math.floor(r / den));
+                r = r % den;
+                pos++;
+            }
+            return {
+                digits: digits,
+                terminates: startRepeat === -1,
+                preLen: startRepeat === -1 ? digits.length : startRepeat,
+                period: startRepeat === -1 ? 0 : digits.length - startRepeat
+            };
+        }
+
+        function nthDigit(num, den, n) {
+            var info = decimalInfo(num, den);
+            if (n <= info.digits.length) return info.digits[n - 1];
+            var k = (n - info.preLen - 1) % info.period;
+            return info.digits[info.preLen + k];
+        }
+
+        /* =======================================================
+           STAGE 1 - Factor Slide
+           ======================================================= */
+        function stageFactors() {
+            var qs = [];
+
+            /* --- 1. slide method on two concrete numbers --- */
+            (function () {
+                var pool = [2, 3, 5, 7, 11];
+                var shared = shuffle(pool).slice(0, 2);
+                var rest = pool.filter(function (p) { return shared.indexOf(p) < 0; });
+                var uA = pick(rest), uB = pick(rest.filter(function (p) { return p !== uA; }));
+
+                var A = {}, B = {};
+                A[shared[0]] = ri(1, 2); B[shared[0]] = ri(1, 2);
+                A[shared[1]] = 1; B[shared[1]] = 1;
+                A[uA] = 1; B[uB] = 1;
+
+                var a = valFromMap(A), b = valFromMap(B);
+                var g = gcd(a, b), l = lcm(a, b);
+
+                qs.push({
+                    prompt: 'Use the slide method to find the <strong>GCF</strong> and the <strong>LCM</strong> ' +
+                        'of <strong>' + a + '</strong> and <strong>' + b + '</strong>.',
+                    type: 'num2',
+                    labels: ['GCF', 'LCM'],
+                    answer: [g, l],
+                    explain: function () {
+                        var x = a, y = b, rows = [], divs = [];
+                        while (gcd(x, y) > 1) {
+                            var d = smallestPrimeFactor(gcd(x, y));
+                            rows.push(d + ' | ' + x + '  ' + y);
+                            divs.push(d);
+                            x /= d; y /= d;
+                        }
+                        return '<p>Peel off common factors until nothing is left to share:</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace;line-height:1.7">' +
+                            rows.join('<br>') + '<br>&nbsp;&nbsp;| ' + x + '&nbsp;&nbsp;' + y + '</p>' +
+                            '<p>The <strong>GCF is the product of the left column</strong>: ' +
+                            divs.join(' &middot; ') + ' = <strong>' + g + '</strong>.</p>' +
+                            '<p>The <strong>LCM is the left column times whatever is left on the bottom</strong>: ' +
+                            g + ' &middot; ' + x + ' &middot; ' + y + ' = <strong>' + l + '</strong>.</p>' +
+                            '<p class="why">Check: ' + a + ' &middot; ' + b + ' &divide; ' + g + ' = ' + l +
+                            '. That is the GCF &middot; LCM = <em>a</em> &middot; <em>b</em> relationship, ' +
+                            'and it is worth knowing on its own.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. GCF / LCM straight from prime factorizations --- */
+            (function () {
+                var p = shuffle([2, 3, 5, 7, 11, 13]).slice(0, 3);
+                var A = {}, B = {};
+                A[p[0]] = ri(2, 5); B[p[0]] = ri(1, 4);
+                while (A[p[0]] === B[p[0]]) B[p[0]] = ri(1, 4);
+                A[p[1]] = ri(1, 3); B[p[1]] = ri(1, 3);
+                while (A[p[1]] === B[p[1]]) B[p[1]] = ri(1, 3);
+                A[p[2]] = ri(1, 2); B[p[2]] = 0;              /* only in A */
+
+                var G = {}, L = {};
+                p.forEach(function (q) {
+                    G[q] = Math.min(A[q] || 0, B[q] || 0);
+                    L[q] = Math.max(A[q] || 0, B[q] || 0);
+                });
+                /* classic wrong answer: sweep in every prime you see, including the
+                   one that lives in only one of the two numbers */
+                var Gall = {};
+                p.forEach(function (q) { Gall[q] = G[q]; });
+                Gall[p[2]] = A[p[2]];
+
+                qs.push({
+                    prompt: 'Two numbers are already factored for you:<br><br>' +
+                        '<strong>A = ' + facFromMap(A) + '</strong> &nbsp;&nbsp;and&nbsp;&nbsp; ' +
+                        '<strong>B = ' + facFromMap(B) + '</strong><br><br>' +
+                        'Which is the <strong>GCF</strong> of A and B?',
+                    type: 'choice',
+                    choices: shuffle([
+                        { html: facFromMap(G), correct: true },
+                        { html: facFromMap(Gall), correct: false },
+                        { html: facFromMap(L), correct: false },
+                        { html: facFromMap(A) + ' &middot; ' + facFromMap(B), correct: false }
+                    ]),
+                    explain: function () {
+                        return '<p>A common factor has to divide <em>both</em> numbers, so for each prime you ' +
+                            'can only take as many copies as the <strong>stingier</strong> of the two numbers ' +
+                            'has &mdash; the <strong>smaller</strong> exponent.</p>' +
+                            '<p>GCF = ' + facFromMap(G) + ' = ' + valFromMap(G) + '</p>' +
+                            '<p class="why">The LCM is the mirror image: take the <strong>larger</strong> ' +
+                            'exponent of every prime that shows up in either number, giving ' +
+                            facFromMap(L) + '. A prime that appears in only one number still has to ride ' +
+                            'along in the LCM &mdash; but it can never be in the GCF.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. the "just multiply them" shortcut --- */
+            (function () {
+                var cop = pick([[4, 9], [5, 8], [7, 10], [9, 10], [3, 8], [5, 12]]);
+                var bad = pick([[6, 8], [4, 10], [9, 12], [6, 15], [8, 12], [10, 25]]);
+                var bad2 = pick([[6, 9], [4, 6], [10, 15], [12, 18]].filter(function (p) {
+                    return p[0] !== bad[0] || p[1] !== bad[1];
+                }));
+                var bad3 = pick([[2, 4], [3, 9], [5, 10], [7, 14]]);
+
+                qs.push({
+                    prompt: 'A student claims you can always find the LCM of two numbers by just ' +
+                        '<strong>multiplying them together</strong>. For which pair below does that ' +
+                        'shortcut actually give the correct LCM?',
+                    type: 'choice',
+                    choices: shuffle([
+                        { html: cop[0] + ' and ' + cop[1], correct: true },
+                        { html: bad[0] + ' and ' + bad[1], correct: false },
+                        { html: bad2[0] + ' and ' + bad2[1], correct: false },
+                        { html: bad3[0] + ' and ' + bad3[1], correct: false }
+                    ]),
+                    explain: function () {
+                        return '<p><strong>' + cop[0] + ' and ' + cop[1] + '</strong> &mdash; because ' +
+                            'GCF(' + cop[0] + ', ' + cop[1] + ') = 1. They share no factor, so nothing gets ' +
+                            'double counted and ' + cop[0] + ' &middot; ' + cop[1] + ' = ' +
+                            lcm(cop[0], cop[1]) + ' really is the LCM.</p>' +
+                            '<p>Take ' + bad[0] + ' and ' + bad[1] + ' instead: the product is ' +
+                            (bad[0] * bad[1]) + ', but the LCM is only <strong>' + lcm(bad[0], bad[1]) +
+                            '</strong>. Their GCF is ' + gcd(bad[0], bad[1]) + ', and the product overshoots ' +
+                            'by exactly that factor.</p>' +
+                            '<p class="why">The rule behind all of it: ' +
+                            '<strong>LCM(a, b) = a &middot; b &divide; GCF(a, b)</strong>. Multiplying only ' +
+                            'lands on the LCM when the GCF is 1 &mdash; that is, when the two numbers are ' +
+                            'relatively prime. Expect to have to say <em>when</em> it works, not just that ' +
+                            'it sometimes does.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. GCF or LCM? reading the situation --- */
+            (function () {
+                var scen = pick([
+                    {
+                        text: 'Hot dogs come in packs of ' + 0 + '', skip: true
+                    }
+                ]);
+                var lcmA = ri(6, 12), lcmB = ri(4, 9);
+                while (lcmA === lcmB) lcmB = ri(4, 9);
+                var g1 = ri(3, 8) * 4, g2 = ri(3, 8) * 6;
+
+                var isLCM = Math.random() < 0.5;
+                var body, ans;
+                if (isLCM) {
+                    body = 'Paper plates come in packs of <strong>' + lcmA + '</strong> and cups come in ' +
+                        'packs of <strong>' + lcmB + '</strong>. You want to buy whole packs of each and end ' +
+                        'up with exactly the same number of plates as cups, buying as few as possible.';
+                    ans = 'LCM';
+                } else {
+                    body = 'You have <strong>' + g1 + '</strong> red beads and <strong>' + g2 + '</strong> ' +
+                        'blue beads. You want to make identical bracelets, using every bead, with as many ' +
+                        'bracelets as you can.';
+                    ans = 'GCF';
+                }
+
+                qs.push({
+                    prompt: body + '<br><br>Does solving this require the <strong>GCF</strong> or the ' +
+                        '<strong>LCM</strong>?',
+                    type: 'choice',
+                    choices: shuffle([
+                        { html: 'Greatest common factor', correct: ans === 'GCF' },
+                        { html: 'Least common multiple', correct: ans === 'LCM' },
+                        { html: 'Neither &mdash; you just multiply the two numbers', correct: false },
+                        { html: 'Neither &mdash; you just add the two numbers', correct: false }
+                    ]),
+                    explain: function () {
+                        if (ans === 'LCM') {
+                            return '<p>You are counting <em>up</em> by ' + lcmA + 's and by ' + lcmB + 's and ' +
+                                'looking for the first number that appears in both lists. That is the ' +
+                                '<strong>least common multiple</strong>: ' + lcm(lcmA, lcmB) + '.</p>' +
+                                '<p class="why">The tell is that you are building bigger and bigger amounts ' +
+                                'and want the <em>smallest</em> one that works. Splitting a fixed amount into ' +
+                                'equal piles is the other story &mdash; that one is a GCF.</p>';
+                        }
+                        return '<p>You are <em>splitting</em> two fixed amounts into equal groups, so the ' +
+                            'number of bracelets has to divide both ' + g1 + ' and ' + g2 + '. The most you ' +
+                            'can make is the <strong>greatest common factor</strong>: ' + gcd(g1, g2) +
+                            ' bracelets, each with ' + (g1 / gcd(g1, g2)) + ' red and ' +
+                            (g2 / gcd(g1, g2)) + ' blue.</p>' +
+                            '<p class="why">The tell is that you are cutting a fixed pile into equal shares ' +
+                            'with nothing left over. Buying more and more until two amounts match up is the ' +
+                            'other story &mdash; that one is an LCM.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        function smallestPrimeFactor(n) {
+            for (var d = 2; d * d <= n; d++) if (n % d === 0) return d;
+            return n;
+        }
+
+        /* =======================================================
+           STAGE 2 - Divisibility Dojo
+           ======================================================= */
+        function stageDivisibility() {
+            var qs = [];
+
+            /* --- 1. spot the multiple of 9 --- */
+            (function () {
+                function mk(div9) {
+                    for (var t = 0; t < 400; t++) {
+                        var n = ri(1000, 9999);
+                        var ds = String(n).split('').reduce(function (s, c) { return s + (+c); }, 0);
+                        if (div9 && ds % 9 === 0) return n;
+                        if (!div9 && ds % 9 !== 0) return n;
+                    }
+                    return div9 ? 1008 : 1234;
+                }
+                var right = mk(true);
+                var wrongs = [];
+                while (wrongs.length < 3) {
+                    var w = mk(false);
+                    if (wrongs.indexOf(w) < 0 && w !== right) wrongs.push(w);
+                }
+                var dsum = function (n) {
+                    return String(n).split('').reduce(function (s, c) { return s + (+c); }, 0);
+                };
+                qs.push({
+                    prompt: 'Without dividing: which of these numbers is <strong>divisible by 9</strong>?',
+                    type: 'choice',
+                    choices: shuffle([{ html: String(right), correct: true }].concat(
+                        wrongs.map(function (w) { return { html: String(w), correct: false }; }))),
+                    explain: function () {
+                        var lines = [right].concat(wrongs).sort(function (a, b) { return a - b; })
+                            .map(function (n) {
+                                var s = dsum(n);
+                                return String(n) + ' &rarr; digits add to ' + s +
+                                    (s % 9 === 0 ? ' <strong>&#10003; divisible by 9</strong>' :
+                                        ' (not a multiple of 9)');
+                            }).join('<br>');
+                        return '<p>Add the digits and test the sum:</p><p>' + lines + '</p>' +
+                            '<p class="why">The answer is <strong>' + right + '</strong>, and ' +
+                            right + ' &divide; 9 = ' + (right / 9) + '. On the test you will also have to ' +
+                            'say <em>why</em> the rule works &mdash; every 100 is 99 + 1 and every 10 is ' +
+                            '9 + 1, so each bundle leaves exactly one behind and the leftovers are the digits.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. why is the test for 3 valid? --- */
+            (function () {
+                var n = ri(2, 9) * 100 + ri(1, 9) * 10 + ri(1, 9);
+                var d = String(n).split('').map(Number);
+                qs.push({
+                    prompt: 'You are explaining to a fourth grader <strong>why</strong> the divisibility test ' +
+                        'for 3 works, using <strong>' + n + '</strong> and base-ten bundles. Which explanation ' +
+                        'is actually the reason?',
+                    type: 'choice',
+                    choices: shuffle([
+                        {
+                            html: 'Each hundred is 99 + 1 and each ten is 9 + 1. The 99s and 9s split into ' +
+                                'groups of 3 perfectly, so the only leftovers are one per bundle &mdash; which ' +
+                                'is exactly the digit sum.',
+                            correct: true
+                        },
+                        {
+                            html: 'Because 3 is a prime number, and every divisibility test works for primes.',
+                            correct: false
+                        },
+                        {
+                            html: 'Because the last digit of a multiple of 3 is always 0, 3, 6, or 9.',
+                            correct: false
+                        },
+                        {
+                            html: 'Because adding digits always gives a smaller number, and smaller numbers ' +
+                                'are easier to divide by 3.',
+                            correct: false
+                        }
+                    ]),
+                    explain: function () {
+                        var s = d[0] + d[1] + d[2];
+                        return '<p>Write it out with ' + n + ':</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' +
+                            n + ' = ' + d[0] + '(99 + 1) + ' + d[1] + '(9 + 1) + ' + d[2] + '<br>' +
+                            '&nbsp;&nbsp;&nbsp;&nbsp;= (' + d[0] + '&middot;99 + ' + d[1] + '&middot;9) + (' +
+                            d[0] + ' + ' + d[1] + ' + ' + d[2] + ')</p>' +
+                            '<p>The first bracket is built entirely out of 99s and 9s, which are already ' +
+                            'multiples of 3, so it contributes nothing left over. Everything rides on the ' +
+                            'second bracket &mdash; the digit sum, ' + s + '.</p>' +
+                            '<p class="why">Notice this argument never mentions 3 being prime. It only uses ' +
+                            'the fact that 9 and 99 are multiples of 3. That is also why the same picture ' +
+                            'proves the rule for 9, and why there is no digit-sum rule for 7.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. divisibility by 4 --- */
+            (function () {
+                function mk(div4) {
+                    for (var t = 0; t < 400; t++) {
+                        var n = ri(10000, 99999);
+                        if (div4 && n % 4 === 0) return n;
+                        if (!div4 && n % 4 !== 0) return n;
+                    }
+                    return div4 ? 10000 : 10001;
+                }
+                var right = mk(true), wrongs = [];
+                while (wrongs.length < 3) {
+                    var w = mk(false);
+                    if (wrongs.indexOf(w) < 0) wrongs.push(w);
+                }
+                qs.push({
+                    prompt: 'Which of these is <strong>divisible by 4</strong>? (You should be able to do this ' +
+                        'by looking at two digits.)',
+                    type: 'choice',
+                    choices: shuffle([{ html: String(right), correct: true }].concat(
+                        wrongs.map(function (w) { return { html: String(w), correct: false }; }))),
+                    explain: function () {
+                        var last2 = right % 100;
+                        return '<p>Only the <strong>last two digits</strong> matter. For ' + right +
+                            ' they are <strong>' + String(last2).padStart(2, '0') + '</strong>, and ' +
+                            last2 + ' &divide; 4 = ' + (last2 / 4) + '.</p>' +
+                            '<p>Why you can ignore everything else: every hundred is divisible by 4 ' +
+                            '(100 = 4 &middot; 25), so all the hundreds, thousands and beyond split into ' +
+                            'groups of 4 with nothing left over. The only possible leftover lives in the ' +
+                            'last two digits.</p>' +
+                            '<p class="why">Same logic, different number: the rule for 8 looks at the last ' +
+                            '<em>three</em> digits, because 1000 = 8 &middot; 125. And the rule for 25 looks at ' +
+                            'the last two, because 100 = 25 &middot; 4.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. digit sum reasoning --- */
+            (function () {
+                var s = pick([12, 15, 21, 24, 33, 42]);      /* multiple of 3, never of 9 */
+                qs.push({
+                    prompt: 'A number you cannot see has digits that add up to <strong>' + s + '</strong>. ' +
+                        'What can you conclude?',
+                    type: 'choice',
+                    choices: shuffle([
+                        {
+                            html: 'It is divisible by 3, but <em>not</em> by 9.',
+                            correct: true
+                        },
+                        {
+                            html: 'It is divisible by both 3 and 9.',
+                            correct: false
+                        },
+                        {
+                            html: 'It is divisible by 9, but not necessarily by 3.',
+                            correct: false
+                        },
+                        {
+                            html: 'Nothing &mdash; you need to see the actual number.',
+                            correct: false
+                        }
+                    ]),
+                    explain: function () {
+                        return '<p>' + s + ' &divide; 3 = ' + (s / 3) + ', so the digit sum is a multiple of ' +
+                            '3 and the number is divisible by 3.</p>' +
+                            '<p>But ' + s + ' &divide; 9 = ' + (s / 9).toFixed(2) + ' &mdash; not a whole ' +
+                            'number. Since the digit-sum test for 9 works in both directions, a digit sum ' +
+                            'that is <em>not</em> a multiple of 9 guarantees the number is <em>not</em> ' +
+                            'divisible by 9.</p>' +
+                            '<p class="why">Worth noticing: every multiple of 9 is a multiple of 3, but not ' +
+                            'the other way round. A digit sum of ' + s + ' pins down exactly that middle case.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           STAGE 3 - Decimal Detective
+           ======================================================= */
+        function stageDecimals() {
+            var qs = [];
+
+            /* --- 1. the nth digit of a repeating decimal --- */
+            (function () {
+                var den = pick([7, 11, 13, 27, 37]);
+                var num = ri(1, den - 1);
+                while (gcd(num, den) !== 1) num = ri(1, den - 1);
+                var info = decimalInfo(num, den);
+                var n = pick([50, 64, 80, 100, 125, 150]);
+                var ans = nthDigit(num, den, n);
+                var blk = info.digits.slice(info.preLen, info.preLen + info.period).join('');
+
+                qs.push({
+                    prompt: 'What is the <strong>' + ordinal(n) + ' digit</strong> in the decimal expansion of ' +
+                        '<strong>' + num + '/' + den + '</strong>?<br>' +
+                        '<span class="note">(Count starting after the decimal point: the first digit is ' +
+                        info.digits[0] + '.)</span>',
+                    type: 'num1',
+                    labels: ['Digit'],
+                    answer: [ans],
+                    explain: function () {
+                        var r = n % info.period;
+                        var idx = r === 0 ? info.period : r;
+                        return '<p>' + num + ' &divide; ' + den + ' = 0.<span style="text-decoration:overline">' +
+                            blk + '</span>&hellip; &mdash; the block <strong>' + blk + '</strong> repeats, so ' +
+                            'the period is <strong>' + info.period + '</strong>.</p>' +
+                            '<p>' + n + ' &divide; ' + info.period + ' = ' + Math.floor(n / info.period) +
+                            ' remainder <strong>' + r + '</strong>. ' +
+                            (r === 0
+                                ? 'A remainder of 0 means you land exactly on the <em>last</em> digit of a ' +
+                                'block, which is ' + ans + '.'
+                                : 'So you go through ' + Math.floor(n / info.period) + ' whole blocks and ' +
+                                'then ' + r + ' more digits &mdash; the ' + ordinal(idx) + ' digit of the ' +
+                                'block, which is <strong>' + ans + '</strong>.') + '</p>' +
+                            '<p class="why">Why there has to be a repeating block at all: dividing by ' + den +
+                            ' can only ever produce remainders 1 through ' + (den - 1) + '. Once a remainder ' +
+                            'repeats, every digit after it repeats too &mdash; so the period can never be ' +
+                            'longer than ' + (den - 1) + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. terminate or repeat? --- */
+            (function () {
+                var termDen = pick([8, 16, 20, 25, 40, 50, 125]);
+                var repDen = pick([3, 6, 7, 9, 11, 12, 15]);
+                var useTerm = Math.random() < 0.5;
+                var den = useTerm ? termDen : repDen;
+                var num = ri(1, den - 1);
+                while (gcd(num, den) !== 1) num = ri(1, den - 1);
+                var f = factorize(den);
+
+                qs.push({
+                    prompt: 'Without doing the division: does the decimal representation of ' +
+                        '<strong>' + num + '/' + den + '</strong> terminate, or does it repeat forever?',
+                    type: 'choice',
+                    choices: shuffle([
+                        { html: 'It terminates', correct: useTerm },
+                        { html: 'It repeats forever', correct: !useTerm },
+                        { html: 'It is irrational, so it does neither', correct: false },
+                        { html: 'There is no way to tell without dividing', correct: false }
+                    ]),
+                    explain: function () {
+                        var fs = facStr(f);
+                        return '<p>' + den + ' = ' + fs + '.</p>' +
+                            (useTerm
+                                ? '<p>Every prime factor is a 2 or a 5, so you can scale the fraction up to a ' +
+                                'denominator that is a power of 10 &mdash; and anything over a power of 10 ' +
+                                '<strong>terminates</strong>.</p>'
+                                : '<p>There is a prime factor other than 2 and 5 in there, so you can never ' +
+                                'turn the denominator into a power of 10. The division has to keep producing ' +
+                                'remainders, and once one repeats the digits <strong>repeat forever</strong>.</p>') +
+                            '<p class="why">The rule, in lowest terms: a fraction terminates exactly when its ' +
+                            'denominator has no prime factors except 2 and 5. Everything else repeats. And ' +
+                            'either way the number is <em>rational</em> &mdash; repeating is not the same as ' +
+                            'irrational.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. what a calculator display can and cannot tell you --- */
+            (function () {
+                var shown = pick([
+                    '0.428571428', '0.166666666', '0.272727272', '0.833333333', '0.181818181'
+                ]);
+                qs.push({
+                    prompt: 'A calculator shows <strong>' + shown + '</strong> and nothing more. What can you ' +
+                        'safely conclude about the number?',
+                    type: 'choice',
+                    choices: shuffle([
+                        {
+                            html: 'Nothing for certain &mdash; the display is consistent with a rational ' +
+                                'number <em>and</em> with an irrational one.',
+                            correct: true
+                        },
+                        {
+                            html: 'It must be rational, because you can see the pattern repeating.',
+                            correct: false
+                        },
+                        {
+                            html: 'It must be irrational, because the decimal does not end.',
+                            correct: false
+                        },
+                        {
+                            html: 'It must be rational, because calculators only display rational numbers.',
+                            correct: false
+                        }
+                    ]),
+                    explain: function () {
+                        return '<p>A calculator can only ever show you finitely many digits. A pattern that ' +
+                            'holds for nine digits tells you nothing guaranteed about the tenth &mdash; let ' +
+                            'alone the ten-billionth.</p>' +
+                            '<p>You can build a <strong>rational</strong> number starting ' + shown +
+                            ' (just let the block keep repeating), and you can build an <strong>irrational' +
+                            '</strong> one too &mdash; match those digits, then continue with something that ' +
+                            'never settles into a period, like 1010010001&hellip;</p>' +
+                            '<p class="why">The trap in the last option: it is true that a calculator display ' +
+                            'is always a rational number, but the display is a <em>rounded approximation</em> ' +
+                            'of the real answer, not the answer. So it cannot settle the question either way. ' +
+                            'Guessing "rational" is reasonable here &mdash; just be clear it is a guess.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           STAGE 4 - Pattern Field
+           ======================================================= */
+        function stagePatterns() {
+            var qs = [];
+            var fam = pick(FAMILIES);
+            var a = fam.a, b = fam.b;
+            var f = function (n) { return a * n + b; };
+            var fig = figureSVG(fam, [1, 2, 3, 4]);
+
+            /* --- 1. fill in a later term --- */
+            (function () {
+                var k = pick([8, 10, 12, 15, 20]);
+                qs.push({
+                    prompt: 'Here are the first four figures in a sequence. How many small squares make up the ' +
+                        '<strong>' + ordinal(k) + ' figure</strong>?',
+                    fig: fig,
+                    type: 'num1',
+                    labels: [ordinal(k) + ' figure'],
+                    answer: [f(k)],
+                    explain: function () {
+                        return '<p>The counts run ' + f(1) + ', ' + f(2) + ', ' + f(3) + ', ' + f(4) +
+                            ', &hellip; &mdash; going up by <strong>' + a + '</strong> every time.</p>' +
+                            '<p>Structurally that is ' + fam.build + ', so the ' + ordinal(k) +
+                            ' figure has ' + a + ' &middot; ' + k + (b < 0 ? ' &minus; ' + (-b) : ' + ' + b) +
+                            ' = <strong>' + f(k) + '</strong> squares.</p>' +
+                            '<p class="why">Do not just add ' + a + ' over and over until you get there. ' +
+                            'The whole point of finding the rule is that you can jump straight to the ' +
+                            ordinal(k) + ' &mdash; or the 500th.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. the nth-figure expression --- */
+            (function () {
+                qs.push({
+                    prompt: 'Which expression gives the number of small squares in the <strong><em>n</em>th ' +
+                        'figure</strong> of this sequence?',
+                    fig: fig,
+                    type: 'choice',
+                    choices: shuffle([
+                        { html: exprStr(a, b), correct: true },
+                        { html: exprStr(a, b + a), correct: false },
+                        { html: exprStr(a + 1, b), correct: false },
+                        { html: exprStr(b === 0 ? 1 : Math.abs(b), a), correct: false }
+                    ]),
+                    explain: function () {
+                        return '<p><strong>' + exprStr(a, b) + '</strong>, and you should be able to point at ' +
+                            'the picture and say why: it is ' + fam.build + '.</p>' +
+                            '<p>Check it against the figures you can see: <em>n</em> = 1 gives ' + f(1) +
+                            ', <em>n</em> = 2 gives ' + f(2) + ', <em>n</em> = 3 gives ' + f(3) +
+                            ', <em>n</em> = 4 gives ' + f(4) + '. All four match.</p>' +
+                            '<p class="why">Testing one value is not enough to pick an expression &mdash; ' +
+                            'several of the wrong answers above agree with the sequence somewhere. The credit ' +
+                            'comes from connecting the expression to the <em>structure</em>, which is exactly ' +
+                            'what the test asks for.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. is a given total reachable? --- */
+            (function () {
+                var reachable = Math.random() < 0.5;
+                var target, nAns = null;
+                if (reachable) {
+                    nAns = ri(9, 30);
+                    target = f(nAns);
+                } else {
+                    target = f(ri(9, 30)) + 1;     /* breaks the parity, so never reachable */
+                }
+                qs.push({
+                    prompt: 'Still the same sequence. Is there a figure made of exactly <strong>' + target +
+                        '</strong> small squares?',
+                    fig: fig,
+                    type: 'choice',
+                    choices: shuffle([
+                        {
+                            html: reachable ? 'Yes &mdash; the ' + ordinal(nAns) + ' figure' : 'Yes &mdash; ' +
+                                'the ' + ordinal(Math.round((target - b) / a)) + ' figure',
+                            correct: reachable
+                        },
+                        { html: 'No &mdash; no figure in this sequence has that many squares', correct: !reachable },
+                        { html: 'Yes &mdash; the ' + ordinal(target) + ' figure', correct: false },
+                        { html: 'There is not enough information to tell', correct: false }
+                    ]),
+                    explain: function () {
+                        var lhs = exprStr(a, b) + ' = ' + target;
+                        if (reachable) {
+                            return '<p>Set the expression equal to the target and solve:</p>' +
+                                '<p style="font-family:ui-monospace,Consolas,monospace">' + lhs + '<br>' +
+                                a + 'n = ' + (target - b) + '<br>n = ' + nAns + '</p>' +
+                                '<p><em>n</em> = ' + nAns + ' is a whole number, so <strong>yes</strong> &mdash; ' +
+                                'it is the ' + ordinal(nAns) + ' figure.</p>' +
+                                '<p class="why">The elementary version of the same check: take off the ' +
+                                (b > 0 ? b + ' extra square' + (b === 1 ? '' : 's') :
+                                    'missing piece') + ' and see whether what is left splits evenly into ' +
+                                'the arms.</p>';
+                        }
+                        var q = (target - b) / a;
+                        return '<p>Set the expression equal to the target and solve:</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + lhs + '<br>' +
+                            a + 'n = ' + (target - b) + '<br>n = ' + q.toFixed(2) + '</p>' +
+                            '<p><em>n</em> is not a whole number, and figure numbers have to be, so ' +
+                            '<strong>no</strong> figure has ' + target + ' squares.</p>' +
+                            '<p class="why">Faster route, and the one the test wants you to be able to ' +
+                            'explain to a child: every figure in this sequence has an <strong>odd</strong> ' +
+                            'number of squares, because ' + fam.pairing + '. ' + target + ' is even, so it ' +
+                            'is out &mdash; no division required.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. the even/odd argument itself --- */
+            (function () {
+                qs.push({
+                    prompt: 'You want to convince a fifth grader &mdash; who has not learned to solve ' +
+                        'equations &mdash; that no figure in this sequence can have an <strong>even</strong> ' +
+                        'number of squares. Which argument does that?',
+                    fig: fig,
+                    type: 'choice',
+                    choices: shuffle([
+                        {
+                            html: 'Show that ' + fam.pairing + '. Everything pairs up except one square, so ' +
+                                'the total is always odd.',
+                            correct: true
+                        },
+                        {
+                            html: 'Point out that ' + exprStr(a, b) + ' has an odd number in it, and odd ' +
+                                'expressions give odd answers.',
+                            correct: false
+                        },
+                        {
+                            html: 'List the first ten figures, show they are all odd, and say the pattern ' +
+                                'must continue.',
+                            correct: false
+                        },
+                        {
+                            html: 'Divide the target by ' + a + ' and show the answer is not a whole number.',
+                            correct: false
+                        }
+                    ]),
+                    explain: function () {
+                        return '<p>The pairing argument is the one that works: ' + fam.pairing + '. ' +
+                            'Even + 1 = odd, every single time, and a child can <em>see</em> it in the ' +
+                            'picture without any algebra.</p>' +
+                            '<p>Why the others fall short:</p>' +
+                            '<p>&bull; Checking ten cases is evidence, not an explanation &mdash; it never ' +
+                            'rules out the eleventh.<br>' +
+                            '&bull; "Odd expressions give odd answers" is not a real rule; it is just ' +
+                            'restating the claim.<br>' +
+                            '&bull; The division argument is perfectly correct, but it <em>is</em> the algebra ' +
+                            'this student has not learned yet.</p>' +
+                            '<p class="why">Test 1 asks for both: solve it with the expression, ' +
+                            '<em>and</em> give the even/odd version a child could follow. They earn separate ' +
+                            'credit, so write both.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        function exprStr(a, b) {
+            var s = (a === 1 ? 'n' : a + 'n');
+            if (b > 0) s += ' + ' + b;
+            else if (b < 0) s += ' &minus; ' + (-b);
+            return s;
+        }
+
+        /* =======================================================
+           STAGE 5 - Equation Triage
+           ======================================================= */
+        function stageEquations() {
+            var qs = [];
+            var kinds = shuffle(['none', 'infinite', 'one', pick(['none', 'infinite', 'one'])]);
+
+            kinds.forEach(function (kind) {
+                qs.push(makeEquationQ(kind));
+            });
+            return qs;
+        }
+
+        function makeEquationQ(kind) {
+            var lhs, rhs, answer, xval = null, work;
+
+            if (kind === 'one') {
+                /* a(x + p) = c(x + q), a != c, chosen so x is a tidy integer */
+                var a, c, p, q, x0, found = false;
+                for (var t = 0; t < 500 && !found; t++) {
+                    a = ri(2, 8); c = ri(2, 8);
+                    if (a === c) continue;
+                    p = ri(-6, 6); x0 = ri(-8, 8);
+                    var numr = a * (x0 + p);
+                    if (numr % c !== 0) continue;
+                    q = numr / c - x0;
+                    if (Math.abs(q) > 12) continue;
+                    found = true;
+                }
+                if (!found) { a = 3; c = 2; p = 1; x0 = 1; q = 2; }   /* 3(x+1) = 2(x+2) */
+                lhs = paren(a, p);
+                rhs = paren(c, q);
+                xval = x0;
+                answer = 'one';
+                work = '<p style="font-family:ui-monospace,Consolas,monospace">' +
+                    stripTags(lhs) + ' = ' + stripTags(rhs) + '<br>' +
+                    linearPlain(a, a * p) + ' = ' + linearPlain(c, c * q) + '<br>' +
+                    linearPlain(a - c, 0) + ' = ' + (c * q - a * p) + '<br>' +
+                    'x = ' + x0 + '</p>' +
+                    '<p>The <em>x</em> terms do not cancel &mdash; there are ' + a + ' of them on one side ' +
+                    'and ' + c + ' on the other &mdash; so you can isolate <em>x</em> and land on exactly ' +
+                    'one value.</p>' +
+                    '<p>Check: ' + a + '(' + x0 + ' + ' + p + ') = ' + (a * (x0 + p)) + ' and ' +
+                    c + '(' + x0 + ' + ' + q + ') = ' + (c * (x0 + q)) + '. &#10003;</p>';
+
+            } else {
+                /* both sides are the same ax + b, except "none" nudges the constant */
+                var A = ri(3, 9), B = ri(-8, 9), D = ri(-6, 6);
+                while (D === 0) D = ri(-6, 6);
+                var off = kind === 'none' ? pick([-4, -3, -2, 2, 3, 4]) : 0;
+
+                lhs = linear(A, B);
+                /* A(x + D) + (B - A*D + off)  expands to  Ax + B + off */
+                var tail = B - A * D + off;
+                rhs = paren(A, D) + (tail === 0 ? '' : pm(tail));
+                answer = kind;
+
+                work = '<p style="font-family:ui-monospace,Consolas,monospace">' +
+                    stripTags(lhs) + ' = ' + stripTags(rhs) + '<br>' +
+                    stripTags(lhs) + ' = ' + linearPlain(A, A * D) +
+                    (tail === 0 ? '' : (tail < 0 ? ' - ' + (-tail) : ' + ' + tail)) + '<br>' +
+                    stripTags(lhs) + ' = ' + linearPlain(A, B + off) + '</p>';
+
+                if (kind === 'none') {
+                    work += '<p>Subtract ' + A + 'x from both sides and you are left with <strong>' +
+                        B + ' = ' + (B + off) + '</strong>, which is false.</p>' +
+                        '<p>The two sides have the <em>same</em> number of <em>x</em>s but different ' +
+                        'constants, so they run parallel &mdash; they are never equal, whatever <em>x</em> ' +
+                        'you pick. <strong>No solutions.</strong></p>' +
+                        '<p class="why">Getting a false numeric statement is not a sign you made a mistake. ' +
+                        'It is the answer: the equation has no solution. Say so explicitly.</p>';
+                } else {
+                    work += '<p>Both sides are the same expression written two different ways. Subtract ' +
+                        A + 'x and you get <strong>' + B + ' = ' + B + '</strong>, which is true no matter ' +
+                        'what <em>x</em> is.</p>' +
+                        '<p>So <strong>every</strong> number is a solution &mdash; infinitely many. An ' +
+                        'equation like this is called an <em>identity</em>.</p>' +
+                        '<p class="why">Ending with 0 = 0 does not mean <em>x</em> = 0, and it does not mean ' +
+                        'the problem was broken. It means the equation was never a restriction on ' +
+                        '<em>x</em> at all.</p>';
+                }
+            }
+
+            return {
+                prompt: 'Solve and classify:<br><br><strong style="font-size:1.2rem">' + lhs + ' = ' + rhs +
+                    '</strong><br><br>How many solutions does this equation have?',
+                type: 'choice',
+                choices: shuffle([
+                    { html: 'Exactly one solution', correct: answer === 'one' },
+                    { html: 'No solutions', correct: answer === 'none' },
+                    { html: 'Infinitely many solutions', correct: answer === 'infinite' },
+                    { html: 'Exactly two solutions', correct: false }
+                ]),
+                explain: function () {
+                    var head = answer === 'one'
+                        ? '<p><strong>Exactly one solution: x = ' + xval + '.</strong></p>'
+                        : answer === 'none'
+                            ? '<p><strong>No solutions.</strong></p>'
+                            : '<p><strong>Infinitely many solutions &mdash; every real number works.</strong></p>';
+                    return head + work;
+                }
+            };
+        }
+
+        function linearPlain(a, b) {
+            var s = (a === 1 ? 'x' : (a === -1 ? '-x' : a + 'x'));
+            if (b > 0) s += ' + ' + b;
+            else if (b < 0) s += ' - ' + (-b);
+            return s;
+        }
+        function stripTags(h) {
+            return h.replace(/&minus;/g, '-').replace(/&middot;/g, '*').replace(/<[^>]+>/g, '');
+        }
+
+        /* =======================================================
+           STAGE 6 - Strip Diagram Station
+           ======================================================= */
+        function stageStrips() {
+            var qs = [];
+
+            /* --- 1. three groups, multiplier + offset --- */
+            (function () {
+                var x = ri(15, 60), m = ri(2, 4), k = ri(2, 6) * 5;
+                var less = Math.random() < 0.5;
+                var third = m * x + (less ? -k : k);
+                var total = x + m * x + third;
+                var nouns = pick([
+                    ['marbles', 'jars'], ['stickers', 'albums'], ['books', 'shelves'],
+                    ['coins', 'piles'], ['beads', 'boxes']
+                ]);
+
+                qs.push({
+                    prompt: 'There are <strong>' + total + ' ' + nouns[0] + '</strong> divided into 3 ' +
+                        nouns[1] + '. The second ' + nouns[1].replace(/s$/, '') + ' has <strong>' + m +
+                        ' times</strong> as many as the first. The third has <strong>' + k + ' ' +
+                        (less ? 'fewer' : 'more') + '</strong> than the second.<br><br>' +
+                        'How many ' + nouns[0] + ' are in the <strong>first</strong> ' +
+                        nouns[1].replace(/s$/, '') + '?',
+                    type: 'num1',
+                    labels: ['First ' + nouns[1].replace(/s$/, '')],
+                    answer: [x],
+                    explain: function () {
+                        var units = 1 + m + m;
+                        var adj = less ? -k : k;
+                        return '<p><strong>Let x = the number of ' + nouns[0] + ' in the first ' +
+                            nouns[1].replace(/s$/, '') + '.</strong> Defining the variable is worth points ' +
+                            'on its own &mdash; do not skip it.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' +
+                            'first&nbsp;&nbsp;= x<br>' +
+                            'second = ' + m + 'x<br>' +
+                            'third&nbsp;&nbsp;= ' + m + 'x ' + (less ? '- ' : '+ ') + k + '<br><br>' +
+                            'x + ' + m + 'x + (' + m + 'x ' + (less ? '- ' : '+ ') + k + ') = ' + total + '<br>' +
+                            units + 'x ' + (adj < 0 ? '- ' + k : '+ ' + k) + ' = ' + total + '<br>' +
+                            units + 'x = ' + (total - adj) + '<br>' +
+                            'x = ' + x + '</p>' +
+                            '<p>So the three ' + nouns[1] + ' hold <strong>' + x + '</strong>, <strong>' +
+                            (m * x) + '</strong> and <strong>' + third + '</strong>. Check: ' + x + ' + ' +
+                            (m * x) + ' + ' + third + ' = ' + total + '. &#10003;</p>' +
+                            '<p class="why">The strip diagram does the same arithmetic with pictures: draw ' +
+                            'the first as 1 unit, the second as ' + m + ' units, the third as ' + m +
+                            ' units with ' + k + ' ' + (less ? 'cut off' : 'tacked on') + '. That is ' +
+                            units + ' units ' + (less ? 'minus' : 'plus') + ' ' + k + ' = ' + total +
+                            ', so one unit is ' + x + '. The "units" in the picture <em>are</em> the ' +
+                            'x terms in the equation.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. fraction, then fraction of the remainder --- */
+            (function () {
+                var d1 = pick([3, 4, 5]), n1 = ri(1, d1 - 1);
+                var d2 = pick([3, 4, 5]), n2 = ri(1, d2 - 1);
+                var unit = ri(2, 9) * 5;
+                var start = unit * d1 * d2;
+                var afterFirst = start * (d1 - n1) / d1;
+                var left = afterFirst * (d2 - n2) / d2;
+                var noun = pick(['pounds of onions', 'tons of gravel', 'liters of paint', 'kilograms of flour']);
+
+                qs.push({
+                    prompt: 'A truck started with some ' + noun + '. One worker took out <strong>' + n1 + '/' +
+                        d1 + '</strong> of it. A second worker then took out <strong>' + n2 + '/' + d2 +
+                        '</strong> of <em>what was left</em>. At that point there were <strong>' + left +
+                        '</strong> ' + noun.replace(/^(pounds|tons|liters|kilograms) of /, '') +
+                        ' remaining.<br><br>How much was there at the start?',
+                    type: 'num1',
+                    labels: ['At the start'],
+                    answer: [start],
+                    explain: function () {
+                        return '<p>Work backwards, one step at a time &mdash; the second fraction is taken ' +
+                            'from the <em>remainder</em>, not from the original amount. That is the trap.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' +
+                            'after worker 2, ' + (d2 - n2) + '/' + d2 + ' of the remainder is left<br>' +
+                            'so the remainder was ' + left + ' &divide; ' + (d2 - n2) + '/' + d2 + ' = ' +
+                            afterFirst + '<br><br>' +
+                            'after worker 1, ' + (d1 - n1) + '/' + d1 + ' of the start is left<br>' +
+                            'so the start was ' + afterFirst + ' &divide; ' + (d1 - n1) + '/' + d1 + ' = ' +
+                            start + '</p>' +
+                            '<p>Forward check: ' + start + ' &minus; ' + n1 + '/' + d1 + ' of it leaves ' +
+                            afterFirst + '; taking ' + n2 + '/' + d2 + ' of that leaves ' + left + '. &#10003;</p>' +
+                            '<p class="why">Strip diagram version: cut the whole bar into ' + d1 +
+                            ' equal pieces and cross off ' + n1 + '. Then cut <em>the surviving part</em> ' +
+                            'into ' + d2 + ' pieces and cross off ' + n2 + '. The pieces still standing are ' +
+                            'worth ' + left + ' altogether &mdash; and now you can read off what one piece ' +
+                            'is worth.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. percent more --- */
+            (function () {
+                var pct = pick([10, 20, 25, 50]);
+                var smaller = ri(4, 20) * 5;
+                var diff = smaller * pct / 100;
+                while (diff !== Math.round(diff)) { smaller += 5; diff = smaller * pct / 100; }
+                var bigger = smaller + diff;
+                var total = smaller + bigger;
+                var pair = pick([
+                    ['male ladybugs', 'female ladybugs'], ['large pumpkins', 'regular pumpkins'],
+                    ['blue marbles', 'red marbles']
+                ]);
+
+                qs.push({
+                    prompt: 'There are <strong>' + pct + '% more</strong> ' + pair[0] + ' than ' + pair[1] +
+                        ', and there are <strong>' + diff + ' more</strong> ' + pair[0] + ' than ' + pair[1] +
+                        '.<br><br>How many are there <strong>altogether</strong>?',
+                    type: 'num1',
+                    labels: ['Total'],
+                    answer: [total],
+                    explain: function () {
+                        var seg = 100 / pct;
+                        return '<p>The key move: the ' + pct + '% <em>is</em> the ' + diff +
+                            '. Those are two descriptions of the same gap.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' +
+                            'let F = number of ' + pair[1] + '<br>' +
+                            pct + '% of F = ' + diff + '<br>' +
+                            'F = ' + diff + ' &divide; ' + (pct / 100) + ' = ' + smaller + '<br>' +
+                            'the other group = ' + smaller + ' + ' + diff + ' = ' + bigger + '<br>' +
+                            'total = ' + total + '</p>' +
+                            '<p class="why">Strip diagram version: draw ' + pair[1] + ' as a bar cut into ' +
+                            seg + ' equal segments, each one worth ' + pct + '%. Draw ' + pair[0] +
+                            ' underneath as the same bar <em>plus one more segment</em>. That sticking-out ' +
+                            'segment is the ' + diff + ', so every segment is ' + diff + ' &mdash; and the ' +
+                            'whole picture is ' + (2 * seg + 1) + ' segments, or ' + total + '.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           stage registry
+           ======================================================= */
+        var STAGES = [
+            {
+                id: 'factors', name: 'Factor Slide', sub: 'GCF, LCM, prime factorization',
+                item: 'Test items 1 and 2', build: stageFactors
+            },
+            {
+                id: 'divis', name: 'Divisibility Dojo', sub: 'The rules, and why they work',
+                item: 'Test item 3', build: stageDivisibility
+            },
+            {
+                id: 'decimals', name: 'Decimal Detective', sub: 'Repeating decimals, rational numbers',
+                item: 'Test item 6', build: stageDecimals
+            },
+            {
+                id: 'patterns', name: 'Pattern Field', sub: 'Figure sequences and even/odd arguments',
+                item: 'Test item 4', build: stagePatterns
+            },
+            {
+                id: 'equations', name: 'Equation Triage', sub: 'One, none, or infinitely many',
+                item: 'Test item 7', build: stageEquations
+            },
+            {
+                id: 'strips', name: 'Strip Diagram Station', sub: 'Word problems, drawn and solved',
+                item: 'Test item 8', build: stageStrips
+            }
+        ];
+
+        /* =======================================================
+           game state + engine
+           ======================================================= */
+        var G = {
+            sets: {},          /* stageId -> [questions] */
+            results: {},       /* stageId -> {correct, total, points} */
+            score: 0, streak: 0, best: 0,
+            correct: 0, answered: 0, total: 0,
+            stage: null, idx: 0, attempts: 0, locked: false, selected: null
+        };
+
+        var el = function (id) { return document.getElementById(id); };
+
+        function buildAll() {
+            G.sets = {}; G.results = {};
+            G.score = 0; G.streak = 0; G.best = 0;
+            G.correct = 0; G.answered = 0; G.total = 0;
+            STAGES.forEach(function (s) {
+                var qs = s.build();
+                G.sets[s.id] = qs;
+                G.total += qs.length;
+            });
+            renderMap();
+            renderScore();
+        }
+
+        function renderScore() {
+            el('s-score').textContent = G.score;
+            el('s-streak').textContent = G.streak;
+            el('s-streak').className = 'v' + (G.streak >= 3 ? ' hot' : '');
+            el('s-correct').textContent = G.correct + ' / ' + G.answered;
+            el('s-bar').style.width = (G.total ? (G.answered / G.total * 100) : 0) + '%';
+        }
+
+        function renderMap() {
+            var m = el('map');
+            m.innerHTML = '';
+            STAGES.forEach(function (s, i) {
+                var r = G.results[s.id];
+                var b = document.createElement('button');
+                b.className = 'stage' + (r ? ' done' : '') +
+                    (G.stage && G.stage.id === s.id ? ' current' : '');
+                b.innerHTML = '<span class="badge">Stage ' + (i + 1) + ' &middot; ' + s.item + '</span>' +
+                    '<span class="nm">' + s.name + '</span>' +
+                    '<span class="sub">' + s.sub + '</span>' +
+                    (r ? '<span class="res">' + r.correct + ' of ' + r.total + ' &middot; ' +
+                        r.points + ' pts</span>'
+                        : '<span class="res" style="color:#6E6E6E">' + G.sets[s.id].length +
+                        ' questions</span>');
+                b.addEventListener('click', function () { startStage(i); });
+                m.appendChild(b);
+            });
+        }
+
+        function show(which) {
+            el('mapPanel').classList.toggle('hidden', which !== 'map');
+            el('qPanel').classList.toggle('hidden', which !== 'q');
+            el('rPanel').classList.toggle('hidden', which !== 'r');
+            el('intro').classList.toggle('hidden', which !== 'map');
+        }
+
+        function startStage(i) {
+            G.stage = STAGES[i];
+            G.idx = 0;
+            if (!G.results[G.stage.id]) {
+                G.results[G.stage.id] = { correct: 0, total: G.sets[G.stage.id].length, points: 0 };
+            } else {
+                /* replaying a stage: clear its old tally so it is not double counted */
+                var old = G.results[G.stage.id];
+                G.score -= old.points;
+                G.correct -= old.correct;
+                G.answered -= old.total;
+                G.results[G.stage.id] = { correct: 0, total: G.sets[G.stage.id].length, points: 0 };
+            }
+            show('q');
+            renderQ();
+        }
+
+        function currentQ() { return G.sets[G.stage.id][G.idx]; }
+
+        function renderQ() {
+            var q = currentQ();
+            G.attempts = 0; G.locked = false; G.selected = null;
+
+            el('q-round').textContent = G.stage.name + ' &middot; ' + G.stage.item;
+            el('q-round').innerHTML = G.stage.name + ' <span style="color:#A2A2A2">&middot; ' +
+                G.stage.item + '</span>';
+            el('q-count').textContent = 'Question ' + (G.idx + 1) + ' of ' + G.sets[G.stage.id].length;
+            el('q-text').innerHTML = q.prompt;
+            el('q-fig').innerHTML = q.fig ? '<div class="figbox">' + q.fig + '</div>' : '';
+            el('q-fb').innerHTML = '';
+            el('btn-check').classList.remove('hidden');
+            el('btn-check').disabled = false;
+            el('btn-check').textContent = 'Check answer';
+            el('btn-next').classList.add('hidden');
+
+            var body = el('q-body');
+            body.innerHTML = '';
+
+            if (q.type === 'choice') {
+                var wrap = document.createElement('div');
+                wrap.className = 'choices';
+                q.choices.forEach(function (c, i) {
+                    var b = document.createElement('button');
+                    b.className = 'choice';
+                    b.type = 'button';
+                    b.dataset.i = i;
+                    b.innerHTML = '<span class="ltr">' + 'ABCD'[i] + '</span><span>' + c.html + '</span>';
+                    b.addEventListener('click', function () {
+                        if (G.locked) return;
+                        wrap.querySelectorAll('.choice').forEach(function (n) { n.classList.remove('sel'); });
+                        b.classList.add('sel');
+                        G.selected = i;
+                    });
+                    wrap.appendChild(b);
+                });
+                body.appendChild(wrap);
+            } else {
+                var f = document.createElement('div');
+                f.className = 'fields';
+                q.labels.forEach(function (lab, i) {
+                    var d = document.createElement('div');
+                    d.className = 'field';
+                    d.innerHTML = '<label for="in' + i + '">' + lab + '</label>' +
+                        '<input id="in' + i + '" type="text" inputmode="numeric" autocomplete="off">';
+                    f.appendChild(d);
+                });
+                body.appendChild(f);
+                var first = body.querySelector('input');
+                if (first) setTimeout(function () { first.focus(); }, 30);
+                body.querySelectorAll('input').forEach(function (inp) {
+                    inp.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (!el('btn-next').classList.contains('hidden')) nextQ();
+                            else check();
+                        }
+                    });
+                });
+            }
+        }
+
+        function check() {
+            var q = currentQ();
+            var ok;
+
+            if (q.type === 'choice') {
+                if (G.selected === null) {
+                    flashFB('near', 'Pick an answer first', 'Choose one of the options, then check it.');
+                    return;
+                }
+                ok = !!q.choices[G.selected].correct;
+            } else {
+                var inputs = Array.prototype.slice.call(el('q-body').querySelectorAll('input'));
+                if (inputs.length !== q.answer.length) return;   /* should never happen */
+                if (inputs.some(function (i) { return i.value.trim() === ''; })) {
+                    flashFB('near', 'Fill in every box',
+                        inputs.length > 1 ? 'Both values are needed before you can check.'
+                            : 'Type an answer before you check it.');
+                    return;
+                }
+                ok = inputs.every(function (inp, i) {
+                    var v = Number(inp.value.replace(/[, ]/g, ''));
+                    return Number.isFinite(v) && v === q.answer[i];
+                });
+                inputs.forEach(function (inp, i) {
+                    var v = Number(inp.value.replace(/[, ]/g, ''));
+                    inp.classList.remove('right', 'wrong');
+                    inp.classList.add(v === q.answer[i] ? 'right' : 'wrong');
+                });
+            }
+
+            G.attempts++;
+
+            if (ok) {
+                var base = G.attempts === 1 ? 100 : 50;
+                G.streak++;
+                if (G.streak > G.best) G.best = G.streak;
+                var bonus = G.streak >= 3 ? Math.min(75, (G.streak - 2) * 25) : 0;
+                var gained = base + bonus;
+                G.score += gained;
+                G.correct++;
+                G.answered++;
+                G.results[G.stage.id].correct++;
+                G.results[G.stage.id].points += gained;
+                lockIn();
+                showFB('good', 'Correct', gained, bonus, q);
+            } else if (G.attempts === 1) {
+                G.streak = 0;
+                flashFB('near', 'Not quite &mdash; one more try',
+                    'Have another look. A correct answer on the second try is still worth 50 points.');
+                if (q.type === 'choice') {
+                    var sel = el('q-body').querySelector('.choice.sel');
+                    if (sel) { sel.classList.add('wrong'); sel.classList.remove('sel'); }
+                    G.selected = null;
+                }
+            } else {
+                G.streak = 0;
+                G.answered++;
+                lockIn();
+                showFB('bad', 'Not this time', 0, 0, q);
+            }
+            renderScore();
+        }
+
+        function lockIn() {
+            var q = currentQ();
+            G.locked = true;
+            el('btn-check').classList.add('hidden');
+            el('btn-next').classList.remove('hidden');
+            el('btn-next').textContent = (G.idx + 1 < G.sets[G.stage.id].length)
+                ? 'Next question' : 'See stage results';
+            if (q.type === 'choice') {
+                el('q-body').querySelectorAll('.choice').forEach(function (b) {
+                    var i = Number(b.dataset.i);
+                    b.disabled = true;
+                    b.classList.remove('sel');
+                    if (q.choices[i].correct) b.classList.add('right');
+                });
+            } else {
+                el('q-body').querySelectorAll('input').forEach(function (inp) { inp.disabled = true; });
+            }
+        }
+
+        function flashFB(kind, head, msg) {
+            el('q-fb').innerHTML = '<div class="fb ' + kind + '"><div class="hd">' + head + '</div>' +
+                '<p>' + msg + '</p></div>';
+        }
+
+        function showFB(kind, head, gained, bonus, q) {
+            var ptline = gained > 0
+                ? ' <span class="pts">+' + gained + ' pts' +
+                (bonus ? ' (' + (gained - bonus) + ' + ' + bonus + ' streak)' : '') + '</span>'
+                : '';
+            var answerLine = '';
+            if (kind === 'bad') {
+                if (q.type === 'choice') {
+                    var right = q.choices.filter(function (c) { return c.correct; })[0];
+                    answerLine = '<p>The answer was <strong>' + right.html + '</strong>.</p>';
+                } else {
+                    answerLine = '<p>The answer was <strong>' +
+                        q.answer.map(function (a, i) { return q.labels[i] + ' = ' + a; }).join(', ') +
+                        '</strong>.</p>';
+                }
+            }
+            el('q-fb').innerHTML = '<div class="fb ' + kind + '">' +
+                '<div class="hd">' + head + ptline + '</div>' +
+                answerLine +
+                (typeof q.explain === 'function' ? q.explain() : (q.explain || '')) +
+                '</div>';
+        }
+
+        function nextQ() {
+            if (G.idx + 1 < G.sets[G.stage.id].length) {
+                G.idx++;
+                renderQ();
+                el('qPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            var doneAll = STAGES.every(function (s) { return G.results[s.id]; });
+            show('r');
+            el('r-score').textContent = G.score;
+
+            var r = G.results[G.stage.id];
+            el('r-title').textContent = doneAll ? 'All six stages complete' : G.stage.name + ' complete';
+            el('r-line').innerHTML = 'You got <strong>' + r.correct + ' of ' + r.total + '</strong> in ' +
+                G.stage.name + '. Best streak so far: <strong>' + G.best + '</strong>.' +
+                (doneAll ? ' You have now cleared every stage.' : '');
+
+            var grid = el('r-grid');
+            grid.innerHTML = '';
+            STAGES.forEach(function (s) {
+                var res = G.results[s.id];
+                var d = document.createElement('div');
+                var weak = res && res.correct < res.total;
+                d.className = 'rcard' + (weak ? ' weak' : '');
+                d.innerHTML = '<div class="nm">' + s.name + '</div>' +
+                    '<div class="sc">' + (res ? res.correct + '/' + res.total : '&mdash;') + '</div>' +
+                    '<div class="tip">' + (res
+                        ? (weak ? 'Worth another pass &mdash; ' + s.item.toLowerCase()
+                            : 'Clean run &mdash; ' + s.item.toLowerCase())
+                        : 'Not attempted yet') + '</div>';
+                grid.appendChild(d);
+            });
+
+            var weakOnes = STAGES.filter(function (s) {
+                var res = G.results[s.id];
+                return res && res.correct < res.total;
+            });
+            el('r-advice').innerHTML = weakOnes.length
+                ? '<div class="prompt-box"><h3>Where to spend your study time</h3><p>' +
+                weakOnes.map(function (s) {
+                    return '<strong>' + s.name + '</strong> (' + s.item + ')';
+                }).join(', ') + '. Replay those stages &mdash; you will get different problems each time, ' +
+                'so you cannot just memorize the answers.</p></div>'
+                : '<div class="prompt-box"><h3>Nice run</h3><p>No missed questions in the stages you ' +
+                'attempted. Run it again for a fresh set, or go back and do the stages you skipped.</p></div>';
+        }
+
+        /* ---------- wiring ---------- */
+        el('btn-check').addEventListener('click', check);
+        el('btn-next').addEventListener('click', nextQ);
+        el('btn-quit').addEventListener('click', function () { renderMap(); show('map'); });
+        el('btn-map').addEventListener('click', function () { renderMap(); show('map'); });
+        el('btn-start').addEventListener('click', function () { startStage(0); });
+        el('btn-reset').addEventListener('click', function () { buildAll(); show('map'); });
+        el('btn-again').addEventListener('click', function () { buildAll(); startStage(0); });
+
+        /* ---------- go ---------- */
+        buildAll();
+        show('map');
+    </script>
+</body>
+
+</html>

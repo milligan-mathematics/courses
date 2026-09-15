@@ -4,6 +4,10 @@ title: "MATH 253: Fundamental Concepts II"
 parent: Home
 nav_order: 253
 activities:
+  - title: "Test 1 Review Games"
+    url: "test-1-review-games.html"
+    type: "Ch. 8 & 9 Review"
+    description: "Six stages, 22 questions, and a fresh problem set every run. Slide method, divisibility rules, repeating decimals, figure sequences, equations with none or infinitely many solutions, and strip diagrams — each one with the reasoning, not just the answer."
   - title: "The Locker Problem"
     url: "locker-problem.html"
     type: "Ch. 8 Investigation"
