@@ -1,0 +1,649 @@
+---
+layout: course
+title: "Dyslexia and Studying in Higher Education"
+parent: Home
+nav_order: 9001
+hide_from_home: true
+---
+
+<link rel="stylesheet" href="{{ site.baseurl }}/assets/css/math411.css">
+<link rel="stylesheet" href="{{ site.baseurl }}/assets/css/reading-map.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<h1>Dyslexia and Studying in Higher Education</h1>
+
+<p style="font-size:0.9rem;color:#6E6E6E;margin-top:-0.5rem">A
+<a href="{{ site.baseurl }}/resources/">Milligan Mathematics resource</a> &middot; open to anyone</p>
+
+<p class="day-blurb">A guide to understanding dyslexia and its relationship with studying in higher education.
+Dyslexia is not one thing &mdash; it comes in patterns, and which pattern you have changes which study
+techniques actually help.</p>
+
+<div id="rm-ruler" aria-hidden="true"><i></i></div>
+
+<div class="rm" id="rm">
+
+<div class="rm-bar">
+  <div class="rm-bar-in">
+    <div class="rm-grp"><span class="lab" id="rm-l-size">Size</span>
+      <div class="rm-seg" role="group" aria-labelledby="rm-l-size">
+        <button type="button" data-set="size" data-val="" aria-pressed="true">A</button>
+        <button type="button" data-set="size" data-val="lg" aria-pressed="false">A+</button>
+        <button type="button" data-set="size" data-val="xl" aria-pressed="false">A++</button>
+      </div>
+    </div>
+    <div class="rm-grp"><span class="lab" id="rm-l-space">Spacing</span>
+      <div class="rm-seg" role="group" aria-labelledby="rm-l-space">
+        <button type="button" data-set="space" data-val="" aria-pressed="true">Normal</button>
+        <button type="button" data-set="space" data-val="open" aria-pressed="false">Open</button>
+        <button type="button" data-set="space" data-val="airy" aria-pressed="false">Wide</button>
+      </div>
+    </div>
+    <div class="rm-grp"><span class="lab" id="rm-l-font">Font</span>
+      <div class="rm-seg" role="group" aria-labelledby="rm-l-font">
+        <button type="button" data-set="font" data-val="" aria-pressed="true">Hyper</button>
+        <button type="button" data-set="font" data-val="mono" aria-pressed="false">Mono</button>
+        <button type="button" data-set="font" data-val="system" aria-pressed="false">Plain</button>
+      </div>
+    </div>
+    <div class="rm-grp"><span class="lab" id="rm-l-tint">Paper</span>
+      <div class="rm-seg" role="group" aria-labelledby="rm-l-tint">
+        <button type="button" class="rm-sw rm-sw-plain" data-set="tint" data-val="" aria-pressed="true" aria-label="No tint"></button>
+        <button type="button" class="rm-sw rm-sw-cream" data-set="tint" data-val="cream" aria-pressed="false" aria-label="Cream paper"></button>
+        <button type="button" class="rm-sw rm-sw-sky" data-set="tint" data-val="sky" aria-pressed="false" aria-label="Blue paper"></button>
+        <button type="button" class="rm-sw rm-sw-rose" data-set="tint" data-val="rose" aria-pressed="false" aria-label="Rose paper"></button>
+        <button type="button" class="rm-sw rm-sw-green" data-set="tint" data-val="green" aria-pressed="false" aria-label="Green paper"></button>
+      </div>
+    </div>
+    <div class="rm-grp">
+      <div class="rm-seg"><button type="button" id="rm-rulerBtn" aria-pressed="false">Line guide</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="rm-body">
+
+<header class="rm-hero">
+  <span class="rm-eyebrow">How to use this guide</span>
+  <p class="rm-lede">Reading isn't one skill. It's several, running at once, and dyslexia can hit any one of
+  them while leaving the others fine. That's why two people with the same label can have completely different
+  problems.</p>
+  <p>This page gives you <strong>eight patterns</strong> to try on. Each one takes about thirty seconds: read a
+  few words, notice what your brain does, and mark whether it feels familiar. At the bottom, the strategies
+  that fit what you marked get flagged.</p>
+  <p>Use the bar above to change the text size, spacing, typeface, and paper colour until this page is
+  comfortable. That's not a gimmick &mdash; noticing which settings help is itself information about how you
+  read. Your marks and settings are saved in this browser, so you can come back to them.</p>
+</header>
+
+<section id="two-roads">
+  <h2>Start here: reading uses two roads</h2>
+  <p>Almost everything in the research on dyslexia hangs off one idea. When you meet a written word, your brain can get
+  to its sound and meaning by two different routes, running in parallel.</p>
+
+  <figure>
+    <div class="rm-figscroll">
+    <svg viewBox="0 0 640 300" role="img" aria-labelledby="rmDiagTitle rmDiagDesc">
+      <title id="rmDiagTitle">The two roads from a printed word to its meaning</title>
+      <desc id="rmDiagDesc">A printed word splits into two paths. The sounding-out road breaks the word into
+      letter sounds and blends them. The recognition road matches the whole word shape against words already
+      known. Both arrive at the word, understood.</desc>
+      <rect class="d-box" x="8" y="126" width="116" height="48" rx="8" stroke-width="1.5"/>
+      <text class="d-t" x="66" y="145" text-anchor="middle">a printed</text>
+      <text class="d-t" x="66" y="162" text-anchor="middle">word</text>
+
+      <path class="d-path-a" d="M128 142 C 170 142, 170 66, 212 66" stroke-width="2.5"/>
+      <path class="d-path-b" d="M128 158 C 170 158, 170 234, 212 234" stroke-width="2.5"/>
+
+      <rect class="d-box-a" x="212" y="38" width="212" height="56" rx="8" stroke-width="1.5"/>
+      <text class="d-lab-a" x="318" y="60" text-anchor="middle">ROAD 1 &mdash; sound it out</text>
+      <text class="d-t-sm" x="318" y="79" text-anchor="middle">y &middot; a &middot; c &middot; h &middot; t &rarr; blend</text>
+
+      <rect class="d-box-b" x="212" y="206" width="212" height="56" rx="8" stroke-width="1.5"/>
+      <text class="d-lab-b" x="318" y="228" text-anchor="middle">ROAD 2 &mdash; recognise it</text>
+      <text class="d-t-sm" x="318" y="247" text-anchor="middle">&ldquo;yacht&rdquo; &mdash; seen it before</text>
+
+      <path class="d-path-a" d="M424 66 C 466 66, 466 142, 508 142" stroke-width="2.5"/>
+      <path class="d-path-b" d="M424 234 C 466 234, 466 158, 508 158" stroke-width="2.5"/>
+
+      <rect class="d-box" x="508" y="126" width="124" height="48" rx="8" stroke-width="1.5"/>
+      <text class="d-t" x="570" y="145" text-anchor="middle">the word,</text>
+      <text class="d-t" x="570" y="162" text-anchor="middle">understood</text>
+
+      <text class="d-t-mute" x="318" y="112" text-anchor="middle">the only road that works for words you've never seen</text>
+      <text class="d-t-mute" x="318" y="192" text-anchor="middle">the only road that works for words that break the rules</text>
+    </svg>
+    </div>
+    <figcaption>Fluent reading runs both roads at once and takes whichever answer arrives first. Most reading
+    difficulty is one road being slow, unreliable, or unavailable.</figcaption>
+  </figure>
+
+  <p><strong>Road 1 is sounding out.</strong> You chop the word into letter-sounds and blend them. It's the
+  only road that can handle a word you've never seen &mdash; including every technical term in your textbook
+  the first time you meet it.</p>
+  <p><strong>Road 2 is recognition.</strong> You've seen the word so many times that the whole shape maps
+  straight to the sound. It's the only road that handles <span class="mono">yacht</span>,
+  <span class="mono">colonel</span>, and <span class="mono">Wednesday</span>, which do not obey the rules.</p>
+  <p>Before those two roads even start, there's a stage that just works out <strong>which letters are there and
+  in what order</strong>. Several of the patterns below live in that early stage rather than in either road
+  &mdash; and those are the ones that cost the most in technical subjects, because a transposed digit or a dropped minus
+  sign is a wrong answer, not a slow one.</p>
+
+  <div class="rm-note">
+    <h3>What this page is not</h3>
+    <p>These patterns come from research models of reading, not from a diagnostic manual. No clinician is going
+    to hand you a report that says &ldquo;letter position dyslexia.&rdquo; What a real evaluation gives you is
+    scores on the underlying skills &mdash; decoding, fluency, spelling, rapid naming, working memory,
+    processing speed.</p>
+    <p>So use this page for what it's actually good for: getting <strong>precise language for your own
+    experience</strong>, and picking study techniques you can start using this week. If you do pursue an
+    evaluation, what you write down here will make you a much better historian of your own reading.</p>
+  </div>
+</section>
+
+<section id="patterns">
+  <h2>Eight patterns &mdash; try each one on</h2>
+  <p>Read the sample <strong>out loud</strong> if you can, or at least sub-vocally. Speed doesn't matter. What
+  matters is whether the description of the error feels like something that happens to you. Mark each one
+  honestly &mdash; &ldquo;sometimes&rdquo; is a real and useful answer.</p>
+
+  <article class="rm-pattern" data-key="phon">
+    <div class="rm-phead">
+      <span class="rm-kicker">Pattern 1 &middot; Road 1 is weak</span>
+      <h3>New words don't assemble</h3>
+    </div>
+    <p class="rm-try">Read these out loud. They're all fake, so there's nothing to recognise &mdash; Road 2 is
+    no help.</p>
+    <div class="rm-spec">blick &nbsp; sare &nbsp; tov &nbsp; flig &nbsp; glorp &nbsp; chirn &nbsp; plimth &nbsp; strandle</div>
+    <div class="rm-tell">
+      <span class="rm-lab">The tell</span>
+      <p>It's slow and effortful in a way real words aren't. Or you find yourself producing a real word that
+      looks similar &mdash; saying <span class="mono">care</span> or <span class="mono">sore</span> for
+      <span class="mono">sare</span>, <span class="mono">black</span> for <span class="mono">blick</span>.
+      That's Road 2 stepping in because Road 1 couldn't deliver. It's the single most common pattern in
+      dyslexia.</p>
+    </div>
+    <div class="rm-eng">
+      <span class="rm-lab">Where this shows up in coursework</span>
+      <p>Every new technical term is a fake word the first time you see it.
+      <span class="mono">Eigenvector. Holonomic. Enthalpy. Nyquist. Bernoulli.</span> If Road 1 is weak, you're
+      not slowly learning the vocabulary of your field &mdash; you're re-decoding it from scratch every single
+      time, which is why reading the chapter is exhausting even when you understand the physics.</p>
+    </div>
+    <fieldset class="rm-mark">
+      <legend>Does this happen to you?</legend>
+      <div class="rm-opts">
+        <span class="rm-opt"><input type="radio" id="phon-y" name="phon" value="yes"><label for="phon-y">Yes, that's me</label></span>
+        <span class="rm-opt"><input type="radio" id="phon-s" name="phon" value="some"><label for="phon-s">Sometimes</label></span>
+        <span class="rm-opt"><input type="radio" id="phon-n" name="phon" value="no"><label for="phon-n">Not really</label></span>
+      </div>
+    </fieldset>
+  </article>
+
+  <article class="rm-pattern" data-key="surf">
+    <div class="rm-phead">
+      <span class="rm-kicker">Pattern 2 &middot; Road 2 is weak</span>
+      <h3>Words that break the rules trip you</h3>
+    </div>
+    <p class="rm-try">Read these out loud. Every one of them lies about how it's pronounced.</p>
+    <div class="rm-spec">yacht &nbsp; colonel &nbsp; choir &nbsp; island &nbsp; Wednesday &nbsp; subtle &nbsp; gauge &nbsp; buoy</div>
+    <div class="rm-tell">
+      <span class="rm-lab">The tell</span>
+      <p>You sound them out and get <span class="mono">yatch-ett</span>, <span class="mono">co-lo-nel</span>,
+      <span class="mono">eye-land</span>, <span class="mono">Wed-nes-day</span>. That's Road 1 doing its job
+      correctly on words that don't play fair, because Road 2 didn't recognise them fast enough. It usually
+      shows up more in spelling than in reading.</p>
+    </div>
+    <div class="rm-eng">
+      <span class="rm-lab">Where this shows up in coursework</span>
+      <p>Your field is full of surnames that don't obey English spelling &mdash;
+      <span class="mono">Fourier, Laplace, Euler, Poisson, Reynolds, Navier</span> &mdash; plus words like
+      <span class="mono">gauge</span> and <span class="mono">torque</span>. If you can't recall a term's
+      spelling reliably, you can't look it up, and spellcheck won't save you because none of it is in the
+      dictionary.</p>
+    </div>
+    <fieldset class="rm-mark">
+      <legend>Does this happen to you?</legend>
+      <div class="rm-opts">
+        <span class="rm-opt"><input type="radio" id="surf-y" name="surf" value="yes"><label for="surf-y">Yes, that's me</label></span>
+        <span class="rm-opt"><input type="radio" id="surf-s" name="surf" value="some"><label for="surf-s">Sometimes</label></span>
+        <span class="rm-opt"><input type="radio" id="surf-n" name="surf" value="no"><label for="surf-n">Not really</label></span>
+      </div>
+    </fieldset>
+  </article>
+
+  <article class="rm-pattern" data-key="lpd">
+    <div class="rm-phead">
+      <span class="rm-kicker">Pattern 3 &middot; Before either road</span>
+      <h3>The middle letters swap places</h3>
+    </div>
+    <p class="rm-try">Read each pair. They differ only in the order of two middle letters.</p>
+    <div class="rm-spec"><span class="pair">di<span class="sw">ar</span>y / dai<span class="sw">ry</span></span> &nbsp; <span class="pair">tr<span class="sw">ia</span>l / tra<span class="sw">il</span></span> &nbsp; <span class="pair">sl<span class="sw">im</span>e / sm<span class="sw">il</span>e</span><br><span class="pair">ca<span class="sw">su</span>al / ca<span class="sw">us</span>al</span> &nbsp; <span class="pair">ang<span class="sw">el</span> / ang<span class="sw">le</span></span> &nbsp; <span class="pair">f<span class="sw">or</span>m / fr<span class="sw">om</span></span></div>
+    <div class="rm-tell">
+      <span class="rm-lab">The tell</span>
+      <p>First and last letters are always right; the middle migrates. You read one word of the pair and get
+      the other, or you have to stop and deliberately check. Researchers found the same error in deaf readers
+      of fingerspelled words &mdash; so it isn't your eyes, it's the stage that encodes letter
+      <strong>order</strong>.</p>
+    </div>
+    <div class="rm-eng">
+      <span class="rm-lab">Where this shows up in coursework</span>
+      <p>This is the expensive one. <span class="mono">Angle / angel. Causal / casual. Form / from.</span> And
+      it doesn't stop at words: transposing digits when you copy a number
+      (<span class="mono">2.718 &rarr; 2.178</span>), flipping subscripts (<span class="mono">x&#8321;&#8322;</span>
+      vs <span class="mono">x&#8322;&#8321;</span>), reversing matrix indices, swapping the order of a limit.
+      You get the physics right and the arithmetic wrong, then can't find the error on re-reading &mdash;
+      because you re-read it the same wrong way.</p>
+    </div>
+    <fieldset class="rm-mark">
+      <legend>Does this happen to you?</legend>
+      <div class="rm-opts">
+        <span class="rm-opt"><input type="radio" id="lpd-y" name="lpd" value="yes"><label for="lpd-y">Yes, that's me</label></span>
+        <span class="rm-opt"><input type="radio" id="lpd-s" name="lpd" value="some"><label for="lpd-s">Sometimes</label></span>
+        <span class="rm-opt"><input type="radio" id="lpd-n" name="lpd" value="no"><label for="lpd-n">Not really</label></span>
+      </div>
+    </fieldset>
+  </article>
+
+  <article class="rm-pattern" data-key="attn">
+    <div class="rm-phead">
+      <span class="rm-kicker">Pattern 4 &middot; Before either road</span>
+      <h3>Neighbouring words trade letters</h3>
+    </div>
+    <p class="rm-try">Read these two-word phrases at normal speed, without slowing down.</p>
+    <div class="rm-spec"><span class="pair"><span class="sw">m</span>ild <span class="sw">w</span>ind</span> &nbsp; <span class="pair"><span class="sw">c</span>ane <span class="sw">l</span>ove</span> &nbsp; <span class="pair"><span class="sw">f</span>ig <span class="sw">t</span>ree</span> &nbsp; <span class="pair"><span class="sw">b</span>ent <span class="sw">t</span>ank</span></div>
+    <div class="rm-tell">
+      <span class="rm-lab">The tell</span>
+      <p>You read <span class="mono">wild mind</span>, <span class="mono">lane cove</span>,
+      <span class="mono">tig free</span>. The letters keep their position but jump to the wrong word. The
+      giveaway: single words in isolation are fine, and it only goes wrong in running text. If you read better
+      with a finger under the line or a card covering the rest of the page, this is probably why.</p>
+    </div>
+    <div class="rm-eng">
+      <span class="rm-lab">Where this shows up in coursework</span>
+      <p>Textbook pages are dense and equations are crowded &mdash; exactly the conditions that cause it. In a
+      long expression you grab a symbol from the term next door, or pull a subscript off the neighbouring
+      variable. Dense two-column PDFs are the worst case.</p>
+    </div>
+    <fieldset class="rm-mark">
+      <legend>Does this happen to you?</legend>
+      <div class="rm-opts">
+        <span class="rm-opt"><input type="radio" id="attn-y" name="attn" value="yes"><label for="attn-y">Yes, that's me</label></span>
+        <span class="rm-opt"><input type="radio" id="attn-s" name="attn" value="some"><label for="attn-s">Sometimes</label></span>
+        <span class="rm-opt"><input type="radio" id="attn-n" name="attn" value="no"><label for="attn-n">Not really</label></span>
+      </div>
+    </fieldset>
+  </article>
+
+  <article class="rm-pattern" data-key="neg">
+    <div class="rm-phead">
+      <span class="rm-kicker">Pattern 5 &middot; Before either road</span>
+      <h3>The front of the word goes missing</h3>
+    </div>
+    <p class="rm-try">Read the left word of each pair. Then check what you actually said.</p>
+    <div class="rm-spec"><span class="pair"><span class="sw">b</span>lend &rarr; lend</span> &nbsp; <span class="pair"><span class="sw">p</span>rice &rarr; rice</span> &nbsp; <span class="pair"><span class="sw">s</span>train &rarr; train</span><br><span class="pair"><span class="sw">p</span>late &rarr; late</span> &nbsp; <span class="pair"><span class="sw">sh</span>own &rarr; own</span> &nbsp; <span class="pair"><span class="sw">c</span>harm &rarr; harm</span></div>
+    <div class="rm-tell">
+      <span class="rm-lab">The tell</span>
+      <p>Letters drop off one end &mdash; nearly always the left &mdash; and what's left is <strong>still a real
+      word</strong>. That's what makes this pattern invisible: nothing feels wrong, the sentence still parses,
+      and you sail past it.</p>
+    </div>
+    <div class="rm-eng">
+      <span class="rm-lab">Where this shows up in coursework</span>
+      <p>A dropped left-hand character is a different quantity: <span class="mono">&minus;x</span> read as
+      <span class="mono">x</span>, <span class="mono">sinh</span> as <span class="mono">sin</span>,
+      <span class="mono">10&#8315;&#179;</span> as <span class="mono">10&#179;</span>,
+      <span class="mono">&le;</span> as <span class="mono">&lt;</span>, <span class="mono">mV</span> as
+      <span class="mono">V</span>. Same failure mode as the words: the result still looks like a legitimate
+      expression, so nothing flags it.</p>
+    </div>
+    <fieldset class="rm-mark">
+      <legend>Does this happen to you?</legend>
+      <div class="rm-opts">
+        <span class="rm-opt"><input type="radio" id="neg-y" name="neg" value="yes"><label for="neg-y">Yes, that's me</label></span>
+        <span class="rm-opt"><input type="radio" id="neg-s" name="neg" value="some"><label for="neg-s">Sometimes</label></span>
+        <span class="rm-opt"><input type="radio" id="neg-n" name="neg" value="no"><label for="neg-n">Not really</label></span>
+      </div>
+    </fieldset>
+  </article>
+
+  <article class="rm-pattern" data-key="vowel">
+    <div class="rm-phead">
+      <span class="rm-kicker">Pattern 6 &middot; Before either road</span>
+      <h3>The consonants hold, the vowels slide</h3>
+    </div>
+    <p class="rm-try">Read down each group. The consonant frame never changes.</p>
+    <div class="rm-spec"><span class="pair">b<span class="sw">i</span>t &middot; b<span class="sw">a</span>t &middot; b<span class="sw">u</span>t &middot; b<span class="sw">e</span>t &middot; b<span class="sw">oa</span>t</span><br><span class="pair">fl<span class="sw">u</span>x &middot; fl<span class="sw">e</span>x</span> &nbsp; <span class="pair">v<span class="sw">e</span>ctor &middot; v<span class="sw">i</span>ctor</span> &nbsp; <span class="pair">m<span class="sw">a</span>ss &middot; m<span class="sw">o</span>ss &middot; m<span class="sw">i</span>ss</span></div>
+    <div class="rm-tell">
+      <span class="rm-lab">The tell</span>
+      <p>You lock onto the consonant skeleton and the vowel becomes a guess filled in from context. Often the
+      first thing people notice is in their own spelling &mdash; consonants right, vowels wrong.</p>
+    </div>
+    <div class="rm-eng">
+      <span class="rm-lab">Where this shows up in coursework</span>
+      <p>Mostly it costs you in written work and in variable naming. If you have <span class="mono">flux</span>
+      and <span class="mono">flex</span> in the same derivation, or <span class="mono">vel</span> and
+      <span class="mono">val</span> in the same function, you've built a trap for yourself.</p>
+    </div>
+    <fieldset class="rm-mark">
+      <legend>Does this happen to you?</legend>
+      <div class="rm-opts">
+        <span class="rm-opt"><input type="radio" id="vowel-y" name="vowel" value="yes"><label for="vowel-y">Yes, that's me</label></span>
+        <span class="rm-opt"><input type="radio" id="vowel-s" name="vowel" value="some"><label for="vowel-s">Sometimes</label></span>
+        <span class="rm-opt"><input type="radio" id="vowel-n" name="vowel" value="no"><label for="vowel-n">Not really</label></span>
+      </div>
+    </fieldset>
+  </article>
+
+  <article class="rm-pattern" data-key="speed">
+    <div class="rm-phead">
+      <span class="rm-kicker">Pattern 7 &middot; Speed, not accuracy</span>
+      <h3>You get it right, it just costs too much</h3>
+    </div>
+    <p class="rm-try">Time yourself. Say this row out loud as fast as you can, twice through, without
+    errors.</p>
+    <div class="rm-spec">7 &nbsp; 3 &nbsp; 9 &nbsp; 2 &nbsp; 5 &nbsp; 8 &nbsp; 1 &nbsp; 4 &nbsp; 6 &nbsp; 3 &nbsp; 9 &nbsp; 7<br>2 &nbsp; 8 &nbsp; 5 &nbsp; 1 &nbsp; 6 &nbsp; 4 &nbsp; 9 &nbsp; 3 &nbsp; 7 &nbsp; 2 &nbsp; 8 &nbsp; 5</div>
+    <div class="rm-tell">
+      <span class="rm-lab">The tell</span>
+      <p>You knew every digit instantly, but naming them in sequence at speed felt weirdly effortful.
+      Researchers call this rapid naming, and it's an independent problem from sounding out &mdash; you can
+      have one, the other, or both. Having both is the hardest combination, and it's the one most likely to
+      have been missed at school, because your <strong>accuracy</strong> was never the problem.</p>
+    </div>
+    <div class="rm-eng">
+      <span class="rm-lab">Where this shows up in coursework</span>
+      <p>This is the accommodation case, full stop. If you are accurate but slow, then a timed exam measures
+      your reading speed, not your grasp of the subject. It's also why you can be genuinely wiped out after forty
+      minutes of reading that a classmate does in fifteen &mdash; you did the same work with a bigger
+      engine.</p>
+    </div>
+    <fieldset class="rm-mark">
+      <legend>Does this happen to you?</legend>
+      <div class="rm-opts">
+        <span class="rm-opt"><input type="radio" id="speed-y" name="speed" value="yes"><label for="speed-y">Yes, that's me</label></span>
+        <span class="rm-opt"><input type="radio" id="speed-s" name="speed" value="some"><label for="speed-s">Sometimes</label></span>
+        <span class="rm-opt"><input type="radio" id="speed-n" name="speed" value="no"><label for="speed-n">Not really</label></span>
+      </div>
+    </fieldset>
+  </article>
+
+  <article class="rm-pattern" data-key="stealth">
+    <div class="rm-phead">
+      <span class="rm-kicker">Pattern 8 &middot; The one that hides</span>
+      <h3>You understand it faster than you can read it</h3>
+    </div>
+    <p class="rm-try">No sample for this one. Just read the list and count how many land.</p>
+    <ul class="rm-checks">
+      <li>You've worked out where a paragraph is going before you've finished decoding it.</li>
+      <li>Reading comprehension tests never flagged you &mdash; but reading aloud in class is something you'd
+      pay to avoid.</li>
+      <li>Your spelling and handwriting don't match how you actually think.</li>
+      <li>You're flattened after forty minutes of reading in a way your friends aren't.</li>
+      <li>You quietly route around reading-heavy tasks and couldn't fully explain why.</li>
+      <li>You can explain a concept beautifully out loud and then write three laboured sentences about it.</li>
+      <li>Some part of you suspects you're getting away with something.</li>
+    </ul>
+    <div class="rm-tell">
+      <span class="rm-lab">The tell</span>
+      <p>This is what dyslexia looks like when strong reasoning is covering for it &mdash; sometimes called
+      <strong>stealth dyslexia</strong>. You're not reading the words; you're using vocabulary, context and
+      inference to reconstruct the meaning, and it works. It works so well that standardised tests come back
+      fine and nobody ever looked further.</p>
+      <p>The cost is that it takes enormous effort, all the time, invisibly. The mask slips in exactly two
+      places: <strong>reading out loud</strong>, and <strong>spelling</strong> &mdash; because neither one lets
+      you use context. If patterns 1&ndash;7 felt mild but this list felt pointed, this is your pattern.</p>
+    </div>
+    <div class="rm-eng">
+      <span class="rm-lab">Where this shows up in coursework</span>
+      <p>Technical and quantitative subjects reward the reasoning that's carrying you, so you can get a long way before the bill comes
+      due &mdash; usually when reading volume jumps in upper-level courses, or when exams get tight enough that
+      speed matters. And the mismatch between how well you think and how hard reading is has a way of turning
+      into &ldquo;I must be a fraud,&rdquo; which is a much worse problem than the reading.</p>
+    </div>
+    <fieldset class="rm-mark">
+      <legend>Does this sound like you?</legend>
+      <div class="rm-opts">
+        <span class="rm-opt"><input type="radio" id="stealth-y" name="stealth" value="yes"><label for="stealth-y">Yes, that's me</label></span>
+        <span class="rm-opt"><input type="radio" id="stealth-s" name="stealth" value="some"><label for="stealth-s">Sometimes</label></span>
+        <span class="rm-opt"><input type="radio" id="stealth-n" name="stealth" value="no"><label for="stealth-n">Not really</label></span>
+      </div>
+    </fieldset>
+  </article>
+
+  <div class="rm-note">
+    <h3>Two things that often ride along</h3>
+    <p><strong>Working memory.</strong> If you lose the beginning of a long word by the time you reach the end,
+    or lose the thread of a derivation between line three and line seven, that's the same limited buffer being
+    spent on decoding instead of on the maths.</p>
+    <p><strong>Attention.</strong> Somewhere between a third and a half of people with dyslexia also meet
+    criteria for ADHD. If you avoid reading, it's worth knowing which kind of avoidance it is:
+    dyslexia-avoidance is <strong>exhaustion</strong> &mdash; you'd keep going if you could. ADHD-avoidance is
+    <strong>boredom</strong> &mdash; you can't stay on the page even when it's easy. If both descriptions fit,
+    both are worth raising, because untreated attention problems will sabotage any reading strategy you
+    try.</p>
+  </div>
+</section>
+
+<section id="profile">
+  <h2>Your profile</h2>
+  <div class="rm-profile">
+    <div class="stack-sm">
+      <span class="rm-lab">Marked &ldquo;yes, that's me&rdquo;</span>
+      <div class="rm-chips" id="rm-chips-yes"><span class="rm-empty">Nothing marked yet &mdash; work through the eight patterns above.</span></div>
+    </div>
+    <div class="stack-sm">
+      <span class="rm-lab">Marked &ldquo;sometimes&rdquo;</span>
+      <div class="rm-chips" id="rm-chips-some"><span class="rm-empty">&mdash;</span></div>
+    </div>
+    <div class="stack-sm">
+      <span class="rm-lab">A description you can hand to someone</span>
+      <p>Bring this to disability services, a doctor, an evaluator, or a professor. Edit it so it sounds like
+      you.</p>
+      <div class="rm-summary" id="rm-summary">Mark some patterns above and a description will be written here.</div>
+      <div class="rm-btnrow">
+        <button type="button" class="rm-btn" id="rm-copyBtn">Copy this description</button>
+        <button type="button" class="rm-btn ghost" id="rm-printBtn">Print / save as PDF</button>
+        <button type="button" class="rm-btn ghost" id="rm-resetBtn">Clear my answers</button>
+        <span class="rm-said" id="rm-said" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="strategies">
+  <h2>Strategies</h2>
+  <p>Everything here is usable. The ones matching what you marked are flagged in the margin &mdash; start with
+  those, and pick <strong>two</strong>. Not eight. Two that you'll actually do for a month.</p>
+  <div class="rm-filter">
+    <div class="rm-seg">
+      <button type="button" id="rm-filterBtn" aria-pressed="false">Show only my matches</button>
+    </div>
+  </div>
+
+  <article class="rm-strat always" data-for="">
+    <div class="rm-strat-top"><h3>Start with these, whatever you marked</h3><span class="rm-match">Everyone</span></div>
+    <ul>
+      <li><strong>Stop re-reading. Start blank-paging.</strong> After a section, shut the book and write what
+      you remember on blank paper. Then check. Re-reading is the most expensive thing you can do and one of the
+      least effective for anyone &mdash; for you it's doubly wasteful. Recall costs almost no reading and is
+      the best-evidenced study technique there is.</li>
+      <li><strong>Use worked examples as your main diet.</strong> Read a fully solved problem. Then redo it
+      with the solution covered. Then do a new one. Going straight to unsolved problems burns the working
+      memory you need for the concept.</li>
+      <li><strong>Draw it.</strong> Free-body diagram, block diagram, concept map, circuit sketch. Spatial
+      reasoning is usually a strength in this profile and a diagram holds information that would otherwise sit
+      in your working memory.</li>
+      <li><strong>Explain it out loud.</strong> To a friend, a rubber duck, or your phone's voice recorder.
+      Talking is almost certainly your strongest channel &mdash; use it for the part of studying that's
+      actually about understanding.</li>
+      <li><strong>Read before lecture, not after.</strong> Even a bad ten-minute skim means lecture is your
+      second exposure. That single change does more for a slow reader than any note-taking system.</li>
+      <li><strong>Get the textbook in a format you control.</strong> An EPUB or accessible PDF lets you change
+      the font, size and spacing and turn on read-aloud. Your disability services office can request accessible
+      formats from publishers, and Bookshare has a large academic catalogue. Ask &mdash; this is
+      routine.</li>
+    </ul>
+  </article>
+
+  <article class="rm-strat" data-for="phon surf vowel">
+    <div class="rm-strat-top"><h3>Build a pronunciation sheet before the chapter</h3><span class="rm-match">Matches your answers</span></div>
+    <ul>
+      <li>Before you read a chapter, pull the new terms out of the summary or index &mdash; usually ten to
+      fifteen. Get each one <strong>said out loud</strong> (text-to-speech, YouTube, or ask your professor) and
+      say it back three times.</li>
+      <li>Write them on one sheet with the pronunciation spelled out your way:
+      <span class="mono">Euler (OY-ler)</span>, <span class="mono">Bernoulli (ber-NOO-lee)</span>,
+      <span class="mono">Navier (nav-YAY)</span>, <span class="mono">enthalpy (EN-thal-pee)</span>. Never meet
+      a technical word for the first time in print.</li>
+      <li><strong>Learn the parts, not the words.</strong> <span class="mono">iso-</span> same,
+      <span class="mono">-tropic</span> direction, <span class="mono">homo-</span> same,
+      <span class="mono">poly-</span> many, <span class="mono">-morphic</span> shape,
+      <span class="mono">co-</span> together, <span class="mono">-variant</span> changing with. Then
+      <span class="mono">isotropic</span> is two known chunks instead of nine unknown letters. This is the adult
+      version of structured phonics, and it's the highest-leverage thing on this page for technical
+      vocabulary.</li>
+      <li>Add your terms to your phone's or Word's autocorrect list so the spelling stops being your
+      problem.</li>
+    </ul>
+  </article>
+
+  <article class="rm-strat" data-for="phon speed stealth">
+    <div class="rm-strat-top"><h3>Let the machine do the decoding</h3><span class="rm-match">Matches your answers</span></div>
+    <ul>
+      <li>Use text-to-speech with <strong>your eyes on the same text</strong> &mdash; not audio alone. Hearing
+      and seeing together is far better than either one, because the audio carries the decoding while your eyes
+      learn the word shapes. Microsoft Edge's Read Aloud and Word's Read Aloud are free and already on your
+      machine; Speechify and NaturalReader do more.</li>
+      <li>Push the speed up over a few weeks. Most people end up comfortable well above normal speaking pace,
+      and that's when it stops feeling like a compromise and starts feeling like an advantage.</li>
+      <li>Record lectures (ask first) and get a transcript &mdash; Otter, Word's transcribe, or your phone.
+      Then you can search the lecture instead of re-reading your notes.</li>
+      <li>For maths in a PDF, screenshot into Mathpix to get clean LaTeX you can enlarge and re-space.
+      Fighting a fixed, tiny, two-column PDF is a losing game.</li>
+    </ul>
+  </article>
+
+  <article class="rm-strat" data-for="lpd neg vowel">
+    <div class="rm-strat-top"><h3>Make copying errors impossible to hide</h3><span class="rm-match">Matches your answers</span></div>
+    <ul>
+      <li><strong>Check numbers right-to-left.</strong> Read a copied number backwards, digit by digit. Reading
+      forwards lets whole-word recognition smooth over a transposition; backwards it can't, so the error has
+      nowhere to hide. Same for a copied expression: check it term by term from the right.</li>
+      <li><strong>Say subscripts and indices out loud every time.</strong> Pick one phrasing and never vary it
+      &mdash; always &ldquo;x sub one two, row one column two.&rdquo; Speech is sequential, so it catches order
+      errors that your eye slides past.</li>
+      <li><strong>Copy a number once.</strong> If a value appears three times in a solution, define it as a
+      symbol on line one and use the symbol. Every re-copy is a fresh chance to transpose.</li>
+      <li><strong>Carry units on every line.</strong> Units are a free error-checker: a dropped prefix or
+      exponent breaks the dimensions and shows up immediately. This is the cheapest habit here and it catches
+      the pattern-5 errors that otherwise look fine.</li>
+      <li><strong>Run a sign-and-exponent pass.</strong> Before you box an answer, do one deliberate scan for
+      <em>only</em> minus signs, exponents, prefixes and inequality directions. A separate pass, not a feeling
+      &mdash; because these errors don't feel like anything.</li>
+      <li><strong>Read your final answer aloud in words</strong>, including the sign and the units.
+      &ldquo;Negative three point two times ten to the minus four newtons.&rdquo; You'll hear what you didn't
+      see.</li>
+    </ul>
+  </article>
+
+  <article class="rm-strat" data-for="attn lpd">
+    <div class="rm-strat-top"><h3>Give the page less to crowd with</h3><span class="rm-match">Matches your answers</span></div>
+    <ul>
+      <li><strong>Mask the page.</strong> An index card under the line, or the line guide at the top of this
+      page. If it helps here, it'll help in your textbook &mdash; that's a real finding about you, not a
+      placebo.</li>
+      <li><strong>Open up the spacing.</strong> More space between letters and lines measurably reduces
+      crowding errors. In anything you control &mdash; your own notes, a Word doc, an EPUB &mdash; go to 1.5 or
+      double spacing and bump the letter spacing slightly.</li>
+      <li><strong>Work equations one term at a time.</strong> Cover the rest of the line with your hand or a
+      card. Long expressions are exactly the crowded condition that causes letters and symbols to migrate.</li>
+      <li><strong>Re-copy dense equations onto your own paper, big and spread out,</strong> before you work
+      with them. The copy is worth the two minutes.</li>
+      <li>Avoid reading dense two-column PDFs at 100%. Zoom until a line is short, or reflow it.</li>
+    </ul>
+  </article>
+
+  <article class="rm-strat" data-for="speed stealth">
+    <div class="rm-strat-top"><h3>Get the accommodations you're entitled to</h3><span class="rm-match">Matches your answers</span></div>
+    <ul>
+      <li><strong>Go to disability services.</strong> Not because you can't cope &mdash; because a timed exam
+      is currently measuring the wrong thing. Extended time (usually 1.5x), a low-distraction room, and
+      permission to record lectures are standard, unremarkable, and not visible to anyone.</li>
+      <li>They'll want documentation. If you were ever tested in school, ask your parents or your old district
+      for the report &mdash; it may still be on file. If not, ask disability services what they accept and who
+      evaluates locally; some universities have funds for this.</li>
+      <li>If you need a new evaluation, the things worth asking to be tested are: <strong>phonological
+      awareness, rapid naming, pseudoword decoding, reading fluency, spelling, working memory, and processing
+      speed.</strong> Ask specifically that decoding be tested <strong>without context</strong> &mdash; that's
+      where compensation stops working and the real picture shows up.</li>
+      <li><strong>Timebox, don't marathon.</strong> Forty or fifty minutes then a real break. Your fatigue is a
+      genuine load limit, and pushing through it produces reading you won't retain.</li>
+      <li>Do your first read of new material when you're fresh, and your problem sets when you're not. Never
+      spend your best hours on your most expensive activity.</li>
+    </ul>
+  </article>
+
+  <article class="rm-strat" data-for="stealth">
+    <div class="rm-strat-top"><h3>About the fraud feeling</h3><span class="rm-match">Matches your answers</span></div>
+    <ul>
+      <li>The gap between how fast you think and how slowly you read is not evidence that the thinking is fake.
+      It's the actual, documented shape of this profile: strong reasoning, weak decoding, and the two are
+      genuinely independent.</li>
+      <li>Reading slowly is not the same as understanding slowly. You already know this about other people; the
+      work is believing it about yourself.</li>
+      <li>Using text-to-speech, extra time, or a recorded lecture isn't a crutch any more than wearing glasses
+      is. You're removing an obstacle that has nothing to do with the subject so you can spend your effort on
+      the subject itself.</li>
+      <li>Say it to one person &mdash; a professor, an advisor, a friend in the major. The isolation costs more
+      than the reading does.</li>
+    </ul>
+  </article>
+</section>
+
+<section id="reportmap">
+  <h2>If you go reading the research</h2>
+  <p>Search for dyslexia and you get a great deal of neuroscience. Most of it is real, and most of it will not
+  change anything you do on Tuesday. Here's what actually repays the reading effort and what you can safely
+  leave alone.</p>
+  <div class="rm-map">
+    <div class="rm-maprow"><span class="rm-verdict rm-v-read">Worth it</span><span class="mt">The subtypes, and the two-route model</span><span class="md">This is where the eight patterns above came from. Look for the tables of error types &mdash; those are the useful part.</span></div>
+    <div class="rm-maprow"><span class="rm-verdict rm-v-read">Worth it</span><span class="mt">Stealth dyslexia and twice-exceptionality</span><span class="md">Pattern 8. Probably the most directly relevant part of the literature for someone already succeeding academically.</span></div>
+    <div class="rm-maprow"><span class="rm-verdict rm-v-read">Worth it</span><span class="mt">The ADHD overlap</span><span class="md">Short, practical, and explains the difference between the two kinds of reading avoidance.</span></div>
+    <div class="rm-maprow"><span class="rm-verdict rm-v-read">Worth it</span><span class="mt">Why the old IQ-gap rule was dropped</span><span class="md">Useful if anyone ever tells you your grades are too good to qualify for support. That standard was abandoned for exactly this reason.</span></div>
+    <div class="rm-maprow"><span class="rm-verdict rm-v-skip">Skip</span><span class="mt">The neuroanatomy</span><span class="md">Arcuate fasciculus, fractional anisotropy, hypoactivation of the temporoparietal cortex. All well established, and none of it is actionable.</span></div>
+    <div class="rm-maprow"><span class="rm-verdict rm-v-skip">Skip</span><span class="mt">Clinical test batteries</span><span class="md">Written for the clinicians administering them. You only need the list of skills to ask about, which is in the accommodations section above.</span></div>
+    <div class="rm-maprow"><span class="rm-verdict rm-v-skip">Skip</span><span class="mt">Eye-tracking and machine learning</span><span class="md">Research tools, not available to you, and not worth the reading effort.</span></div>
+    <div class="rm-maprow"><span class="rm-verdict rm-v-skip">Skip</span><span class="mt">Brain stimulation (tDCS / rTMS)</span><span class="md">Experimental, done in labs under supervision. Do not buy a device online.</span></div>
+  </div>
+
+  <div class="rm-plain">
+    <h3>Two honest caveats</h3>
+    <p><strong>Coloured paper.</strong> This page lets you tint the background because glare and comfort are
+    real, and if a tint makes you want to keep reading, that's a genuine benefit. But be clear-eyed: the
+    evidence that coloured overlays actually improve reading in dyslexia is weak, and the &ldquo;letters
+    wobble&rdquo; visual theory behind it is contested. Larger text and wider spacing have better support
+    than colour does.</p>
+    <p><strong>The subtype labels.</strong> Much of the subtype research comes from studying
+    adults who lost reading ability after brain injury, then extended to developmental dyslexia. That extension
+    is real research, but it's less settled than most summaries of it suggest. Trust the descriptions
+    of the errors &mdash; those are things you can check against your own experience. Hold the labels
+    loosely.</p>
+  </div>
+</section>
+
+<section id="close">
+  <h2>If you only take one thing</h2>
+  <p>The thing that has been costing you the most is almost certainly not the reading itself &mdash; it's that
+  you've been using reading as your <strong>study method</strong>. Reading and re-reading is the most expensive
+  tool you own and one of the weakest for actually retaining anything.</p>
+  <p>Swap it. Read once, with whatever supports make that survivable. Then close the book and work: recall it,
+  draw it, say it, solve it. That's a better way to study for anyone. For you it also happens to cut the price
+  in half.</p>
+</section>
+
+</div><!-- /.rm-body -->
+</div><!-- /.rm -->
+
+<script src="{{ site.baseurl }}/assets/js/reading-map.js"></script>
