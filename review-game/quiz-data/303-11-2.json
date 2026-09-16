@@ -1,0 +1,765 @@
+{
+  "title": "MATH 303 — §11.2 Vectors and Vector Algebra",
+  "section": "11.2",
+  "questions": [
+    {
+      "question": "Two vectors $\\mathbf{u}$ and $\\mathbf{v}$ are considered equivalent if they share which of the following properties?",
+      "answerOptions": [
+        {
+          "text": "The same magnitude and the same direction, regardless of their position in space.",
+          "isCorrect": true,
+          "rationale": "Vectors are defined by their length and orientation, meaning they can be translated anywhere as long as these two properties remain constant."
+        },
+        {
+          "text": "The same initial point, terminal point, and magnitude.",
+          "isCorrect": false,
+          "rationale": "Position is not a defining characteristic of a vector; requiring the same points is too restrictive."
+        },
+        {
+          "text": "The same direction and the same initial point, but different magnitudes.",
+          "isCorrect": false,
+          "rationale": "Vectors with different magnitudes cannot be equivalent because magnitude is a core defining property."
+        },
+        {
+          "text": "The same component form and the same location relative to the origin.",
+          "isCorrect": false,
+          "rationale": "The location relative to the origin is irrelevant for equivalence, as vectors are free to be moved through translation."
+        }
+      ],
+      "hint": "Think about whether a vector's location in a coordinate plane changes its identity.",
+      "section": "11.2"
+    },
+    {
+      "question": "What is the component form of a vector $\\mathbf{v}$ in $R^3$ with an initial point $P=(4, -2, 6)$ and a terminal point $Q=(-1, 3, 2)$?",
+      "answerOptions": [
+        {
+          "text": "$\\langle -5, 5, -4 \\rangle$",
+          "isCorrect": true,
+          "rationale": "The component form is calculated by subtracting the initial coordinates from the terminal coordinates: $(-1-4, 3-(-2), 2-6)$."
+        },
+        {
+          "text": "$\\langle 5, -5, 4 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This results from subtracting the terminal coordinates from the initial coordinates, which is the reverse of the correct procedure."
+        },
+        {
+          "text": "$\\langle 3, 1, 8 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This error occurs if the coordinates are added together instead of being subtracted."
+        },
+        {
+          "text": "$\\langle -1, 3, 2 \\rangle$",
+          "isCorrect": false,
+          "rationale": "These are simply the coordinates of the terminal point, which only represent the vector if it were in standard position starting at the origin."
+        }
+      ],
+      "hint": "Remember the subtraction order: terminal point minus initial point.",
+      "section": "11.2"
+    },
+    {
+      "question": "Given the vector $\\mathbf{w} = \\langle -3, 4, 12 \\rangle$, what is its magnitude $|\\|\\mathbf{w}\\||$?",
+      "answerOptions": [
+        {
+          "text": "13",
+          "isCorrect": true,
+          "rationale": "The magnitude is calculated as $\\sqrt{(-3)^2 + 4^2 + 12^2} = \\sqrt{9 + 16 + 144} = \\sqrt{169} = 13$."
+        },
+        {
+          "text": "$\\sqrt{13}$",
+          "isCorrect": false,
+          "rationale": "This might be chosen if the squares of the components were summed but the square root was applied incorrectly to a pre-summed value."
+        },
+        {
+          "text": "19",
+          "isCorrect": false,
+          "rationale": "This reflects a common error where the absolute values of the components are summed ($3+4+12$) instead of using the Pythagorean distance formula."
+        },
+        {
+          "text": "$\\sqrt{151}$",
+          "isCorrect": false,
+          "rationale": "This calculation would occur if the square of the z-component was ignored or calculated incorrectly as $12^2 = 126$."
+        }
+      ],
+      "hint": "This is a direct application of the distance formula extended to three dimensions.",
+      "section": "11.2"
+    },
+    {
+      "question": "If vector $\\mathbf{v} = \\langle 2, -5 \\rangle$ and scalar $c = -3$, what is the result of the scalar multiplication $c\\mathbf{v}$?",
+      "answerOptions": [
+        {
+          "text": "$\\langle -6, 15 \\rangle$",
+          "isCorrect": true,
+          "rationale": "Scalar multiplication involves multiplying each component of the vector by the scalar: $-3(2) = -6$ and $-3(-5) = 15$."
+        },
+        {
+          "text": "$\\langle 6, -15 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This error involves failing to apply the negative sign of the scalar to both components."
+        },
+        {
+          "text": "$\\langle -1, -8 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This looks like a procedural error where the scalar was added or subtracted from the components instead of multiplied."
+        },
+        {
+          "text": "$\\langle -6, -5 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This occurs if the scalar is only multiplied by the first component and the second component is left unchanged."
+        }
+      ],
+      "hint": "Distribute the scalar value across all components of the vector.",
+      "section": "11.2"
+    },
+    {
+      "question": "Geometrically, what does the 'Triangle Rule' for vector addition $\\mathbf{u} + \\mathbf{v}$ describe?",
+      "answerOptions": [
+        {
+          "text": "Placing the initial point of $\\mathbf{v}$ at the terminal point of $\\mathbf{u}$ and drawing the vector from $\\mathbf{u}$'s tail to $\\mathbf{v}$'s head.",
+          "isCorrect": true,
+          "rationale": "This correctly describes the 'tip-to-tail' method where the resultant vector connects the start of the first to the end of the second."
+        },
+        {
+          "text": "Placing the initial points of both vectors together and drawing the vector that connects their terminal points.",
+          "isCorrect": false,
+          "rationale": "This description refers to vector subtraction, not addition."
+        },
+        {
+          "text": "Placing both vectors at the origin and drawing the diagonal of the resulting parallelogram.",
+          "isCorrect": false,
+          "rationale": "While this yields the same result, it describes the Parallelogram Rule, which is conceptually distinct from the Triangle Rule."
+        },
+        {
+          "text": "Subtracting the components of $\\mathbf{u}$ from $\\mathbf{v}$ and plotting the resulting point.",
+          "isCorrect": false,
+          "rationale": "This is an algebraic process for subtraction, not a geometric rule for addition."
+        }
+      ],
+      "hint": "Consider the sequential 'head-to-tail' arrangement of vectors.",
+      "section": "11.2"
+    },
+    {
+      "question": "Which vector property is expressed by the equation $c(\\mathbf{u} + \\mathbf{v}) = c\\mathbf{u} + c\\mathbf{v}$?",
+      "answerOptions": [
+        {
+          "text": "Distributivity over vector addition",
+          "isCorrect": true,
+          "rationale": "This property shows that a scalar multiple can be distributed across the sum of two vectors."
+        },
+        {
+          "text": "Associativity of addition",
+          "isCorrect": false,
+          "rationale": "Associativity involve grouping three vectors differently, such as $(\\mathbf{u} + \\mathbf{v}) + \\mathbf{w}$."
+        },
+        {
+          "text": "Commutativity of addition",
+          "isCorrect": false,
+          "rationale": "Commutativity refers to the order of addition, $\\mathbf{u} + \\mathbf{v} = \\mathbf{v} + \\mathbf{u}$, not scalar distribution."
+        },
+        {
+          "text": "Distributivity over scalar addition",
+          "isCorrect": false,
+          "rationale": "Distributivity over scalar addition involves two scalars and one vector, such as $(c + d)\\mathbf{u}$."
+        }
+      ],
+      "hint": "Look at how the scalar interacts with the group of vectors inside the parentheses.",
+      "section": "11.2"
+    },
+    {
+      "question": "How is the unit vector $\\hat{\\mathbf{u}}$ in the direction of a non-zero vector $\\mathbf{v}$ calculated?",
+      "answerOptions": [
+        {
+          "text": "$\\hat{\\mathbf{u}} = \\frac{\\mathbf{v}}{|\\|\\mathbf{v}\\||}$",
+          "isCorrect": true,
+          "rationale": "Normalizing a vector involves dividing each of its components by its magnitude to ensure the new vector has a length of 1 while maintaining direction."
+        },
+        {
+          "text": "$\\hat{\\mathbf{u}} = \\mathbf{v} \\cdot |\\|\\mathbf{v}\\||$",
+          "isCorrect": false,
+          "rationale": "Multiplying by the magnitude would scale the vector's length by its own length squared, which does not produce a unit vector."
+        },
+        {
+          "text": "$\\hat{\\mathbf{u}} = \\langle 1, 1, 1 \\rangle - \\mathbf{v}$",
+          "isCorrect": false,
+          "rationale": "Subtracting from a vector of ones is not a valid way to find a directional unit vector."
+        },
+        {
+          "text": "$\\hat{\\mathbf{u}} = \\frac{|\\|\\mathbf{v}\\||}{\\mathbf{v}}$",
+          "isCorrect": false,
+          "rationale": "Division of a scalar by a vector is not a defined operation in vector algebra; it must be scalar multiplication by the reciprocal."
+        }
+      ],
+      "hint": "Think about how to 'scale' a vector so that its length becomes exactly one.",
+      "section": "11.2"
+    },
+    {
+      "question": "Express the vector $\\mathbf{v} = \\langle 5, 0, -2 \\rangle$ as a linear combination of the standard basis vectors $\\mathbf{i}$, $\\mathbf{j}$, and $\\mathbf{k}$.",
+      "answerOptions": [
+        {
+          "text": "$5\\mathbf{i} - 2\\mathbf{k}$",
+          "isCorrect": true,
+          "rationale": "The standard basis vectors represent unit steps in the $x$, $y$, and $z$ directions, so $\\langle 5, 0, -2 \\rangle$ is $5\\mathbf{i} + 0\\mathbf{j} - 2\\mathbf{k}$."
+        },
+        {
+          "text": "$5\\mathbf{i} - 2\\mathbf{j}$",
+          "isCorrect": false,
+          "rationale": "This incorrectly assigns the z-component (-2) to the $\\mathbf{j}$ vector, which represents the y-direction."
+        },
+        {
+          "text": "$5\\mathbf{i} + \\mathbf{j} - 2\\mathbf{k}$",
+          "isCorrect": false,
+          "rationale": "This adds a $\\mathbf{j}$ component where the original vector had a zero, changing the vector's direction."
+        },
+        {
+          "text": "$\\langle 5\\mathbf{i}, 0\\mathbf{j}, -2\\mathbf{k} \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is a mixing of notations; a linear combination is a sum of vectors, not a vector of basis elements."
+        }
+      ],
+      "hint": "Each component of the vector corresponds to the coefficient of one of the standard unit vectors.",
+      "section": "11.2"
+    },
+    {
+      "question": "If a ball is launched from the ground with an initial vertical velocity of $64 \\text{ ft/s}$ and an initial horizontal velocity of $10 \\text{ ft/s}$, what is the vertical component of its velocity vector $\\mathbf{v}(t)$ after $2$ seconds (assume $g = -32 \\text{ ft/s}^2$)?",
+      "answerOptions": [
+        {
+          "text": "$0 \\text{ ft/s}$",
+          "isCorrect": true,
+          "rationale": "The vertical velocity formula is $v_y(t) = v_{y0} + at$. Here, $64 + (-32)(2) = 0$."
+        },
+        {
+          "text": "$64 \\text{ ft/s}$",
+          "isCorrect": false,
+          "rationale": "This assumes that the velocity is constant and ignores the acceleration due to gravity."
+        },
+        {
+          "text": "$-64 \\text{ ft/s}$",
+          "isCorrect": false,
+          "rationale": "This would be the vertical velocity when the ball hits the ground at $t=4$, not at the peak of its arc at $t=2$."
+        },
+        {
+          "text": "$10 \\text{ ft/s}$",
+          "isCorrect": false,
+          "rationale": "This is the constant horizontal velocity, which does not change based on vertical gravitational acceleration."
+        }
+      ],
+      "hint": "Use the kinematics equation for velocity under constant acceleration.",
+      "section": "11.2"
+    },
+    {
+      "question": "In a static equilibrium problem where a weight is hanging from two ropes, what must be true about the sum of the tension vectors $\\mathbf{T}_1$, $\\mathbf{T}_2$, and the weight vector $\\mathbf{W}$?",
+      "answerOptions": [
+        {
+          "text": "Their vector sum must be the zero vector $\\mathbf{0}$.",
+          "isCorrect": true,
+          "rationale": "Static equilibrium implies that the net force acting on the object is zero, so all force vectors must cancel each other out."
+        },
+        {
+          "text": "The magnitudes of $\\mathbf{T}_1$ and $\\mathbf{T}_2$ must sum to equal the magnitude of $\\mathbf{W}$.",
+          "isCorrect": false,
+          "rationale": "Magnitude summation does not account for the directions (angles) of the forces; only the vector components must sum to zero."
+        },
+        {
+          "text": "The horizontal components of $\\mathbf{T}_1$ and $\\mathbf{T}_2$ must be zero.",
+          "isCorrect": false,
+          "rationale": "The horizontal components must sum to zero, but they are usually non-zero individually to counteract each other."
+        },
+        {
+          "text": "$\\mathbf{T}_1$ and $\\mathbf{T}_2$ must be equivalent vectors.",
+          "isCorrect": false,
+          "rationale": "The tensions are only equal if the angles and rope lengths are perfectly symmetrical, which is not required for equilibrium."
+        }
+      ],
+      "hint": "Consider the definition of a 'static' system in terms of net force.",
+      "section": "11.2"
+    },
+    {
+      "question": "Find the point $N$ that is exactly one quarter of the way from point $P=(-2, 4, 1)$ toward point $Q=(3, 2, -1)$.",
+      "answerOptions": [
+        {
+          "text": "$(-\\frac{3}{4}, \\frac{7}{2}, \\frac{1}{2})$",
+          "isCorrect": true,
+          "rationale": "First find the vector $\\vec{PQ} = \\langle 5, -2, -2 \\rangle$, then calculate $P + \\frac{1}{4}\\vec{PQ} = \\langle -2, 4, 1 \\rangle + \\langle 1.25, -0.5, -0.5 \\rangle$."
+        },
+        {
+          "text": "$(\\frac{1}{2}, 3, 0)$",
+          "isCorrect": false,
+          "rationale": "This is the midpoint (one half of the way), found by averaging the coordinates of $P$ and $Q$."
+        },
+        {
+          "text": "$(\\frac{1}{4}, 1, -\\frac{1}{4})$",
+          "isCorrect": false,
+          "rationale": "This results from simply multiplying the coordinates of $Q$ by $\\frac{1}{4}$, ignoring the starting point $P$ and the displacement vector."
+        },
+        {
+          "text": "$(-\\frac{5}{4}, \\frac{9}{2}, \\frac{3}{2})$",
+          "isCorrect": false,
+          "rationale": "This error occurs if the vector $\\vec{QP}$ (initial minus terminal) is used instead of $\\vec{PQ}$."
+        }
+      ],
+      "hint": "Calculate the vector from $P$ to $Q$ first, then add a fraction of it to $P$.",
+      "section": "11.2"
+    },
+    {
+      "question": "A pilot wants to maintain a ground velocity $\\mathbf{v}_g$ due west. If there is a wind velocity $\\mathbf{v}_w$ blowing toward the southeast, which vector equation should the pilot use to find the necessary airspeed velocity $\\mathbf{v}_a$?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{v}_a = \\mathbf{v}_g - \\mathbf{v}_w$",
+          "isCorrect": true,
+          "rationale": "Since ground velocity is the sum of airspeed and wind velocity ($\\mathbf{v}_g = \\mathbf{v}_a + \\mathbf{v}_w$), the pilot must subtract the wind from the desired ground track."
+        },
+        {
+          "text": "$\\mathbf{v}_a = \\mathbf{v}_g + \\mathbf{v}_w$",
+          "isCorrect": false,
+          "rationale": "Adding the wind vector would result in the pilot being pushed further off course by the wind rather than compensating for it."
+        },
+        {
+          "text": "$\\mathbf{v}_a = \\mathbf{v}_w - \\mathbf{v}_g$",
+          "isCorrect": false,
+          "rationale": "This would find a vector pointing in the opposite direction of the necessary flight path."
+        },
+        {
+          "text": "$\\mathbf{v}_a = |\\|\\mathbf{v}_g\\|| + |\\|\\mathbf{v}_w\\||$",
+          "isCorrect": false,
+          "rationale": "Airspeed is a vector with direction, not just a sum of magnitudes."
+        }
+      ],
+      "hint": "The ground speed is the 'resultant' of the plane's effort through the air and the wind's movement.",
+      "section": "11.2"
+    },
+    {
+      "question": "What happens to a vector $\\mathbf{v}$ when it is multiplied by a scalar $c$ such that $-1 < c < 0$?",
+      "answerOptions": [
+        {
+          "text": "Its direction is reversed, and its magnitude decreases.",
+          "isCorrect": true,
+          "rationale": "A negative scalar reverses the direction, and since the absolute value of $c$ is less than 1, the vector is shortened."
+        },
+        {
+          "text": "Its direction remains the same, but its magnitude decreases.",
+          "isCorrect": false,
+          "rationale": "The negative sign of the scalar always forces a $180^\\circ$ change in direction."
+        },
+        {
+          "text": "Its direction is reversed, and its magnitude increases.",
+          "isCorrect": false,
+          "rationale": "Magnitude increases only if $|c| > 1$; here, $|c|$ is a fraction between 0 and 1."
+        },
+        {
+          "text": "It becomes the zero vector $\\mathbf{0}$.",
+          "isCorrect": false,
+          "rationale": "A vector only becomes the zero vector if it is multiplied by a scalar exactly equal to 0."
+        }
+      ],
+      "hint": "Consider the effect of both the sign and the absolute value of the scalar.",
+      "section": "11.2"
+    },
+    {
+      "question": "If $\\mathbf{u} = \\langle 2, 3 \\rangle$ and $\\mathbf{v} = \\langle 0, 1 \\rangle$, find the scalars $a$ and $b$ such that $\\mathbf{w} = \\langle 1, 2 \\rangle$ is expressed as $\\mathbf{w} = a\\mathbf{u} + b\\mathbf{v}$.",
+      "answerOptions": [
+        {
+          "text": "$a = \\frac{1}{2}, b = \\frac{1}{2}$",
+          "isCorrect": true,
+          "rationale": "Setting up the system $2a + 0b = 1$ and $3a + 1b = 2$ yields $a = 0.5$, and substituting that into the second equation gives $1.5 + b = 2$, so $b = 0.5$."
+        },
+        {
+          "text": "$a = 1, b = -1$",
+          "isCorrect": false,
+          "rationale": "This combination would result in $\\langle 2, 3 \\rangle + \\langle 0, -1 \\rangle = \\langle 2, 2 \\rangle$, which is not $\\mathbf{w}$."
+        },
+        {
+          "text": "$a = \\frac{1}{2}, b = 2$",
+          "isCorrect": false,
+          "rationale": "While $a=0.5$ correctly satisfies the x-component, $b=2$ would result in a y-component of $1.5 + 2 = 3.5$."
+        },
+        {
+          "text": "$a = 2, b = -4$",
+          "isCorrect": false,
+          "rationale": "This would result in an x-component of 4, which does not match the x-component of $\\mathbf{w}$."
+        }
+      ],
+      "hint": "Solve the system of linear equations created by the x and y components.",
+      "section": "11.2"
+    },
+    {
+      "question": "The zero vector $\\mathbf{0}$ is unique in vector algebra because it is the only vector that possesses which of the following?",
+      "answerOptions": [
+        {
+          "text": "A magnitude of zero and no specific direction.",
+          "isCorrect": true,
+          "rationale": "By definition, the zero vector has no length and thus cannot point in any direction, unlike all other vectors which must have one."
+        },
+        {
+          "text": "An initial point at the origin but no terminal point.",
+          "isCorrect": false,
+          "rationale": "Every vector, including the zero vector, has a terminal point; for the zero vector, the initial and terminal points coincide."
+        },
+        {
+          "text": "A magnitude of one but an undefined direction.",
+          "isCorrect": false,
+          "rationale": "This describes a unit vector, but unit vectors by definition must have a specific direction."
+        },
+        {
+          "text": "The property of being equivalent to any other vector with the same direction.",
+          "isCorrect": false,
+          "rationale": "Equivalence requires the same magnitude; since the zero vector has magnitude 0, it cannot be equivalent to any non-zero vector."
+        }
+      ],
+      "hint": "Consider what happens to the 'arrow' representation when the length is reduced to nothing.",
+      "section": "11.2"
+    },
+    {
+      "question": "Which of the following describes the geometric interpretation of the vector subtraction $\\mathbf{u} - \\mathbf{v}$ when both are drawn from the origin?",
+      "answerOptions": [
+        {
+          "text": "The vector pointing from the terminal point (head) of $\\mathbf{v}$ to the terminal point (head) of $\\mathbf{u}$.",
+          "isCorrect": true,
+          "rationale": "This is the 'head-to-head' rule for subtraction, representing the change required to go from $\\mathbf{v}$ to $\\mathbf{u}$."
+        },
+        {
+          "text": "The vector pointing from the terminal point of $\\mathbf{u}$ to the terminal point of $\\mathbf{v}$.",
+          "isCorrect": false,
+          "rationale": "This would describe the vector $\\mathbf{v} - \\mathbf{u}$, which is the negative of the desired vector."
+        },
+        {
+          "text": "The diagonal of the parallelogram formed by $\\mathbf{u}$ and $-\\mathbf{v}$ starting at the origin.",
+          "isCorrect": false,
+          "rationale": "While this is a valid way to find the sum $\\mathbf{u} + (-\\mathbf{v})$, it is the 'Parallelogram Rule' applied to addition rather than the primary geometric shortcut for subtraction."
+        },
+        {
+          "text": "The vector found by connecting the initial point of $\\mathbf{u}$ to the terminal point of $\\mathbf{v}$.",
+          "isCorrect": false,
+          "rationale": "This doesn't match any standard geometric rule for basic vector operations."
+        }
+      ],
+      "hint": "Subtraction can be viewed as the vector that 'closes' the triangle between the two heads.",
+      "section": "11.2"
+    },
+    {
+      "question": "In the standard basis of $R^3$, what are the components of the unit vector $\\mathbf{j}$?",
+      "answerOptions": [
+        {
+          "text": "$\\langle 0, 1, 0 \\rangle$",
+          "isCorrect": true,
+          "rationale": "The basis vector $\\mathbf{j}$ is defined as the unit vector pointing in the positive y-direction."
+        },
+        {
+          "text": "$\\langle 1, 0, 0 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is the definition of the basis vector $\\mathbf{i}$, pointing in the x-direction."
+        },
+        {
+          "text": "$\\langle 0, 0, 1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is the definition of the basis vector $\\mathbf{k}$, pointing in the z-direction."
+        },
+        {
+          "text": "$\\langle 1, 1, 1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is a vector pointing diagonally through the first octant, not a standard basis vector."
+        }
+      ],
+      "hint": "This vector points specifically and only in the direction of the y-axis.",
+      "section": "11.2"
+    },
+    {
+      "question": "Given $\\mathbf{u} = \\langle -2, 2, 4 \\rangle$, what is the value of $|\\|-\\frac{1}{2}\\mathbf{u}\\||$?",
+      "answerOptions": [
+        {
+          "text": "$\\sqrt{6}$",
+          "isCorrect": true,
+          "rationale": "First find $-\\frac{1}{2}\\mathbf{u} = \\langle 1, -1, -2 \\rangle$. The magnitude is $\\sqrt{1^2 + (-1)^2 + (-2)^2} = \\sqrt{6}$."
+        },
+        {
+          "text": "$\\sqrt{24}$",
+          "isCorrect": false,
+          "rationale": "This is the magnitude of the original vector $\\mathbf{u}$, without applying the scalar multiplication."
+        },
+        {
+          "text": "$-\\sqrt{6}$",
+          "isCorrect": false,
+          "rationale": "Magnitude represents length and must always be a non-negative real number."
+        },
+        {
+          "text": "3",
+          "isCorrect": false,
+          "rationale": "This might be obtained by incorrectly averaging the components rather than using the square root of the sum of squares."
+        }
+      ],
+      "hint": "Apply the property $|\\|c\\mathbf{u}\\|| = |c| |\\|\\mathbf{u}\\||$.",
+      "section": "11.2"
+    },
+    {
+      "question": "When setting up a vector equation for a projectile's velocity $\\mathbf{v}(t) = \\langle v_x(t), v_y(t) \\rangle$, why is $v_x(t)$ often treated as a constant?",
+      "answerOptions": [
+        {
+          "text": "Because air resistance is typically ignored, meaning there is no horizontal acceleration.",
+          "isCorrect": true,
+          "rationale": "In ideal projectile motion, gravity only acts vertically, leaving the horizontal velocity unchanged throughout the flight."
+        },
+        {
+          "text": "Because gravity acts equally in all directions, canceling out horizontal movement.",
+          "isCorrect": false,
+          "rationale": "Gravity is a directional force that acts only toward the center of the earth (downward), not horizontally."
+        },
+        {
+          "text": "Because the initial horizontal velocity is always set to zero by the observer.",
+          "isCorrect": false,
+          "rationale": "Projectiles usually have a non-zero horizontal velocity; it is just constant, not necessarily zero."
+        },
+        {
+          "text": "Because horizontal displacement is independent of the time variable $t$.",
+          "isCorrect": false,
+          "rationale": "Horizontal displacement is $x(t) = v_{x0}t$, which is definitely dependent on time."
+        }
+      ],
+      "hint": "Think about which forces are acting on the object once it is in the air.",
+      "section": "11.2"
+    },
+    {
+      "question": "If vector $\\mathbf{T}_2$ makes a $60^\\circ$ angle with a horizontal ceiling, what is its component form in terms of its magnitude $|\\|\\mathbf{T}_2\\||$?",
+      "answerOptions": [
+        {
+          "text": "$\\langle |\\|\\mathbf{T}_2\\|| \\cos(60^\\circ), |\\|\\mathbf{T}_2\\|| \\sin(60^\\circ) \\rangle$",
+          "isCorrect": true,
+          "rationale": "Using trigonometry, the horizontal component is the magnitude times the cosine of the angle, and the vertical is the magnitude times the sine."
+        },
+        {
+          "text": "$\\langle |\\|\\mathbf{T}_2\\|| \\sin(60^\\circ), |\\|\\mathbf{T}_2\\|| \\cos(60^\\circ) \\rangle$",
+          "isCorrect": false,
+          "rationale": "This swaps the sine and cosine, which incorrectly assigns the vertical relationship to the x-axis."
+        },
+        {
+          "text": "$\\langle \\cos(60^\\circ), \\sin(60^\\circ) \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is a unit vector; it lacks the scalar magnitude $|\\|\\mathbf{T}_2\\||$ needed to represent the specific force."
+        },
+        {
+          "text": "$\\langle |\\|\\mathbf{T}_2\\|| \\tan(60^\\circ), |\\|\\mathbf{T}_2\\|| \\rangle$",
+          "isCorrect": false,
+          "rationale": "Tangent is the ratio of components, not a multiplier for a single component in this context."
+        }
+      ],
+      "hint": "Apply the standard trigonometric definitions of x and y in a right triangle.",
+      "section": "11.2"
+    },
+    {
+      "question": "What is the result of the vector addition $\\langle 5, -2 \\rangle + \\langle -1, 2 \\rangle$?",
+      "answerOptions": [
+        {
+          "text": "$\\langle 4, 0 \\rangle$",
+          "isCorrect": true,
+          "rationale": "Vector addition is performed component-wise: $5 + (-1) = 4$ and $-2 + 2 = 0$."
+        },
+        {
+          "text": "$\\langle 6, -4 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is the result of vector subtraction ($5 - (-1)$ and $-2 - 2$) rather than addition."
+        },
+        {
+          "text": "$\\langle 4, 4 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This error occurs if the absolute value of the y-components is taken before adding."
+        },
+        {
+          "text": "$\\sqrt{16}$",
+          "isCorrect": false,
+          "rationale": "The sum of two vectors must be another vector, not a scalar value like a magnitude."
+        }
+      ],
+      "hint": "Combine the horizontal parts together and the vertical parts together.",
+      "section": "11.2"
+    },
+    {
+      "question": "Which property allows us to say that $(\\mathbf{u} + \\mathbf{v}) + \\mathbf{w} = \\mathbf{u} + (\\mathbf{v} + \\mathbf{w})$?",
+      "answerOptions": [
+        {
+          "text": "Associativity of Addition",
+          "isCorrect": true,
+          "rationale": "Associativity states that the way vectors are grouped in a sequence of additions does not change the final sum."
+        },
+        {
+          "text": "Commutativity of Addition",
+          "isCorrect": false,
+          "rationale": "Commutativity involves the order of two vectors ($u+v = v+u$), not the grouping of three."
+        },
+        {
+          "text": "Additive Identity",
+          "isCorrect": false,
+          "rationale": "Additive identity refers to the property of the zero vector ($\\mathbf{u} + \\mathbf{0} = \\mathbf{u}$)."
+        },
+        {
+          "text": "Distributivity",
+          "isCorrect": false,
+          "rationale": "Distributivity involves a relationship between scalar multiplication and addition, not just addition itself."
+        }
+      ],
+      "hint": "Think about how we 'associate' or group terms in an expression.",
+      "section": "11.2"
+    },
+    {
+      "question": "What is the physical interpretation of normalizing a velocity vector?",
+      "answerOptions": [
+        {
+          "text": "Finding a vector that points in the same direction but has a speed of 1 unit.",
+          "isCorrect": true,
+          "rationale": "Normalization removes the magnitude (speed) while preserving the directional information of the velocity."
+        },
+        {
+          "text": "Calculating the total distance traveled by an object.",
+          "isCorrect": false,
+          "rationale": "Distance is the integral of speed over time, whereas normalization is a vector operation at a specific moment."
+        },
+        {
+          "text": "Changing the direction of the object to point toward the origin.",
+          "isCorrect": false,
+          "rationale": "Normalization never changes the direction of a vector; it only scales its length to 1."
+        },
+        {
+          "text": "Adjusting the velocity to account for wind resistance.",
+          "isCorrect": false,
+          "rationale": "Accounting for resistance involves vector addition or subtraction of force/acceleration, not normalization."
+        }
+      ],
+      "hint": "Focus on what happens to the magnitude when you divide a vector by its own length.",
+      "section": "11.2"
+    },
+    {
+      "question": "If a vector is in 'standard position,' where is its tail located?",
+      "answerOptions": [
+        {
+          "text": "At the origin $(0, 0, 0)$.",
+          "isCorrect": true,
+          "rationale": "Standard position specifically refers to a vector whose initial point is anchored at the coordinate system's origin."
+        },
+        {
+          "text": "At any point on the x-axis.",
+          "isCorrect": false,
+          "rationale": "Being on an axis is not specific enough; it must be the intersection of all axes (the origin)."
+        },
+        {
+          "text": "At the same point as its terminal point.",
+          "isCorrect": false,
+          "rationale": "This would only be true for the zero vector, and standard position applies to all vectors."
+        },
+        {
+          "text": "At the coordinates specified by its components.",
+          "isCorrect": false,
+          "rationale": "The components specify the location of the terminal point when the tail is at the origin."
+        }
+      ],
+      "hint": "Consider the most basic 'starting point' in a coordinate system.",
+      "section": "11.2"
+    },
+    {
+      "question": "Which scalar property ensures that $0\\mathbf{u} = \\mathbf{0}$ for any vector $\\mathbf{u}$?",
+      "answerOptions": [
+        {
+          "text": "Scalar Zero Property",
+          "isCorrect": true,
+          "rationale": "This property defines that multiplying any vector by the scalar zero results in the zero vector."
+        },
+        {
+          "text": "Multiplicative Identity",
+          "isCorrect": false,
+          "rationale": "The multiplicative identity property states that $1\\mathbf{u} = \\mathbf{u}$."
+        },
+        {
+          "text": "Additive Inverse",
+          "isCorrect": false,
+          "rationale": "The additive inverse property states that $\\mathbf{u} + (-\\mathbf{u}) = \\mathbf{0}$."
+        },
+        {
+          "text": "Magnitude of Scalar Multiple",
+          "isCorrect": false,
+          "rationale": "This property relates to the length of a scaled vector, $\\|c\\mathbf{u}\\| = |c|\\|\\mathbf{u}\\|$, not the resulting vector itself."
+        }
+      ],
+      "hint": "Think about the effect of multiplying a value by zero in standard arithmetic.",
+      "section": "11.2"
+    },
+    {
+      "question": "A vector $\\mathbf{u}$ has a magnitude of 10. If we define $\\mathbf{v} = -2\\mathbf{u}$, what is the magnitude of $\\mathbf{v}$?",
+      "answerOptions": [
+        {
+          "text": "20",
+          "isCorrect": true,
+          "rationale": "The magnitude of a scalar multiple is the absolute value of the scalar times the original magnitude: $|-2| \\times 10 = 20$."
+        },
+        {
+          "text": "-20",
+          "isCorrect": false,
+          "rationale": "Magnitude is a measure of length and can never be negative."
+        },
+        {
+          "text": "5",
+          "isCorrect": false,
+          "rationale": "This would result from dividing by 2 rather than multiplying by 2."
+        },
+        {
+          "text": "$\\sqrt{20}$",
+          "isCorrect": false,
+          "rationale": "This error occurs if the scalar is placed under a square root unnecessarily."
+        }
+      ],
+      "hint": "Remember that magnitude is always a positive distance.",
+      "section": "11.2"
+    },
+    {
+      "question": "The 'Parallelogram Rule' is most useful for visualizing which of the following?",
+      "answerOptions": [
+        {
+          "text": "The sum of two vectors that share the same initial point.",
+          "isCorrect": true,
+          "rationale": "The Parallelogram Rule specifically uses two vectors with coinciding tails to find their sum as the diagonal."
+        },
+        {
+          "text": "The difference between two vectors pointing in opposite directions.",
+          "isCorrect": false,
+          "rationale": "While it can be adapted, it is primarily a rule for addition, and 'opposite directions' doesn't require a parallelogram."
+        },
+        {
+          "text": "The product of a vector and a scalar.",
+          "isCorrect": false,
+          "rationale": "Scalar multiplication results in a single line (scaling), not a 2D geometric shape like a parallelogram."
+        },
+        {
+          "text": "The normalization of a 3D vector.",
+          "isCorrect": false,
+          "rationale": "Normalization is about magnitude adjustment, which is a 1D scaling operation."
+        }
+      ],
+      "hint": "Think about the shape formed when two arrows start at the same 'tail' point.",
+      "section": "11.2"
+    },
+    {
+      "question": "If a vector $\\mathbf{v} = \\langle a, b, c \\rangle$, what is the magnitude of the vector $1\\mathbf{v}$?",
+      "answerOptions": [
+        {
+          "text": "$\\sqrt{a^2 + b^2 + c^2}$",
+          "isCorrect": true,
+          "rationale": "The scalar 1 is the multiplicative identity, so $1\\mathbf{v} = \\mathbf{v}$, and the magnitude remains unchanged."
+        },
+        {
+          "text": "$a + b + c$",
+          "isCorrect": false,
+          "rationale": "This is a common misconception where components are simply added instead of using the distance formula."
+        },
+        {
+          "text": "1",
+          "isCorrect": false,
+          "rationale": "This would only be true if $\\mathbf{v}$ was already a unit vector; multiplying by 1 does not force the magnitude to 1."
+        },
+        {
+          "text": "0",
+          "isCorrect": false,
+          "rationale": "Only multiplication by the scalar 0 results in a magnitude of 0."
+        }
+      ],
+      "hint": "Consider the effect of the scalar 1 on any mathematical object.",
+      "section": "11.2"
+    }
+  ],
+  "questionCount": 28,
+  "exportedAt": "2026-09-16T11:16:09",
+  "source": "303/quiz_source/11.2-quiz-source.json"
+}

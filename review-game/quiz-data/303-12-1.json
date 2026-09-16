@@ -1,0 +1,711 @@
+{
+  "title": "MATH 303 — §12.1 Vector Functions and Their Derivatives",
+  "section": "12.1",
+  "questions": [
+    {
+      "question": "What is the domain of the vector-valued function $\\mathbf{r}(t) = \\langle \\sqrt{t+2}, \\ln(4-t), \\frac{1}{t} \\rangle$?",
+      "answerOptions": [
+        {
+          "text": "$(-2, 0) \\cup (0, 4)$",
+          "isCorrect": false,
+          "rationale": "The lower bound for the square root includes $t = -2$, making the interval closed at that end."
+        },
+        {
+          "text": "$[-2, 0) \\cup (0, 4)$",
+          "isCorrect": true,
+          "rationale": "The domain is the intersection of $t \\ge -2$, $t < 4$, and $t \\ne 0$."
+        },
+        {
+          "text": "$[-2, 4]$",
+          "isCorrect": false,
+          "rationale": "This ignores the discontinuity at $t=0$ and the fact that the natural log is undefined for $t=4$."
+        },
+        {
+          "text": "$(-\\infty, 4)$",
+          "isCorrect": false,
+          "rationale": "This fails to account for the restriction imposed by the square root function on negative values below $-2$."
+        }
+      ],
+      "hint": "Find the intersection of the domains of all three individual component functions.",
+      "section": "12.1"
+    },
+    {
+      "question": "Evaluate the limit: $\\lim_{t \\to 0} \\langle \\frac{\\sin(3t)}{t}, e^{2t}, t^2 + 5 \\rangle$.",
+      "answerOptions": [
+        {
+          "text": "$\\langle 1, 1, 5 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This uses the standard limit for $\\sin(t)/t$ but neglects the coefficient in the argument of the sine function."
+        },
+        {
+          "text": "$\\langle 3, 1, 5 \\rangle$",
+          "isCorrect": true,
+          "rationale": "The limit of $\\sin(at)/t$ as $t$ approaches $0$ is $a$, while the other components are evaluated by direct substitution."
+        },
+        {
+          "text": "$\\langle 3, 0, 5 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The exponential function $e^0$ evaluates to $1$, not $0$."
+        },
+        {
+          "text": "The limit does not exist.",
+          "isCorrect": false,
+          "rationale": "All individual component limits exist and are finite, so the vector limit must exist."
+        }
+      ],
+      "hint": "Recall the special trigonometric limit for sine functions as the argument approaches zero.",
+      "section": "12.1"
+    },
+    {
+      "question": "Which vector function represents the intersection of the cylinder $x^2 + y^2 = 16$ and the plane $z = 2x + 3$?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{r}(t) = \\langle 4\\cos t, 4\\sin t, 8\\cos t + 3 \\rangle$",
+          "isCorrect": true,
+          "rationale": "Substituting the circular parameterization of the cylinder into the plane's equation correctly defines the $z$-component."
+        },
+        {
+          "text": "$\\mathbf{r}(t) = \\langle 4\\cos t, 4\\sin t, 4\\cos t + 3 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The coefficient for the $x$-term in the $z$-component calculation was incorrectly kept as $1$ instead of $2$."
+        },
+        {
+          "text": "$\\mathbf{r}(t) = \\langle 16\\cos t, 16\\sin t, 32\\cos t + 3 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This uses the square of the radius for the $x$ and $y$ components instead of the radius itself."
+        },
+        {
+          "text": "$\\mathbf{r}(t) = \\langle \\cos t, \\sin t, 2\\cos t + 3 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This assumes a unit circle for the cylinder's base rather than a circle with radius $4$."
+        }
+      ],
+      "hint": "Parameterize the circular base first, then substitute that into the equation for the plane.",
+      "section": "12.1"
+    },
+    {
+      "question": "A vector function $\\mathbf{r}(t)$ is considered 'smooth' on an interval $I$ if $\\mathbf{r}'(t)$ is continuous and which other condition is met?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{r}'(t) \\ne \\mathbf{0}$ for all $t \\in I$",
+          "isCorrect": true,
+          "rationale": "A zero derivative can result in cusps or sharp corners where the curve's direction is not well-defined."
+        },
+        {
+          "text": "$\\mathbf{r}(t)$ is linear",
+          "isCorrect": false,
+          "rationale": "Smoothness allows for curved paths; it only requires the tangent vector to vary continuously and never be zero."
+        },
+        {
+          "text": "$\\mathbf{r}''(t)$ is also continuous",
+          "isCorrect": false,
+          "rationale": "While many smooth functions have continuous second derivatives, the definition of a smooth curve only requires the first derivative to be continuous and non-zero."
+        },
+        {
+          "text": "The magnitude $|\\mathbf{r}(t)|$ is constant",
+          "isCorrect": false,
+          "rationale": "Constant magnitude implies the curve lies on a sphere, but a curve can be smooth without being restricted to a spherical surface."
+        }
+      ],
+      "hint": "Consider what happens to the tangent vector if the derivative becomes the zero vector.",
+      "section": "12.1"
+    },
+    {
+      "question": "Find the derivative of $\\mathbf{r}(t) = \\langle t^2e^t, \\sin(t^2), \\ln(t^2+1) \\rangle$.",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{r}'(t) = \\langle (t^2+2t)e^t, 2t\\cos(t^2), \\frac{2t}{t^2+1} \\rangle$",
+          "isCorrect": true,
+          "rationale": "This correctly applies the product rule to the first component and the chain rule to the second and third components."
+        },
+        {
+          "text": "$\\mathbf{r}'(t) = \\langle 2te^t, \\cos(t^2), \\frac{1}{t^2+1} \\rangle$",
+          "isCorrect": false,
+          "rationale": "This fails to use the product rule for the first component and omits necessary inner function derivatives for the others."
+        },
+        {
+          "text": "$\\mathbf{r}'(t) = \\langle t^2e^t, 2t\\cos(t^2), \\frac{2t}{t^2+1} \\rangle$",
+          "isCorrect": false,
+          "rationale": "The first component is incorrect because the derivative of $e^t$ was taken but the product rule was not fully executed."
+        },
+        {
+          "text": "$\\mathbf{r}'(t) = \\langle (t^2+2t)e^t, \\cos(2t), \\frac{2}{t} \\rangle$",
+          "isCorrect": false,
+          "rationale": "The second and third components incorrectly differentiate the inner functions and apply the chain rule."
+        }
+      ],
+      "hint": "Apply the product rule to the first component and the chain rule to the remaining two components.",
+      "section": "12.1"
+    },
+    {
+      "question": "If $\\mathbf{r}(t)$ is a differentiable vector function such that $|\\mathbf{r}(t)| = k$ for some constant $k$, which of the following is true?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{r}(t) \\cdot \\mathbf{r}'(t) = 0$",
+          "isCorrect": true,
+          "rationale": "Differentiating the dot product of a vector with itself when the magnitude is constant leads to this orthogonality condition."
+        },
+        {
+          "text": "$\\mathbf{r}(t) \\times \\mathbf{r}'(t) = \\mathbf{0}$",
+          "isCorrect": false,
+          "rationale": "This would imply the velocity is parallel to the position vector, which occurs for straight-line motion, not constant-distance motion."
+        },
+        {
+          "text": "$\\mathbf{r}'(t) = \\mathbf{0}$",
+          "isCorrect": false,
+          "rationale": "A particle can move on a sphere (constant magnitude) with a non-zero velocity."
+        },
+        {
+          "text": "$\\mathbf{r}(t) + \\mathbf{r}'(t) = \\mathbf{k}$",
+          "isCorrect": false,
+          "rationale": "There is no general additive relationship between the position and velocity vectors for spherical motion."
+        }
+      ],
+      "hint": "Think about the geometric relationship between a position vector and its tangent vector when moving on the surface of a sphere.",
+      "section": "12.1"
+    },
+    {
+      "question": "Find the unit tangent vector $\\mathbf{T}(t)$ for $\\mathbf{r}(t) = \\langle 3\\cos t, 3\\sin t, 4t \\rangle$.",
+      "answerOptions": [
+        {
+          "text": "$\\langle -\\frac{3}{5}\\sin t, \\frac{3}{5}\\cos t, \\frac{4}{5} \\rangle$",
+          "isCorrect": true,
+          "rationale": "The derivative magnitude is $\\sqrt{(-3\\sin t)^2 + (3\\cos t)^2 + 4^2} = \\sqrt{9+16} = 5$, and dividing the derivative by this magnitude yields the unit vector."
+        },
+        {
+          "text": "$\\langle -3\\sin t, 3\\cos t, 4 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is the tangent vector, but its magnitude is not $1$, so it is not a unit tangent vector."
+        },
+        {
+          "text": "$\\langle -\\sin t, \\cos t, 1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This result ignores the specific coefficients of the original vector function during normalization."
+        },
+        {
+          "text": "$\\langle -\\frac{3}{7}\\sin t, \\frac{3}{7}\\cos t, \\frac{4}{7} \\rangle$",
+          "isCorrect": false,
+          "rationale": "This uses an incorrect sum of components ($3+4=7$) rather than the square root of the sum of the squares to find the magnitude."
+        }
+      ],
+      "hint": "Differentiate the vector function first, then divide that derivative by its own magnitude.",
+      "section": "12.1"
+    },
+    {
+      "question": "Which rule describes the derivative of the dot product of two vector functions $\\mathbf{u}(t)$ and $\\mathbf{v}(t)$?",
+      "answerOptions": [
+        {
+          "text": "$\\frac{d}{dt} [\\mathbf{u}(t) \\cdot \\mathbf{v}(t)] = \\mathbf{u}'(t) \\cdot \\mathbf{v}(t) + \\mathbf{u}(t) \\cdot \\mathbf{v}'(t)$",
+          "isCorrect": true,
+          "rationale": "The dot product rule for vector functions follows the same structure as the standard product rule for scalar functions."
+        },
+        {
+          "text": "$\\frac{d}{dt} [\\mathbf{u}(t) \\cdot \\mathbf{v}(t)] = \\mathbf{u}'(t) \\cdot \\mathbf{v}'(t)$",
+          "isCorrect": false,
+          "rationale": "This is a common error that neglects the terms where only one of the two functions is differentiated."
+        },
+        {
+          "text": "$\\frac{d}{dt} [\\mathbf{u}(t) \\cdot \\mathbf{v}(t)] = \\mathbf{u}'(t) \\times \\mathbf{v}(t) + \\mathbf{u}(t) \\times \\mathbf{v}'(t)$",
+          "isCorrect": false,
+          "rationale": "The derivative of a scalar (dot product) must result in a scalar, whereas this expression yields a vector."
+        },
+        {
+          "text": "$\\frac{d}{dt} [\\mathbf{u}(t) \\cdot \\mathbf{v}(t)] = |\\mathbf{u}'(t)| |\\mathbf{v}(t)| \\cos\\theta$",
+          "isCorrect": false,
+          "rationale": "This expression refers to the definition of the dot product itself but does not represent its derivative with respect to time."
+        }
+      ],
+      "hint": "Consider how the standard product rule from single-variable calculus might be adapted for dot products.",
+      "section": "12.1"
+    },
+    {
+      "question": "Find the indefinite integral $\\int \\langle t^2, e^{-t}, 2t \\rangle dt$.",
+      "answerOptions": [
+        {
+          "text": "$\\langle \\frac{t^3}{3}, -e^{-t}, t^2 \\rangle + \\mathbf{C}$",
+          "isCorrect": true,
+          "rationale": "Integrating each component correctly involves the power rule and the basic exponential integration rule with the chain rule constant."
+        },
+        {
+          "text": "$\\langle \\frac{t^3}{3}, e^{-t}, t^2 \\rangle + C$",
+          "isCorrect": false,
+          "rationale": "The integration constant for a vector function must be a constant vector, not a scalar, and the exponential term is missing a negative sign."
+        },
+        {
+          "text": "$\\langle 2t, -e^{-t}, 2 \\rangle + \\mathbf{C}$",
+          "isCorrect": false,
+          "rationale": "This represents the derivative of the vector function rather than its integral."
+        },
+        {
+          "text": "$\\langle \\frac{t^3}{3}, -e^{t}, t^2 \\rangle + \\mathbf{C}$",
+          "isCorrect": false,
+          "rationale": "The second component incorrectly changes the sign of the exponent during integration."
+        }
+      ],
+      "hint": "Perform the integration component-wise and remember to include a constant vector.",
+      "section": "12.1"
+    },
+    {
+      "question": "Determine the vector equation of the tangent line to $\\mathbf{r}(t) = \\langle t, t^2, t^3 \\rangle$ at the point $(1, 1, 1)$.",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{L}(s) = \\langle 1+s, 1+2s, 1+3s \\rangle$",
+          "isCorrect": true,
+          "rationale": "The point occurs at $t=1$, and the tangent vector $\\mathbf{r}'(1) = \\langle 1, 2, 3 \\rangle$ is used as the direction vector for the line."
+        },
+        {
+          "text": "$\\mathbf{L}(s) = \\langle s, 2s, 3s \\rangle$",
+          "isCorrect": false,
+          "rationale": "This line has the correct direction but passes through the origin instead of the point $(1, 1, 1)$."
+        },
+        {
+          "text": "$\\mathbf{L}(s) = \\langle 1+t, 1+t^2, 1+t^3 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is not a linear equation; it simply shifts the original curve rather than defining a tangent line."
+        },
+        {
+          "text": "$\\mathbf{L}(s) = \\langle 1+s, 2+s, 3+s \\rangle$",
+          "isCorrect": false,
+          "rationale": "This uses the components of the tangent vector as the starting point rather than the direction coefficients."
+        }
+      ],
+      "hint": "Identify the parameter value for the given point and then find the tangent vector at that specific value.",
+      "section": "12.1"
+    },
+    {
+      "question": "Given acceleration $\\mathbf{a}(t) = \\langle 0, 0, -32 \\rangle$, initial velocity $\\mathbf{v}(0) = \\langle 10, 0, 64 \\rangle$, and initial position $\\mathbf{r}(0) = \\langle 0, 0, 0 \\rangle$, find the position vector function $\\mathbf{r}(t)$.",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{r}(t) = \\langle 10t, 0, 64t - 16t^2 \\rangle$",
+          "isCorrect": true,
+          "rationale": "Integrating acceleration once gives velocity $\\langle 10, 0, 64 - 32t \\rangle$, and integrating again with the initial position yields this result."
+        },
+        {
+          "text": "$\\mathbf{r}(t) = \\langle 10, 0, 64 - 32t \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is the velocity vector function, not the position vector function."
+        },
+        {
+          "text": "$\\mathbf{r}(t) = \\langle 10t, 0, 64t - 32t^2 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The vertical component integration failed to divide the $t^2$ term by 2, resulting in an incorrect coefficient."
+        },
+        {
+          "text": "$\\mathbf{r}(t) = \\langle 5t^2, 0, 32t^2 - 16t^2 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This incorrectly integrates the constant velocity components as if they were linear functions of time."
+        }
+      ],
+      "hint": "Integrate the acceleration twice and apply the initial condition constants at each step.",
+      "section": "12.1"
+    },
+    {
+      "question": "What is the result of $\\frac{d}{dt} [\\mathbf{u}(t) \\times \\mathbf{v}(t)]$?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{u}'(t) \\times \\mathbf{v}(t) + \\mathbf{u}(t) \\times \\mathbf{v}'(t)$",
+          "isCorrect": true,
+          "rationale": "The derivative of a cross product follows a product rule structure while strictly maintaining the order of the vectors."
+        },
+        {
+          "text": "$\\mathbf{u}'(t) \\times \\mathbf{v}'(t)$",
+          "isCorrect": false,
+          "rationale": "This ignores the terms where only one function is differentiated, similar to failing the product rule in scalar calculus."
+        },
+        {
+          "text": "$\\mathbf{v}(t) \\times \\mathbf{u}'(t) + \\mathbf{u}(t) \\times \\mathbf{v}'(t)$",
+          "isCorrect": false,
+          "rationale": "The order of vectors in a cross product matters; reversing $\\mathbf{u}' \\times \\mathbf{v}$ to $\\mathbf{v} \\times \\mathbf{u}'$ introduces a sign error."
+        },
+        {
+          "text": "$\\mathbf{u}'(t) \\cdot \\mathbf{v}(t) + \\mathbf{u}(t) \\cdot \\mathbf{v}'(t)$",
+          "isCorrect": false,
+          "rationale": "The derivative of a cross product must result in a vector, but this expression yields a scalar."
+        }
+      ],
+      "hint": "Remember that the cross product is non-commutative, so the sequence of terms in the product rule is essential.",
+      "section": "12.1"
+    },
+    {
+      "question": "Evaluate the definite integral $\\int_{0}^{\\pi} \\langle \\sin t, \\cos t, t \\rangle dt$.",
+      "answerOptions": [
+        {
+          "text": "$\\langle 2, 0, \\frac{\\pi^2}{2} \\rangle$",
+          "isCorrect": true,
+          "rationale": "The integral of $\\sin t$ from $0$ to $\\pi$ is $2$, $\\cos t$ is $0$, and $t$ is $\\pi^2/2$."
+        },
+        {
+          "text": "$\\langle 0, 0, \\frac{\\pi^2}{2} \\rangle$",
+          "isCorrect": false,
+          "rationale": "The first component integral ($-\\cos(\\pi) - (-\\cos(0))$) results in $1+1=2$, not $0$."
+        },
+        {
+          "text": "$\\langle 2, 2, \\pi \\rangle$",
+          "isCorrect": false,
+          "rationale": "This incorrectly evaluates the integral of $\\cos t$ and uses the wrong power for the $z$-component."
+        },
+        {
+          "text": "$\\langle -2, 0, \\frac{\\pi^2}{2} \\rangle$",
+          "isCorrect": false,
+          "rationale": "A sign error occurred in the evaluation of the first component's definite integral."
+        }
+      ],
+      "hint": "Integrate each component individually and apply the Fundamental Theorem of Calculus.",
+      "section": "12.1"
+    },
+    {
+      "question": "According to Example 6, if a point moves along a sphere, its velocity vector is always...",
+      "answerOptions": [
+        {
+          "text": "Tangential to the sphere",
+          "isCorrect": true,
+          "rationale": "Because the position and velocity vectors are orthogonal, the velocity vector must lie in the tangent plane of the sphere at that point."
+        },
+        {
+          "text": "Parallel to the position vector",
+          "isCorrect": false,
+          "rationale": "If the velocity were parallel to the position vector, the particle would be moving directly toward or away from the center, changing its distance."
+        },
+        {
+          "text": "A constant vector",
+          "isCorrect": false,
+          "rationale": "Moving in a circle or on a sphere requires the velocity vector to change direction continuously."
+        },
+        {
+          "text": "Zero",
+          "isCorrect": false,
+          "rationale": "A particle can move at a constant speed along the surface of a sphere, so its velocity need not be zero."
+        }
+      ],
+      "hint": "Recall the relationship between the position vector and the tangent vector for paths of constant magnitude.",
+      "section": "12.1"
+    },
+    {
+      "question": "For a vector function $\\mathbf{u}(t)$ and a scalar function $f(t)$, what is the derivative of $f(t)\\mathbf{u}(t)$?",
+      "answerOptions": [
+        {
+          "text": "$f'(t)\\mathbf{u}(t) + f(t)\\mathbf{u}'(t)$",
+          "isCorrect": true,
+          "rationale": "This is the Scalar Multiple Rule, which mirrors the product rule for two scalar functions."
+        },
+        {
+          "text": "$f'(t)\\mathbf{u}'(t)$",
+          "isCorrect": false,
+          "rationale": "This is a common misconception that ignores the addition of terms required by the product rule."
+        },
+        {
+          "text": "$f(t)\\mathbf{u}'(t)$",
+          "isCorrect": false,
+          "rationale": "This only accounts for the change in the vector part, ignoring the rate of change of the scalar coefficient."
+        },
+        {
+          "text": "$f'(t) + \\mathbf{u}'(t)$",
+          "isCorrect": false,
+          "rationale": "A scalar and a vector cannot be added directly, making this expression mathematically invalid."
+        }
+      ],
+      "hint": "Use the product rule as it applies to a scalar-vector product.",
+      "section": "12.1"
+    },
+    {
+      "question": "The curve $\\mathbf{r}(t) = \\langle a\\cos t, a\\sin t, bt \\rangle$ describes what geometric shape?",
+      "answerOptions": [
+        {
+          "text": "A circular helix",
+          "isCorrect": true,
+          "rationale": "The $x$ and $y$ components trace a circle while the $z$ component increases linearly, creating a spiral shape."
+        },
+        {
+          "text": "An ellipse",
+          "isCorrect": false,
+          "rationale": "An ellipse is a closed 2D curve, whereas the linear $z$ component makes this a 3D path that does not close."
+        },
+        {
+          "text": "A parabola",
+          "isCorrect": false,
+          "rationale": "A parabola would typically involve a squared term in one of the components and does not exhibit circular symmetry in the other two."
+        },
+        {
+          "text": "A straight line",
+          "isCorrect": false,
+          "rationale": "The trigonometric components indicate periodic circular motion, which is inconsistent with the path of a line."
+        }
+      ],
+      "hint": "Consider the shape of the projection in the $xy$-plane and how the $z$-coordinate changes over time.",
+      "section": "12.1"
+    },
+    {
+      "question": "Find $\\lim_{t \\to 1} \\langle \\frac{t^2-1}{t-1}, \\sqrt{t+3}, \\frac{\\ln t}{t-1} \\rangle$.",
+      "answerOptions": [
+        {
+          "text": "$\\langle 2, 2, 1 \\rangle$",
+          "isCorrect": true,
+          "rationale": "Factoring the first component, evaluating the second directly, and using L'Hopital's rule for the third yields these values."
+        },
+        {
+          "text": "$\\langle 1, 2, 0 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The first component limit involves cancellation of $(t-1)$, resulting in $1+1=2$, not $1$."
+        },
+        {
+          "text": "$\\langle 2, 2, 0 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The limit of $\\ln(t)/(t-1)$ as $t \\to 1$ is $1$, which can be found via L'Hopital's rule or derivative definitions."
+        },
+        {
+          "text": "The limit is undefined.",
+          "isCorrect": false,
+          "rationale": "Although there are indeterminate forms $0/0$, they can be resolved using algebraic or calculus-based techniques."
+        }
+      ],
+      "hint": "Use factoring or L'Hopital's rule for components that result in an indeterminate form.",
+      "section": "12.1"
+    },
+    {
+      "question": "If $\\mathbf{r}(t) = \\langle f(t), g(t), h(t) \\rangle$, then $\\mathbf{r}(t)$ is continuous at $t=a$ if and only if...",
+      "answerOptions": [
+        {
+          "text": "$f, g,$ and $h$ are all continuous at $a$.",
+          "isCorrect": true,
+          "rationale": "The continuity of a vector function is defined by the simultaneous continuity of its scalar component functions."
+        },
+        {
+          "text": "$\\mathbf{r}'(a)$ exists.",
+          "isCorrect": false,
+          "rationale": "Differentiability implies continuity, but a function can be continuous without being differentiable."
+        },
+        {
+          "text": "$|\\mathbf{r}(t)|$ is a constant function.",
+          "isCorrect": false,
+          "rationale": "Constant magnitude is a specific geometric property and is not a requirement for general continuity."
+        },
+        {
+          "text": "The limit $\\lim_{t \\to a} \\mathbf{r}(t) = \\mathbf{0}$.",
+          "isCorrect": false,
+          "rationale": "Continuity requires the limit to equal the function value at the point, which is not necessarily the zero vector."
+        }
+      ],
+      "hint": "Recall how limits and continuity were defined for the individual scalar functions that make up the vector.",
+      "section": "12.1"
+    },
+    {
+      "question": "In the context of Exercise 86, what is the net external torque $\\tau$ equal to?",
+      "answerOptions": [
+        {
+          "text": "The derivative of angular momentum $\\mathbf{L}'(t)$",
+          "isCorrect": true,
+          "rationale": "Newton's Second Law applied to rotational motion shows that torque is the rate of change of angular momentum."
+        },
+        {
+          "text": "The cross product of velocity and acceleration",
+          "isCorrect": false,
+          "rationale": "Torque is defined as the cross product of position and force, not velocity and acceleration."
+        },
+        {
+          "text": "The mass times the acceleration vector",
+          "isCorrect": false,
+          "rationale": "This describes net force, not torque, which involves a rotational component."
+        },
+        {
+          "text": "The integral of position with respect to time",
+          "isCorrect": false,
+          "rationale": "Torque is a dynamic quantity related to force and rotation, not the time-integral of position."
+        }
+      ],
+      "hint": "Consider the relationship between rotational force and the time-dependent quantity representing rotational motion.",
+      "section": "12.1"
+    },
+    {
+      "question": "What is the derivative of the triple scalar product $\\mathbf{u} \\cdot (\\mathbf{v} \\times \\mathbf{w})$?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{u}' \\cdot (\\mathbf{v} \\times \\mathbf{w}) + \\mathbf{u} \\cdot (\\mathbf{v}' \\times \\mathbf{w}) + \\mathbf{u} \\cdot (\\mathbf{v} \\times \\mathbf{w}')$",
+          "isCorrect": true,
+          "rationale": "Applying the product rule sequentially to the dot and cross products results in a sum of three triple products, each with one derivative."
+        },
+        {
+          "text": "$\\mathbf{u}' \\cdot (\\mathbf{v}' \\times \\mathbf{w}')$",
+          "isCorrect": false,
+          "rationale": "This incorrectly differentiates all components simultaneously, violating the product rule."
+        },
+        {
+          "text": "$(\\mathbf{u}' \\cdot \\mathbf{v} \\times \\mathbf{w}) + (\\mathbf{u} \\cdot \\mathbf{v} \\times \\mathbf{w})'$",
+          "isCorrect": false,
+          "rationale": "This expression is logically circular and does not provide the expanded derivative form."
+        },
+        {
+          "text": "$\\mathbf{0}$",
+          "isCorrect": false,
+          "rationale": "The triple scalar product is generally a time-varying scalar function, so its derivative is not zero unless it is constant."
+        }
+      ],
+      "hint": "Apply the product rule for dot products first, then use the product rule for the internal cross product.",
+      "section": "12.1"
+    },
+    {
+      "question": "At what time $t$ does the ball in Example 7 reach its maximum height?",
+      "answerOptions": [
+        {
+          "text": "$t = 2$",
+          "isCorrect": true,
+          "rationale": "The vertical velocity component $v_z(t) = 64 - 32t$ becomes zero when $t=2$, indicating the peak of the trajectory."
+        },
+        {
+          "text": "$t = 4$",
+          "isCorrect": false,
+          "rationale": "At $t=4$, the ball returns to its original vertical position (ground level), as shown by the definite integral calculation."
+        },
+        {
+          "text": "$t = 0$",
+          "isCorrect": false,
+          "rationale": "This is the launch time, when the ball has its maximum initial vertical velocity."
+        },
+        {
+          "text": "$t = 32$",
+          "isCorrect": false,
+          "rationale": "This number represents the magnitude of gravitational acceleration, not the time to reach maximum height."
+        }
+      ],
+      "hint": "The maximum height occurs when the vertical component of the velocity vector is zero.",
+      "section": "12.1"
+    },
+    {
+      "question": "Which property of vector functions ensures that $\\frac{d}{dt} [\\mathbf{u}(f(t))] = f'(t)\\mathbf{u}'(f(t))$?",
+      "answerOptions": [
+        {
+          "text": "Chain Rule",
+          "isCorrect": true,
+          "rationale": "The differentiation of a vector function composed with a scalar function follows the chain rule established for scalar functions."
+        },
+        {
+          "text": "Scalar Multiple Rule",
+          "isCorrect": false,
+          "rationale": "The scalar multiple rule applies to $f(t)\\mathbf{u}(t)$, not to the composition $\\mathbf{u}(f(t))$."
+        },
+        {
+          "text": "Fundamental Theorem of Calculus",
+          "isCorrect": false,
+          "rationale": "This theorem relates differentiation and integration but does not define the rule for differentiating composite functions."
+        },
+        {
+          "text": "Distributive Property",
+          "isCorrect": false,
+          "rationale": "The distributive property concerns sums and products, not the differentiation of functional compositions."
+        }
+      ],
+      "hint": "Think about the rule used when a function is nested inside another function.",
+      "section": "12.1"
+    },
+    {
+      "question": "If $\\mathbf{r}'(t) = \\mathbf{0}$ at $t=t_0$, what might be present on the graph of the space curve?",
+      "answerOptions": [
+        {
+          "text": "A sharp corner or cusp",
+          "isCorrect": true,
+          "rationale": "A zero derivative allows the particle to momentarily stop and change direction abruptly, violating smoothness."
+        },
+        {
+          "text": "A vertical asymptote",
+          "isCorrect": false,
+          "rationale": "Asymptotes are related to infinite values of components, not a zero derivative vector."
+        },
+        {
+          "text": "A circle of radius $t_0$",
+          "isCorrect": false,
+          "rationale": "A zero derivative does not define the global shape of the curve, only a local lack of smoothness."
+        },
+        {
+          "text": "A point where the curve is linear",
+          "isCorrect": false,
+          "rationale": "Linearity requires a constant non-zero derivative, whereas a zero derivative suggests a point of non-smoothness."
+        }
+      ],
+      "hint": "Recall the definition of a 'smooth' curve and what happens when that condition is violated.",
+      "section": "12.1"
+    },
+    {
+      "question": "How is the magnitude of the tangent vector related to a particle's motion?",
+      "answerOptions": [
+        {
+          "text": "It represents the speed of the particle.",
+          "isCorrect": true,
+          "rationale": "The magnitude of the velocity vector (the tangent vector) is the instantaneous speed."
+        },
+        {
+          "text": "It represents the distance from the origin.",
+          "isCorrect": false,
+          "rationale": "Distance from the origin is given by the magnitude of the position vector, not the tangent vector."
+        },
+        {
+          "text": "It represents the acceleration toward the center.",
+          "isCorrect": false,
+          "rationale": "Acceleration is the derivative of the velocity vector, not the magnitude of the velocity vector itself."
+        },
+        {
+          "text": "It is always equal to $1$.",
+          "isCorrect": false,
+          "rationale": "Only the 'unit tangent vector' has a magnitude of $1$; general tangent vectors can have any non-negative magnitude."
+        }
+      ],
+      "hint": "Think of the tangent vector as the velocity of a particle moving along the curve.",
+      "section": "12.1"
+    },
+    {
+      "question": "What happens to the orientation of the helix $\\mathbf{r}(t) = \\langle \\cos t, \\sin t, t \\rangle$ if the third component is changed to $-t$?",
+      "answerOptions": [
+        {
+          "text": "The arrows on the helix would point downward instead of upward.",
+          "isCorrect": true,
+          "rationale": "The $z$-component determines vertical progression; changing its sign causes the curve to spiral in the negative $z$ direction as $t$ increases."
+        },
+        {
+          "text": "The helix would spiral in the opposite circular direction.",
+          "isCorrect": false,
+          "rationale": "Circular direction is determined by the $x$ and $y$ components; changing the $z$ component only affects vertical orientation."
+        },
+        {
+          "text": "The helix would become a flat circle.",
+          "isCorrect": false,
+          "rationale": "A flat circle would require the $z$ component to be a constant, not a linear function of $t$."
+        },
+        {
+          "text": "There would be no change in orientation.",
+          "isCorrect": false,
+          "rationale": "The parameter $t$ determines the path's progression; changing its sign in a component necessarily alters that progression."
+        }
+      ],
+      "hint": "Consider how the particle's vertical position changes relative to the parameter $t$.",
+      "section": "12.1"
+    },
+    {
+      "question": "In Example 3, what shape is formed by the intersection of the cylinder and the plane?",
+      "answerOptions": [
+        {
+          "text": "An ellipse",
+          "isCorrect": true,
+          "rationale": "A cylinder sliced by a non-parallel plane always results in an elliptical cross-section."
+        },
+        {
+          "text": "A circle",
+          "isCorrect": false,
+          "rationale": "A circle only occurs if the plane is perfectly perpendicular to the cylinder's central axis."
+        },
+        {
+          "text": "A hyperbola",
+          "isCorrect": false,
+          "rationale": "Hyperbolic intersections typically involve cones or hyperbolic surfaces rather than standard cylinders."
+        },
+        {
+          "text": "A line",
+          "isCorrect": false,
+          "rationale": "The intersection of a 3D cylinder and a plane is a curve, not a straight line, unless the plane is tangent to the cylinder."
+        }
+      ],
+      "hint": "Think about the shape produced when you cut a cylindrical tube at an angle.",
+      "section": "12.1"
+    }
+  ],
+  "questionCount": 26,
+  "exportedAt": "2026-09-16T11:16:09",
+  "source": "303/quiz_source/12.1-quiz-source.json"
+}

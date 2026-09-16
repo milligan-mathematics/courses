@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Game Host - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .stage {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--spacing-xl) var(--spacing-md);
+            text-align: center;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .game-code {
+            font-family: var(--font-primary);
+            font-size: 4rem;
+            font-weight: bold;
+            letter-spacing: 0.2em;
+            color: var(--color-primary);
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: var(--spacing-lg) var(--spacing-xl);
+            display: inline-block;
+            box-shadow: var(--shadow-card);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .join-hint {
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .player-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: var(--spacing-lg) 0;
+            min-height: 3rem;
+        }
+
+        .player-chip {
+            background: var(--bg-card);
+            border: 1px solid #e9ecef;
+            border-radius: 999px;
+            padding: 8px 18px;
+            font-weight: bold;
+            box-shadow: var(--shadow-card);
+        }
+
+        .btn {
+            background-color: var(--color-primary);
+            color: #fff;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            font-family: var(--font-primary);
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: var(--color-primary-dark);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: var(--color-mountain-gray);
+        }
+
+        select,
+        input[type="number"],
+        input[type="text"] {
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin: 0 8px 16px;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.4;
+        }
+
+        .timer-bar-track {
+            background: #e9ecef;
+            border-radius: 999px;
+            height: 14px;
+            overflow: hidden;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .timer-bar-fill {
+            background: var(--color-accent-green);
+            height: 100%;
+            width: 100%;
+            transition: width 1s linear, background-color 0.3s;
+        }
+
+        .answered-count {
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-lg);
+            font-weight: bold;
+        }
+
+        .answer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .answer-tile {
+            border-radius: 10px;
+            padding: 20px;
+            color: #fff;
+            font-size: 1.15rem;
+            font-weight: bold;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-height: 80px;
+            position: relative;
+            opacity: 1;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .answer-tile.dimmed {
+            opacity: 0.35;
+        }
+
+        .answer-tile.correct-tile {
+            outline: 5px solid #fff;
+            outline-offset: -8px;
+            transform: scale(1.02);
+        }
+
+        .answer-tile .shape {
+            font-size: 1.6rem;
+            flex-shrink: 0;
+        }
+
+        .answer-tile .pct {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            font-size: 1.4rem;
+        }
+
+        .tile-a {
+            background: var(--color-primary);
+        }
+
+        .tile-b {
+            background: var(--color-accent-blue);
+        }
+
+        .tile-c {
+            background: var(--color-accent-sunrise);
+        }
+
+        .tile-d {
+            background: var(--color-accent-green);
+        }
+
+        .leaderboard-list {
+            list-style: none;
+            max-width: 500px;
+            margin: var(--spacing-lg) auto;
+            text-align: left;
+        }
+
+        .leaderboard-list li {
+            display: flex;
+            justify-content: space-between;
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 14px 20px;
+            margin-bottom: 8px;
+            box-shadow: var(--shadow-card);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .leaderboard-list li:nth-child(1) {
+            border-left: 6px solid var(--color-primary);
+        }
+
+        .leaderboard-list li:nth-child(2) {
+            border-left: 6px solid var(--color-accent-blue);
+        }
+
+        .leaderboard-list li:nth-child(3) {
+            border-left: 6px solid var(--color-accent-green);
+        }
+
+        .rank {
+            color: var(--text-muted);
+            margin-right: 12px;
+        }
+
+        .setup-field {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .setup-field label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .error-msg {
+            color: #c82333;
+            font-weight: bold;
+            margin-top: var(--spacing-md);
+        }
+
+        .section-badge {
+            color: var(--text-muted);
+            font-weight: bold;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .section-badge:empty {
+            display: none;
+        }
+
+        /* True/False and other two-option questions get one wide row. */
+        .answer-grid.two-up {
+            grid-template-columns: 1fr 1fr;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand"><span>Milligan</span> Mathematics</a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="stage">
+
+        <!-- SETUP -->
+        <section id="screen-setup" class="screen active">
+            <h1>Review Game — Host</h1>
+            <p class="join-hint">Pick a question set to start a new game.</p>
+
+            <div class="setup-field">
+                <label for="quiz-select">Question set</label>
+                <select id="quiz-select">
+                    <option value="303-test1-review">MATH 303 — Test 1 Review (§§11.1–12.3)</option>
+                    <option value="303-11-1">MATH 303 — §11.1 Three-Dimensional Cartesian Space</option>
+                    <option value="303-11-2">MATH 303 — §11.2 Vectors and Vector Algebra</option>
+                    <option value="303-11-3">MATH 303 — §11.3 The Dot Product</option>
+                    <option value="303-11-4">MATH 303 — §11.4 The Cross Product</option>
+                    <option value="303-11-5">MATH 303 — §11.5 Lines and Planes in Space</option>
+                    <option value="303-11-6">MATH 303 — §11.6 Cylinders and Quadric Surfaces</option>
+                    <option value="303-12-1">MATH 303 — §12.1 Vector Functions and Their Derivatives</option>
+                    <option value="303-12-2">MATH 303 — §12.2 Arc Length and Unit Tangent Vectors</option>
+                    <option value="303-12-3">MATH 303 — §12.3 Curvature, Torsion, and Frenet-Serret</option>
+                </select>
+            </div>
+            <div class="setup-field">
+                <label for="question-count">How many questions? (randomly selected)</label>
+                <input type="number" id="question-count" value="10" min="1" max="60">
+                <p class="join-hint" id="set-size-hint" style="margin-top:4px;"></p>
+            </div>
+            <div class="setup-field">
+                <label for="question-duration">Seconds per question</label>
+                <input type="number" id="question-duration" value="20" min="5" max="120">
+            </div>
+
+            <button class="btn" id="btn-create">Create Game</button>
+            <p class="error-msg" id="setup-error"></p>
+        </section>
+
+        <!-- LOBBY -->
+        <section id="screen-lobby" class="screen">
+            <h1>Join the game!</h1>
+            <p class="join-hint">Go to <strong id="student-url"></strong> and enter this code:</p>
+            <div class="game-code" id="lobby-code">------</div>
+            <div class="player-chips" id="player-chips"></div>
+            <button class="btn" id="btn-start" disabled>Start Game</button>
+        </section>
+
+        <!-- QUESTION -->
+        <section id="screen-question" class="screen">
+            <div class="timer-bar-track">
+                <div class="timer-bar-fill" id="timer-fill"></div>
+            </div>
+            <p class="answered-count" id="answered-count">0 of 0 answered</p>
+            <p class="section-badge" id="section-badge"></p>
+            <div class="question-text" id="question-text"></div>
+            <div class="answer-grid" id="answer-grid"></div>
+            <div style="margin-top: 24px;">
+                <button class="btn" id="btn-reveal">Reveal Answer</button>
+            </div>
+        </section>
+
+        <!-- REVEAL -->
+        <section id="screen-reveal" class="screen">
+            <p class="section-badge" id="reveal-section-badge"></p>
+            <div class="question-text" id="reveal-question-text"></div>
+            <div class="answer-grid" id="reveal-answer-grid"></div>
+            <div style="margin-top: 24px;">
+                <button class="btn" id="btn-show-leaderboard">Show Leaderboard</button>
+            </div>
+        </section>
+
+        <!-- LEADERBOARD -->
+        <section id="screen-leaderboard" class="screen">
+            <h1>Leaderboard</h1>
+            <ol class="leaderboard-list" id="leaderboard-list"></ol>
+            <button class="btn" id="btn-next">Next Question</button>
+        </section>
+
+        <!-- END -->
+        <section id="screen-end" class="screen">
+            <h1>🏆 Final Results</h1>
+            <ol class="leaderboard-list" id="final-list"></ol>
+            <button class="btn btn-secondary" onclick="location.reload()">New Game</button>
+        </section>
+
+    </main>
+
+    <script type="module">
+        import { firebaseConfig } from './firebase-config.js';
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+        import {
+            getAuth, signInAnonymously
+        } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+        import {
+            getDatabase, ref, set, update, onValue, get, serverTimestamp, off
+        } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        const SHAPES = ['▲', '◆', '●', '■'];
+        const TILE_CLASSES = ['tile-a', 'tile-b', 'tile-c', 'tile-d'];
+
+        let uid = null;
+        let gameCode = null;
+        let quizData = null;
+        let order = [];
+        let currentIndex = 0;
+        let questionDuration = 20;
+        let timerInterval = null;
+        let answerShuffles = [];
+
+        document.getElementById('student-url').textContent =
+            location.href.replace(/host\.html.*$/, 'student.html');
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function makeGameCode() {
+            const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no 0/O/1/I
+            let code = '';
+            for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)];
+            return code;
+        }
+
+        function shuffle(arr) {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        // Show how many questions the selected set holds, so the count above it makes sense.
+        const quizSelect = document.getElementById('quiz-select');
+        async function updateSetSizeHint() {
+            const hint = document.getElementById('set-size-hint');
+            try {
+                const resp = await fetch(`quiz-data/${quizSelect.value}.json`);
+                const data = await resp.json();
+                const n = data.questions.length;
+                hint.textContent = `This set has ${n} questions.`;
+                document.getElementById('question-count').max = n;
+            } catch {
+                hint.textContent = '';
+            }
+        }
+        quizSelect.addEventListener('change', updateSetSizeHint);
+        updateSetSizeHint();
+
+        document.getElementById('btn-create').addEventListener('click', async () => {
+            const errorEl = document.getElementById('setup-error');
+            errorEl.textContent = '';
+            try {
+                const quizId = document.getElementById('quiz-select').value;
+                const count = parseInt(document.getElementById('question-count').value, 10);
+                questionDuration = parseInt(document.getElementById('question-duration').value, 10);
+
+                const resp = await fetch(`quiz-data/${quizId}.json`);
+                if (!resp.ok) throw new Error('Could not load question set.');
+                quizData = await resp.json();
+
+                const allIndices = quizData.questions.map((_, i) => i);
+                order = shuffle(allIndices).slice(0, Math.min(count, allIndices.length));
+                // Option counts vary: most questions have four, True/False ones have two.
+                answerShuffles = order.map(origIdx => {
+                    const n = quizData.questions[origIdx].answerOptions.length;
+                    return shuffle(Array.from({ length: n }, (_, i) => i));
+                });
+
+                const cred = await signInAnonymously(auth);
+                uid = cred.user.uid;
+                gameCode = makeGameCode();
+
+                await set(ref(db, `games/${gameCode}`), {
+                    hostId: uid,
+                    quizId,
+                    status: 'lobby',
+                    currentIndex: -1,
+                    order,
+                    answerShuffles,
+                    questionDuration,
+                    createdAt: serverTimestamp()
+                });
+
+                document.getElementById('lobby-code').textContent = gameCode;
+                showScreen('screen-lobby');
+                listenForPlayers();
+            } catch (e) {
+                errorEl.textContent = e.message;
+                console.error(e);
+            }
+        });
+
+        function listenForPlayers() {
+            const playersRef = ref(db, `games/${gameCode}/players`);
+            onValue(playersRef, (snap) => {
+                const players = snap.val() || {};
+                const chipsEl = document.getElementById('player-chips');
+                chipsEl.innerHTML = '';
+                const names = Object.values(players).map(p => p.name);
+                names.forEach(name => {
+                    const chip = document.createElement('div');
+                    chip.className = 'player-chip';
+                    chip.textContent = name;
+                    chipsEl.appendChild(chip);
+                });
+                document.getElementById('btn-start').disabled = names.length === 0;
+            });
+        }
+
+        document.getElementById('btn-start').addEventListener('click', () => {
+            startQuestion(0);
+        });
+
+        async function startQuestion(index) {
+            currentIndex = index;
+            await update(ref(db, `games/${gameCode}`), {
+                status: 'question',
+                currentIndex: index,
+                questionStartedAt: serverTimestamp()
+            });
+            renderQuestion(index);
+            showScreen('screen-question');
+            listenForAnswerCount(index);
+            runTimer(questionDuration);
+        }
+
+        function renderQuestion(index) {
+            const q = quizData.questions[order[index]];
+            const shuffleMap = answerShuffles[index];
+            document.getElementById('section-badge').textContent = q.section ? `§${q.section}` : '';
+            document.getElementById('question-text').innerHTML = q.question;
+            const grid = document.getElementById('answer-grid');
+            grid.innerHTML = '';
+            grid.classList.toggle('two-up', shuffleMap.length === 2);
+            shuffleMap.forEach((origIdx, pos) => {
+                const opt = q.answerOptions[origIdx];
+                const tile = document.createElement('div');
+                tile.className = `answer-tile ${TILE_CLASSES[pos]}`;
+                tile.innerHTML = `<span class="shape">${SHAPES[pos]}</span><span>${opt.text}</span>`;
+                grid.appendChild(tile);
+            });
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise([document.getElementById('question-text'), grid]);
+            }
+        }
+
+        function runTimer(seconds) {
+            clearInterval(timerInterval);
+            const fill = document.getElementById('timer-fill');
+            let remaining = seconds;
+            fill.style.width = '100%';
+            fill.style.backgroundColor = 'var(--color-accent-green)';
+            timerInterval = setInterval(() => {
+                remaining -= 1;
+                const pct = Math.max(0, (remaining / seconds) * 100);
+                fill.style.width = pct + '%';
+                if (pct < 30) fill.style.backgroundColor = '#dc3545';
+                else if (pct < 60) fill.style.backgroundColor = 'var(--color-accent-sunrise)';
+                if (remaining <= 0) clearInterval(timerInterval);
+            }, 1000);
+        }
+
+        let answerCountRef = null;
+        function listenForAnswerCount(index) {
+            if (answerCountRef) off(answerCountRef);
+            answerCountRef = ref(db, `games/${gameCode}/responses/${index}`);
+            onValue(answerCountRef, (snap) => {
+                const responses = snap.val() || {};
+                const answered = Object.keys(responses).length;
+                const total = document.querySelectorAll('.player-chip').length;
+                document.getElementById('answered-count').textContent =
+                    `${answered} of ${total} answered`;
+            });
+        }
+
+        document.getElementById('btn-reveal').addEventListener('click', async () => {
+            clearInterval(timerInterval);
+            await update(ref(db, `games/${gameCode}`), { status: 'reveal' });
+            await renderReveal(currentIndex);
+            showScreen('screen-reveal');
+        });
+
+        async function renderReveal(index) {
+            const q = quizData.questions[order[index]];
+            const shuffleMap = answerShuffles[index];
+            document.getElementById('reveal-section-badge').textContent = q.section ? `§${q.section}` : '';
+            document.getElementById('reveal-question-text').innerHTML = q.question;
+
+            const snap = await get(ref(db, `games/${gameCode}/responses/${index}`));
+            const responses = snap.val() || {};
+            const counts = shuffleMap.map(() => 0);
+            Object.values(responses).forEach(r => {
+                if (typeof r.answerIndex === 'number' && r.answerIndex < counts.length) counts[r.answerIndex]++;
+            });
+            const totalAnswers = counts.reduce((a, b) => a + b, 0) || 1;
+
+            const grid = document.getElementById('reveal-answer-grid');
+            grid.innerHTML = '';
+            grid.classList.toggle('two-up', shuffleMap.length === 2);
+            shuffleMap.forEach((origIdx, pos) => {
+                const opt = q.answerOptions[origIdx];
+                const tile = document.createElement('div');
+                const isCorrect = opt.isCorrect;
+                tile.className = `answer-tile ${TILE_CLASSES[pos]} ${isCorrect ? 'correct-tile' : 'dimmed'}`;
+                const pct = Math.round((counts[pos] / totalAnswers) * 100);
+                tile.innerHTML =
+                    `<span class="shape">${SHAPES[pos]}</span><span>${opt.text}</span><span class="pct">${pct}%</span>`;
+                grid.appendChild(tile);
+            });
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise([document.getElementById('reveal-question-text'), grid]);
+            }
+        }
+
+        document.getElementById('btn-show-leaderboard').addEventListener('click', async () => {
+            await update(ref(db, `games/${gameCode}`), { status: 'leaderboard' });
+            await renderLeaderboard('leaderboard-list');
+            showScreen('screen-leaderboard');
+        });
+
+        async function getSortedPlayers() {
+            const snap = await get(ref(db, `games/${gameCode}/players`));
+            const players = snap.val() || {};
+            return Object.values(players).sort((a, b) => (b.score || 0) - (a.score || 0));
+        }
+
+        async function renderLeaderboard(listId) {
+            const sorted = await getSortedPlayers();
+            const list = document.getElementById(listId);
+            list.innerHTML = '';
+            sorted.slice(0, 10).forEach((p, i) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span><span class="rank">#${i + 1}</span>${p.name}</span><span>${p.score || 0}</span>`;
+                list.appendChild(li);
+            });
+        }
+
+        document.getElementById('btn-next').addEventListener('click', async () => {
+            const nextIndex = currentIndex + 1;
+            if (nextIndex >= order.length) {
+                await update(ref(db, `games/${gameCode}`), { status: 'ended' });
+                await renderLeaderboard('final-list');
+                showScreen('screen-end');
+            } else {
+                startQuestion(nextIndex);
+            }
+        });
+    </script>
+</body>
+
+</html>

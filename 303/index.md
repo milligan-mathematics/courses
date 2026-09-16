@@ -53,7 +53,12 @@ More sections are on the way.
 <div class="resource-grid">
   <a href="../review-game/host.html" class="resource-card">
     <div class="resource-meta" style="color: var(--color-accent-green);">Live Game (Host)</div>
-    <h4>Chapter 11 Review</h4>
-    <p class="resource-desc">Start a live, Kahoot-style review game for the class — students join on their own devices.</p>
+    <h4>Test 1 Review — §§11.1–12.3</h4>
+    <p class="resource-desc">Start a live, Kahoot-style review game for the class — students join on their own devices. Pick the combined Test 1 set or drill a single section.</p>
+  </a>
+  <a href="../review-game/student.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">Join a Game</div>
+    <h4>Student Join Page</h4>
+    <p class="resource-desc">Enter the game code your instructor puts on the screen.</p>
   </a>
 </div>

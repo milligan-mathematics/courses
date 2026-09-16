@@ -1,0 +1,691 @@
+{
+  "title": "MATH 303 — §12.3 Curvature, Torsion, and the Frenet-Serret Formulas",
+  "section": "12.3",
+  "questions": [
+    {
+      "question": "Which vector in the Frenet-Serret frame is defined as the cross product $\\mathbf{B}(t) = \\mathbf{T}(t) \\times \\mathbf{N}(t)$?",
+      "answerOptions": [
+        {
+          "text": "The Unit Binormal Vector",
+          "isCorrect": true,
+          "rationale": "By definition, the binormal vector completes the right-handed orthonormal triad by taking the cross product of the tangent and normal vectors."
+        },
+        {
+          "text": "The Unit Tangent Vector",
+          "isCorrect": false,
+          "rationale": "The unit tangent vector is typically defined as the normalized derivative of the position vector, not as a cross product of the other frame vectors."
+        },
+        {
+          "text": "The Principal Normal Vector",
+          "isCorrect": false,
+          "rationale": "The principal normal vector is defined by the normalization of the derivative of the unit tangent vector."
+        },
+        {
+          "text": "The Velocity Vector",
+          "isCorrect": false,
+          "rationale": "The velocity vector is the derivative of the position vector and is not necessarily a unit vector."
+        }
+      ],
+      "hint": "Consider which vector completes the orthogonal triad in a right-handed system.",
+      "section": "12.3"
+    },
+    {
+      "question": "What is the curvature $\\kappa$ of a straight line?",
+      "answerOptions": [
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "A curvature of 1 would imply a circle with a radius of 1, whereas a line has no bend."
+        },
+        {
+          "text": "$\\infty$",
+          "isCorrect": false,
+          "rationale": "Infinite curvature would imply an infinitely sharp turn, which is the opposite of a straight path."
+        },
+        {
+          "text": "$0$",
+          "isCorrect": true,
+          "rationale": "Curvature measures how sharply a curve bends; since a straight line does not bend, its unit tangent vector is constant and its derivative is zero."
+        },
+        {
+          "text": "It depends on the slope of the line.",
+          "isCorrect": false,
+          "rationale": "Regardless of the orientation or slope, a line remains straight and thus has no change in the direction of its tangent vector."
+        }
+      ],
+      "hint": "Recall how much the direction of the tangent vector changes as you move along a straight path.",
+      "section": "12.3"
+    },
+    {
+      "question": "The osculating plane at a point on a curve is spanned by which two vectors?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{N}(t)$ and $\\mathbf{B}(t)$",
+          "isCorrect": false,
+          "rationale": "This pair of vectors spans the normal plane, which is perpendicular to the direction of motion."
+        },
+        {
+          "text": "$\\mathbf{T}(t)$ and $\\mathbf{N}(t)$",
+          "isCorrect": true,
+          "rationale": "The osculating plane contains the tangent and normal vectors, providing the best local planar approximation of the curve."
+        },
+        {
+          "text": "$\\mathbf{T}(t)$ and $\\mathbf{B}(t)$",
+          "isCorrect": false,
+          "rationale": "This pair of vectors defines the rectifying plane, not the osculating plane."
+        },
+        {
+          "text": "$\\mathbf{r}'(t)$ and $\\mathbf{r}'''(t)$",
+          "isCorrect": false,
+          "rationale": "The osculating plane is defined by the first two derivatives' directions, but the standard spanning set uses the unit tangent and normal vectors."
+        }
+      ],
+      "hint": "Think of the plane that 'kisses' the curve and contains the direction of turning.",
+      "section": "12.3"
+    },
+    {
+      "question": "For a curve lying entirely within a single plane, what can be concluded about its torsion function $\\tau$?",
+      "answerOptions": [
+        {
+          "text": "$\\tau$ is always positive.",
+          "isCorrect": false,
+          "rationale": "Torsion measures the twist out of a plane; a planar curve has no such twist, regardless of the sign."
+        },
+        {
+          "text": "$\\tau$ is identically zero.",
+          "isCorrect": true,
+          "rationale": "Torsion measures how much a curve twists out of its osculating plane; if the curve is planar, the binormal vector is constant, making its derivative zero."
+        },
+        {
+          "text": "$\\tau$ is equal to the curvature $\\kappa$.",
+          "isCorrect": false,
+          "rationale": "Curvature and torsion are independent properties; one measures bending and the other measures twisting."
+        },
+        {
+          "text": "$\\tau$ is constant but non-zero.",
+          "isCorrect": false,
+          "rationale": "A non-zero torsion would imply the curve is leaving its current plane of motion, which contradicts it being a planar curve."
+        }
+      ],
+      "hint": "Torsion measures the degree of 'twisting' out of the current plane.",
+      "section": "12.3"
+    },
+    {
+      "question": "Which formula correctly represents the normal component of acceleration $a_N$?",
+      "answerOptions": [
+        {
+          "text": "$a_N = \\frac{d}{dt}(|\\mathbf{v}(t)|)$",
+          "isCorrect": false,
+          "rationale": "This formula defines the tangential acceleration, which represents the rate of change of speed."
+        },
+        {
+          "text": "$a_N = \\kappa |\\mathbf{v}(t)|^2$",
+          "isCorrect": true,
+          "rationale": "The normal acceleration depends on the sharpness of the curve (curvature) and the square of the speed of the object."
+        },
+        {
+          "text": "$a_N = \\tau |\\mathbf{v}(t)|$",
+          "isCorrect": false,
+          "rationale": "Acceleration is confined to the osculating plane and does not depend on torsion, which relates to twisting out of that plane."
+        },
+        {
+          "text": "$a_N = \\sqrt{|\\mathbf{a}|^2 + a_T^2}$",
+          "isCorrect": false,
+          "rationale": "According to the Pythagorean relationship $|\\mathbf{a}|^2 = a_T^2 + a_N^2$, the correct calculation would involve subtraction, not addition."
+        }
+      ],
+      "hint": "Consider how speed and the sharpness of a turn contribute to the 'pull' toward the center of the bend.",
+      "section": "12.3"
+    },
+    {
+      "question": "What happens to the required friction force to prevent a car from skidding if its speed is doubled while navigating the same circular curve?",
+      "answerOptions": [
+        {
+          "text": "The force is doubled.",
+          "isCorrect": false,
+          "rationale": "While the speed is doubled, the centripetal acceleration formula involves the square of the velocity, leading to a greater increase in force."
+        },
+        {
+          "text": "The force is quadrupled.",
+          "isCorrect": true,
+          "rationale": "Because $a_N = v^2/r$, doubling the speed $v$ results in $(2v)^2 = 4v^2$, meaning the normal acceleration and required force increase by a factor of four."
+        },
+        {
+          "text": "The force remains the same.",
+          "isCorrect": false,
+          "rationale": "Higher speeds require more force to change the direction of the car's velocity vector."
+        },
+        {
+          "text": "The force is halved.",
+          "isCorrect": false,
+          "rationale": "Increasing speed increases the difficulty of maintaining a curve, necessitating more friction, not less."
+        }
+      ],
+      "hint": "Review the relationship between velocity and normal acceleration in circular motion.",
+      "section": "12.3"
+    },
+    {
+      "question": "The Frenet-Serret formula $\\frac{d\\mathbf{T}}{ds} = \\kappa \\mathbf{N}$ implies that the unit tangent vector changes in which direction?",
+      "answerOptions": [
+        {
+          "text": "In the direction of the binormal vector",
+          "isCorrect": false,
+          "rationale": "The tangent vector's change is restricted to the osculating plane and does not point toward the binormal direction."
+        },
+        {
+          "text": "In the direction of the principal normal vector",
+          "isCorrect": true,
+          "rationale": "The derivative of the tangent vector with respect to arc length points toward the 'inside' of the curve's bend, which is the direction of the normal vector."
+        },
+        {
+          "text": "Opposite to the direction of motion",
+          "isCorrect": false,
+          "rationale": "A change opposite to motion would decrease the magnitude, but $\\mathbf{T}$ is a unit vector and only its direction can change."
+        },
+        {
+          "text": "In the direction of the position vector $\\mathbf{r}(t)$",
+          "isCorrect": false,
+          "rationale": "The change in direction of the tangent depends on the local geometry of the curve, not its absolute position from the origin."
+        }
+      ],
+      "hint": "Look at the vector that the derivative of $\\mathbf{T}$ is proportional to in the formula.",
+      "section": "12.3"
+    },
+    {
+      "question": "What is the radius of the osculating circle for a curve at a point where the curvature is $\\kappa$?",
+      "answerOptions": [
+        {
+          "text": "$\\kappa$",
+          "isCorrect": false,
+          "rationale": "Curvature is the reciprocal of the radius, so $\\kappa$ represents the sharpness, not the distance to the center."
+        },
+        {
+          "text": "$1/\\kappa$",
+          "isCorrect": true,
+          "rationale": "The radius of curvature is defined as the reciprocal of the curvature, representing the radius of the circle that best fits the curve at that point."
+        },
+        {
+          "text": "$\\kappa^2$",
+          "isCorrect": false,
+          "rationale": "The relationship between radius and curvature is linear and inverse, not quadratic."
+        },
+        {
+          "text": "$2\\pi / \\kappa$",
+          "isCorrect": false,
+          "rationale": "This expression incorrectly incorporates the circumference formula into the definition of the radius of curvature."
+        }
+      ],
+      "hint": "Recall the relationship found when calculating the curvature of a circle of radius $a$.",
+      "section": "12.3"
+    },
+    {
+      "question": "Which of the following describes the 'Rectifying Plane'?",
+      "answerOptions": [
+        {
+          "text": "The plane perpendicular to $\\mathbf{T}$",
+          "isCorrect": false,
+          "rationale": "The plane perpendicular to the tangent vector is the normal plane."
+        },
+        {
+          "text": "The plane perpendicular to $\\mathbf{N}$",
+          "isCorrect": true,
+          "rationale": "The rectifying plane is spanned by the tangent and binormal vectors, meaning its normal vector is the principal normal vector $\\mathbf{N}$."
+        },
+        {
+          "text": "The plane perpendicular to $\\mathbf{B}$",
+          "isCorrect": false,
+          "rationale": "The plane perpendicular to the binormal vector is the osculating plane."
+        },
+        {
+          "text": "The plane that contains the acceleration vector",
+          "isCorrect": false,
+          "rationale": "The acceleration vector lies in the osculating plane, which is perpendicular to $\\mathbf{B}$."
+        }
+      ],
+      "hint": "Identify which vector in the TNB frame serves as the normal to this specific plane.",
+      "section": "12.3"
+    },
+    {
+      "question": "True or False: If the acceleration of a moving object is always perpendicular to its velocity, then the object's speed must be constant.",
+      "answerOptions": [
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "If acceleration is perpendicular to velocity, the tangential component $a_T$ (the rate of change of speed) is zero, meaning speed does not change."
+        },
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "Acceleration affects both speed and direction; if there is no component in the direction of velocity, the magnitude of velocity (speed) remains constant."
+        }
+      ],
+      "hint": "Think about the role of the tangential component of acceleration.",
+      "section": "12.3"
+    },
+    {
+      "question": "According to the Frenet-Serret formulas, the derivative of the binormal vector with respect to arc length, $d\\mathbf{B}/ds$, is proportional to which vector?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{T}$",
+          "isCorrect": false,
+          "rationale": "The binormal vector is always perpendicular to the tangent; its rate of change is directed along the normal vector."
+        },
+        {
+          "text": "$\\mathbf{N}$",
+          "isCorrect": true,
+          "rationale": "The third Frenet-Serret formula states $d\\mathbf{B}/ds = -\\tau \\mathbf{N}$, indicating its change is in the direction of the normal."
+        },
+        {
+          "text": "$\\mathbf{B}$",
+          "isCorrect": false,
+          "rationale": "Because $\\mathbf{B}$ is a unit vector, its derivative must be orthogonal to itself, so it cannot point in its own direction."
+        },
+        {
+          "text": "The zero vector $\\mathbf{0}$",
+          "isCorrect": false,
+          "rationale": "This would only be true if the torsion were zero, which is not true for general space curves."
+        }
+      ],
+      "hint": "Check the relationship involving torsion in the provided summary table.",
+      "section": "12.3"
+    },
+    {
+      "question": "In the context of the TNB frame, which statement about the magnitude of the vectors is correct?",
+      "answerOptions": [
+        {
+          "text": "$|\\mathbf{T}| = |\\mathbf{N}| = |\\mathbf{B}| = 1$",
+          "isCorrect": true,
+          "rationale": "The vectors in the Frenet-Serret frame are defined specifically as unit vectors to provide an orthonormal coordinate system along the curve."
+        },
+        {
+          "text": "$|\\mathbf{T}| = 1$, but $|\\mathbf{N}|$ and $|\\mathbf{B}|$ vary with curvature.",
+          "isCorrect": false,
+          "rationale": "All three vectors are normalized during their definition to ensure they are unit vectors."
+        },
+        {
+          "text": "Only $|\\mathbf{T}|$ must be 1.",
+          "isCorrect": false,
+          "rationale": "The frame is an orthonormal basis, requiring all members to be of unit length and mutually perpendicular."
+        },
+        {
+          "text": "The magnitudes depend on the speed $|\\mathbf{r}'(t)|$.",
+          "isCorrect": false,
+          "rationale": "While the derivatives used to find them depend on speed, the final vectors are divided by their own magnitudes to become unit vectors."
+        }
+      ],
+      "hint": "Consider the word 'Unit' in 'Unit Tangent', 'Unit Normal', and 'Unit Binormal'.",
+      "section": "12.3"
+    },
+    {
+      "question": "The tangential component of acceleration $a_T$ is defined as the derivative of what quantity?",
+      "answerOptions": [
+        {
+          "text": "Curvature",
+          "isCorrect": false,
+          "rationale": "Curvature is a geometric property of the path, not a kinematic property that determines acceleration components directly."
+        },
+        {
+          "text": "Speed",
+          "isCorrect": true,
+          "rationale": "Tangential acceleration measures how much the magnitude of the velocity (speed) is changing over time."
+        },
+        {
+          "text": "Torsion",
+          "isCorrect": false,
+          "rationale": "Torsion relates to the twisting of the path in 3D space and does not describe the rate of change of speed."
+        },
+        {
+          "text": "Position",
+          "isCorrect": false,
+          "rationale": "The derivative of position is velocity; tangential acceleration is a component of the second derivative of position."
+        }
+      ],
+      "hint": "Identify the scalar quantity that represents 'how fast' an object is moving.",
+      "section": "12.3"
+    },
+    {
+      "question": "For the circular helix $\\mathbf{r}(t) = (a \\cos t, a \\sin t, bt)$, what can be said about its curvature?",
+      "answerOptions": [
+        {
+          "text": "It is constant.",
+          "isCorrect": true,
+          "rationale": "A circular helix turns and rises at a constant rate, resulting in a constant curvature throughout the curve."
+        },
+        {
+          "text": "It increases as $t$ increases.",
+          "isCorrect": false,
+          "rationale": "Curvature only increases if the spiral tightens, but a standard helix has a fixed radius and pitch."
+        },
+        {
+          "text": "It is zero at $t = 0$.",
+          "isCorrect": false,
+          "rationale": "Because the helix is always turning, its curvature is never zero."
+        },
+        {
+          "text": "It depends on the position from the origin.",
+          "isCorrect": false,
+          "rationale": "Curvature is an intrinsic property of the shape of the curve, not its location in space."
+        }
+      ],
+      "hint": "Think about whether a spiral shape with a constant radius 'bends' more or less as it moves up.",
+      "section": "12.3"
+    },
+    {
+      "question": "Given a curve $\\mathbf{r}(t)$, if the speed is constant, which component of acceleration must be zero?",
+      "answerOptions": [
+        {
+          "text": "The normal component $a_N$",
+          "isCorrect": false,
+          "rationale": "The normal component exists as long as the curve is turning, even if the speed is constant."
+        },
+        {
+          "text": "The tangential component $a_T$",
+          "isCorrect": true,
+          "rationale": "Tangential acceleration is the rate of change of speed; if speed is constant, its derivative is zero."
+        },
+        {
+          "text": "Both $a_T$ and $a_N$",
+          "isCorrect": false,
+          "rationale": "This would only be true for motion along a straight line at constant speed."
+        },
+        {
+          "text": "The binormal component $a_B$",
+          "isCorrect": false,
+          "rationale": "Acceleration has no binormal component by definition, regardless of whether speed is constant."
+        }
+      ],
+      "hint": "Recall which component is related to 'speeding up' or 'slowing down'.",
+      "section": "12.3"
+    },
+    {
+      "question": "What does torsion $\\tau$ physically represent for a space curve?",
+      "answerOptions": [
+        {
+          "text": "How sharply the curve turns within a plane.",
+          "isCorrect": false,
+          "rationale": "This is the definition of curvature, not torsion."
+        },
+        {
+          "text": "How much the curve 'twists' out of its current plane of motion.",
+          "isCorrect": true,
+          "rationale": "Torsion measures the rate at which the osculating plane rotates, indicating the curve's departure from a 2D path."
+        },
+        {
+          "text": "The rate at which the speed of the object changes.",
+          "isCorrect": false,
+          "rationale": "The rate of change of speed is the tangential acceleration."
+        },
+        {
+          "text": "The distance from the origin to the curve.",
+          "isCorrect": false,
+          "rationale": "This is simply the magnitude of the position vector, which is unrelated to the intrinsic shape properties like torsion."
+        }
+      ],
+      "hint": "Consider the difference between a flat circle and a rising spiral.",
+      "section": "12.3"
+    },
+    {
+      "question": "If $\\mathbf{T}(t)$ and $\\mathbf{r}'(t)$ are known, how is $\\mathbf{N}(t)$ calculated?",
+      "answerOptions": [
+        {
+          "text": "By normalizing $\\mathbf{T}'(t)$",
+          "isCorrect": true,
+          "rationale": "The unit normal vector is defined as the unit vector in the direction of the derivative of the unit tangent vector."
+        },
+        {
+          "text": "By taking $\\mathbf{r}'(t) \\times \\mathbf{r}''(t)$",
+          "isCorrect": false,
+          "rationale": "This cross product results in a vector parallel to the binormal vector, not the normal vector."
+        },
+        {
+          "text": "By normalizing $\\mathbf{r}''(t)$",
+          "isCorrect": false,
+          "rationale": "The second derivative of position is not necessarily in the same direction as the derivative of the unit tangent vector unless speed is constant."
+        },
+        {
+          "text": "By calculating $\\mathbf{B}(t) \\times \\mathbf{T}(t)$",
+          "isCorrect": false,
+          "rationale": "While this yields the correct direction in a right-handed system, the standard definition is based on the change of the tangent vector."
+        }
+      ],
+      "hint": "Think about the definition of the normal vector as it relates to the rate of change of direction.",
+      "section": "12.3"
+    },
+    {
+      "question": "The center of the osculating circle at point $P$ lies in the direction of which vector from $P$?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{T}(t)$",
+          "isCorrect": false,
+          "rationale": "The tangent vector is parallel to the curve at $P$, while the center of the circle must be in the direction of the bend."
+        },
+        {
+          "text": "$\\mathbf{N}(t)$",
+          "isCorrect": true,
+          "rationale": "The normal vector points 'inward' toward the concave side of the curve, which is the direction of the center of curvature."
+        },
+        {
+          "text": "$\\mathbf{B}(t)$",
+          "isCorrect": false,
+          "rationale": "The binormal vector is perpendicular to the plane in which the curve is locally bending."
+        },
+        {
+          "text": "$-\\mathbf{N}(t)$",
+          "isCorrect": false,
+          "rationale": "The negative normal vector points away from the bend, whereas the circle must lie inside the curve's turn."
+        }
+      ],
+      "hint": "Which vector points 'inward' toward the side the curve is bending?",
+      "section": "12.3"
+    },
+    {
+      "question": "At an inflection point of a plane curve $y = f(x)$, what happens to the curvature?",
+      "answerOptions": [
+        {
+          "text": "It reaches a maximum.",
+          "isCorrect": false,
+          "rationale": "At an inflection point, the curve is transitioning between different directions of bending, not reaching a peak in sharpness."
+        },
+        {
+          "text": "It becomes zero.",
+          "isCorrect": true,
+          "rationale": "Inflection points are defined as where the second derivative $f''(x)$ is zero; since curvature for a plane curve is proportional to $f''(x)$, it must also be zero."
+        },
+        {
+          "text": "It is undefined.",
+          "isCorrect": false,
+          "rationale": "As long as the function is twice differentiable, the curvature formula yields a value, which is zero at such points."
+        },
+        {
+          "text": "It is equal to the slope of the tangent.",
+          "isCorrect": false,
+          "rationale": "The slope of the tangent relates to the first derivative, while curvature relates to the rate of change of that slope."
+        }
+      ],
+      "hint": "Consider the value of the second derivative at an inflection point.",
+      "section": "12.3"
+    },
+    {
+      "question": "Why is $\\mathbf{T}(t) \\cdot \\mathbf{T}'(t) = 0$ for any smooth curve?",
+      "answerOptions": [
+        {
+          "text": "Because $\\mathbf{T}(t)$ is always zero.",
+          "isCorrect": false,
+          "rationale": "The unit tangent vector has a magnitude of 1, so it is never the zero vector."
+        },
+        {
+          "text": "Because $\\mathbf{T}(t)$ has constant length.",
+          "isCorrect": true,
+          "rationale": "For any vector function of constant length, its derivative is always orthogonal to the vector itself."
+        },
+        {
+          "text": "Because the curve is a straight line.",
+          "isCorrect": false,
+          "rationale": "This property holds for all smooth curves, not just straight lines."
+        },
+        {
+          "text": "Because the speed is constant.",
+          "isCorrect": false,
+          "rationale": "The orthogonality of $\\mathbf{T}$ and its derivative is a property of unit vectors and is independent of the parameterization speed."
+        }
+      ],
+      "hint": "Recall the property of derivatives for vector functions with constant magnitude.",
+      "section": "12.3"
+    },
+    {
+      "question": "Which plane is orthogonal to the curve's direction of motion at a point $\\mathbf{r}(t_0)$?",
+      "answerOptions": [
+        {
+          "text": "Osculating Plane",
+          "isCorrect": false,
+          "rationale": "The osculating plane contains the tangent vector, so it is parallel to the direction of motion, not orthogonal."
+        },
+        {
+          "text": "Rectifying Plane",
+          "isCorrect": false,
+          "rationale": "The rectifying plane also contains the tangent vector."
+        },
+        {
+          "text": "Normal Plane",
+          "isCorrect": true,
+          "rationale": "The normal plane is perpendicular to the tangent vector $\\mathbf{T}(t)$, which points in the direction of motion."
+        },
+        {
+          "text": "Horizontal Plane",
+          "isCorrect": false,
+          "rationale": "Horizontal planes are defined by the global coordinate system, not the intrinsic moving frame of the curve."
+        }
+      ],
+      "hint": "Identify the plane whose normal vector is the unit tangent vector $\\mathbf{T}$.",
+      "section": "12.3"
+    },
+    {
+      "question": "What does the second Frenet-Serret formula, $d\\mathbf{N}/ds = -\\kappa \\mathbf{T} + \\tau \\mathbf{B}$, describe?",
+      "answerOptions": [
+        {
+          "text": "The change in the normal vector as it moves along the curve.",
+          "isCorrect": true,
+          "rationale": "This formula shows that the normal vector's direction changes based on both the bending (curvature) and twisting (torsion) of the curve."
+        },
+        {
+          "text": "The definition of the binormal vector.",
+          "isCorrect": false,
+          "rationale": "The binormal vector is defined by the cross product of $\\mathbf{T}$ and $\\mathbf{N}$."
+        },
+        {
+          "text": "The calculation of total acceleration.",
+          "isCorrect": false,
+          "rationale": "Acceleration is $d\\mathbf{v}/dt$, which involves time derivatives, while this formula involves derivatives with respect to arc length $s$."
+        },
+        {
+          "text": "The rate at which the speed changes.",
+          "isCorrect": false,
+          "rationale": "The rate of change of speed is the tangential acceleration, unrelated to the derivative of the normal vector."
+        }
+      ],
+      "hint": "This formula explains how the principal normal vector 'rotates' toward the other two frame vectors.",
+      "section": "12.3"
+    },
+    {
+      "question": "True or False: The acceleration vector $\\mathbf{a}(t)$ of a particle moving along a smooth curve always lies in the osculating plane.",
+      "answerOptions": [
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "Since acceleration is composed of tangential ($\\mathbf{T}$) and normal ($\\mathbf{N}$) components, and these vectors span the osculating plane, the acceleration vector must lie within it."
+        },
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "Acceleration has no component in the binormal ($\\mathbf{B}$) direction, thus it is restricted to the plane spanned by $\\mathbf{T}$ and $\\mathbf{N}$."
+        }
+      ],
+      "hint": "Consider the components of acceleration ($a_T$ and $a_N$) and the vectors they are associated with.",
+      "section": "12.3"
+    },
+    {
+      "question": "How is the torsion $\\tau$ related to the binormal vector $\\mathbf{B}$ and the normal vector $\\mathbf{N}$ in a practical formula?",
+      "answerOptions": [
+        {
+          "text": "$\\tau = \\frac{d\\mathbf{B}}{ds} \\cdot \\mathbf{N}$",
+          "isCorrect": false,
+          "rationale": "The correct formula includes a negative sign because the binormal vector changes in the direction of the negative normal."
+        },
+        {
+          "text": "$\\tau = -\\frac{d\\mathbf{B}}{ds} \\cdot \\mathbf{N}$",
+          "isCorrect": true,
+          "rationale": "Torsion is defined by the projection of the change in the binormal vector onto the normal vector, with a negative sign by convention."
+        },
+        {
+          "text": "$\\tau = |\\frac{d\\mathbf{B}}{ds}|$",
+          "isCorrect": false,
+          "rationale": "This magnitude is equal to the absolute value of torsion, but torsion can be signed."
+        },
+        {
+          "text": "$\\tau = \\mathbf{B} \\cdot \\mathbf{N}$",
+          "isCorrect": false,
+          "rationale": "These vectors are orthogonal, so their dot product is always zero and cannot represent torsion."
+        }
+      ],
+      "hint": "Check the relationship defined by the third Frenet-Serret formula.",
+      "section": "12.3"
+    },
+    {
+      "question": "Which quantity measures the rate of change of the unit tangent vector with respect to arc length?",
+      "answerOptions": [
+        {
+          "text": "Speed",
+          "isCorrect": false,
+          "rationale": "Speed is the rate of change of position along the curve, not the rate of change of the tangent vector's direction."
+        },
+        {
+          "text": "Torsion",
+          "isCorrect": false,
+          "rationale": "Torsion measures the rate of change of the binormal vector, not the tangent vector."
+        },
+        {
+          "text": "Curvature",
+          "isCorrect": true,
+          "rationale": "Curvature is defined as $|d\\mathbf{T}/ds|$, quantifying how quickly the curve's direction is changing."
+        },
+        {
+          "text": "Velocity",
+          "isCorrect": false,
+          "rationale": "Velocity is the derivative of position, whereas curvature is the derivative of the direction of that velocity."
+        }
+      ],
+      "hint": "Consider the geometric meaning of 'bending' in terms of the unit tangent vector.",
+      "section": "12.3"
+    },
+    {
+      "question": "In the formula for curvature $\\kappa = \\frac{|\\mathbf{r}'(t) \\times \\mathbf{r}''(t)|}{|\\mathbf{r}'(t)|^3}$, what does the denominator represent?",
+      "answerOptions": [
+        {
+          "text": "The speed squared",
+          "isCorrect": false,
+          "rationale": "The speed is $|\\mathbf{r}'(t)|$, so the denominator is the cube of the speed, not the square."
+        },
+        {
+          "text": "The cube of the speed",
+          "isCorrect": true,
+          "rationale": "The term $|\\mathbf{r}'(t)|$ is the speed of the particle, and it is raised to the third power in this curvature formula."
+        },
+        {
+          "text": "The magnitude of acceleration",
+          "isCorrect": false,
+          "rationale": "The magnitude of acceleration is $|\\mathbf{r}''(t)|$, which appears in the numerator's cross product."
+        },
+        {
+          "text": "The rate of change of speed",
+          "isCorrect": false,
+          "rationale": "The rate of change of speed is the tangential acceleration, which is a scalar derivative, not the magnitude of velocity cubed."
+        }
+      ],
+      "hint": "Identify the relationship between the first derivative of position and the speed of the object.",
+      "section": "12.3"
+    }
+  ],
+  "questionCount": 26,
+  "exportedAt": "2026-09-16T11:16:09",
+  "source": "303/quiz_source/12.3-quiz-source.json"
+}

@@ -1,0 +1,701 @@
+{
+  "title": "MATH 303 — §12.2 Arc Length and Unit Tangent Vectors",
+  "section": "12.2",
+  "questions": [
+    {
+      "question": "For a smooth space curve defined by the vector function $\\mathbf{r}(t) = \\langle f(t), g(t), h(t) \\rangle$, what is the mathematically precise definition of the arc length $L$ from $t = a$ to $t = b$?",
+      "answerOptions": [
+        {
+          "text": "$L = \\int_a^b \\sqrt{[f'(t)]^2 + [g'(t)]^2 + [h'(t)]^2} \\, dt$",
+          "isCorrect": true,
+          "rationale": "This formula represents the integration of the speed (magnitude of the velocity vector) over the specified time interval to find the total distance traveled along the curve."
+        },
+        {
+          "text": "$L = \\int_a^b (f'(t) + g'(t) + h'(t)) \\, dt$",
+          "isCorrect": false,
+          "rationale": "This option incorrectly sums the individual components of the derivative instead of finding the magnitude of the velocity vector."
+        },
+        {
+          "text": "$L = |\\mathbf{r}(b) - \\mathbf{r}(a)|$",
+          "isCorrect": false,
+          "rationale": "This calculates the displacement (straight-line distance) between the start and end points, not the actual path length along a curved trajectory."
+        },
+        {
+          "text": "$L = \\int_a^b [f'(t)]^2 + [g'(t)]^2 + [h'(t)]^2 \\, dt$",
+          "isCorrect": false,
+          "rationale": "This neglects the square root required to find the Euclidean norm (magnitude) of the velocity vector."
+        }
+      ],
+      "hint": "Consider how you would find the magnitude of the velocity vector $\\mathbf{r}'(t)$ before integrating.",
+      "section": "12.2"
+    },
+    {
+      "question": "The unit tangent vector $\\mathbf{T}(t)$ is used to describe the direction of motion. If $\\mathbf{r}(t) = \\langle \\cos t, \\sin t, t \\rangle$, what is the value of $|\\mathbf{T}(t)|$ for any $t$?",
+      "answerOptions": [
+        {
+          "text": "$1$",
+          "isCorrect": true,
+          "rationale": "By definition, the unit tangent vector is normalized by dividing the velocity vector by its own magnitude, ensuring its length is always unity."
+        },
+        {
+          "text": "$\\sqrt{2}$",
+          "isCorrect": false,
+          "rationale": "While the magnitude of the velocity vector for this specific helix is $\\sqrt{2}$, the unit tangent vector itself is defined to have a magnitude of 1."
+        },
+        {
+          "text": "$\\sqrt{1 + \\cos^2 t}$",
+          "isCorrect": false,
+          "rationale": "This might be a result of a procedural error in calculating the magnitude of the velocity vector or failing to divide by it."
+        },
+        {
+          "text": "$t$",
+          "isCorrect": false,
+          "rationale": "The magnitude of a unit vector is a constant scalar, not a variable dependent on the parameter $t$."
+        }
+      ],
+      "hint": "Recall the fundamental property that distinguishes a 'unit' vector from a standard vector.",
+      "section": "12.2"
+    },
+    {
+      "question": "When reparametrizing a curve with respect to the arc length parameter $s$, what is the resulting magnitude of the derivative $\\left| \\frac{d\\mathbf{r}}{ds} \\right|$?",
+      "answerOptions": [
+        {
+          "text": "$1$",
+          "isCorrect": true,
+          "rationale": "Reparametrizing by arc length ensures the curve is traversed at a constant speed of one unit of distance per unit of parameter."
+        },
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "A derivative of zero would imply the position is constant and the object is not moving, which is not true for a curve."
+        },
+        {
+          "text": "$|\\mathbf{r}'(t)|$",
+          "isCorrect": false,
+          "rationale": "This is the speed with respect to the original parameter $t$, which the arc length parameter $s$ is specifically designed to normalize."
+        },
+        {
+          "text": "$s$",
+          "isCorrect": false,
+          "rationale": "The magnitude of the derivative is a constant speed, not the value of the parameter itself."
+        }
+      ],
+      "hint": "Think about the 'speed' of a curve when the parameter used is the actual distance along the path.",
+      "section": "12.2"
+    },
+    {
+      "question": "A projectile is launched with an initial speed $v_0$ at an angle $\\theta$ from ground level ($y_0 = 0$). According to the source material, which condition determines the time $t$ at which the projectile reaches its maximum height?",
+      "answerOptions": [
+        {
+          "text": "The vertical component of velocity is zero ($v_y(t) = 0$).",
+          "isCorrect": true,
+          "rationale": "Maximum height is reached at the peak of the trajectory where upward motion ceases before downward motion begins."
+        },
+        {
+          "text": "The horizontal component of velocity is zero ($v_x(t) = 0$).",
+          "isCorrect": false,
+          "rationale": "In ideal projectile motion without air resistance, the horizontal velocity remains constant and non-zero throughout the flight."
+        },
+        {
+          "text": "The acceleration vector is zero ($\\mathbf{a}(t) = \\mathbf{0}$).",
+          "isCorrect": false,
+          "rationale": "The acceleration due to gravity is a constant non-zero vector $\\langle 0, -g \\rangle$ acting throughout the entire flight."
+        },
+        {
+          "text": "The vertical position is zero ($y(t) = 0$).",
+          "isCorrect": false,
+          "rationale": "This condition describes the moment the projectile hits the ground, not its maximum height."
+        }
+      ],
+      "hint": "Consider the state of the object's vertical motion at the exact moment it stops rising and begins to fall.",
+      "section": "12.2"
+    },
+    {
+      "question": "The Cornu spiral is defined by $\\mathbf{r}(t) = \\langle \\int_0^t \\cos(\\frac{u^2}{2}) \\, du, \\int_0^t \\sin(\\frac{u^2}{2}) \\, du \\rangle$. Using the Fundamental Theorem of Calculus and the arc length formula, what is the arc length of this spiral over the interval $[0, b]$?",
+      "answerOptions": [
+        {
+          "text": "$b$",
+          "isCorrect": true,
+          "rationale": "Applying the Fundamental Theorem of Calculus to the components shows that the magnitude of the velocity vector is $\\sqrt{\\cos^2(t^2/2) + \\sin^2(t^2/2)} = 1$, making the arc length equal to the upper limit of integration."
+        },
+        {
+          "text": "$\\frac{b^2}{2}$",
+          "isCorrect": false,
+          "rationale": "This could result from incorrectly integrating the argument of the trigonometric functions instead of the magnitude of the derivative."
+        },
+        {
+          "text": "$\\sqrt{b}$",
+          "isCorrect": false,
+          "rationale": "This might be a confusion between the arc length formula and the square root operation performed during magnitude calculation."
+        },
+        {
+          "text": "$\\sin(\\frac{b^2}{2})$",
+          "isCorrect": false,
+          "rationale": "This mistakenly assumes the arc length is one of the original component functions evaluated at the boundary."
+        }
+      ],
+      "hint": "First find the derivatives of the $x$ and $y$ components, then determine the speed $|\\mathbf{r}'(t)|$.",
+      "section": "12.2"
+    },
+    {
+      "question": "True or False: For a circle centered at the origin, $\\mathbf{r}(t) = \\langle a \\cos t, a \\sin t \\rangle$, the position vector $\\mathbf{r}(t)$ and the velocity vector $\\mathbf{r}'(t)$ are perpendicular for all $t$.",
+      "answerOptions": [
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "The dot product $\\mathbf{r}(t) \\cdot \\mathbf{r}'(t)$ equals zero because $(-a \\cos t)(a \\sin t) + (a \\sin t)(a \\cos t) = 0$, which is a general property of motion at a constant distance from a fixed point."
+        },
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "The position vector points radially outward from the origin while the tangent vector points along the circumference; these are always orthogonal in a circle."
+        }
+      ],
+      "hint": "Evaluate the dot product of the position vector and its derivative.",
+      "section": "12.2"
+    },
+    {
+      "question": "Consider the helix $\\mathbf{r}(t) = \\langle \\cos t, \\sin t, t \\rangle$. Why are the position vector $\\mathbf{r}(t)$ and the velocity vector $\\mathbf{r}'(t)$ NOT perpendicular for this curve?",
+      "answerOptions": [
+        {
+          "text": "The dot product $\\mathbf{r}(t) \\cdot \\mathbf{r}'(t) = t$, which is not zero for most $t$.",
+          "isCorrect": true,
+          "rationale": "While the $x$ and $y$ components cancel out in the dot product, the $z$ components produce $t \\cdot 1$, making the vectors non-orthogonal except at the origin."
+        },
+        {
+          "text": "The velocity vector is always constant.",
+          "isCorrect": false,
+          "rationale": "The velocity vector $\\langle -\\sin t, \\cos t, 1 \\rangle$ changes direction even if its magnitude is constant."
+        },
+        {
+          "text": "The helix has no radius.",
+          "isCorrect": false,
+          "rationale": "The helix clearly has a radius of 1 in the $xy$-plane."
+        },
+        {
+          "text": "They are perpendicular; the statement is incorrect.",
+          "isCorrect": false,
+          "rationale": "A common misconception is extending circle properties to helices without accounting for the vertical $z$ component."
+        }
+      ],
+      "hint": "Perform the dot product calculation $\\mathbf{r}(t) \\cdot \\mathbf{r}'(t)$ and observe the result of the $z$-components.",
+      "section": "12.2"
+    },
+    {
+      "question": "Suppose a curve is defined by linear polynomials such that $\\mathbf{r}(t) = \\langle a_1 t + b_1, a_2 t + b_2, a_3 t + b_3 \\rangle$. What can be said about the unit tangent vector $\\mathbf{T}(t)$?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{T}(t)$ is constant.",
+          "isCorrect": true,
+          "rationale": "The derivative $\\mathbf{r}'(t)$ is a constant vector $\\langle a_1, a_2, a_3 \\rangle$, and normalizing a constant vector results in a constant unit vector."
+        },
+        {
+          "text": "$\\mathbf{T}(t)$ changes linearly with $t$.",
+          "isCorrect": false,
+          "rationale": "While the position changes linearly, the direction (tangent) of a straight line does not change."
+        },
+        {
+          "text": "$\\mathbf{T}(t)$ is always zero.",
+          "isCorrect": false,
+          "rationale": "The unit tangent vector must have a magnitude of 1 and is only undefined if the curve is not smooth ($\\mathbf{r}'(t) = \\mathbf{0}$)."
+        },
+        {
+          "text": "$\\mathbf{T}(t)$ is perpendicular to the line.",
+          "isCorrect": false,
+          "rationale": "The tangent vector, by definition, points in the direction of the curve (along the line), not perpendicular to it."
+        }
+      ],
+      "hint": "Identify the shape of a curve whose parametric equations are all linear functions of $t$.",
+      "section": "12.2"
+    },
+    {
+      "question": "In the context of projectile motion on flat terrain, how does the initial launch height $y_0 > 0$ affect the impact speed compared to the initial launch speed $v_0$?",
+      "answerOptions": [
+        {
+          "text": "The impact speed will be slightly greater than $v_0$.",
+          "isCorrect": true,
+          "rationale": "As the projectile falls from $y_0$ to ground level ($y=0$), potential energy is converted into kinetic energy, increasing the speed beyond its initial value."
+        },
+        {
+          "text": "The impact speed will be exactly $v_0$.",
+          "isCorrect": false,
+          "rationale": "This only occurs if the projectile lands at the same vertical height from which it was launched."
+        },
+        {
+          "text": "The impact speed will be slightly less than $v_0$.",
+          "isCorrect": false,
+          "rationale": "This would contradict the conservation of energy, as the object has lost vertical height and thus should have gained speed."
+        },
+        {
+          "text": "The impact speed is independent of $y_0$.",
+          "isCorrect": false,
+          "rationale": "Vertical displacement affects the final vertical velocity component, which in turn affects the total impact speed."
+        }
+      ],
+      "hint": "Think about energy conservation and what happens to an object's speed as it falls below its starting height.",
+      "section": "12.2"
+    },
+    {
+      "question": "If the launch speed $v_0$ of a projectile is doubled (and all other factors remain constant), how is the range $R$ affected on level ground?",
+      "answerOptions": [
+        {
+          "text": "The range increases by a factor of 4.",
+          "isCorrect": true,
+          "rationale": "The standard range formula $R = \\frac{v_0^2 \\sin(2\\theta)}{g}$ shows that range is proportional to the square of the initial velocity."
+        },
+        {
+          "text": "The range doubles.",
+          "isCorrect": false,
+          "rationale": "This is a common misconception that assumes a linear relationship between launch speed and distance."
+        },
+        {
+          "text": "The range remains the same.",
+          "isCorrect": false,
+          "rationale": "Increasing the initial energy of the projectile significantly impacts how far it can travel horizontally."
+        },
+        {
+          "text": "The range increases by a factor of $\\sqrt{2}$.",
+          "isCorrect": false,
+          "rationale": "This would imply range is proportional to the square root of velocity, which is physically incorrect."
+        }
+      ],
+      "hint": "Consider the relationship between $v_0$ and the range formula derived in physics or implied in the exercises.",
+      "section": "12.2"
+    },
+    {
+      "question": "A tractrix is defined by $\\mathbf{r}(t) = \\langle t - \\tanh t, \\text{sech } t \\rangle$. What is the magnitude of the velocity vector $|\\mathbf{r}'(t)|$ for this curve?",
+      "answerOptions": [
+        {
+          "text": "$\\tanh t$",
+          "isCorrect": true,
+          "rationale": "The derivative is $\\langle 1 - \\text{sech}^2 t, -\\text{sech } t \\tanh t \\rangle$. Using the identity $1 - \\text{sech}^2 t = \\tanh^2 t$, the magnitude simplifies to $\\sqrt{\\tanh^4 t + \\text{sech}^2 t \\tanh^2 t} = \\sqrt{\\tanh^2 t(\\tanh^2 t + \\text{sech}^2 t)} = \\tanh t$."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "While many textbook examples have constant speed, the tractrix is a specific curve where speed varies with the parameter $t$."
+        },
+        {
+          "text": "$\\text{sech } t$",
+          "isCorrect": false,
+          "rationale": "This might arise from an error in applying the hyperbolic trigonometric identities during the magnitude calculation."
+        },
+        {
+          "text": "$\\sqrt{1 + \\text{sech}^2 t}$",
+          "isCorrect": false,
+          "rationale": "This likely represents a failure to properly differentiate the $x$-component or simplify the resulting expression."
+        }
+      ],
+      "hint": "Differentiate the components using hyperbolic derivative rules and use the identity $\\tanh^2 t + \\text{sech}^2 t = 1$.",
+      "section": "12.2"
+    },
+    {
+      "question": "A bug crawls along $\\mathbf{r}(t) = \\langle 3t, 2t^2, \\frac{4\\sqrt{2}}{3}t^{3/2} \\rangle$. If the bug starts at $t=0$, what is the arc length function $s(t)$?",
+      "answerOptions": [
+        {
+          "text": "$3t + 2t^2$",
+          "isCorrect": true,
+          "rationale": "The speed is $|\\mathbf{r}'(t)| = \\sqrt{3^2 + (4t)^2 + (2\\sqrt{2}\\sqrt{t})^2} = \\sqrt{9 + 16t^2 + 8t} = \\sqrt{(4t+3)^2} = 4t+3$. Integrating from $0$ to $t$ gives $2t^2 + 3t$."
+        },
+        {
+          "text": "$t^2 + 3t$",
+          "isCorrect": false,
+          "rationale": "This error likely stems from a mistake in the integration of the $4t$ term or the magnitude calculation."
+        },
+        {
+          "text": "$\\sqrt{9 + 16t^2 + 8t}$",
+          "isCorrect": false,
+          "rationale": "This is the speed (the integrand), not the total arc length (the integral)."
+        },
+        {
+          "text": "$4t + 3$",
+          "isCorrect": false,
+          "rationale": "This is the derivative of the arc length function, representing the instantaneous speed at time $t$."
+        }
+      ],
+      "hint": "First calculate the speed $|\\mathbf{r}'(t)|$, simplify the expression under the square root into a perfect square, and then integrate.",
+      "section": "12.2"
+    },
+    {
+      "question": "Which of the following describes the relationship between the arc length parameter $s$ and the time parameter $t$ according to the Fundamental Theorem of Calculus?",
+      "answerOptions": [
+        {
+          "text": "$\\frac{ds}{dt} = |\\mathbf{r}'(t)|$",
+          "isCorrect": true,
+          "rationale": "The rate of change of distance along the curve with respect to time is precisely the magnitude of the velocity vector."
+        },
+        {
+          "text": "$\\frac{ds}{dt} = \\mathbf{r}'(t)$",
+          "isCorrect": false,
+          "rationale": "This is a category error; $s$ is a scalar quantity while $\\mathbf{r}'(t)$ is a vector."
+        },
+        {
+          "text": "$s = \\int |\\mathbf{r}(t)| \\, dt$",
+          "isCorrect": false,
+          "rationale": "Arc length is the integral of the magnitude of the velocity (derivative), not the integral of the magnitude of the position vector."
+        },
+        {
+          "text": "$\\frac{dt}{ds} = |\\mathbf{r}'(t)|$",
+          "isCorrect": false,
+          "rationale": "This is the reciprocal of the correct relationship; it would imply speed is the rate of change of time with respect to distance."
+        }
+      ],
+      "hint": "Consider how 'speed' is defined in terms of the distance $s$ traveled over time $t$.",
+      "section": "12.2"
+    },
+    {
+      "question": "When a projectile is launched from ground level on the moon, where gravity is $g/6$, how is the range affected compared to an identical launch on Earth?",
+      "answerOptions": [
+        {
+          "text": "The range is 6 times larger.",
+          "isCorrect": true,
+          "rationale": "Since range $R$ is inversely proportional to $g$ ($R \\propto 1/g$), reducing gravity by a factor of 6 increases the range by that same factor."
+        },
+        {
+          "text": "The range is 6 times smaller.",
+          "isCorrect": false,
+          "rationale": "This suggests gravity is directly proportional to range, which would mean stronger gravity pulls objects further away."
+        },
+        {
+          "text": "The range is $\\sqrt{6}$ times larger.",
+          "isCorrect": false,
+          "rationale": "This would be the case if range were proportional to $1/\\sqrt{g}$, but the standard kinematic equations show a linear inverse relationship with $g$."
+        },
+        {
+          "text": "The range remains the same.",
+          "isCorrect": false,
+          "rationale": "Gravity is the primary decelerating force in the vertical direction; changing it significantly alters the trajectory and landing point."
+        }
+      ],
+      "hint": "Examine the role of $g$ in the denominator of the projectile range formula.",
+      "section": "12.2"
+    },
+    {
+      "question": "Find the unit tangent vector $\\mathbf{T}(t)$ for the line $\\mathbf{r}(t) = \\langle 1 + 3t, 2 - 4t, 5 + 4t \\rangle$.",
+      "answerOptions": [
+        {
+          "text": "$\\langle \\frac{3}{\\sqrt{41}}, -\\frac{4}{\\sqrt{41}}, \\frac{4}{\\sqrt{41}} \\rangle$",
+          "isCorrect": true,
+          "rationale": "The velocity vector is the constant vector $\\langle 3, -4, 4 \\rangle$ with magnitude $\\sqrt{3^2 + (-4)^2 + 4^2} = \\sqrt{9+16+16} = \\sqrt{41}$."
+        },
+        {
+          "text": "$\\langle 3, -4, 4 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is the tangent (velocity) vector, but it has not been normalized to a unit length of 1."
+        },
+        {
+          "text": "$\\langle \\frac{3}{41}, -\\frac{4}{41}, \\frac{4}{41} \\rangle$",
+          "isCorrect": false,
+          "rationale": "This divides by the square of the magnitude ($41$) instead of the magnitude itself ($\\sqrt{41}$)."
+        },
+        {
+          "text": "$\\langle 1, 1, 1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The unit tangent vector must point in the direction of the line's motion, not a generic diagonal direction."
+        }
+      ],
+      "hint": "Differentiate the vector function to find the direction vector of the line and then normalize it.",
+      "section": "12.2"
+    },
+    {
+      "question": "For the circular path $\\mathbf{r}(t) = \\langle 4 \\cos t, 4 \\sin t, 0 \\rangle$, what is the arc length $s$ as a function of $t$ starting from $t=0$?",
+      "answerOptions": [
+        {
+          "text": "$s = 4t$",
+          "isCorrect": true,
+          "rationale": "The speed $|\\mathbf{r}'(t)| = \\sqrt{(-4\\sin t)^2 + (4\\cos t)^2} = \\sqrt{16(\\sin^2 t + \\cos^2 t)} = 4$. Integrating $4$ from $0$ to $t$ yields $4t$."
+        },
+        {
+          "text": "$s = t$",
+          "isCorrect": false,
+          "rationale": "This assumes the radius is 1, neglecting the scaling factor of 4 in the position vector."
+        },
+        {
+          "text": "$s = 4\\pi t$",
+          "isCorrect": false,
+          "rationale": "This incorrectly incorporates $\\pi$ into the relationship between the parameter and arc length."
+        },
+        {
+          "text": "$s = 16t$",
+          "isCorrect": false,
+          "rationale": "This likely comes from failing to take the square root when calculating the magnitude of the velocity vector."
+        }
+      ],
+      "hint": "Calculate the speed of the circle and integrate it over the interval $[0, t]$.",
+      "section": "12.2"
+    },
+    {
+      "question": "Suppose two different parametrizations $\\mathbf{r}_1(t)$ and $\\mathbf{r}_2(u)$ describe the same physical curve. If you calculate the arc length $L$ for the same portion of the curve using both, which statement is correct?",
+      "answerOptions": [
+        {
+          "text": "The arc length $L$ will be identical for both.",
+          "isCorrect": true,
+          "rationale": "Arc length is an intrinsic geometric property of the curve itself and is independent of how the path is parametrized."
+        },
+        {
+          "text": "The arc length depends on the speed of the parametrization.",
+          "isCorrect": false,
+          "rationale": "The integration process 'un-does' the speed by integrating the magnitude of the derivative, isolating the path distance."
+        },
+        {
+          "text": "$L$ will be different if one parametrization traces the curve twice.",
+          "isCorrect": false,
+          "rationale": "The definition of arc length usually specifies that the curve is traced exactly once; otherwise, you are calculating distance traveled, not path length."
+        },
+        {
+          "text": "Arc length can only be calculated for the simplest parametrization.",
+          "isCorrect": false,
+          "rationale": "While some parametrizations make the integral easier to solve, the theoretical length remains the same for any valid smooth parametrization."
+        }
+      ],
+      "hint": "Consider if the physical length of a string changes if you walk along it at different speeds.",
+      "section": "12.2"
+    },
+    {
+      "question": "What is the unit tangent vector $\\mathbf{T}(t)$ of the curve $\\mathbf{r}(t) = \\langle t, t^2, \\frac{2}{3}t^3 \\rangle$ at $t=1$?",
+      "answerOptions": [
+        {
+          "text": "$\\langle \\frac{1}{3}, \\frac{2}{3}, \\frac{2}{3} \\rangle$",
+          "isCorrect": true,
+          "rationale": "The derivative is $\\mathbf{r}'(t) = \\langle 1, 2t, 2t^2 \\rangle$. At $t=1$, $\\mathbf{r}'(1) = \\langle 1, 2, 2 \\rangle$. The magnitude is $\\sqrt{1^2 + 2^2 + 2^2} = \\sqrt{9} = 3$."
+        },
+        {
+          "text": "$\\langle 1, 2, 2 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is the tangent vector at $t=1$, but it is not a unit vector."
+        },
+        {
+          "text": "$\\langle \\frac{1}{\\sqrt{3}}, \\frac{1}{\\sqrt{3}}, \\frac{1}{\\sqrt{3}} \\rangle$",
+          "isCorrect": false,
+          "rationale": "This assumes all components contribute equally to the unit vector's magnitude, which is incorrect for this curve."
+        },
+        {
+          "text": "$\\langle 1, 1, \\frac{2}{3} \\rangle$",
+          "isCorrect": false,
+          "rationale": "This mistakenly uses the values of the position vector $\\mathbf{r}(1)$ instead of the derivative $\\mathbf{r}'(1)$."
+        }
+      ],
+      "hint": "Differentiate the position vector, evaluate it at $t=1$, and then divide by its magnitude.",
+      "section": "12.2"
+    },
+    {
+      "question": "In the arc length parametrization of a helix $\\mathbf{r}(s) = \\langle \\cos(\\frac{s}{c}), \\sin(\\frac{s}{c}), \\frac{s}{k} \\rangle$, why is the parameter $s$ useful for geometry?",
+      "answerOptions": [
+        {
+          "text": "It allows us to locate points based on actual distance from a reference point.",
+          "isCorrect": true,
+          "rationale": "Because the speed is 1, a change in $s$ of 5 units corresponds to moving exactly 5 units along the physical curve."
+        },
+        {
+          "text": "It makes the equations for $x$ and $y$ linear.",
+          "isCorrect": false,
+          "rationale": "Reparametrization changes the rate at which the curve is traversed but does not change the fundamental circular nature of the components."
+        },
+        {
+          "text": "It eliminates the need for trigonometric functions.",
+          "isCorrect": false,
+          "rationale": "Trigonometric functions are required to describe circular/helical shapes regardless of the parameter used."
+        },
+        {
+          "text": "It ensures the curve never intersects itself.",
+          "isCorrect": false,
+          "rationale": "Self-intersection is a property of the curve's shape in space, not its parametrization."
+        }
+      ],
+      "hint": "Think about the convenience of having a parameter that represents the odometer reading along the path.",
+      "section": "12.2"
+    },
+    {
+      "question": "A projectile is launched from ground level at an angle $\\theta = 45^\\circ$. According to the principles in Section 12.2, why does this angle generally yield the maximum range on flat terrain?",
+      "answerOptions": [
+        {
+          "text": "It maximizes the product of the horizontal and vertical velocity components.",
+          "isCorrect": true,
+          "rationale": "The range is proportional to $\\cos \\theta \\sin \\theta = \\frac{1}{2} \\sin(2\\theta)$, and $\\sin(2\\theta)$ is maximized when $2\\theta = 90^\\circ$."
+        },
+        {
+          "text": "It minimizes the impact of gravity.",
+          "isCorrect": false,
+          "rationale": "Gravity acts as a constant downward acceleration regardless of the launch angle chosen."
+        },
+        {
+          "text": "It provides the longest time of flight.",
+          "isCorrect": false,
+          "rationale": "Higher angles (closer to $90^\\circ$) provide longer flight times but result in smaller horizontal distances."
+        },
+        {
+          "text": "It maximizes the launch speed $v_0$.",
+          "isCorrect": false,
+          "rationale": "Launch speed is an initial condition determined by the source (e.g., gunpowder), not the angle of the rifle."
+        }
+      ],
+      "hint": "Consider the mathematical function $\\sin(2\\theta)$ that appears in the range formula.",
+      "section": "12.2"
+    },
+    {
+      "question": "What is the unit tangent vector $\\mathbf{T}(t)$ for a curve where the speed $|\\mathbf{r}'(t)|$ is constant?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{T}(t)$ is just a scalar multiple of $\\mathbf{r}'(t)$.",
+          "isCorrect": true,
+          "rationale": "Since $|\\mathbf{r}'(t)| = c$, $\\mathbf{T}(t) = \\frac{1}{c} \\mathbf{r}'(t)$, meaning the direction vector is simply the velocity vector scaled by a constant factor."
+        },
+        {
+          "text": "$\\mathbf{T}(t)$ is always a constant vector.",
+          "isCorrect": false,
+          "rationale": "Even if the speed is constant, the direction of the velocity vector can change (as in a circle), so the unit tangent vector is not necessarily constant."
+        },
+        {
+          "text": "$\\mathbf{T}(t)$ is equal to the acceleration vector.",
+          "isCorrect": false,
+          "rationale": "The unit tangent vector describes direction, whereas acceleration describes the rate of change of velocity."
+        },
+        {
+          "text": "$\\mathbf{T}(t)$ cannot be calculated if speed is constant.",
+          "isCorrect": false,
+          "rationale": "Constant speed (provided it is non-zero) makes the calculation of the unit tangent vector straightforward."
+        }
+      ],
+      "hint": "Look at the definition $\\mathbf{T}(t) = \\frac{\\mathbf{r}'(t)}{|\\mathbf{r}'(t)|}$ and replace the denominator with a constant $c$.",
+      "section": "12.2"
+    },
+    {
+      "question": "For the curve $\\mathbf{r}(t) = \\langle e^t, e^t \\cos t, e^t \\sin t \\rangle$, which component of the velocity vector $\\mathbf{r}'(t)$ requires the product rule?",
+      "answerOptions": [
+        {
+          "text": "Both the $y$ and $z$ components.",
+          "isCorrect": true,
+          "rationale": "The $y$ component ($e^t \\cos t$) and the $z$ component ($e^t \\sin t$) both involve the product of two functions of $t$."
+        },
+        {
+          "text": "Only the $x$ component.",
+          "isCorrect": false,
+          "rationale": "The $x$ component is just $e^t$, which is its own derivative."
+        },
+        {
+          "text": "Only the $y$ component.",
+          "isCorrect": false,
+          "rationale": "While the $y$ component requires the product rule, the $z$ component does as well because it is also a product ($e^t \\cdot \\sin t$)."
+        },
+        {
+          "text": "None of them; they require the chain rule only.",
+          "isCorrect": false,
+          "rationale": "The derivatives of $e^t \\cos t$ and $e^t \\sin t$ fundamentally require the product rule because they are products of exponential and trigonometric functions."
+        }
+      ],
+      "hint": "Observe which components consist of a product of two distinct functions of the parameter $t$.",
+      "section": "12.2"
+    },
+    {
+      "question": "In the exercise involving a bug on a web (Exercise 28), you find that $s(t) = 5$. If $s(t)$ is a strictly increasing function, what does this imply about the solution for $t$?",
+      "answerOptions": [
+        {
+          "text": "There is exactly one unique time $t$ when the bug hits the web.",
+          "isCorrect": true,
+          "rationale": "A strictly increasing arc length function implies the bug never backtracks or stops, ensuring it crosses the distance threshold exactly once."
+        },
+        {
+          "text": "The bug hits the web multiple times.",
+          "isCorrect": false,
+          "rationale": "This would only happen if the function were not monotonic (i.e., if the bug moved backward)."
+        },
+        {
+          "text": "The bug never reaches the web.",
+          "isCorrect": false,
+          "rationale": "As long as the range of $s(t)$ includes 5, a strictly increasing function will eventually hit that value."
+        },
+        {
+          "text": "The time $t$ must be negative.",
+          "isCorrect": false,
+          "rationale": "Usually, for these problems, $t=0$ is the start, so a distance of 5 would occur at a positive time."
+        }
+      ],
+      "hint": "Think about the properties of monotonic functions and how many times they can cross a specific horizontal line.",
+      "section": "12.2"
+    },
+    {
+      "question": "The acceleration vector $\\mathbf{a}(t)$ for a projectile is given as $\\langle 0, -g \\rangle$. If we integrate this vector twice, what happens to the integration constants?",
+      "answerOptions": [
+        {
+          "text": "They represent the initial velocity $\\mathbf{v}_0$ and initial position $\\mathbf{r}_0$.",
+          "isCorrect": true,
+          "rationale": "The first integration constant is a vector representing initial velocity, and the second is a vector representing the initial position."
+        },
+        {
+          "text": "They cancel each other out.",
+          "isCorrect": false,
+          "rationale": "Integration constants are additive and represent independent physical parameters (velocity and position)."
+        },
+        {
+          "text": "They are always zero.",
+          "isCorrect": false,
+          "rationale": "This would only be true if the object started from the origin with zero initial velocity."
+        },
+        {
+          "text": "They represent the maximum height and range.",
+          "isCorrect": false,
+          "rationale": "Max height and range are derived values from the final equation, not the immediate constants of integration."
+        }
+      ],
+      "hint": "Recall the physical meaning of constants added during the integration of acceleration and velocity.",
+      "section": "12.2"
+    },
+    {
+      "question": "Which of the following is a false statement regarding the unit tangent vector $\\mathbf{T}(t)$?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{T}(t)$ can be defined even if $\\mathbf{r}'(t) = \\mathbf{0}$.",
+          "isCorrect": true,
+          "rationale": "The definition of $\\mathbf{T}(t)$ involves dividing by $|\\mathbf{r}'(t)|$, so it is undefined at any point where the derivative is the zero vector (i.e., where the curve is not smooth)."
+        },
+        {
+          "text": "$|\\mathbf{T}(t)|$ is always 1.",
+          "isCorrect": false,
+          "rationale": "This is a true statement by the very definition of a 'unit' vector."
+        },
+        {
+          "text": "$\\mathbf{T}(t)$ points in the direction of increasing $t$.",
+          "isCorrect": false,
+          "rationale": "This is a true statement; the tangent vector follows the orientation defined by the parameter."
+        },
+        {
+          "text": "$\\mathbf{T}(t) = \\frac{d\\mathbf{r}}{ds}$.",
+          "isCorrect": false,
+          "rationale": "This is a true statement derived from the relationship between the arc length parameter and the tangent vector."
+        }
+      ],
+      "hint": "Review the requirement for a curve to be 'smooth' for the tangent vector to exist.",
+      "section": "12.2"
+    },
+    {
+      "question": "Given the curve $\\mathbf{r}(t) = \\langle a \\cos(\\omega t), a \\sin(\\omega t), bt \\rangle$, what is the speed of the particle?",
+      "answerOptions": [
+        {
+          "text": "$\\sqrt{a^2 \\omega^2 + b^2}$",
+          "isCorrect": true,
+          "rationale": "The derivative is $\\langle -a \\omega \\sin(\\omega t), a \\omega \\cos(\\omega t), b \\rangle$. Squaring and summing gives $a^2 \\omega^2 (\\sin^2(\\omega t) + \\cos^2(\\omega t)) + b^2 = a^2 \\omega^2 + b^2$."
+        },
+        {
+          "text": "$a \\omega + b$",
+          "isCorrect": false,
+          "rationale": "This ignores the Pythagorean theorem required for vector magnitude, simply adding the coefficients of the components."
+        },
+        {
+          "text": "$\\sqrt{a^2 + b^2}$",
+          "isCorrect": false,
+          "rationale": "This error occurs if one forgets to apply the chain rule to the $\\omega t$ term inside the trigonometric functions."
+        },
+        {
+          "text": "$\\omega \\sqrt{a^2 + b^2}$",
+          "isCorrect": false,
+          "rationale": "This incorrectly assumes that the $\\omega$ factor applies to the vertical $z$ component as well."
+        }
+      ],
+      "hint": "Differentiate each component (remembering the chain rule for the trigonometric parts) and find the magnitude.",
+      "section": "12.2"
+    }
+  ],
+  "questionCount": 26,
+  "exportedAt": "2026-09-16T11:16:09",
+  "source": "303/quiz_source/12.2-quiz-source.json"
+}

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Game - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            min-height: 100vh;
+        }
+
+        .stage {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: var(--spacing-lg) var(--spacing-md);
+            text-align: center;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .btn {
+            background-color: var(--color-primary);
+            color: #fff;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            font-family: var(--font-primary);
+            width: 100%;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: var(--color-primary-dark);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        input[type="text"] {
+            font-family: var(--font-secondary);
+            font-size: 1.2rem;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 100%;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        #join-code {
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            font-weight: bold;
+        }
+
+        .answer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: var(--spacing-lg);
+        }
+
+        .answer-tile {
+            border-radius: 14px;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.1s, opacity 0.3s;
+        }
+
+        .answer-tile:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        .answer-tile:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .answer-tile.selected {
+            outline: 5px solid #333;
+            outline-offset: -8px;
+        }
+
+        .tile-a {
+            background: var(--color-primary);
+        }
+
+        .tile-b {
+            background: var(--color-accent-blue);
+        }
+
+        .tile-c {
+            background: var(--color-accent-sunrise);
+        }
+
+        .tile-d {
+            background: var(--color-accent-green);
+        }
+
+        .feedback-banner {
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: var(--spacing-md);
+            color: #fff;
+        }
+
+        .feedback-banner.correct {
+            background: var(--color-accent-green);
+        }
+
+        .feedback-banner.incorrect {
+            background: #dc3545;
+        }
+
+        .points-earned {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .rationale-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: left;
+            margin-top: var(--spacing-md);
+        }
+
+        .rank-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+
+        .error-msg {
+            color: #c82333;
+            font-weight: bold;
+            margin-top: var(--spacing-md);
+        }
+
+        .waiting-spinner {
+            font-size: 3rem;
+            margin: var(--spacing-lg) 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand"><span>Milligan</span> Mathematics</a>
+        </div>
+    </nav>
+
+    <main class="stage">
+
+        <!-- JOIN -->
+        <section id="screen-join" class="screen active">
+            <h1>Join Game</h1>
+            <input type="text" id="join-code" placeholder="GAME CODE" maxlength="5">
+            <input type="text" id="join-name" placeholder="Your name" maxlength="24">
+            <button class="btn" id="btn-join">Join</button>
+            <p class="error-msg" id="join-error"></p>
+        </section>
+
+        <!-- WAITING (in lobby) -->
+        <section id="screen-waiting" class="screen">
+            <h1>You're in!</h1>
+            <div class="waiting-spinner">⏳</div>
+            <p>Waiting for the host to start the game...</p>
+        </section>
+
+        <!-- ANSWER -->
+        <section id="screen-answer" class="screen">
+            <h2>Pick your answer!</h2>
+            <div class="answer-grid" id="answer-grid">
+                <button class="answer-tile tile-a" data-i="0">▲</button>
+                <button class="answer-tile tile-b" data-i="1">◆</button>
+                <button class="answer-tile tile-c" data-i="2">●</button>
+                <button class="answer-tile tile-d" data-i="3">■</button>
+            </div>
+        </section>
+
+        <!-- LOCKED IN -->
+        <section id="screen-locked" class="screen">
+            <h1>Locked in!</h1>
+            <div class="waiting-spinner">🔒</div>
+            <p>Waiting for the rest of the class...</p>
+        </section>
+
+        <!-- FEEDBACK -->
+        <section id="screen-feedback" class="screen">
+            <div class="feedback-banner" id="feedback-banner"></div>
+            <p class="points-earned" id="points-earned"></p>
+            <div class="rationale-box">
+                <strong>Correct answer:</strong> <span id="correct-answer-text"></span>
+                <p id="rationale-text" style="margin-top: 10px;"></p>
+            </div>
+        </section>
+
+        <!-- RANK -->
+        <section id="screen-rank" class="screen">
+            <h2>You're in place...</h2>
+            <div class="rank-display" id="rank-display">#-</div>
+            <p id="rank-score"></p>
+        </section>
+
+        <!-- END -->
+        <section id="screen-end" class="screen">
+            <h1>🏁 Game Over!</h1>
+            <div class="rank-display" id="final-rank-display">#-</div>
+            <p id="final-score"></p>
+        </section>
+
+    </main>
+
+    <script type="module">
+        import { firebaseConfig } from './firebase-config.js';
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+        import {
+            getAuth, signInAnonymously
+        } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+        import {
+            getDatabase, ref, set, get, onValue, runTransaction, serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let uid = null;
+        let gameCode = null;
+        let quizData = null;
+        let order = [];
+        let answerShuffles = [];
+        let questionDuration = 20;
+        let lastSeenIndex = -1;
+        let lastSeenStatus = null;
+        let hasAnsweredCurrent = false;
+        let selectedAnswerIndex = null;
+        let lastPointsEarned = 0;
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        document.getElementById('join-code').addEventListener('input', (e) => {
+            e.target.value = e.target.value.toUpperCase();
+        });
+
+        document.getElementById('btn-join').addEventListener('click', async () => {
+            const errorEl = document.getElementById('join-error');
+            errorEl.textContent = '';
+            const code = document.getElementById('join-code').value.trim().toUpperCase();
+            const name = document.getElementById('join-name').value.trim();
+
+            if (!code || !name) {
+                errorEl.textContent = 'Enter both a game code and your name.';
+                return;
+            }
+
+            try {
+                const cred = await signInAnonymously(auth);
+                uid = cred.user.uid;
+
+                const gameSnap = await get(ref(db, `games/${code}`));
+                const game = gameSnap.val();
+                if (!game) {
+                    errorEl.textContent = 'Game not found. Double-check the code.';
+                    return;
+                }
+
+                gameCode = code;
+                order = game.order || [];
+                answerShuffles = game.answerShuffles || [];
+                questionDuration = game.questionDuration || 20;
+
+                const resp = await fetch(`quiz-data/${game.quizId}.json`);
+                quizData = await resp.json();
+
+                await set(ref(db, `games/${gameCode}/players/${uid}`), {
+                    name,
+                    score: 0,
+                    joinedAt: serverTimestamp()
+                });
+
+                showScreen('screen-waiting');
+                listenForGameState();
+            } catch (e) {
+                errorEl.textContent = 'Something went wrong joining. Try again.';
+                console.error(e);
+            }
+        });
+
+        function listenForGameState() {
+            onValue(ref(db, `games/${gameCode}`), (snap) => {
+                const game = snap.val();
+                if (!game) return;
+
+                if (game.status === lastSeenStatus && game.currentIndex === lastSeenIndex) return;
+
+                if (game.currentIndex !== lastSeenIndex) {
+                    hasAnsweredCurrent = false;
+                    selectedAnswerIndex = null;
+                }
+                lastSeenStatus = game.status;
+                lastSeenIndex = game.currentIndex;
+
+                if (game.status === 'question' && !hasAnsweredCurrent) {
+                    showAnswerScreen(game.currentIndex);
+                } else if (game.status === 'reveal') {
+                    showFeedback(game.currentIndex);
+                } else if (game.status === 'leaderboard') {
+                    showRank();
+                } else if (game.status === 'ended') {
+                    showFinal();
+                }
+            });
+        }
+
+        function showAnswerScreen(index) {
+            // True/False questions only have two options; hide the tiles that aren't in play.
+            const optionCount = (answerShuffles[index] || [0, 1, 2, 3]).length;
+            document.querySelectorAll('.answer-tile').forEach((btn, i) => {
+                btn.disabled = false;
+                btn.classList.remove('selected');
+                btn.style.display = i < optionCount ? '' : 'none';
+            });
+            showScreen('screen-answer');
+        }
+
+        document.getElementById('answer-grid').addEventListener('click', async (e) => {
+            const btn = e.target.closest('.answer-tile');
+            if (!btn || hasAnsweredCurrent) return;
+
+            hasAnsweredCurrent = true;
+            selectedAnswerIndex = parseInt(btn.dataset.i, 10);
+            document.querySelectorAll('.answer-tile').forEach(b => b.disabled = true);
+            btn.classList.add('selected');
+
+            const gameSnap = await get(ref(db, `games/${gameCode}`));
+            const game = gameSnap.val();
+            const q = quizData.questions[order[game.currentIndex]];
+            const shuffleMap = answerShuffles[game.currentIndex];
+            const origIdx = shuffleMap[selectedAnswerIndex];
+            const correct = !!q.answerOptions[origIdx]?.isCorrect;
+
+            const elapsedMs = Date.now() - (game.questionStartedAt || Date.now());
+            const remainingFrac = Math.min(1, Math.max(0, 1 - elapsedMs / (questionDuration * 1000)));
+            const points = correct ? Math.round(500 + 500 * remainingFrac) : 0;
+            lastPointsEarned = points;
+
+            await set(ref(db, `games/${gameCode}/responses/${game.currentIndex}/${uid}`), {
+                answerIndex: selectedAnswerIndex,
+                correct,
+                points
+            });
+
+            await runTransaction(ref(db, `games/${gameCode}/players/${uid}/score`), (current) => {
+                return (current || 0) + points;
+            });
+
+            showScreen('screen-locked');
+        });
+
+        function showFeedback(index) {
+            const q = quizData.questions[order[index]];
+            const shuffleMap = answerShuffles[index];
+            const banner = document.getElementById('feedback-banner');
+            const myOrigIdx = selectedAnswerIndex !== null ? shuffleMap[selectedAnswerIndex] : null;
+            const wasCorrect = myOrigIdx !== null && q.answerOptions[myOrigIdx]?.isCorrect;
+
+            if (selectedAnswerIndex === null) {
+                banner.textContent = "Time's up!";
+                banner.className = 'feedback-banner incorrect';
+                document.getElementById('points-earned').textContent = 'No answer submitted.';
+            } else if (wasCorrect) {
+                banner.textContent = 'Correct! 🎉';
+                banner.className = 'feedback-banner correct';
+                document.getElementById('points-earned').textContent = `+${lastPointsEarned} points`;
+            } else {
+                banner.textContent = 'Not quite.';
+                banner.className = 'feedback-banner incorrect';
+                document.getElementById('points-earned').textContent = '+0 points';
+            }
+
+            const correctOpt = q.answerOptions.find(o => o.isCorrect);
+            document.getElementById('correct-answer-text').innerHTML = correctOpt.text;
+            document.getElementById('rationale-text').innerHTML = correctOpt.rationale || '';
+
+            showScreen('screen-feedback');
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise([document.getElementById('screen-feedback')]);
+            }
+        }
+
+        async function showRank() {
+            const snap = await get(ref(db, `games/${gameCode}/players`));
+            const players = snap.val() || {};
+            const sorted = Object.entries(players).sort((a, b) => (b[1].score || 0) - (a[1].score || 0));
+            const myIndex = sorted.findIndex(([id]) => id === uid);
+            const myScore = players[uid]?.score || 0;
+
+            document.getElementById('rank-display').textContent = myIndex >= 0 ? `#${myIndex + 1}` : '—';
+            document.getElementById('rank-score').textContent = `${myScore} points`;
+            showScreen('screen-rank');
+        }
+
+        async function showFinal() {
+            const snap = await get(ref(db, `games/${gameCode}/players`));
+            const players = snap.val() || {};
+            const sorted = Object.entries(players).sort((a, b) => (b[1].score || 0) - (a[1].score || 0));
+            const myIndex = sorted.findIndex(([id]) => id === uid);
+            const myScore = players[uid]?.score || 0;
+
+            document.getElementById('final-rank-display').textContent = myIndex >= 0 ? `#${myIndex + 1}` : '—';
+            document.getElementById('final-score').textContent = `Final score: ${myScore} points`;
+            showScreen('screen-end');
+        }
+    </script>
+</body>
+
+</html>

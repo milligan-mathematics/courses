@@ -1,0 +1,765 @@
+{
+  "title": "MATH 303 — §11.3 The Dot Product",
+  "section": "11.3",
+  "questions": [
+    {
+      "question": "Which of the following expressions correctly defines the dot product of two vectors $\\mathbf{u} = \\langle u_1, u_2, u_3 \\rangle$ and $\\mathbf{v} = \\langle v_1, v_2, v_3 \\rangle$ in $R^3$?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{u} \\cdot \\mathbf{v} = u_1 v_1 + u_2 v_2 + u_3 v_3$",
+          "isCorrect": true,
+          "rationale": "The dot product in three dimensions is computed by summing the products of the corresponding components of the two vectors."
+        },
+        {
+          "text": "$\\mathbf{u} \\cdot \\mathbf{v} = \\langle u_1 v_1, u_2 v_2, u_3 v_3 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This result is a vector, but the dot product must always result in a scalar value."
+        },
+        {
+          "text": "$\\mathbf{u} \\cdot \\mathbf{v} = (u_1 + v_1) + (u_2 + v_2) + (u_3 + v_3)$",
+          "isCorrect": false,
+          "rationale": "This formula incorrectly adds components together rather than multiplying the corresponding pairs before summing."
+        },
+        {
+          "text": "$\\mathbf{u} \\cdot \\mathbf{v} = \\sqrt{u_1 v_1 + u_2 v_2 + u_3 v_3}$",
+          "isCorrect": false,
+          "rationale": "The dot product formula does not involve a square root; square roots are used when calculating the magnitude of a single vector."
+        }
+      ],
+      "hint": "Recall that the dot product is often called the 'scalar product' for a specific reason regarding the output type.",
+      "section": "11.3"
+    },
+    {
+      "question": "If the dot product of two nonzero vectors $\\mathbf{u}$ and $\\mathbf{v}$ is negative, what can be concluded about the angle $\\theta$ between them?",
+      "answerOptions": [
+        {
+          "text": "$\\frac{\\pi}{2} < \\theta \\le \\pi$",
+          "isCorrect": true,
+          "rationale": "Since $\\mathbf{u} \\cdot \\mathbf{v} = |\\mathbf{u}||\\mathbf{v}|\\cos\\theta$ and magnitudes are positive, a negative dot product implies that $\\cos\\theta$ is negative, which occurs in the second quadrant."
+        },
+        {
+          "text": "$0 \\le \\theta < \\frac{\\pi}{2}$",
+          "isCorrect": false,
+          "rationale": "This range describes acute angles where the cosine, and thus the dot product of nonzero vectors, would be positive."
+        },
+        {
+          "text": "$\\theta = \\frac{\\pi}{2}$",
+          "isCorrect": false,
+          "rationale": "At this specific angle, the cosine is zero, which would result in a dot product of exactly zero."
+        },
+        {
+          "text": "$\\theta = 0$",
+          "isCorrect": false,
+          "rationale": "If the angle is zero, the vectors point in the same direction and the dot product would be the positive product of their magnitudes."
+        }
+      ],
+      "hint": "Consider the sign of the cosine function in the interval $[0, \\pi]$.",
+      "section": "11.3"
+    },
+    {
+      "question": "The property $\\mathbf{u} \\cdot \\mathbf{u} = |\\mathbf{u}|^2$ is derived from which concept?",
+      "answerOptions": [
+        {
+          "text": "The definition of vector magnitude",
+          "isCorrect": true,
+          "rationale": "Magnitude is defined as the square root of the sum of squared components, which matches the algebraic definition of a vector dotted with itself."
+        },
+        {
+          "text": "The Commutative Property",
+          "isCorrect": false,
+          "rationale": "The commutative property states that the order of the vectors does not change the result, but it doesn't define the relationship to magnitude."
+        },
+        {
+          "text": "The Distributive Property",
+          "isCorrect": false,
+          "rationale": "While the distributive property is used in more complex algebraic proofs, the magnitude identity is a direct result of the component-wise definition."
+        },
+        {
+          "text": "The Law of Sines",
+          "isCorrect": false,
+          "rationale": "The Law of Sines relates side lengths and angles in triangles but is not the basis for the dot product's magnitude property."
+        }
+      ],
+      "hint": "Think about the formula for the length of a vector in terms of its components.",
+      "section": "11.3"
+    },
+    {
+      "question": "Which of the following is the correct formula for the scalar projection of $\\mathbf{u}$ onto $\\mathbf{v}$?",
+      "answerOptions": [
+        {
+          "text": "$\\text{comp}_{\\mathbf{v}}\\mathbf{u} = \\frac{\\mathbf{u} \\cdot \\mathbf{v}}{|\\mathbf{v}|}$",
+          "isCorrect": true,
+          "rationale": "The scalar projection represents the component of $\\mathbf{u}$ in the direction of $\\mathbf{v}$, derived by dividing the dot product by the magnitude of the target vector."
+        },
+        {
+          "text": "$\\text{comp}_{\\mathbf{v}}\\mathbf{u} = \\frac{\\mathbf{u} \\cdot \\mathbf{v}}{|\\mathbf{u}|}$",
+          "isCorrect": false,
+          "rationale": "This formula would incorrectly find the scalar projection of $\\mathbf{v}$ onto $\\mathbf{u}$ instead of $\\mathbf{u}$ onto $\\mathbf{v}$."
+        },
+        {
+          "text": "$\\text{comp}_{\\mathbf{v}}\\mathbf{u} = \\frac{\\mathbf{u} \\cdot \\mathbf{v}}{|\\mathbf{v}|^2} \\mathbf{v}$",
+          "isCorrect": false,
+          "rationale": "This is the formula for the vector projection, not the scalar projection, as indicated by the inclusion of the vector $\\mathbf{v}$."
+        },
+        {
+          "text": "$\\text{comp}_{\\mathbf{v}}\\mathbf{u} = |\\mathbf{u}|\\sin\\theta$",
+          "isCorrect": false,
+          "rationale": "The projection uses the cosine of the angle to find the adjacent component, whereas sine would find the opposite (orthogonal) component."
+        }
+      ],
+      "hint": "Identify which vector's magnitude acts as the divisor to normalize the direction of the shadow.",
+      "section": "11.3"
+    },
+    {
+      "question": "A force $\\mathbf{F} = \\langle 3, 4 \\rangle$ (in Newtons) moves an object along the displacement vector $\\mathbf{D} = \\langle 5, 2 \\rangle$ (in meters). What is the work done?",
+      "answerOptions": [
+        {
+          "text": "$23 \\text{ Joules}$",
+          "isCorrect": true,
+          "rationale": "Work is the dot product of the force and displacement vectors: $(3)(5) + (4)(2) = 15 + 8 = 23$."
+        },
+        {
+          "text": "$\\sqrt{23} \\text{ Joules}$",
+          "isCorrect": false,
+          "rationale": "The work formula $W = \\mathbf{F} \\cdot \\mathbf{D}$ results directly in a scalar; there is no square root required."
+        },
+        {
+          "text": "$29 \\text{ Joules}$",
+          "isCorrect": false,
+          "rationale": "This value might be reached by incorrectly summing the magnitudes or miscalculating the individual component products."
+        },
+        {
+          "text": "$\\langle 15, 8 \\rangle \\text{ Joules}$",
+          "isCorrect": false,
+          "rationale": "Work is a scalar quantity representing energy, not a vector representing components."
+        }
+      ],
+      "hint": "Apply the physical definition of work using the component-wise dot product formula.",
+      "section": "11.3"
+    },
+    {
+      "question": "In the context of direction cosines for a vector $\\mathbf{u}$, what is the value of $(\\cos\\alpha)^2 + (\\cos\\beta)^2 + (\\cos\\gamma)^2$?",
+      "answerOptions": [
+        {
+          "text": "$1$",
+          "isCorrect": true,
+          "rationale": "The sum of the squares of the direction cosines is equivalent to the sum of the squared components divided by the squared magnitude, which simplifies to 1."
+        },
+        {
+          "text": "$|\\mathbf{u}|$",
+          "isCorrect": false,
+          "rationale": "The magnitude itself is not the sum of the squared cosines; rather, the cosines are normalized by the magnitude."
+        },
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "The sum of squares of real numbers (cosines) can only be zero if each individual cosine is zero, which isn't true for a general nonzero vector."
+        },
+        {
+          "text": "$\\pi$",
+          "isCorrect": false,
+          "rationale": "While angles are measured in radians involving $\\pi$, the identity for the squares of the direction cosines is a constant integer value."
+        }
+      ],
+      "hint": "Consider how the components $u_1, u_2, u_3$ relate to the definition of direction cosines and the vector's magnitude.",
+      "section": "11.3"
+    },
+    {
+      "question": "If two nonzero vectors $\\mathbf{u}$ and $\\mathbf{v}$ satisfy $\\mathbf{u} \\cdot \\mathbf{v} = -|\\mathbf{u}||\\mathbf{v}|$, what is the geometric relationship between them?",
+      "answerOptions": [
+        {
+          "text": "They are parallel and point in opposite directions.",
+          "isCorrect": true,
+          "rationale": "A dot product equal to the negative product of magnitudes implies $\\cos\\theta = -1$, which corresponds to an angle of $\\pi$ radians ($180^\\circ$)."
+        },
+        {
+          "text": "They are orthogonal.",
+          "isCorrect": false,
+          "rationale": "Orthogonal vectors have a dot product of zero, not a value related to the product of their magnitudes."
+        },
+        {
+          "text": "They are parallel and point in the same direction.",
+          "isCorrect": false,
+          "rationale": "If they pointed in the same direction, $\\cos\\theta$ would be $1$, and the dot product would be positive $|\\mathbf{u}||\\mathbf{v}|$. "
+        },
+        {
+          "text": "They form an acute angle.",
+          "isCorrect": false,
+          "rationale": "Acute angles result in a positive dot product because the cosine of an angle between $0$ and $90^\\circ$ is positive."
+        }
+      ],
+      "hint": "Analyze the value of $\\cos\\theta$ required to make the dot product formula yield this specific result.",
+      "section": "11.3"
+    },
+    {
+      "question": "What is the result of the dot product $\\mathbf{j} \\cdot \\mathbf{k}$ using standard basis vectors?",
+      "answerOptions": [
+        {
+          "text": "$0$",
+          "isCorrect": true,
+          "rationale": "The standard basis vectors $\\mathbf{j} = \\langle 0, 1, 0 \\rangle$ and $\\mathbf{k} = \\langle 0, 0, 1 \\rangle$ are orthogonal to each other."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "This would be the result if a unit vector were dotted with itself, such as $\\mathbf{j} \\cdot \\mathbf{j}$."
+        },
+        {
+          "text": "$\\mathbf{i}$",
+          "isCorrect": false,
+          "rationale": "The dot product always results in a scalar, not another basis vector."
+        },
+        {
+          "text": "$-1$",
+          "isCorrect": false,
+          "rationale": "A result of $-1$ would imply the vectors are unit vectors pointing in opposite directions, which is not true for $\\mathbf{j}$ and $\\mathbf{k}$."
+        }
+      ],
+      "hint": "Think about the geometric orientation of the $y$-axis relative to the $z$-axis.",
+      "section": "11.3"
+    },
+    {
+      "question": "When decomposing a vector $\\mathbf{u}$ into two components $\\mathbf{u} = \\mathbf{u}_{||} + \\mathbf{u}_{\\perp}$ relative to a vector $\\mathbf{v}$, how is $\\mathbf{u}_{\\perp}$ calculated?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{u}_{\\perp} = \\mathbf{u} - \\text{proj}_{\\mathbf{v}}\\mathbf{u}$",
+          "isCorrect": true,
+          "rationale": "The perpendicular component is found by subtracting the parallel component (the projection) from the original vector."
+        },
+        {
+          "text": "$\\mathbf{u}_{\\perp} = \\text{proj}_{\\mathbf{v}}\\mathbf{u} - \\mathbf{u}$",
+          "isCorrect": false,
+          "rationale": "Subtracting in this order would yield a vector pointing in the opposite direction of the true perpendicular component."
+        },
+        {
+          "text": "$\\mathbf{u}_{\\perp} = \\frac{\\mathbf{u} \\cdot \\mathbf{v}}{|\\mathbf{u}|^2} \\mathbf{u}$",
+          "isCorrect": false,
+          "rationale": "This formula looks similar to a projection formula but does not represent the decomposition into an orthogonal part."
+        },
+        {
+          "text": "$\\mathbf{u}_{\\perp} = \\mathbf{u} \\cdot \\mathbf{v}$",
+          "isCorrect": false,
+          "rationale": "The dot product is a scalar and cannot be used alone to define the vector component $\\mathbf{u}_{\\perp}$."
+        }
+      ],
+      "hint": "Consider the vector addition triangle where the original vector is the sum of its parallel and orthogonal parts.",
+      "section": "11.3"
+    },
+    {
+      "question": "If $\\mathbf{u} \\cdot (\\mathbf{v} + \\mathbf{w}) = 5$ and $\\mathbf{u} \\cdot \\mathbf{v} = 2$, what is the value of $\\mathbf{u} \\cdot \\mathbf{w}$?",
+      "answerOptions": [
+        {
+          "text": "$3$",
+          "isCorrect": true,
+          "rationale": "According to the Distributive Property, $\\mathbf{u} \\cdot (\\mathbf{v} + \\mathbf{w}) = \\mathbf{u} \\cdot \\mathbf{v} + \\mathbf{u} \\cdot \\mathbf{w}$, so $5 = 2 + \\mathbf{u} \\cdot \\mathbf{w}$."
+        },
+        {
+          "text": "$7$",
+          "isCorrect": false,
+          "rationale": "This would result from incorrectly adding the two values instead of applying the subtraction required by the distributive law."
+        },
+        {
+          "text": "$10$",
+          "isCorrect": false,
+          "rationale": "This incorrectly assumes the dot product distributes as multiplication over a single sum rather than as a sum of individual dot products."
+        },
+        {
+          "text": "$2.5$",
+          "isCorrect": false,
+          "rationale": "This suggests a division occurred, which is not part of the algebraic properties of the dot product distribution."
+        }
+      ],
+      "hint": "Apply the algebraic property that allows the dot product to be distributed across vector addition.",
+      "section": "11.3"
+    },
+    {
+      "question": "Which vector is geometrically represented as the normal vector $\\mathbf{n}$ for the plane defined by $4x - 3y + 2z = 10$?",
+      "answerOptions": [
+        {
+          "text": "$\\langle 4, -3, 2 \\rangle$",
+          "isCorrect": true,
+          "rationale": "In the equation of a plane $ax + by + cz = d$, the coefficients $\\langle a, b, c \\rangle$ form a vector that is normal (orthogonal) to the plane."
+        },
+        {
+          "text": "$\\langle 4, 3, 2 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The sign of the coefficient for $y$ must be preserved; here it is negative, so the component must be $-3$."
+        },
+        {
+          "text": "$\\langle -4, 3, -2 \\rangle$",
+          "isCorrect": false,
+          "rationale": "While this vector is also normal (pointing in the opposite direction), the standard extraction of coefficients from the provided equation leads to $\\langle 4, -3, 2 \\rangle$."
+        },
+        {
+          "text": "$\\langle 10, 10, 10 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The constant $d$ on the right side of the equation does not determine the direction of the normal vector."
+        }
+      ],
+      "hint": "Look at the relationship between the coefficients of the variables in the linear equation and the dot product definition $\\mathbf{n} \\cdot \\mathbf{x} = d$.",
+      "section": "11.3"
+    },
+    {
+      "question": "According to Example 4 in the text, why do all vectors orthogonal to $\\mathbf{j}$ lie in the $xz$-plane?",
+      "answerOptions": [
+        {
+          "text": "Because their $y$-component must be zero to satisfy $\\mathbf{v} \\cdot \\mathbf{j} = 0$.",
+          "isCorrect": true,
+          "rationale": "Dotting $\\langle x, y, z \\rangle$ with $\\langle 0, 1, 0 \\rangle$ results in $y=0$, which is the defining equation of the $xz$-plane."
+        },
+        {
+          "text": "Because $\\mathbf{j}$ points in the $z$ direction.",
+          "isCorrect": false,
+          "rationale": "The vector $\\mathbf{j}$ is the standard basis vector for the $y$-axis, not the $z$-axis."
+        },
+        {
+          "text": "Because only the $x$ and $z$ components of $\\mathbf{j}$ are nonzero.",
+          "isCorrect": false,
+          "rationale": "The components of $\\mathbf{j}$ are $\\langle 0, 1, 0 \\rangle$, meaning only the $y$ component is nonzero."
+        },
+        {
+          "text": "Because the dot product with $\\mathbf{j}$ is always $1$.",
+          "isCorrect": false,
+          "rationale": "The dot product of orthogonal vectors must be zero, not one."
+        }
+      ],
+      "hint": "Recall the components of the standard basis vector $\\mathbf{j}$ and how they interact in a dot product.",
+      "section": "11.3"
+    },
+    {
+      "question": "What is the direction angle $\\alpha$ for a vector $\\mathbf{u}$ that points exactly along the positive $y$-axis?",
+      "answerOptions": [
+        {
+          "text": "$90^\\circ$ (or $\\frac{\\pi}{2}$)",
+          "isCorrect": true,
+          "rationale": "The angle $\\alpha$ is measured relative to the positive $x$-axis; the $y$-axis is perpendicular to the $x$-axis."
+        },
+        {
+          "text": "$0^\\circ$",
+          "isCorrect": false,
+          "rationale": "An angle of $0^\\circ$ would mean the vector points along the positive $x$-axis, not the $y$-axis."
+        },
+        {
+          "text": "$180^\\circ$",
+          "isCorrect": false,
+          "rationale": "An angle of $180^\\circ$ would mean the vector points along the negative $x$-axis."
+        },
+        {
+          "text": "$45^\\circ$",
+          "isCorrect": false,
+          "rationale": "This angle would imply the vector has equal $x$ and $y$ components, not that it lies solely on the $y$-axis."
+        }
+      ],
+      "hint": "Recall that $\\alpha$ is defined as the angle between the vector and the positive $x$-axis.",
+      "section": "11.3"
+    },
+    {
+      "question": "If $\\text{comp}_{\\mathbf{v}}\\mathbf{u} = 0$ for two nonzero vectors, what does this imply about $\\mathbf{u}$ and $\\mathbf{v}$?",
+      "answerOptions": [
+        {
+          "text": "They are orthogonal.",
+          "isCorrect": true,
+          "rationale": "A scalar projection of zero means the dot product is zero, which is the condition for orthogonality between nonzero vectors."
+        },
+        {
+          "text": "They are parallel.",
+          "isCorrect": false,
+          "rationale": "If they were parallel, the projection would have a magnitude equal to the magnitude of $\\mathbf{u}$."
+        },
+        {
+          "text": "One vector is the zero vector.",
+          "isCorrect": false,
+          "rationale": "The question specifies that both vectors are nonzero."
+        },
+        {
+          "text": "The vectors are of equal length.",
+          "isCorrect": false,
+          "rationale": "Equal lengths do not force the dot product or the projection to be zero."
+        }
+      ],
+      "hint": "Relate the scalar projection formula to the condition for perpendicularity.",
+      "section": "11.3"
+    },
+    {
+      "question": "In the proof of the Dot Product and Angle theorem, which geometric law is used as the starting point?",
+      "answerOptions": [
+        {
+          "text": "The Law of Cosines",
+          "isCorrect": true,
+          "rationale": "The proof uses the Law of Cosines on a triangle formed by vectors $\\mathbf{u}$, $\\mathbf{v}$, and $\\mathbf{u}-\\mathbf{v}$ to link side lengths and the angle."
+        },
+        {
+          "text": "The Pythagorean Theorem",
+          "isCorrect": false,
+          "rationale": "The Pythagorean Theorem is a special case of the Law of Cosines for right triangles, but the general proof must account for any angle $\\theta$."
+        },
+        {
+          "text": "The Law of Sines",
+          "isCorrect": false,
+          "rationale": "The Law of Sines deals with the ratios of sides and sines of opposite angles, which doesn't directly lead to the dot product's cosine formula."
+        },
+        {
+          "text": "Thales' Theorem",
+          "isCorrect": false,
+          "rationale": "Thales' Theorem is mentioned as a challenge problem/application, not as the foundational proof for the dot product angle formula."
+        }
+      ],
+      "hint": "Think of a trigonometric law that relates all three sides of a triangle and one of its angles.",
+      "section": "11.3"
+    },
+    {
+      "question": "Evaluate the dot product: $\\langle 4, -5 \\rangle \\cdot \\langle 1, 1 \\rangle$.",
+      "answerOptions": [
+        {
+          "text": "$-1$",
+          "isCorrect": true,
+          "rationale": "Following the formula: $(4)(1) + (-5)(1) = 4 - 5 = -1$."
+        },
+        {
+          "text": "$9$",
+          "isCorrect": false,
+          "rationale": "This value might be reached by incorrectly taking the absolute values of the components before adding."
+        },
+        {
+          "text": "$\\langle 4, -5 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The dot product must be a scalar, not a vector."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "This error likely results from a sign mistake during the addition of $4$ and $-5$."
+        }
+      ],
+      "hint": "Perform the component-wise multiplication and summation as shown in Example 1.",
+      "section": "11.3"
+    },
+    {
+      "question": "Given a nonzero vector $\\mathbf{u}$, what is the scalar result of $(3\\mathbf{u}) \\cdot (2\\mathbf{u})$ in terms of its magnitude?",
+      "answerOptions": [
+        {
+          "text": "$6|\\mathbf{u}|^2$",
+          "isCorrect": true,
+          "rationale": "Using the scalar multiplication property, we factor out the scalars $3$ and $2$ to get $6(\\mathbf{u} \\cdot \\mathbf{u})$, and $\\mathbf{u} \\cdot \\mathbf{u} = |\\mathbf{u}|^2$."
+        },
+        {
+          "text": "$6|\\mathbf{u}|$",
+          "isCorrect": false,
+          "rationale": "The dot product of a vector with itself results in the square of the magnitude, not just the magnitude."
+        },
+        {
+          "text": "$5|\\mathbf{u}|^2$",
+          "isCorrect": false,
+          "rationale": "This is likely a mistake in multiplying the scalars $3$ and $2$."
+        },
+        {
+          "text": "$36|\\mathbf{u}|^2$",
+          "isCorrect": false,
+          "rationale": "This error comes from incorrectly squaring the product of the scalars instead of just multiplying them."
+        }
+      ],
+      "hint": "Apply the scalar property of dot products along with the magnitude property.",
+      "section": "11.3"
+    },
+    {
+      "question": "A vector $\\mathbf{u}$ has direction cosines $\\cos\\alpha = 0.6$ and $\\cos\\beta = 0.8$. What must be the value of $\\cos\\gamma$?",
+      "answerOptions": [
+        {
+          "text": "$0$",
+          "isCorrect": true,
+          "rationale": "Since $(0.6)^2 + (0.8)^2 + (\\cos\\gamma)^2 = 1$, we have $0.36 + 0.64 + (\\cos\\gamma)^2 = 1$, which means $1 + (\\cos\\gamma)^2 = 1$."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "If $\\cos\\gamma$ were 1, the sum of squares would exceed 1, which violates the direction cosine identity."
+        },
+        {
+          "text": "$0.2$",
+          "isCorrect": false,
+          "rationale": "This might be chosen by assuming the cosines themselves sum to 1, rather than their squares."
+        },
+        {
+          "text": "$-0.2$",
+          "isCorrect": false,
+          "rationale": "Similar to assuming the sum is 1, this also ignores the requirement that the squares of the values must sum to 1."
+        }
+      ],
+      "hint": "Use the fundamental identity that relates the squares of all three direction cosines.",
+      "section": "11.3"
+    },
+    {
+      "question": "What is the dot product of any vector $\\mathbf{u}$ with the zero vector $\\mathbf{0}$?",
+      "answerOptions": [
+        {
+          "text": "The scalar $0$",
+          "isCorrect": true,
+          "rationale": "By definition, multiplying any component by zero and summing results in the scalar zero."
+        },
+        {
+          "text": "The vector $\\mathbf{0}$",
+          "isCorrect": false,
+          "rationale": "The dot product's result is always a scalar, even when interacting with the zero vector."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "This would only happen if the vectors were unit vectors pointing in the same direction, which is not the case for the zero vector."
+        },
+        {
+          "text": "Undefined",
+          "isCorrect": false,
+          "rationale": "The dot product with a zero vector is well-defined and equals the scalar zero."
+        }
+      ],
+      "hint": "Recall the Zero Vector Property listed in the notes.",
+      "section": "11.3"
+    },
+    {
+      "question": "If vector $\\mathbf{u}$ is projected onto vector $\\mathbf{v}$, the resulting vector $\\text{proj}_{\\mathbf{v}}\\mathbf{u}$ is always...",
+      "answerOptions": [
+        {
+          "text": "parallel to $\\mathbf{v}$.",
+          "isCorrect": true,
+          "rationale": "The vector projection is defined as a scalar multiple of the vector $\\mathbf{v}$, meaning it must be parallel to $\\mathbf{v}$."
+        },
+        {
+          "text": "orthogonal to $\\mathbf{v}$.",
+          "isCorrect": false,
+          "rationale": "The projection is the 'shadow' along the vector, while the component orthogonal to $\\mathbf{v}$ is $\\mathbf{u} - \\text{proj}_{\\mathbf{v}}\\mathbf{u}$."
+        },
+        {
+          "text": "parallel to $\\mathbf{u}$.",
+          "isCorrect": false,
+          "rationale": "The projection is only parallel to $\\mathbf{u}$ if $\\mathbf{u}$ and $\\mathbf{v}$ were already parallel to begin with."
+        },
+        {
+          "text": "a unit vector.",
+          "isCorrect": false,
+          "rationale": "The projection vector has a magnitude equal to the scalar projection; it is not restricted to being a unit vector."
+        }
+      ],
+      "hint": "Look at the direction part of the vector projection formula.",
+      "section": "11.3"
+    },
+    {
+      "question": "Why is the dot product $\\mathbf{u} \\cdot \\mathbf{v}$ also known as the scalar product?",
+      "answerOptions": [
+        {
+          "text": "Because the output is a single real number rather than a vector.",
+          "isCorrect": true,
+          "rationale": "The term 'scalar product' emphasizes that the operation results in a scalar quantity."
+        },
+        {
+          "text": "Because it only works when multiplying a vector by a scalar.",
+          "isCorrect": false,
+          "rationale": "Multiplying a vector by a scalar is called scalar multiplication, which is distinct from the dot product of two vectors."
+        },
+        {
+          "text": "Because it is used to find the length (a scalar) of vectors.",
+          "isCorrect": false,
+          "rationale": "While it can be used to find length, that is an application, not the reason for its name."
+        },
+        {
+          "text": "Because it was invented by a mathematician named Scalar.",
+          "isCorrect": false,
+          "rationale": "The term comes from the mathematical definition of a scalar, not a person's name."
+        }
+      ],
+      "hint": "Compare the 'type' of the inputs (vectors) to the 'type' of the output.",
+      "section": "11.3"
+    },
+    {
+      "question": "If $\\theta = \\pi$, what is the relationship between $\\mathbf{u} \\cdot \\mathbf{v}$ and the magnitudes of the vectors?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{u} \\cdot \\mathbf{v} = -|\\mathbf{u}||\\mathbf{v}|$",
+          "isCorrect": true,
+          "rationale": "When the angle is $\\pi$ ($180^\\circ$), the cosine is $-1$, making the dot product the negative product of the magnitudes."
+        },
+        {
+          "text": "$\\mathbf{u} \\cdot \\mathbf{v} = |\\mathbf{u}||\\mathbf{v}|$",
+          "isCorrect": false,
+          "rationale": "This occurs when $\\theta = 0$, where the vectors point in the same direction and the cosine is 1."
+        },
+        {
+          "text": "$\\mathbf{u} \\cdot \\mathbf{v} = 0$",
+          "isCorrect": false,
+          "rationale": "This occurs when the vectors are orthogonal ($\\theta = \\pi/2$)."
+        },
+        {
+          "text": "$\\mathbf{u} \\cdot \\mathbf{v} = 1$",
+          "isCorrect": false,
+          "rationale": "The dot product is equal to 1 only in specific cases involving unit vectors, not as a general rule for $\\theta = \\pi$."
+        }
+      ],
+      "hint": "Check the value of $\\cos(\\pi)$ in the angle theorem formula.",
+      "section": "11.3"
+    },
+    {
+      "question": "In the work calculation $W = \\mathbf{F} \\cdot \\mathbf{D}$, if a force is applied perfectly perpendicular to the direction of motion, how much work is done?",
+      "answerOptions": [
+        {
+          "text": "$0$",
+          "isCorrect": true,
+          "rationale": "Since $\\mathbf{F}$ and $\\mathbf{D}$ are orthogonal, their dot product is zero, meaning no work is performed in the direction of displacement."
+        },
+        {
+          "text": "$|\\mathbf{F}||\\mathbf{D}|$",
+          "isCorrect": false,
+          "rationale": "This would be the work if the force were applied in the exact same direction as the displacement."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "The value of work depends on the magnitudes; it is not automatically 1 for perpendicular forces."
+        },
+        {
+          "text": "A negative amount of work.",
+          "isCorrect": false,
+          "rationale": "Negative work occurs when the force has a component in the opposite direction of motion ($90^\\circ < \\theta \\le 180^\\circ$)."
+        }
+      ],
+      "hint": "Consider the dot product of two vectors that are orthogonal to each other.",
+      "section": "11.3"
+    },
+    {
+      "question": "In Example 7, the force required to prevent the boat from rolling down the ramp is calculated using which method?",
+      "answerOptions": [
+        {
+          "text": "The scalar projection of the weight vector onto a vector parallel to the ramp.",
+          "isCorrect": true,
+          "rationale": "The force pulling the boat down is the component of its weight acting along the incline, which is found via scalar projection."
+        },
+        {
+          "text": "The dot product of the weight vector and the ramp's length.",
+          "isCorrect": false,
+          "rationale": "While the dot product is involved in the projection calculation, it must be normalized by the direction vector to find the specific force magnitude."
+        },
+        {
+          "text": "The vector projection of the ramp onto the weight vector.",
+          "isCorrect": false,
+          "rationale": "This would find the ramp's component in the vertical direction, which does not represent the force acting along the ramp."
+        },
+        {
+          "text": "Finding the magnitude of the displacement vector.",
+          "isCorrect": false,
+          "rationale": "The problem asks for force, not distance; the displacement is not provided for the rolling prevention calculation."
+        }
+      ],
+      "hint": "Think about how we extract a specific component of a force acting in a certain direction.",
+      "section": "11.3"
+    },
+    {
+      "question": "Which property states that $\\mathbf{u} \\cdot \\mathbf{v} = \\mathbf{v} \\cdot \\mathbf{u}$?",
+      "answerOptions": [
+        {
+          "text": "The Commutative Property",
+          "isCorrect": true,
+          "rationale": "The commutative property confirms that the order in which two vectors are dotted does not affect the scalar result."
+        },
+        {
+          "text": "The Distributive Property",
+          "isCorrect": false,
+          "rationale": "The distributive property involves a vector dotted with a sum of vectors, not the order of two single vectors."
+        },
+        {
+          "text": "The Associative Property",
+          "isCorrect": false,
+          "rationale": "The dot product is not associative in the traditional sense because $(\\mathbf{u} \\cdot \\mathbf{v}) \\cdot \\mathbf{w}$ is not defined (scalar dotted with a vector)."
+        },
+        {
+          "text": "The Magnitude Property",
+          "isCorrect": false,
+          "rationale": "The magnitude property specifically relates a vector dotted with itself to its length."
+        }
+      ],
+      "hint": "Think of the term used when the order of operands does not change the outcome.",
+      "section": "11.3"
+    },
+    {
+      "question": "To prove Thales' Theorem using vectors, what must be shown about the vectors connecting a point on the circle to the endpoints of the diameter?",
+      "answerOptions": [
+        {
+          "text": "Their dot product is zero.",
+          "isCorrect": true,
+          "rationale": "A triangle formed by these vectors is a right triangle if and only if the vectors forming the angle at the circle are orthogonal."
+        },
+        {
+          "text": "Their magnitudes are equal.",
+          "isCorrect": false,
+          "rationale": "The lengths of the two sides of the triangle do not have to be equal for it to be a right triangle unless it is an isosceles right triangle."
+        },
+        {
+          "text": "They are parallel to each other.",
+          "isCorrect": false,
+          "rationale": "Parallel vectors would not form a triangle; they would lie on the same line."
+        },
+        {
+          "text": "Their sum is the zero vector.",
+          "isCorrect": false,
+          "rationale": "If their sum were zero, they would be opposites of each other, which does not describe the sides of a triangle from a circle point."
+        }
+      ],
+      "hint": "Consider the geometric definition of a 'right triangle' in terms of vector orientation.",
+      "section": "11.3"
+    },
+    {
+      "question": "What is the relationship between the vector projection $\\text{proj}_{\\mathbf{v}}\\mathbf{u}$ and the scalar projection $\\text{comp}_{\\mathbf{v}}\\mathbf{u}$?",
+      "answerOptions": [
+        {
+          "text": "The vector projection is the scalar projection multiplied by a unit vector in the direction of $\\mathbf{v}$.",
+          "isCorrect": true,
+          "rationale": "The vector projection adds direction (from $\\mathbf{v}$) to the magnitude provided by the scalar projection."
+        },
+        {
+          "text": "They are the same value.",
+          "isCorrect": false,
+          "rationale": "One is a scalar (a number) and the other is a vector (a directed quantity), so they cannot be identical."
+        },
+        {
+          "text": "The scalar projection is the magnitude of the vector projection divided by $\\mathbf{u}$.",
+          "isCorrect": false,
+          "rationale": "Dividing a magnitude by a vector is not a valid mathematical operation in vector calculus."
+        },
+        {
+          "text": "The vector projection is always larger than the scalar projection.",
+          "isCorrect": false,
+          "rationale": "A vector cannot be 'larger' than a scalar as they are different types of quantities."
+        }
+      ],
+      "hint": "Think about how we turn a magnitude into a vector in a specific direction.",
+      "section": "11.3"
+    },
+    {
+      "question": "Find $k$ so that $\\langle 3, -2 \\rangle$ and $\\langle k, 6 \\rangle$ are orthogonal.",
+      "answerOptions": [
+        {
+          "text": "$4$",
+          "isCorrect": true,
+          "rationale": "Setting the dot product to zero: $(3)(k) + (-2)(6) = 0 \\implies 3k - 12 = 0 \\implies k = 4$."
+        },
+        {
+          "text": "$-4$",
+          "isCorrect": false,
+          "rationale": "This would result in a dot product of $-24$, meaning the vectors are not orthogonal."
+        },
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "A value of $0$ for $k$ would result in a dot product of $-12$."
+        },
+        {
+          "text": "$9$",
+          "isCorrect": false,
+          "rationale": "This value does not satisfy the condition that the sum of the products of the components is zero."
+        }
+      ],
+      "hint": "Set up an equation where the dot product of the two vectors equals zero.",
+      "section": "11.3"
+    }
+  ],
+  "questionCount": 28,
+  "exportedAt": "2026-09-16T11:16:09",
+  "source": "303/quiz_source/11.3-quiz-source.json"
+}

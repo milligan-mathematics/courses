@@ -1,0 +1,698 @@
+{
+  "title": "MATH 303 — §11.6 Cylinders and Quadric Surfaces",
+  "section": "11.6",
+  "questions": [
+    {
+      "question": "Which quadric surface is defined by the equation $x = y^2 + z^2$?",
+      "answerOptions": [
+        {
+          "text": "Elliptic Paraboloid",
+          "isCorrect": true,
+          "rationale": "This surface opens along the $x$-axis and has elliptical (specifically circular) cross-sections perpendicular to that axis."
+        },
+        {
+          "text": "Hyperboloid of One Sheet",
+          "isCorrect": false,
+          "rationale": "This surface would typically involve squared terms for all three variables with one subtraction, rather than one variable being a linear sum of others."
+        },
+        {
+          "text": "Ellipsoid",
+          "isCorrect": false,
+          "rationale": "An ellipsoid equation requires all three variables to be squared and summed to a positive constant."
+        },
+        {
+          "text": "Hyperbolic Paraboloid",
+          "isCorrect": false,
+          "rationale": "This surface requires a subtraction between the two squared terms, creating a saddle shape."
+        }
+      ],
+      "hint": "Consider the relationship between the linear variable and the two squared variables.",
+      "section": "11.6"
+    },
+    {
+      "question": "For the ellipsoid equation $\\frac{x^2}{a^2} + \\frac{y^2}{b^2} + \\frac{z^2}{c^2} = 1$, what condition must be met for the horizontal cross-sections (parallel to the $xy$-plane) to be circles?",
+      "answerOptions": [
+        {
+          "text": "$a = b$",
+          "isCorrect": true,
+          "rationale": "When the denominators for the $x$ and $y$ terms are equal, the resulting cross-section at any constant $z$ follows the standard form of a circle."
+        },
+        {
+          "text": "$a = c$",
+          "isCorrect": false,
+          "rationale": "Equality between the $x$ and $z$ coefficients would affect the vertical cross-sections in the $xz$-plane rather than the horizontal ones."
+        },
+        {
+          "text": "$a^2 + b^2 = c^2$",
+          "isCorrect": false,
+          "rationale": "This Pythagorean relationship is not required for circular symmetry in a specific plane."
+        },
+        {
+          "text": "$b = c$",
+          "isCorrect": false,
+          "rationale": "This would result in circular vertical cross-sections in the $yz$-plane."
+        }
+      ],
+      "hint": "Focus on the coefficients of the variables that define the horizontal plane.",
+      "section": "11.6"
+    },
+    {
+      "question": "Identify the type of surface represented by the equation $x^2 - 6x + 2y + 11 = 0$ in three-dimensional space.",
+      "answerOptions": [
+        {
+          "text": "Parabolic Cylinder",
+          "isCorrect": true,
+          "rationale": "Because the variable $z$ is missing from the equation, the trace in the $xy$-plane (a parabola) is extended infinitely along the $z$-axis."
+        },
+        {
+          "text": "Elliptic Paraboloid",
+          "isCorrect": false,
+          "rationale": "An elliptic paraboloid would require the presence of all three variables, with two of them being squared."
+        },
+        {
+          "text": "Hyperboloid of Two Sheets",
+          "isCorrect": false,
+          "rationale": "This surface requires all three variables to be squared with two negative signs when set to a positive constant."
+        },
+        {
+          "text": "Plane",
+          "isCorrect": false,
+          "rationale": "A plane requires all present variables to be linear, but this equation contains a squared $x$ term."
+        }
+      ],
+      "hint": "Notice which variable is missing from the equation and what the remaining curve looks like.",
+      "section": "11.6"
+    },
+    {
+      "question": "What is the shape of the cross-section of the surface $z = x^2 + y^2$ when intersected by the plane $z = 4$?",
+      "answerOptions": [
+        {
+          "text": "A circle with radius $2$",
+          "isCorrect": true,
+          "rationale": "Substituting $z = 4$ yields $4 = x^2 + y^2$, which is the standard equation for a circle with $r = \\sqrt{4}$."
+        },
+        {
+          "text": "A parabola",
+          "isCorrect": false,
+          "rationale": "Parabolas appear in the vertical cross-sections (where $x$ or $y$ is constant) rather than the horizontal ones for this surface."
+        },
+        {
+          "text": "An ellipse with major axis $4$",
+          "isCorrect": false,
+          "rationale": "While a circle is a special type of ellipse, the equal coefficients of $x$ and $y$ specify a perfectly circular shape."
+        },
+        {
+          "text": "A hyperbola",
+          "isCorrect": false,
+          "rationale": "Hyperbolas require a difference between the squared terms, which is not present here."
+        }
+      ],
+      "hint": "Substitute the constant value into the equation and observe the resulting two-dimensional form.",
+      "section": "11.6"
+    },
+    {
+      "question": "True or False: A sphere is considered a special case of an ellipsoid.",
+      "answerOptions": [
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "A sphere is an ellipsoid where the lengths of all three semi-axes ($a, b, c$) are equal."
+        },
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "By definition, any surface where $x^2, y^2,$ and $z^2$ have positive coefficients and sum to a constant is an ellipsoid, including spheres."
+        }
+      ],
+      "hint": "Think about whether the definition of an ellipsoid allows for equal radii in all directions.",
+      "section": "11.6"
+    },
+    {
+      "question": "If the curve $x^2 = 2y$ in the $xy$-plane is rotated about the $y$-axis, what is the equation of the resulting surface?",
+      "answerOptions": [
+        {
+          "text": "$x^2 + z^2 = 2y$",
+          "isCorrect": true,
+          "rationale": "Rotating about the $y$-axis replaces the $x^2$ term with $x^2 + z^2$ to maintain radial symmetry around that axis."
+        },
+        {
+          "text": "$x^2 + y^2 = 2z$",
+          "isCorrect": false,
+          "rationale": "This equation would represent a rotation about the $z$-axis of a curve originally in the $xz$-plane."
+        },
+        {
+          "text": "$x^2 - z^2 = 2y$",
+          "isCorrect": false,
+          "rationale": "The subtraction of terms would result in a hyperbolic paraboloid rather than a surface of revolution."
+        },
+        {
+          "text": "$x^2 + y^2 + z^2 = 2$",
+          "isCorrect": false,
+          "rationale": "This is the equation of a sphere, which does not match the parabolic growth of the original curve."
+        }
+      ],
+      "hint": "To rotate around an axis, the distance from that axis must be constant in the equation.",
+      "section": "11.6"
+    },
+    {
+      "question": "Which of the following describes the surface $6y^2 + 4z^2 - 3x^2 = 12$?",
+      "answerOptions": [
+        {
+          "text": "Hyperboloid of One Sheet",
+          "isCorrect": true,
+          "rationale": "Dividing by $12$ yields $\\frac{y^2}{2} + \\frac{z^2}{3} - \\frac{x^2}{4} = 1$, which contains two positive squared terms and one negative squared term."
+        },
+        {
+          "text": "Hyperboloid of Two Sheets",
+          "isCorrect": false,
+          "rationale": "A hyperboloid of two sheets would require two negative squared terms when the constant on the other side is positive."
+        },
+        {
+          "text": "Cone",
+          "isCorrect": false,
+          "rationale": "A cone requires the constant term to be zero so that the surface passes through the origin."
+        },
+        {
+          "text": "Ellipsoid",
+          "isCorrect": false,
+          "rationale": "An ellipsoid requires all coefficients of the squared terms to be positive."
+        }
+      ],
+      "hint": "Count the number of negative signs when the equation is set equal to a positive constant.",
+      "section": "11.6"
+    },
+    {
+      "question": "The equation $z = \\ln(x)$ represents which type of surface in three-dimensional space?",
+      "answerOptions": [
+        {
+          "text": "Cylindrical Surface",
+          "isCorrect": true,
+          "rationale": "Since the variable $y$ is entirely absent, the logarithmic curve in the $xz$-plane is projected linearly along the $y$-axis."
+        },
+        {
+          "text": "Quadric Surface",
+          "isCorrect": false,
+          "rationale": "Quadric surfaces are defined by second-degree polynomial equations, but this equation uses a transcendental function."
+        },
+        {
+          "text": "Plane",
+          "isCorrect": false,
+          "rationale": "The relationship between $x$ and $z$ is non-linear, so it cannot form a flat plane."
+        },
+        {
+          "text": "Surface of Revolution",
+          "isCorrect": false,
+          "rationale": "This equation lacks the squared variable combinations required for radial symmetry about an axis."
+        }
+      ],
+      "hint": "Identify the missing variable and how it affects the extension of the curve into space.",
+      "section": "11.6"
+    },
+    {
+      "question": "What is the result of rotating the line $x = 2y$ in the $xy$-plane about the $y$-axis?",
+      "answerOptions": [
+        {
+          "text": "A Cone",
+          "isCorrect": true,
+          "rationale": "Rotating a line through the origin (other than the axis itself) creates a conical surface, represented by $x^2 + z^2 = 4y^2$."
+        },
+        {
+          "text": "A Cylinder",
+          "isCorrect": false,
+          "rationale": "A cylinder would be produced if a line parallel to the axis of rotation were rotated."
+        },
+        {
+          "text": "A Paraboloid",
+          "isCorrect": false,
+          "rationale": "Producing a paraboloid requires rotating a parabola, not a straight line."
+        },
+        {
+          "text": "A Sphere",
+          "isCorrect": false,
+          "rationale": "A sphere is generated by rotating a circle or semicircle, not a line."
+        }
+      ],
+      "hint": "Visualize a diagonal line spinning around a vertical axis.",
+      "section": "11.6"
+    },
+    {
+      "question": "In the context of surfaces of revolution, what is a 'generating curve'?",
+      "answerOptions": [
+        {
+          "text": "A two-dimensional curve that is rotated about an axis to create the surface.",
+          "isCorrect": true,
+          "rationale": "The generating curve provides the profile that, when swept around an axis, defines the three-dimensional boundary."
+        },
+        {
+          "text": "The set of all points where the surface intersects the $xyz$ origin.",
+          "isCorrect": false,
+          "rationale": "This describes the intercepts or the origin itself, not the profile curve."
+        },
+        {
+          "text": "The straight line that serves as the center of rotation.",
+          "isCorrect": false,
+          "rationale": "This describes the axis of rotation, not the curve being rotated."
+        },
+        {
+          "text": "The path a single point takes as it moves across the surface.",
+          "isCorrect": false,
+          "rationale": "This describes a trajectory or trace on the surface rather than the defining profile."
+        }
+      ],
+      "hint": "Think of the 'template' shape used to build the surface.",
+      "section": "11.6"
+    },
+    {
+      "question": "Find the equation of the surface formed by rotating $z = e^y$ about the $y$-axis.",
+      "answerOptions": [
+        {
+          "text": "$x^2 + z^2 = e^{2y}$",
+          "isCorrect": true,
+          "rationale": "By substituting the distance $r = \\sqrt{x^2 + z^2}$ for $z$ in the original relation, we get $r = e^y$, leading to $r^2 = (e^y)^2$."
+        },
+        {
+          "text": "$z^2 + y^2 = e^x$",
+          "isCorrect": false,
+          "rationale": "This would indicate a rotation about the $x$-axis, which is not requested."
+        },
+        {
+          "text": "$x^2 + z^2 = e^y$",
+          "isCorrect": false,
+          "rationale": "This mistake ignores the fact that $z$ must be squared to match the radial distance $r^2$ from the axis."
+        },
+        {
+          "text": "$z = e^{\\sqrt{x^2 + y^2}}$",
+          "isCorrect": false,
+          "rationale": "This represents a different rotation where the growth is radial from the $z$-axis."
+        }
+      ],
+      "hint": "The distance from the $y$-axis to any point $(x, y, z)$ on the surface is $\\sqrt{x^2 + z^2}$.",
+      "section": "11.6"
+    },
+    {
+      "question": "Which quadric surface is represented by $2x^2 + 2y^2 = z^2$?",
+      "answerOptions": [
+        {
+          "text": "Circular Cone",
+          "isCorrect": true,
+          "rationale": "This equation matches the form $x^2 + y^2 = cz^2$, which defines a cone opening along the $z$-axis."
+        },
+        {
+          "text": "Hyperboloid of One Sheet",
+          "isCorrect": false,
+          "rationale": "A hyperboloid would require a non-zero constant on one side of the equation."
+        },
+        {
+          "text": "Elliptic Paraboloid",
+          "isCorrect": false,
+          "rationale": "A paraboloid would have a linear $z$ term rather than $z^2$."
+        },
+        {
+          "text": "Ellipsoid",
+          "isCorrect": false,
+          "rationale": "An ellipsoid requires the sum of squared terms to equal a positive constant, not another variable."
+        }
+      ],
+      "hint": "Note that all variables are squared and the equation is homogeneous (set to zero if all terms are on one side).",
+      "section": "11.6"
+    },
+    {
+      "question": "True or False: A quadric surface that is a surface of revolution has a unique generating curve.",
+      "answerOptions": [
+        {
+          "text": "False",
+          "isCorrect": true,
+          "rationale": "Generating curves are not unique; for example, different intersections with different planes can produce the same surface when rotated."
+        },
+        {
+          "text": "True",
+          "isCorrect": false,
+          "rationale": "Many different curves (traces) can be used to generate the same surface of revolution."
+        }
+      ],
+      "hint": "Think about whether you can find the same profile curve in more than one coordinate plane.",
+      "section": "11.6"
+    },
+    {
+      "question": "Identify the surface defined by $x^2 + 2x - y^2 + z^2 = 0$.",
+      "answerOptions": [
+        {
+          "text": "Hyperboloid of One Sheet",
+          "isCorrect": true,
+          "rationale": "Completing the square gives $(x+1)^2 - y^2 + z^2 = 1$, which has two positive squares and one negative square."
+        },
+        {
+          "text": "Hyperboloid of Two Sheets",
+          "isCorrect": false,
+          "rationale": "This would require two negative squared terms after completing the square and setting the constant to positive."
+        },
+        {
+          "text": "Elliptic Paraboloid",
+          "isCorrect": false,
+          "rationale": "The presence of three squared terms excludes the possibility of it being a paraboloid."
+        },
+        {
+          "text": "Cone",
+          "isCorrect": false,
+          "rationale": "The constant resulting from completing the square is non-zero, so it cannot be a standard cone."
+        }
+      ],
+      "hint": "Complete the square for the $x$ terms and analyze the signs of the squared variables.",
+      "section": "11.6"
+    },
+    {
+      "question": "What kind of traces are formed by the intersection of the hyperbolic paraboloid $z = y^2 - x^2$ with vertical planes $y = k$?",
+      "answerOptions": [
+        {
+          "text": "Parabolas opening downward",
+          "isCorrect": true,
+          "rationale": "Substituting $y = k$ gives $z = k^2 - x^2$, which is a parabola in the $xz$-plane with a negative leading coefficient."
+        },
+        {
+          "text": "Parabolas opening upward",
+          "isCorrect": false,
+          "rationale": "This would occur if the $x$ term were positive and the $y$ term were constant."
+        },
+        {
+          "text": "Hyperbolas",
+          "isCorrect": false,
+          "rationale": "Hyperbolas are formed by horizontal traces ($z = k$) for this surface, not vertical ones."
+        },
+        {
+          "text": "Lines",
+          "isCorrect": false,
+          "rationale": "Vertical traces of this second-degree surface are curved unless the plane is specific and the surface is a degenerate case."
+        }
+      ],
+      "hint": "Look at the sign of the $x^2$ term when $y$ is treated as a constant.",
+      "section": "11.6"
+    },
+    {
+      "question": "Identify the surface $15x^2 + 30x - 20y + 12z^2 + 55 = 0$.",
+      "answerOptions": [
+        {
+          "text": "Elliptic Paraboloid",
+          "isCorrect": true,
+          "rationale": "Completing the square for $x$ and $z$ results in an equation where $y$ is linear and $x$ and $z$ are squared with the same sign."
+        },
+        {
+          "text": "Hyperbolic Paraboloid",
+          "isCorrect": false,
+          "rationale": "The $x^2$ and $z^2$ terms have the same sign, which prevents the 'saddle' shape of a hyperbolic paraboloid."
+        },
+        {
+          "text": "Ellipsoid",
+          "isCorrect": false,
+          "rationale": "Because $y$ is linear and not squared, the surface cannot be an ellipsoid."
+        },
+        {
+          "text": "Hyperboloid of One Sheet",
+          "isCorrect": false,
+          "rationale": "This surface requires all three variables to be squared."
+        }
+      ],
+      "hint": "Examine the degrees of each variable to see which are squared and which are linear.",
+      "section": "11.6"
+    },
+    {
+      "question": "What is the generating curve in the $yz$-plane for the surface $x^2 + y^2 = 5z$?",
+      "answerOptions": [
+        {
+          "text": "$y^2 = 5z$",
+          "isCorrect": true,
+          "rationale": "In the $yz$-plane, $x=0$, so the equation simplifies directly to $y^2 = 5z$."
+        },
+        {
+          "text": "$x^2 = 5z$",
+          "isCorrect": false,
+          "rationale": "This is the generating curve in the $xz$-plane, not the $yz$-plane."
+        },
+        {
+          "text": "$y = 5z$",
+          "isCorrect": false,
+          "rationale": "The $y$ variable must remain squared to match the original surface equation."
+        },
+        {
+          "text": "$z = 5y^2$",
+          "isCorrect": false,
+          "rationale": "This reflects an algebraic error in isolating the variables from the original equation."
+        }
+      ],
+      "hint": "Set the variable that is perpendicular to the $yz$-plane to zero.",
+      "section": "11.6"
+    },
+    {
+      "question": "If Earth is modeled as an ellipsoid centered at the origin with equatorial radius $a = 6378$ and polar radius $c = 6357$ (rotation about the $z$-axis), what is its equation?",
+      "answerOptions": [
+        {
+          "text": "$\\frac{x^2}{6378^2} + \\frac{y^2}{6378^2} + \\frac{z^2}{6357^2} = 1$",
+          "isCorrect": true,
+          "rationale": "The equatorial radii ($x$ and $y$) are equal, and the polar radius ($z$) is different, following the standard ellipsoid form."
+        },
+        {
+          "text": "$\\frac{x^2}{6378} + \\frac{y^2}{6378} + \\frac{z^2}{6357} = 1$",
+          "isCorrect": false,
+          "rationale": "The denominators in the standard equation for an ellipsoid must be the squares of the radii."
+        },
+        {
+          "text": "$\\frac{x^2}{6357^2} + \\frac{y^2}{6357^2} + \\frac{z^2}{6378^2} = 1$",
+          "isCorrect": false,
+          "rationale": "This would represent a planet that is 'taller' than it is wide, with the polar radius larger than the equatorial radius."
+        },
+        {
+          "text": "$x^2 + y^2 + z^2 = 6378^2$",
+          "isCorrect": false,
+          "rationale": "This describes a perfect sphere, which does not account for the different polar radius."
+        }
+      ],
+      "hint": "Equatorial radii apply to the $x$ and $y$ axes, while the polar radius applies to the $z$ axis.",
+      "section": "11.6"
+    },
+    {
+      "question": "Which of the following describes the trace of the surface $x^2 - y^2 + z^2 = 1$ in the plane $y = 0$?",
+      "answerOptions": [
+        {
+          "text": "A circle",
+          "isCorrect": true,
+          "rationale": "Setting $y = 0$ results in $x^2 + z^2 = 1$, which is the equation of a unit circle in the $xz$-plane."
+        },
+        {
+          "text": "A hyperbola",
+          "isCorrect": false,
+          "rationale": "While the surface is a hyperboloid, this specific trace consists of two positive squared terms summing to a constant."
+        },
+        {
+          "text": "Two intersecting lines",
+          "isCorrect": false,
+          "rationale": "This would be the trace of a cone ($x^2 - y^2 + z^2 = 0$) in certain planes, but not this hyperboloid."
+        },
+        {
+          "text": "An empty set",
+          "isCorrect": false,
+          "rationale": "The equation $x^2 + z^2 = 1$ has many real solutions, so the trace is not empty."
+        }
+      ],
+      "hint": "Plug in the value for $y$ and look at the signs of the remaining terms.",
+      "section": "11.6"
+    },
+    {
+      "question": "Which variable's traces are always parabolas in the surface $z = 4x^2 - y^2$?",
+      "answerOptions": [
+        {
+          "text": "Both $x$ and $y$",
+          "isCorrect": true,
+          "rationale": "Holding either $x$ or $y$ constant results in a linear relationship between $z$ and the square of the remaining variable."
+        },
+        {
+          "text": "Only $z$",
+          "isCorrect": false,
+          "rationale": "Holding $z$ constant results in $k = 4x^2 - y^2$, which is a hyperbola trace."
+        },
+        {
+          "text": "Only $x$",
+          "isCorrect": false,
+          "rationale": "While $x$-constant traces are parabolas, $y$-constant traces are also parabolas."
+        },
+        {
+          "text": "None of the variables",
+          "isCorrect": false,
+          "rationale": "This is a quadric surface specifically characterized by parabolic traces in vertical planes."
+        }
+      ],
+      "hint": "Consider what happens to the equation when you fix the value of $x$ or $y$.",
+      "section": "11.6"
+    },
+    {
+      "question": "Identify the surface $x^2 + z^2 = 1 - 3y^2$.",
+      "answerOptions": [
+        {
+          "text": "Ellipsoid",
+          "isCorrect": true,
+          "rationale": "Rearranging gives $x^2 + 3y^2 + z^2 = 1$, where all three squared variables have positive coefficients and sum to a positive constant."
+        },
+        {
+          "text": "Hyperboloid of One Sheet",
+          "isCorrect": false,
+          "rationale": "After rearranging, all terms are positive, whereas a hyperboloid requires at least one negative term."
+        },
+        {
+          "text": "Cone",
+          "isCorrect": false,
+          "rationale": "The equation does not equal zero, and all terms would be positive on one side anyway."
+        },
+        {
+          "text": "Sphere",
+          "isCorrect": false,
+          "rationale": "The coefficient of $y^2$ is $3$, while $x^2$ and $z^2$ are $1$, meaning it is stretched rather than perfectly round."
+        }
+      ],
+      "hint": "Move all variable terms to one side of the equation.",
+      "section": "11.6"
+    },
+    {
+      "question": "True or False: A vertical paraboloid whose horizontal cross-sections are circles is a type of elliptic paraboloid.",
+      "answerOptions": [
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "A circle is a specific type of ellipse where the semi-axes are equal ($a=b$)."
+        },
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "The term 'elliptic' encompasses circular cross-sections as a special case."
+        }
+      ],
+      "hint": "Recall the geometric relationship between circles and ellipses.",
+      "section": "11.6"
+    },
+    {
+      "question": "The surface defined by $y = z^2$ in 3D space is called a:",
+      "answerOptions": [
+        {
+          "text": "Parabolic Cylinder",
+          "isCorrect": true,
+          "rationale": "The equation defines a parabola in the $yz$-plane that is extended along the $x$-axis, which is missing from the equation."
+        },
+        {
+          "text": "Circular Cylinder",
+          "isCorrect": false,
+          "rationale": "A circular cylinder would require both $y$ and $z$ to be squared and summed to a constant."
+        },
+        {
+          "text": "Paraboloid",
+          "isCorrect": false,
+          "rationale": "A paraboloid is a quadric surface involving all three variables, not a projected two-dimensional curve."
+        },
+        {
+          "text": "Hyperbolic Cylinder",
+          "isCorrect": false,
+          "rationale": "This would require a subtraction of squared terms, such as $y^2 - z^2 = 1$."
+        }
+      ],
+      "hint": "Consider the shape in the plane of the present variables and how it extends along the axis of the missing variable.",
+      "section": "11.6"
+    },
+    {
+      "question": "What is the vertex of the parabola formed by the intersection of $z = x^2 + y^2$ and the plane $x = 1$?",
+      "answerOptions": [
+        {
+          "text": "$(1, 0, 1)$",
+          "isCorrect": true,
+          "rationale": "Substituting $x = 1$ gives $z = 1 + y^2$; the vertex of $z = y^2 + 1$ is at $y=0$, which makes $z=1$."
+        },
+        {
+          "text": "$(0, 0, 0)$",
+          "isCorrect": false,
+          "rationale": "This is the vertex of the entire surface, but the cross-section is taken at a plane shifted from the origin."
+        },
+        {
+          "text": "$(1, 1, 2)$",
+          "isCorrect": false,
+          "rationale": "This point lies on the parabola but is not its lowest point (vertex)."
+        },
+        {
+          "text": "$(1, 0, 0)$",
+          "isCorrect": false,
+          "rationale": "While $x=1$ and $y=0$, the $z$ value must satisfy $z = 1^2 + 0^2$."
+        }
+      ],
+      "hint": "Fix the $x$ coordinate and find the minimum value of the resulting $2D$ parabola.",
+      "section": "11.6"
+    },
+    {
+      "question": "Identify the surface $-x^2 + 2x + 2y^2 - 3z^2 = 8y + 2$.",
+      "answerOptions": [
+        {
+          "text": "Hyperboloid of Two Sheets",
+          "isCorrect": true,
+          "rationale": "Completing the squares results in $-(x-1)^2 + 2(y-2)^2 - 3z^2 = -7$, which rearranges to $(x-1)^2 - 2(y-2)^2 + 3z^2 = 7$, showing two negative signs."
+        },
+        {
+          "text": "Hyperboloid of One Sheet",
+          "isCorrect": false,
+          "rationale": "The final form has two negative signs relative to the constant, characterizing two sheets rather than one."
+        },
+        {
+          "text": "Elliptic Paraboloid",
+          "isCorrect": false,
+          "rationale": "Since $x, y,$ and $z$ are all squared, the surface cannot be a paraboloid."
+        },
+        {
+          "text": "Hyperbolic Paraboloid",
+          "isCorrect": false,
+          "rationale": "This would require one of the variables to be linear."
+        }
+      ],
+      "hint": "Complete the squares for all three variables and check the signs of the coefficients.",
+      "section": "11.6"
+    },
+    {
+      "question": "Which of these is a valid generating curve for the surface $2x^2 + 2y^2 = z$ in the $xz$-plane?",
+      "answerOptions": [
+        {
+          "text": "$z = 2x^2$",
+          "isCorrect": true,
+          "rationale": "In the $xz$-plane, $y=0$, so the equation simplifies to $2x^2 = z$."
+        },
+        {
+          "text": "$x = 2z^2$",
+          "isCorrect": false,
+          "rationale": "This would imply $x$ is the linear variable, which contradicts the original surface equation."
+        },
+        {
+          "text": "$z = 2x$",
+          "isCorrect": false,
+          "rationale": "The squared term must be preserved for the cross-section to be a parabola."
+        },
+        {
+          "text": "$x^2 + z^2 = 2$",
+          "isCorrect": false,
+          "rationale": "This represents a circle, but the surface is a paraboloid."
+        }
+      ],
+      "hint": "Set $y = 0$ in the original equation to find the trace.",
+      "section": "11.6"
+    },
+    {
+      "question": "True or False: Every surface of revolution has a unique axis of rotation.",
+      "answerOptions": [
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "A surface of revolution is defined by its symmetry around a specific central line."
+        },
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "While generating curves aren't unique, the geometric axis that the curve revolves around is a fixed property of that specific surface."
+        }
+      ],
+      "hint": "Think about whether a surface like a cylinder or a sphere can be thought of as spinning around more than one central line simultaneously.",
+      "section": "11.6"
+    }
+  ],
+  "questionCount": 27,
+  "exportedAt": "2026-09-16T11:16:09",
+  "source": "303/quiz_source/11.6-quiz-source.json"
+}

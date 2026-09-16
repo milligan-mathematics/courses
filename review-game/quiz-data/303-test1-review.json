@@ -1,0 +1,1466 @@
+{
+  "title": "MATH 303 — Test 1 Review (§§11.1–12.3)",
+  "questions": [
+    {
+      "question": "What is the distance between a point $P(x, y, z)$ and the $z$-axis in $\\mathbb{R}^3$?",
+      "answerOptions": [
+        {
+          "text": "$\\sqrt{x^2 + y^2}$",
+          "isCorrect": true,
+          "rationale": "The distance to an axis is the length of the segment perpendicular to that axis; for the $z$-axis, the $z$-coordinate remains constant while the horizontal distance is calculated using $x$ and $y$."
+        },
+        {
+          "text": "$|z|$",
+          "isCorrect": false,
+          "rationale": "This represents the distance from the point to the $xy$-plane, not the $z$-axis."
+        },
+        {
+          "text": "$\\sqrt{x^2 + y^2 + z^2}$",
+          "isCorrect": false,
+          "rationale": "This is the formula for the distance from the point to the origin $(0,0,0)$."
+        },
+        {
+          "text": "$\\sqrt{y^2 + z^2}$",
+          "isCorrect": false,
+          "rationale": "This represents the distance from the point to the $x$-axis."
+        }
+      ],
+      "hint": "Think about the coordinates of the point on the $z$-axis that is closest to $(x, y, z)$.",
+      "section": "11.1"
+    },
+    {
+      "question": "Which set of conditions describes the intersection of the sphere $(x-1)^2 + (y+2)^2 + (z-3)^2 = 25$ with the $xz$-plane?",
+      "answerOptions": [
+        {
+          "text": "$(x-1)^2 + (z-3)^2 = 21$ and $y=0$",
+          "isCorrect": true,
+          "rationale": "In the $xz$-plane, $y=0$; substituting this into the sphere equation gives $(x-1)^2 + (0+2)^2 + (z-3)^2 = 25$, which simplifies to $(x-1)^2 + (z-3)^2 = 21$."
+        },
+        {
+          "text": "$(x-1)^2 + (z-3)^2 = 25$ and $y=0$",
+          "isCorrect": false,
+          "rationale": "This fails to account for the constant $y$-term squared that must be subtracted from the radius squared."
+        },
+        {
+          "text": "$(x-1)^2 + (y+2)^2 = 16$ and $z=0$",
+          "isCorrect": false,
+          "rationale": "This describes the intersection with the $xy$-plane, not the $xz$-plane."
+        },
+        {
+          "text": "$x=1$ and $z=3$ and $y=0$",
+          "isCorrect": false,
+          "rationale": "This describes a single point, but the intersection of a sphere and a plane is generally a circle."
+        }
+      ],
+      "hint": "Recall the equation of the $xz$-plane and substitute that value into the sphere's equation.",
+      "section": "11.1"
+    },
+    {
+      "question": "A sphere is centered at $(3, 8, 1)$ and is tangent to the $xy$-plane. What is the equation of this sphere?",
+      "answerOptions": [
+        {
+          "text": "$(x-3)^2 + (y-8)^2 + (z-1)^2 = 1$",
+          "isCorrect": true,
+          "rationale": "If a sphere is tangent to the $xy$-plane ($z=0$), its radius must equal the absolute value of the $z$-coordinate of its center, which is $|1|=1$."
+        },
+        {
+          "text": "$(x-3)^2 + (y-8)^2 + (z-1)^2 = 9$",
+          "isCorrect": false,
+          "rationale": "This uses the $x$-coordinate for the radius, which would make the sphere tangent to the $yz$-plane."
+        },
+        {
+          "text": "$(x-3)^2 + (y-8)^2 + (z-1)^2 = 64$",
+          "isCorrect": false,
+          "rationale": "This uses the $y$-coordinate for the radius, which would make the sphere tangent to the $xz$-plane."
+        },
+        {
+          "text": "$(x-3)^2 + (y-8)^2 + (z-1)^2 = 0$",
+          "isCorrect": false,
+          "rationale": "A radius of zero defines a single point rather than a sphere."
+        }
+      ],
+      "hint": "Tangency to a plane means the distance from the center to that plane is exactly the radius.",
+      "section": "11.1"
+    },
+    {
+      "question": "Describe the geometric object in $\\mathbb{R}^3$ defined by the simultaneous equations $x^2 + y^2 = 4$ and $z = 5$.",
+      "answerOptions": [
+        {
+          "text": "A circle in the plane $z=5$",
+          "isCorrect": true,
+          "rationale": "The first equation defines a cylinder, and the second restricts it to a specific horizontal plane, resulting in a circle centered at $(0,0,5)$."
+        },
+        {
+          "text": "A circular cylinder of radius 2",
+          "isCorrect": false,
+          "rationale": "A cylinder would require $z$ to be unconstrained, but here $z$ is fixed at 5."
+        },
+        {
+          "text": "A sphere centered at $(0,0,5)$ with radius 2",
+          "isCorrect": false,
+          "rationale": "A sphere equation would involve $z$ in the squared terms, such as $(z-5)^2$."
+        },
+        {
+          "text": "A line parallel to the $z$-axis",
+          "isCorrect": false,
+          "rationale": "A line is formed by the intersection of two planes or a point and a direction, not a circle equation and a plane."
+        }
+      ],
+      "hint": "Consider how the restriction on $z$ affects the 'extrusion' of the 2D curve.",
+      "section": "11.1"
+    },
+    {
+      "question": "The equation $x^2 + y^2 + z^2 - 4x + 6y = 3$ represents a sphere. What is its radius?",
+      "answerOptions": [
+        {
+          "text": "4",
+          "isCorrect": true,
+          "rationale": "Completing the square: $(x-2)^2 + (y+3)^2 + z^2 = 3 + 4 + 9 = 16$. The radius is $\\sqrt{16} = 4$."
+        },
+        {
+          "text": "$\\sqrt{3}$",
+          "isCorrect": false,
+          "rationale": "This assumes the constant on the right is $r^2$ without completing the square on the left."
+        },
+        {
+          "text": "16",
+          "isCorrect": false,
+          "rationale": "This is the value of $r^2$ after completing the square, not the radius itself."
+        },
+        {
+          "text": "2",
+          "isCorrect": false,
+          "rationale": "This might come from an error in completing the square or taking the square root twice."
+        }
+      ],
+      "hint": "You must complete the square for the $x$ and $y$ terms to put the equation in standard form.",
+      "section": "11.1"
+    },
+    {
+      "question": "A cylinder is defined by $y^2 + z^2 = 16$. Along which axis is this cylinder oriented?",
+      "answerOptions": [
+        {
+          "text": "The $x$-axis",
+          "isCorrect": true,
+          "rationale": "The missing variable $x$ means the circular cross-section in the $yz$-plane is extended infinitely in both directions along the $x$-axis."
+        },
+        {
+          "text": "The $y$-axis",
+          "isCorrect": false,
+          "rationale": "Orientation along the $y$-axis would require $y$ to be the missing variable."
+        },
+        {
+          "text": "The $z$-axis",
+          "isCorrect": false,
+          "rationale": "Orientation along the $z$-axis would require $z$ to be the missing variable."
+        },
+        {
+          "text": "The origin",
+          "isCorrect": false,
+          "rationale": "Orientation refers to a line or axis of symmetry, not a single point."
+        }
+      ],
+      "hint": "The 'axis' of a cylinder corresponds to the variable that is not constrained by the equation.",
+      "section": "11.1"
+    },
+    {
+      "question": "What is the component form of a vector $\\mathbf{v}$ in $R^3$ with an initial point $P=(4, -2, 6)$ and a terminal point $Q=(-1, 3, 2)$?",
+      "answerOptions": [
+        {
+          "text": "$\\langle -5, 5, -4 \\rangle$",
+          "isCorrect": true,
+          "rationale": "The component form is calculated by subtracting the initial coordinates from the terminal coordinates: $(-1-4, 3-(-2), 2-6)$."
+        },
+        {
+          "text": "$\\langle 5, -5, 4 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This results from subtracting the terminal coordinates from the initial coordinates, which is the reverse of the correct procedure."
+        },
+        {
+          "text": "$\\langle 3, 1, 8 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This error occurs if the coordinates are added together instead of being subtracted."
+        },
+        {
+          "text": "$\\langle -1, 3, 2 \\rangle$",
+          "isCorrect": false,
+          "rationale": "These are simply the coordinates of the terminal point, which only represent the vector if it were in standard position starting at the origin."
+        }
+      ],
+      "hint": "Remember the subtraction order: terminal point minus initial point.",
+      "section": "11.2"
+    },
+    {
+      "question": "Given the vector $\\mathbf{w} = \\langle -3, 4, 12 \\rangle$, what is its magnitude $|\\|\\mathbf{w}\\||$?",
+      "answerOptions": [
+        {
+          "text": "13",
+          "isCorrect": true,
+          "rationale": "The magnitude is calculated as $\\sqrt{(-3)^2 + 4^2 + 12^2} = \\sqrt{9 + 16 + 144} = \\sqrt{169} = 13$."
+        },
+        {
+          "text": "$\\sqrt{13}$",
+          "isCorrect": false,
+          "rationale": "This might be chosen if the squares of the components were summed but the square root was applied incorrectly to a pre-summed value."
+        },
+        {
+          "text": "19",
+          "isCorrect": false,
+          "rationale": "This reflects a common error where the absolute values of the components are summed ($3+4+12$) instead of using the Pythagorean distance formula."
+        },
+        {
+          "text": "$\\sqrt{151}$",
+          "isCorrect": false,
+          "rationale": "This calculation would occur if the square of the z-component was ignored or calculated incorrectly as $12^2 = 126$."
+        }
+      ],
+      "hint": "This is a direct application of the distance formula extended to three dimensions.",
+      "section": "11.2"
+    },
+    {
+      "question": "How is the unit vector $\\hat{\\mathbf{u}}$ in the direction of a non-zero vector $\\mathbf{v}$ calculated?",
+      "answerOptions": [
+        {
+          "text": "$\\hat{\\mathbf{u}} = \\frac{\\mathbf{v}}{|\\|\\mathbf{v}\\||}$",
+          "isCorrect": true,
+          "rationale": "Normalizing a vector involves dividing each of its components by its magnitude to ensure the new vector has a length of 1 while maintaining direction."
+        },
+        {
+          "text": "$\\hat{\\mathbf{u}} = \\mathbf{v} \\cdot |\\|\\mathbf{v}\\||$",
+          "isCorrect": false,
+          "rationale": "Multiplying by the magnitude would scale the vector's length by its own length squared, which does not produce a unit vector."
+        },
+        {
+          "text": "$\\hat{\\mathbf{u}} = \\langle 1, 1, 1 \\rangle - \\mathbf{v}$",
+          "isCorrect": false,
+          "rationale": "Subtracting from a vector of ones is not a valid way to find a directional unit vector."
+        },
+        {
+          "text": "$\\hat{\\mathbf{u}} = \\frac{|\\|\\mathbf{v}\\||}{\\mathbf{v}}$",
+          "isCorrect": false,
+          "rationale": "Division of a scalar by a vector is not a defined operation in vector algebra; it must be scalar multiplication by the reciprocal."
+        }
+      ],
+      "hint": "Think about how to 'scale' a vector so that its length becomes exactly one.",
+      "section": "11.2"
+    },
+    {
+      "question": "Find the point $N$ that is exactly one quarter of the way from point $P=(-2, 4, 1)$ toward point $Q=(3, 2, -1)$.",
+      "answerOptions": [
+        {
+          "text": "$(-\\frac{3}{4}, \\frac{7}{2}, \\frac{1}{2})$",
+          "isCorrect": true,
+          "rationale": "First find the vector $\\vec{PQ} = \\langle 5, -2, -2 \\rangle$, then calculate $P + \\frac{1}{4}\\vec{PQ} = \\langle -2, 4, 1 \\rangle + \\langle 1.25, -0.5, -0.5 \\rangle$."
+        },
+        {
+          "text": "$(\\frac{1}{2}, 3, 0)$",
+          "isCorrect": false,
+          "rationale": "This is the midpoint (one half of the way), found by averaging the coordinates of $P$ and $Q$."
+        },
+        {
+          "text": "$(\\frac{1}{4}, 1, -\\frac{1}{4})$",
+          "isCorrect": false,
+          "rationale": "This results from simply multiplying the coordinates of $Q$ by $\\frac{1}{4}$, ignoring the starting point $P$ and the displacement vector."
+        },
+        {
+          "text": "$(-\\frac{5}{4}, \\frac{9}{2}, \\frac{3}{2})$",
+          "isCorrect": false,
+          "rationale": "This error occurs if the vector $\\vec{QP}$ (initial minus terminal) is used instead of $\\vec{PQ}$."
+        }
+      ],
+      "hint": "Calculate the vector from $P$ to $Q$ first, then add a fraction of it to $P$.",
+      "section": "11.2"
+    },
+    {
+      "question": "If $\\mathbf{u} = \\langle 2, 3 \\rangle$ and $\\mathbf{v} = \\langle 0, 1 \\rangle$, find the scalars $a$ and $b$ such that $\\mathbf{w} = \\langle 1, 2 \\rangle$ is expressed as $\\mathbf{w} = a\\mathbf{u} + b\\mathbf{v}$.",
+      "answerOptions": [
+        {
+          "text": "$a = \\frac{1}{2}, b = \\frac{1}{2}$",
+          "isCorrect": true,
+          "rationale": "Setting up the system $2a + 0b = 1$ and $3a + 1b = 2$ yields $a = 0.5$, and substituting that into the second equation gives $1.5 + b = 2$, so $b = 0.5$."
+        },
+        {
+          "text": "$a = 1, b = -1$",
+          "isCorrect": false,
+          "rationale": "This combination would result in $\\langle 2, 3 \\rangle + \\langle 0, -1 \\rangle = \\langle 2, 2 \\rangle$, which is not $\\mathbf{w}$."
+        },
+        {
+          "text": "$a = \\frac{1}{2}, b = 2$",
+          "isCorrect": false,
+          "rationale": "While $a=0.5$ correctly satisfies the x-component, $b=2$ would result in a y-component of $1.5 + 2 = 3.5$."
+        },
+        {
+          "text": "$a = 2, b = -4$",
+          "isCorrect": false,
+          "rationale": "This would result in an x-component of 4, which does not match the x-component of $\\mathbf{w}$."
+        }
+      ],
+      "hint": "Solve the system of linear equations created by the x and y components.",
+      "section": "11.2"
+    },
+    {
+      "question": "Given $\\mathbf{u} = \\langle -2, 2, 4 \\rangle$, what is the value of $|\\|-\\frac{1}{2}\\mathbf{u}\\||$?",
+      "answerOptions": [
+        {
+          "text": "$\\sqrt{6}$",
+          "isCorrect": true,
+          "rationale": "First find $-\\frac{1}{2}\\mathbf{u} = \\langle 1, -1, -2 \\rangle$. The magnitude is $\\sqrt{1^2 + (-1)^2 + (-2)^2} = \\sqrt{6}$."
+        },
+        {
+          "text": "$\\sqrt{24}$",
+          "isCorrect": false,
+          "rationale": "This is the magnitude of the original vector $\\mathbf{u}$, without applying the scalar multiplication."
+        },
+        {
+          "text": "$-\\sqrt{6}$",
+          "isCorrect": false,
+          "rationale": "Magnitude represents length and must always be a non-negative real number."
+        },
+        {
+          "text": "3",
+          "isCorrect": false,
+          "rationale": "This might be obtained by incorrectly averaging the components rather than using the square root of the sum of squares."
+        }
+      ],
+      "hint": "Apply the property $|\\|c\\mathbf{u}\\|| = |c| |\\|\\mathbf{u}\\||$.",
+      "section": "11.2"
+    },
+    {
+      "question": "If the dot product of two nonzero vectors $\\mathbf{u}$ and $\\mathbf{v}$ is negative, what can be concluded about the angle $\\theta$ between them?",
+      "answerOptions": [
+        {
+          "text": "$\\frac{\\pi}{2} < \\theta \\le \\pi$",
+          "isCorrect": true,
+          "rationale": "Since $\\mathbf{u} \\cdot \\mathbf{v} = |\\mathbf{u}||\\mathbf{v}|\\cos\\theta$ and magnitudes are positive, a negative dot product implies that $\\cos\\theta$ is negative, which occurs in the second quadrant."
+        },
+        {
+          "text": "$0 \\le \\theta < \\frac{\\pi}{2}$",
+          "isCorrect": false,
+          "rationale": "This range describes acute angles where the cosine, and thus the dot product of nonzero vectors, would be positive."
+        },
+        {
+          "text": "$\\theta = \\frac{\\pi}{2}$",
+          "isCorrect": false,
+          "rationale": "At this specific angle, the cosine is zero, which would result in a dot product of exactly zero."
+        },
+        {
+          "text": "$\\theta = 0$",
+          "isCorrect": false,
+          "rationale": "If the angle is zero, the vectors point in the same direction and the dot product would be the positive product of their magnitudes."
+        }
+      ],
+      "hint": "Consider the sign of the cosine function in the interval $[0, \\pi]$.",
+      "section": "11.3"
+    },
+    {
+      "question": "Which of the following is the correct formula for the scalar projection of $\\mathbf{u}$ onto $\\mathbf{v}$?",
+      "answerOptions": [
+        {
+          "text": "$\\text{comp}_{\\mathbf{v}}\\mathbf{u} = \\frac{\\mathbf{u} \\cdot \\mathbf{v}}{|\\mathbf{v}|}$",
+          "isCorrect": true,
+          "rationale": "The scalar projection represents the component of $\\mathbf{u}$ in the direction of $\\mathbf{v}$, derived by dividing the dot product by the magnitude of the target vector."
+        },
+        {
+          "text": "$\\text{comp}_{\\mathbf{v}}\\mathbf{u} = \\frac{\\mathbf{u} \\cdot \\mathbf{v}}{|\\mathbf{u}|}$",
+          "isCorrect": false,
+          "rationale": "This formula would incorrectly find the scalar projection of $\\mathbf{v}$ onto $\\mathbf{u}$ instead of $\\mathbf{u}$ onto $\\mathbf{v}$."
+        },
+        {
+          "text": "$\\text{comp}_{\\mathbf{v}}\\mathbf{u} = \\frac{\\mathbf{u} \\cdot \\mathbf{v}}{|\\mathbf{v}|^2} \\mathbf{v}$",
+          "isCorrect": false,
+          "rationale": "This is the formula for the vector projection, not the scalar projection, as indicated by the inclusion of the vector $\\mathbf{v}$."
+        },
+        {
+          "text": "$\\text{comp}_{\\mathbf{v}}\\mathbf{u} = |\\mathbf{u}|\\sin\\theta$",
+          "isCorrect": false,
+          "rationale": "The projection uses the cosine of the angle to find the adjacent component, whereas sine would find the opposite (orthogonal) component."
+        }
+      ],
+      "hint": "Identify which vector's magnitude acts as the divisor to normalize the direction of the shadow.",
+      "section": "11.3"
+    },
+    {
+      "question": "In the context of direction cosines for a vector $\\mathbf{u}$, what is the value of $(\\cos\\alpha)^2 + (\\cos\\beta)^2 + (\\cos\\gamma)^2$?",
+      "answerOptions": [
+        {
+          "text": "$1$",
+          "isCorrect": true,
+          "rationale": "The sum of the squares of the direction cosines is equivalent to the sum of the squared components divided by the squared magnitude, which simplifies to 1."
+        },
+        {
+          "text": "$|\\mathbf{u}|$",
+          "isCorrect": false,
+          "rationale": "The magnitude itself is not the sum of the squared cosines; rather, the cosines are normalized by the magnitude."
+        },
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "The sum of squares of real numbers (cosines) can only be zero if each individual cosine is zero, which isn't true for a general nonzero vector."
+        },
+        {
+          "text": "$\\pi$",
+          "isCorrect": false,
+          "rationale": "While angles are measured in radians involving $\\pi$, the identity for the squares of the direction cosines is a constant integer value."
+        }
+      ],
+      "hint": "Consider how the components $u_1, u_2, u_3$ relate to the definition of direction cosines and the vector's magnitude.",
+      "section": "11.3"
+    },
+    {
+      "question": "Evaluate the dot product: $\\langle 4, -5 \\rangle \\cdot \\langle 1, 1 \\rangle$.",
+      "answerOptions": [
+        {
+          "text": "$-1$",
+          "isCorrect": true,
+          "rationale": "Following the formula: $(4)(1) + (-5)(1) = 4 - 5 = -1$."
+        },
+        {
+          "text": "$9$",
+          "isCorrect": false,
+          "rationale": "This value might be reached by incorrectly taking the absolute values of the components before adding."
+        },
+        {
+          "text": "$\\langle 4, -5 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The dot product must be a scalar, not a vector."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "This error likely results from a sign mistake during the addition of $4$ and $-5$."
+        }
+      ],
+      "hint": "Perform the component-wise multiplication and summation as shown in Example 1.",
+      "section": "11.3"
+    },
+    {
+      "question": "A vector $\\mathbf{u}$ has direction cosines $\\cos\\alpha = 0.6$ and $\\cos\\beta = 0.8$. What must be the value of $\\cos\\gamma$?",
+      "answerOptions": [
+        {
+          "text": "$0$",
+          "isCorrect": true,
+          "rationale": "Since $(0.6)^2 + (0.8)^2 + (\\cos\\gamma)^2 = 1$, we have $0.36 + 0.64 + (\\cos\\gamma)^2 = 1$, which means $1 + (\\cos\\gamma)^2 = 1$."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "If $\\cos\\gamma$ were 1, the sum of squares would exceed 1, which violates the direction cosine identity."
+        },
+        {
+          "text": "$0.2$",
+          "isCorrect": false,
+          "rationale": "This might be chosen by assuming the cosines themselves sum to 1, rather than their squares."
+        },
+        {
+          "text": "$-0.2$",
+          "isCorrect": false,
+          "rationale": "Similar to assuming the sum is 1, this also ignores the requirement that the squares of the values must sum to 1."
+        }
+      ],
+      "hint": "Use the fundamental identity that relates the squares of all three direction cosines.",
+      "section": "11.3"
+    },
+    {
+      "question": "Find $k$ so that $\\langle 3, -2 \\rangle$ and $\\langle k, 6 \\rangle$ are orthogonal.",
+      "answerOptions": [
+        {
+          "text": "$4$",
+          "isCorrect": true,
+          "rationale": "Setting the dot product to zero: $(3)(k) + (-2)(6) = 0 \\implies 3k - 12 = 0 \\implies k = 4$."
+        },
+        {
+          "text": "$-4$",
+          "isCorrect": false,
+          "rationale": "This would result in a dot product of $-24$, meaning the vectors are not orthogonal."
+        },
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "A value of $0$ for $k$ would result in a dot product of $-12$."
+        },
+        {
+          "text": "$9$",
+          "isCorrect": false,
+          "rationale": "This value does not satisfy the condition that the sum of the products of the components is zero."
+        }
+      ],
+      "hint": "Set up an equation where the dot product of the two vectors equals zero.",
+      "section": "11.3"
+    },
+    {
+      "question": "If $\\mathbf{u}$ and $\\mathbf{v}$ are parallel vectors, what is the value of $\\mathbf{u} \\times \\mathbf{v}$?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{0}$",
+          "isCorrect": true,
+          "rationale": "Parallel vectors have an angle of $0$ or $\\pi$, making $\\sin\\theta = 0$ in the magnitude formula."
+        },
+        {
+          "text": "The dot product $\\mathbf{u} \\cdot \\mathbf{v}$.",
+          "isCorrect": false,
+          "rationale": "The dot product results in a scalar, whereas the cross product must result in a vector, even if it is the zero vector."
+        },
+        {
+          "text": "A unit vector normal to the plane of the vectors.",
+          "isCorrect": false,
+          "rationale": "Parallel vectors do not define a unique plane and cannot 'spawn' a parallelogram with area."
+        },
+        {
+          "text": "$|\\mathbf{u}||\\mathbf{v}|\\mathbf{n}$",
+          "isCorrect": false,
+          "rationale": "This formula applies when the vectors are orthogonal (where $\\sin\\theta = 1$), not when they are parallel."
+        }
+      ],
+      "hint": "Think about the sine of the angle between two lines that never diverge.",
+      "section": "11.4"
+    },
+    {
+      "question": "Find the cross product $\\mathbf{u} \\times \\mathbf{v}$ where $\\mathbf{u} = \\langle 1, 0, 2 \\rangle$ and $\\mathbf{v} = \\langle 0, 1, 3 \\rangle$.",
+      "answerOptions": [
+        {
+          "text": "$\\langle -2, -3, 1 \\rangle$",
+          "isCorrect": true,
+          "rationale": "Expanding the determinant: $\\mathbf{i}(0-2) - \\mathbf{j}(3-0) + \\mathbf{k}(1-0) = -2\\mathbf{i} - 3\\mathbf{j} + 1\\mathbf{k}$."
+        },
+        {
+          "text": "$\\langle -2, 3, 1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is a common error resulting from forgetting to negate the $\\mathbf{j}$ component in the determinant expansion."
+        },
+        {
+          "text": "$\\langle 2, 3, -1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This result corresponds to $\\mathbf{v} \\times \\mathbf{u}$, which is the negative of the correct answer."
+        },
+        {
+          "text": "$\\langle 0, 0, 6 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This result suggests a simple component-wise multiplication, which is not how the cross product is defined."
+        }
+      ],
+      "hint": "Set up the $3 \\times 3$ determinant with $\\mathbf{i}, \\mathbf{j}, \\mathbf{k}$ on the top row.",
+      "section": "11.4"
+    },
+    {
+      "question": "If the triple scalar product of three non-zero vectors is exactly zero, what can be concluded about the vectors?",
+      "answerOptions": [
+        {
+          "text": "The vectors are coplanar.",
+          "isCorrect": true,
+          "rationale": "A volume of zero means the vectors lie in the same 2D plane and do not extend into a 3D shape."
+        },
+        {
+          "text": "The vectors are all mutually orthogonal.",
+          "isCorrect": false,
+          "rationale": "If vectors were mutually orthogonal, the triple scalar product would be the product of their magnitudes, which is non-zero."
+        },
+        {
+          "text": "One of the vectors must be the zero vector.",
+          "isCorrect": false,
+          "rationale": "While a zero vector would result in a zero product, the question specifies the vectors are non-zero."
+        },
+        {
+          "text": "The vectors are all parallel to each other.",
+          "isCorrect": false,
+          "rationale": "While parallel vectors are coplanar, not all coplanar vectors need to be parallel to result in a zero volume."
+        }
+      ],
+      "hint": "Think about what happens to the volume of a box if you 'squash' it flat.",
+      "section": "11.4"
+    },
+    {
+      "question": "Calculate the area of a triangle with vertices at $(0,0,0)$, $(2,0,0)$, and $(0,3,0)$.",
+      "answerOptions": [
+        {
+          "text": "$3$",
+          "isCorrect": true,
+          "rationale": "The vectors are $\\mathbf{u} = \\langle 2,0,0 \\rangle$ and $\\mathbf{v} = \\langle 0,3,0 \\rangle$. $\\mathbf{u} \\times \\mathbf{v} = \\langle 0,0,6 \\rangle$. Area is $\\frac{1}{2}|\\langle 0,0,6 \\rangle| = 3$."
+        },
+        {
+          "text": "$6$",
+          "isCorrect": false,
+          "rationale": "This is the area of the parallelogram formed by the vectors; the triangle's area is half of that."
+        },
+        {
+          "text": "$\\sqrt{13}$",
+          "isCorrect": false,
+          "rationale": "This is likely calculated by applying the Pythagorean theorem to the coordinates incorrectly rather than using the cross product."
+        },
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "This would only be correct if the points were collinear, but these points form a right triangle in the $xy$-plane."
+        }
+      ],
+      "hint": "Form two vectors from the origin and use half the magnitude of their cross product.",
+      "section": "11.4"
+    },
+    {
+      "question": "Simplify the expression: $(2\\mathbf{i}) \\times (5\\mathbf{j})$.",
+      "answerOptions": [
+        {
+          "text": "$10\\mathbf{k}$",
+          "isCorrect": true,
+          "rationale": "Using scalar associativity: $(2)(5)(\\mathbf{i} \\times \\mathbf{j}) = 10(\\mathbf{k}) = 10\\mathbf{k}$."
+        },
+        {
+          "text": "$10$",
+          "isCorrect": false,
+          "rationale": "The cross product results in a vector, not a scalar value like $10$."
+        },
+        {
+          "text": "$-10\\mathbf{k}$",
+          "isCorrect": false,
+          "rationale": "This follows the wrong order for the unit vectors; $\\mathbf{i} \\times \\mathbf{j}$ is positive $\\mathbf{k}$."
+        },
+        {
+          "text": "$\\mathbf{0}$",
+          "isCorrect": false,
+          "rationale": "The vectors $\\mathbf{i}$ and $\\mathbf{j}$ are orthogonal, not parallel, so their cross product is non-zero."
+        }
+      ],
+      "hint": "Apply the scalar multiplication property first, then the unit vector cross product rule.",
+      "section": "11.4"
+    },
+    {
+      "question": "What is the result of the cross product $(\\mathbf{i} + \\mathbf{j}) \\times \\mathbf{k}$?",
+      "answerOptions": [
+        {
+          "text": "$-\\mathbf{j} + \\mathbf{i}$",
+          "isCorrect": true,
+          "rationale": "By distribution: $(\\mathbf{i} \\times \\mathbf{k}) + (\\mathbf{j} \\times \\mathbf{k}) = (-\\mathbf{j}) + (\\mathbf{i})$."
+        },
+        {
+          "text": "$\\mathbf{j} - \\mathbf{i}$",
+          "isCorrect": false,
+          "rationale": "This is the result of $\\mathbf{k} \\times (\\mathbf{i} + \\mathbf{j})$, reversing the correct sign due to anticommutativity."
+        },
+        {
+          "text": "$\\mathbf{i} + \\mathbf{j}$",
+          "isCorrect": false,
+          "rationale": "This incorrectly assumes the cross product behaves like multiplication by 1."
+        },
+        {
+          "text": "$\\mathbf{0}$",
+          "isCorrect": false,
+          "rationale": "The vector $\\mathbf{i} + \\mathbf{j}$ lies in the $xy$-plane and is thus orthogonal to $\\mathbf{k}$, not parallel."
+        }
+      ],
+      "hint": "Distribute the cross product across the sum and use unit vector identities.",
+      "section": "11.4"
+    },
+    {
+      "question": "A line in $R^3$ passes through the point $P_0(1, -2, 3)$ and is parallel to the vector $\\vec{v} = \\langle 4, 0, -1 \\rangle$. Which set of parametric equations correctly describes this line?",
+      "answerOptions": [
+        {
+          "text": "$x = 1 + 4t, y = -2, z = 3 - t$",
+          "isCorrect": true,
+          "rationale": "These equations correctly use the point coordinates as constants and the direction vector components as coefficients for the parameter $t$."
+        },
+        {
+          "text": "$x = 4 + t, y = -2t, z = -1 + 3t$",
+          "isCorrect": false,
+          "rationale": "This swap represents a common error where the point and direction vector components are interchanged."
+        },
+        {
+          "text": "$x = 1 + 4t, y = -2 + t, z = 3 - t$",
+          "isCorrect": false,
+          "rationale": "The $y$ component of the direction vector is zero, meaning the $y$ value should remain constant, not vary with $t$."
+        },
+        {
+          "text": "$x = 1 - 4t, y = -2, z = 3 + t$",
+          "isCorrect": false,
+          "rationale": "While this describes a parallel line, the signs of the direction vector components are inconsistently applied compared to the standard form."
+        }
+      ],
+      "hint": "Recall how the components of the direction vector relate to the coefficients of the parameter $t$.",
+      "section": "11.5"
+    },
+    {
+      "question": "Given a plane with the equation $3x - 5y + z = 12$, what is a normal vector $\\vec{n}$ to this plane?",
+      "answerOptions": [
+        {
+          "text": "$\\vec{n} = \\langle 3, -5, 1 \\rangle$",
+          "isCorrect": true,
+          "rationale": "The coefficients of $x, y,$ and $z$ in the general linear equation of a plane directly represent the components of its normal vector."
+        },
+        {
+          "text": "$\\vec{n} = \\langle 3, 5, 1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The sign of the $y$ coefficient must be preserved when extracting the normal vector components."
+        },
+        {
+          "text": "$\\vec{n} = \\langle 1/3, -1/5, 1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "Taking the reciprocals of the coefficients is a common procedural error not grounded in the definition of the normal vector."
+        },
+        {
+          "text": "$\\vec{n} = \\langle 3, -5, -12 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The constant $d$ on the right side of the equation does not contribute to the direction of the normal vector."
+        }
+      ],
+      "hint": "Look at the coefficients of the variables in the general linear equation.",
+      "section": "11.5"
+    },
+    {
+      "question": "Find the direction vector $\\vec{v}$ for the line of intersection of the planes $x + y + z = 1$ and $x - 2y + 3z = 2$.",
+      "answerOptions": [
+        {
+          "text": "$\\vec{v} = \\langle 5, -2, -3 \\rangle$",
+          "isCorrect": true,
+          "rationale": "The direction of the intersection line is found by the cross product of the normal vectors $\\vec{n_1} = \\langle 1, 1, 1 \\rangle$ and $\\vec{n_2} = \\langle 1, -2, 3 \\rangle$."
+        },
+        {
+          "text": "$\\vec{v} = \\langle 1, 1, 1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is simply the normal vector of the first plane, which is perpendicular to the line of intersection, not parallel to it."
+        },
+        {
+          "text": "$\\vec{v} = \\langle 2, -1, 4 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This result comes from adding the normal vectors, which does not yield the direction of the line of intersection."
+        },
+        {
+          "text": "$\\vec{v} = \\langle 0, 0, 0 \\rangle$",
+          "isCorrect": false,
+          "rationale": "A zero vector would imply the planes are parallel and do not intersect in a line, which is not the case here."
+        }
+      ],
+      "hint": "Consider how the line of intersection relates to the normal vectors of both planes.",
+      "section": "11.5"
+    },
+    {
+      "question": "A line is parallel to the $z$-axis and passes through $(5, -1, 0)$. What are its parametric equations?",
+      "answerOptions": [
+        {
+          "text": "$x = 5, y = -1, z = t$",
+          "isCorrect": true,
+          "rationale": "Parallelism to the $z$-axis means the direction vector is $\\langle 0, 0, 1 \\rangle$, keeping $x$ and $y$ constant while $z$ varies."
+        },
+        {
+          "text": "$x = 5t, y = -t, z = 0$",
+          "isCorrect": false,
+          "rationale": "These equations describe a line in the $xy$-plane that passes through the origin, not a line parallel to the $z$-axis."
+        },
+        {
+          "text": "$x = 5 + t, y = -1 + t, z = t$",
+          "isCorrect": false,
+          "rationale": "This line moves in all three dimensions and is not parallel to any single coordinate axis."
+        },
+        {
+          "text": "$x = t, y = t, z = 5$",
+          "isCorrect": false,
+          "rationale": "This line is parallel to the $xy$-plane at a height of $z=5$, but it is not parallel to the $z$-axis."
+        }
+      ],
+      "hint": "Consider what the direction vector must be for a line that only changes in the vertical ($z$) direction.",
+      "section": "11.5"
+    },
+    {
+      "question": "Find the point where the line $\\vec{r}(t) = \\langle 1 + t, 2t, 3 - t \\rangle$ intersects the $xz$-plane.",
+      "answerOptions": [
+        {
+          "text": "$(1, 0, 3)$",
+          "isCorrect": true,
+          "rationale": "The $xz$-plane requires $y=0$. Setting $2t = 0$ gives $t = 0$, and substituting $t=0$ back into the line equation yields $(1, 0, 3)$."
+        },
+        {
+          "text": "$(0, -2, 4)$",
+          "isCorrect": false,
+          "rationale": "This would be the intersection with the $yz$-plane (where $x=0$), resulting from setting $1+t=0$."
+        },
+        {
+          "text": "$(4, 6, 0)$",
+          "isCorrect": false,
+          "rationale": "This would be the intersection with the $xy$-plane (where $z=0$), resulting from setting $3-t=0$."
+        },
+        {
+          "text": "$(1, 2, 3)$",
+          "isCorrect": false,
+          "rationale": "This point on the line does not have a $y$-coordinate of zero, so it cannot be on the $xz$-plane."
+        }
+      ],
+      "hint": "Determine which coordinate must be zero for any point on the $xz$-plane.",
+      "section": "11.5"
+    },
+    {
+      "question": "Two planes are given by $x + 2y + 2z = 5$ and $x + 2y + 2z = 10$. What is the relationship between them?",
+      "answerOptions": [
+        {
+          "text": "They are parallel and distinct.",
+          "isCorrect": true,
+          "rationale": "They share the same normal vector $\\langle 1, 2, 2 \\rangle$ but have different constants $d$, meaning they never intersect."
+        },
+        {
+          "text": "They are identical planes.",
+          "isCorrect": false,
+          "rationale": "Identical planes would require the equations to be scalar multiples of each other, including the constant term $d$."
+        },
+        {
+          "text": "They intersect at a line.",
+          "isCorrect": false,
+          "rationale": "Intersection at a line requires the normal vectors to be non-parallel, which is not the case here."
+        },
+        {
+          "text": "They are perpendicular to each other.",
+          "isCorrect": false,
+          "rationale": "Perpendicularity requires the dot product of the normal vectors to be zero; here it is $1+4+4=9$."
+        }
+      ],
+      "hint": "Compare the coefficients of the variables and the constants on the right side.",
+      "section": "11.5"
+    },
+    {
+      "question": "Which quadric surface is defined by the equation $x = y^2 + z^2$?",
+      "answerOptions": [
+        {
+          "text": "Elliptic Paraboloid",
+          "isCorrect": true,
+          "rationale": "This surface opens along the $x$-axis and has elliptical (specifically circular) cross-sections perpendicular to that axis."
+        },
+        {
+          "text": "Hyperboloid of One Sheet",
+          "isCorrect": false,
+          "rationale": "This surface would typically involve squared terms for all three variables with one subtraction, rather than one variable being a linear sum of others."
+        },
+        {
+          "text": "Ellipsoid",
+          "isCorrect": false,
+          "rationale": "An ellipsoid equation requires all three variables to be squared and summed to a positive constant."
+        },
+        {
+          "text": "Hyperbolic Paraboloid",
+          "isCorrect": false,
+          "rationale": "This surface requires a subtraction between the two squared terms, creating a saddle shape."
+        }
+      ],
+      "hint": "Consider the relationship between the linear variable and the two squared variables.",
+      "section": "11.6"
+    },
+    {
+      "question": "Identify the type of surface represented by the equation $x^2 - 6x + 2y + 11 = 0$ in three-dimensional space.",
+      "answerOptions": [
+        {
+          "text": "Parabolic Cylinder",
+          "isCorrect": true,
+          "rationale": "Because the variable $z$ is missing from the equation, the trace in the $xy$-plane (a parabola) is extended infinitely along the $z$-axis."
+        },
+        {
+          "text": "Elliptic Paraboloid",
+          "isCorrect": false,
+          "rationale": "An elliptic paraboloid would require the presence of all three variables, with two of them being squared."
+        },
+        {
+          "text": "Hyperboloid of Two Sheets",
+          "isCorrect": false,
+          "rationale": "This surface requires all three variables to be squared with two negative signs when set to a positive constant."
+        },
+        {
+          "text": "Plane",
+          "isCorrect": false,
+          "rationale": "A plane requires all present variables to be linear, but this equation contains a squared $x$ term."
+        }
+      ],
+      "hint": "Notice which variable is missing from the equation and what the remaining curve looks like.",
+      "section": "11.6"
+    },
+    {
+      "question": "What is the shape of the cross-section of the surface $z = x^2 + y^2$ when intersected by the plane $z = 4$?",
+      "answerOptions": [
+        {
+          "text": "A circle with radius $2$",
+          "isCorrect": true,
+          "rationale": "Substituting $z = 4$ yields $4 = x^2 + y^2$, which is the standard equation for a circle with $r = \\sqrt{4}$."
+        },
+        {
+          "text": "A parabola",
+          "isCorrect": false,
+          "rationale": "Parabolas appear in the vertical cross-sections (where $x$ or $y$ is constant) rather than the horizontal ones for this surface."
+        },
+        {
+          "text": "An ellipse with major axis $4$",
+          "isCorrect": false,
+          "rationale": "While a circle is a special type of ellipse, the equal coefficients of $x$ and $y$ specify a perfectly circular shape."
+        },
+        {
+          "text": "A hyperbola",
+          "isCorrect": false,
+          "rationale": "Hyperbolas require a difference between the squared terms, which is not present here."
+        }
+      ],
+      "hint": "Substitute the constant value into the equation and observe the resulting two-dimensional form.",
+      "section": "11.6"
+    },
+    {
+      "question": "If the curve $x^2 = 2y$ in the $xy$-plane is rotated about the $y$-axis, what is the equation of the resulting surface?",
+      "answerOptions": [
+        {
+          "text": "$x^2 + z^2 = 2y$",
+          "isCorrect": true,
+          "rationale": "Rotating about the $y$-axis replaces the $x^2$ term with $x^2 + z^2$ to maintain radial symmetry around that axis."
+        },
+        {
+          "text": "$x^2 + y^2 = 2z$",
+          "isCorrect": false,
+          "rationale": "This equation would represent a rotation about the $z$-axis of a curve originally in the $xz$-plane."
+        },
+        {
+          "text": "$x^2 - z^2 = 2y$",
+          "isCorrect": false,
+          "rationale": "The subtraction of terms would result in a hyperbolic paraboloid rather than a surface of revolution."
+        },
+        {
+          "text": "$x^2 + y^2 + z^2 = 2$",
+          "isCorrect": false,
+          "rationale": "This is the equation of a sphere, which does not match the parabolic growth of the original curve."
+        }
+      ],
+      "hint": "To rotate around an axis, the distance from that axis must be constant in the equation.",
+      "section": "11.6"
+    },
+    {
+      "question": "Which quadric surface is represented by $2x^2 + 2y^2 = z^2$?",
+      "answerOptions": [
+        {
+          "text": "Circular Cone",
+          "isCorrect": true,
+          "rationale": "This equation matches the form $x^2 + y^2 = cz^2$, which defines a cone opening along the $z$-axis."
+        },
+        {
+          "text": "Hyperboloid of One Sheet",
+          "isCorrect": false,
+          "rationale": "A hyperboloid would require a non-zero constant on one side of the equation."
+        },
+        {
+          "text": "Elliptic Paraboloid",
+          "isCorrect": false,
+          "rationale": "A paraboloid would have a linear $z$ term rather than $z^2$."
+        },
+        {
+          "text": "Ellipsoid",
+          "isCorrect": false,
+          "rationale": "An ellipsoid requires the sum of squared terms to equal a positive constant, not another variable."
+        }
+      ],
+      "hint": "Note that all variables are squared and the equation is homogeneous (set to zero if all terms are on one side).",
+      "section": "11.6"
+    },
+    {
+      "question": "Identify the surface defined by $x^2 + 2x - y^2 + z^2 = 0$.",
+      "answerOptions": [
+        {
+          "text": "Hyperboloid of One Sheet",
+          "isCorrect": true,
+          "rationale": "Completing the square gives $(x+1)^2 - y^2 + z^2 = 1$, which has two positive squares and one negative square."
+        },
+        {
+          "text": "Hyperboloid of Two Sheets",
+          "isCorrect": false,
+          "rationale": "This would require two negative squared terms after completing the square and setting the constant to positive."
+        },
+        {
+          "text": "Elliptic Paraboloid",
+          "isCorrect": false,
+          "rationale": "The presence of three squared terms excludes the possibility of it being a paraboloid."
+        },
+        {
+          "text": "Cone",
+          "isCorrect": false,
+          "rationale": "The constant resulting from completing the square is non-zero, so it cannot be a standard cone."
+        }
+      ],
+      "hint": "Complete the square for the $x$ terms and analyze the signs of the squared variables.",
+      "section": "11.6"
+    },
+    {
+      "question": "What is the domain of the vector-valued function $\\mathbf{r}(t) = \\langle \\sqrt{t+2}, \\ln(4-t), \\frac{1}{t} \\rangle$?",
+      "answerOptions": [
+        {
+          "text": "$(-2, 0) \\cup (0, 4)$",
+          "isCorrect": false,
+          "rationale": "The lower bound for the square root includes $t = -2$, making the interval closed at that end."
+        },
+        {
+          "text": "$[-2, 0) \\cup (0, 4)$",
+          "isCorrect": true,
+          "rationale": "The domain is the intersection of $t \\ge -2$, $t < 4$, and $t \\ne 0$."
+        },
+        {
+          "text": "$[-2, 4]$",
+          "isCorrect": false,
+          "rationale": "This ignores the discontinuity at $t=0$ and the fact that the natural log is undefined for $t=4$."
+        },
+        {
+          "text": "$(-\\infty, 4)$",
+          "isCorrect": false,
+          "rationale": "This fails to account for the restriction imposed by the square root function on negative values below $-2$."
+        }
+      ],
+      "hint": "Find the intersection of the domains of all three individual component functions.",
+      "section": "12.1"
+    },
+    {
+      "question": "Evaluate the limit: $\\lim_{t \\to 0} \\langle \\frac{\\sin(3t)}{t}, e^{2t}, t^2 + 5 \\rangle$.",
+      "answerOptions": [
+        {
+          "text": "$\\langle 1, 1, 5 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This uses the standard limit for $\\sin(t)/t$ but neglects the coefficient in the argument of the sine function."
+        },
+        {
+          "text": "$\\langle 3, 1, 5 \\rangle$",
+          "isCorrect": true,
+          "rationale": "The limit of $\\sin(at)/t$ as $t$ approaches $0$ is $a$, while the other components are evaluated by direct substitution."
+        },
+        {
+          "text": "$\\langle 3, 0, 5 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The exponential function $e^0$ evaluates to $1$, not $0$."
+        },
+        {
+          "text": "The limit does not exist.",
+          "isCorrect": false,
+          "rationale": "All individual component limits exist and are finite, so the vector limit must exist."
+        }
+      ],
+      "hint": "Recall the special trigonometric limit for sine functions as the argument approaches zero.",
+      "section": "12.1"
+    },
+    {
+      "question": "Which vector function represents the intersection of the cylinder $x^2 + y^2 = 16$ and the plane $z = 2x + 3$?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{r}(t) = \\langle 4\\cos t, 4\\sin t, 8\\cos t + 3 \\rangle$",
+          "isCorrect": true,
+          "rationale": "Substituting the circular parameterization of the cylinder into the plane's equation correctly defines the $z$-component."
+        },
+        {
+          "text": "$\\mathbf{r}(t) = \\langle 4\\cos t, 4\\sin t, 4\\cos t + 3 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The coefficient for the $x$-term in the $z$-component calculation was incorrectly kept as $1$ instead of $2$."
+        },
+        {
+          "text": "$\\mathbf{r}(t) = \\langle 16\\cos t, 16\\sin t, 32\\cos t + 3 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This uses the square of the radius for the $x$ and $y$ components instead of the radius itself."
+        },
+        {
+          "text": "$\\mathbf{r}(t) = \\langle \\cos t, \\sin t, 2\\cos t + 3 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This assumes a unit circle for the cylinder's base rather than a circle with radius $4$."
+        }
+      ],
+      "hint": "Parameterize the circular base first, then substitute that into the equation for the plane.",
+      "section": "12.1"
+    },
+    {
+      "question": "Find the unit tangent vector $\\mathbf{T}(t)$ for $\\mathbf{r}(t) = \\langle 3\\cos t, 3\\sin t, 4t \\rangle$.",
+      "answerOptions": [
+        {
+          "text": "$\\langle -\\frac{3}{5}\\sin t, \\frac{3}{5}\\cos t, \\frac{4}{5} \\rangle$",
+          "isCorrect": true,
+          "rationale": "The derivative magnitude is $\\sqrt{(-3\\sin t)^2 + (3\\cos t)^2 + 4^2} = \\sqrt{9+16} = 5$, and dividing the derivative by this magnitude yields the unit vector."
+        },
+        {
+          "text": "$\\langle -3\\sin t, 3\\cos t, 4 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is the tangent vector, but its magnitude is not $1$, so it is not a unit tangent vector."
+        },
+        {
+          "text": "$\\langle -\\sin t, \\cos t, 1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This result ignores the specific coefficients of the original vector function during normalization."
+        },
+        {
+          "text": "$\\langle -\\frac{3}{7}\\sin t, \\frac{3}{7}\\cos t, \\frac{4}{7} \\rangle$",
+          "isCorrect": false,
+          "rationale": "This uses an incorrect sum of components ($3+4=7$) rather than the square root of the sum of the squares to find the magnitude."
+        }
+      ],
+      "hint": "Differentiate the vector function first, then divide that derivative by its own magnitude.",
+      "section": "12.1"
+    },
+    {
+      "question": "Find the indefinite integral $\\int \\langle t^2, e^{-t}, 2t \\rangle dt$.",
+      "answerOptions": [
+        {
+          "text": "$\\langle \\frac{t^3}{3}, -e^{-t}, t^2 \\rangle + \\mathbf{C}$",
+          "isCorrect": true,
+          "rationale": "Integrating each component correctly involves the power rule and the basic exponential integration rule with the chain rule constant."
+        },
+        {
+          "text": "$\\langle \\frac{t^3}{3}, e^{-t}, t^2 \\rangle + C$",
+          "isCorrect": false,
+          "rationale": "The integration constant for a vector function must be a constant vector, not a scalar, and the exponential term is missing a negative sign."
+        },
+        {
+          "text": "$\\langle 2t, -e^{-t}, 2 \\rangle + \\mathbf{C}$",
+          "isCorrect": false,
+          "rationale": "This represents the derivative of the vector function rather than its integral."
+        },
+        {
+          "text": "$\\langle \\frac{t^3}{3}, -e^{t}, t^2 \\rangle + \\mathbf{C}$",
+          "isCorrect": false,
+          "rationale": "The second component incorrectly changes the sign of the exponent during integration."
+        }
+      ],
+      "hint": "Perform the integration component-wise and remember to include a constant vector.",
+      "section": "12.1"
+    },
+    {
+      "question": "Determine the vector equation of the tangent line to $\\mathbf{r}(t) = \\langle t, t^2, t^3 \\rangle$ at the point $(1, 1, 1)$.",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{L}(s) = \\langle 1+s, 1+2s, 1+3s \\rangle$",
+          "isCorrect": true,
+          "rationale": "The point occurs at $t=1$, and the tangent vector $\\mathbf{r}'(1) = \\langle 1, 2, 3 \\rangle$ is used as the direction vector for the line."
+        },
+        {
+          "text": "$\\mathbf{L}(s) = \\langle s, 2s, 3s \\rangle$",
+          "isCorrect": false,
+          "rationale": "This line has the correct direction but passes through the origin instead of the point $(1, 1, 1)$."
+        },
+        {
+          "text": "$\\mathbf{L}(s) = \\langle 1+t, 1+t^2, 1+t^3 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is not a linear equation; it simply shifts the original curve rather than defining a tangent line."
+        },
+        {
+          "text": "$\\mathbf{L}(s) = \\langle 1+s, 2+s, 3+s \\rangle$",
+          "isCorrect": false,
+          "rationale": "This uses the components of the tangent vector as the starting point rather than the direction coefficients."
+        }
+      ],
+      "hint": "Identify the parameter value for the given point and then find the tangent vector at that specific value.",
+      "section": "12.1"
+    },
+    {
+      "question": "For a smooth space curve defined by the vector function $\\mathbf{r}(t) = \\langle f(t), g(t), h(t) \\rangle$, what is the mathematically precise definition of the arc length $L$ from $t = a$ to $t = b$?",
+      "answerOptions": [
+        {
+          "text": "$L = \\int_a^b \\sqrt{[f'(t)]^2 + [g'(t)]^2 + [h'(t)]^2} \\, dt$",
+          "isCorrect": true,
+          "rationale": "This formula represents the integration of the speed (magnitude of the velocity vector) over the specified time interval to find the total distance traveled along the curve."
+        },
+        {
+          "text": "$L = \\int_a^b (f'(t) + g'(t) + h'(t)) \\, dt$",
+          "isCorrect": false,
+          "rationale": "This option incorrectly sums the individual components of the derivative instead of finding the magnitude of the velocity vector."
+        },
+        {
+          "text": "$L = |\\mathbf{r}(b) - \\mathbf{r}(a)|$",
+          "isCorrect": false,
+          "rationale": "This calculates the displacement (straight-line distance) between the start and end points, not the actual path length along a curved trajectory."
+        },
+        {
+          "text": "$L = \\int_a^b [f'(t)]^2 + [g'(t)]^2 + [h'(t)]^2 \\, dt$",
+          "isCorrect": false,
+          "rationale": "This neglects the square root required to find the Euclidean norm (magnitude) of the velocity vector."
+        }
+      ],
+      "hint": "Consider how you would find the magnitude of the velocity vector $\\mathbf{r}'(t)$ before integrating.",
+      "section": "12.2"
+    },
+    {
+      "question": "When reparametrizing a curve with respect to the arc length parameter $s$, what is the resulting magnitude of the derivative $\\left| \\frac{d\\mathbf{r}}{ds} \\right|$?",
+      "answerOptions": [
+        {
+          "text": "$1$",
+          "isCorrect": true,
+          "rationale": "Reparametrizing by arc length ensures the curve is traversed at a constant speed of one unit of distance per unit of parameter."
+        },
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "A derivative of zero would imply the position is constant and the object is not moving, which is not true for a curve."
+        },
+        {
+          "text": "$|\\mathbf{r}'(t)|$",
+          "isCorrect": false,
+          "rationale": "This is the speed with respect to the original parameter $t$, which the arc length parameter $s$ is specifically designed to normalize."
+        },
+        {
+          "text": "$s$",
+          "isCorrect": false,
+          "rationale": "The magnitude of the derivative is a constant speed, not the value of the parameter itself."
+        }
+      ],
+      "hint": "Think about the 'speed' of a curve when the parameter used is the actual distance along the path.",
+      "section": "12.2"
+    },
+    {
+      "question": "Find the unit tangent vector $\\mathbf{T}(t)$ for the line $\\mathbf{r}(t) = \\langle 1 + 3t, 2 - 4t, 5 + 4t \\rangle$.",
+      "answerOptions": [
+        {
+          "text": "$\\langle \\frac{3}{\\sqrt{41}}, -\\frac{4}{\\sqrt{41}}, \\frac{4}{\\sqrt{41}} \\rangle$",
+          "isCorrect": true,
+          "rationale": "The velocity vector is the constant vector $\\langle 3, -4, 4 \\rangle$ with magnitude $\\sqrt{3^2 + (-4)^2 + 4^2} = \\sqrt{9+16+16} = \\sqrt{41}$."
+        },
+        {
+          "text": "$\\langle 3, -4, 4 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is the tangent (velocity) vector, but it has not been normalized to a unit length of 1."
+        },
+        {
+          "text": "$\\langle \\frac{3}{41}, -\\frac{4}{41}, \\frac{4}{41} \\rangle$",
+          "isCorrect": false,
+          "rationale": "This divides by the square of the magnitude ($41$) instead of the magnitude itself ($\\sqrt{41}$)."
+        },
+        {
+          "text": "$\\langle 1, 1, 1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The unit tangent vector must point in the direction of the line's motion, not a generic diagonal direction."
+        }
+      ],
+      "hint": "Differentiate the vector function to find the direction vector of the line and then normalize it.",
+      "section": "12.2"
+    },
+    {
+      "question": "For the circular path $\\mathbf{r}(t) = \\langle 4 \\cos t, 4 \\sin t, 0 \\rangle$, what is the arc length $s$ as a function of $t$ starting from $t=0$?",
+      "answerOptions": [
+        {
+          "text": "$s = 4t$",
+          "isCorrect": true,
+          "rationale": "The speed $|\\mathbf{r}'(t)| = \\sqrt{(-4\\sin t)^2 + (4\\cos t)^2} = \\sqrt{16(\\sin^2 t + \\cos^2 t)} = 4$. Integrating $4$ from $0$ to $t$ yields $4t$."
+        },
+        {
+          "text": "$s = t$",
+          "isCorrect": false,
+          "rationale": "This assumes the radius is 1, neglecting the scaling factor of 4 in the position vector."
+        },
+        {
+          "text": "$s = 4\\pi t$",
+          "isCorrect": false,
+          "rationale": "This incorrectly incorporates $\\pi$ into the relationship between the parameter and arc length."
+        },
+        {
+          "text": "$s = 16t$",
+          "isCorrect": false,
+          "rationale": "This likely comes from failing to take the square root when calculating the magnitude of the velocity vector."
+        }
+      ],
+      "hint": "Calculate the speed of the circle and integrate it over the interval $[0, t]$.",
+      "section": "12.2"
+    },
+    {
+      "question": "What is the unit tangent vector $\\mathbf{T}(t)$ of the curve $\\mathbf{r}(t) = \\langle t, t^2, \\frac{2}{3}t^3 \\rangle$ at $t=1$?",
+      "answerOptions": [
+        {
+          "text": "$\\langle \\frac{1}{3}, \\frac{2}{3}, \\frac{2}{3} \\rangle$",
+          "isCorrect": true,
+          "rationale": "The derivative is $\\mathbf{r}'(t) = \\langle 1, 2t, 2t^2 \\rangle$. At $t=1$, $\\mathbf{r}'(1) = \\langle 1, 2, 2 \\rangle$. The magnitude is $\\sqrt{1^2 + 2^2 + 2^2} = \\sqrt{9} = 3$."
+        },
+        {
+          "text": "$\\langle 1, 2, 2 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is the tangent vector at $t=1$, but it is not a unit vector."
+        },
+        {
+          "text": "$\\langle \\frac{1}{\\sqrt{3}}, \\frac{1}{\\sqrt{3}}, \\frac{1}{\\sqrt{3}} \\rangle$",
+          "isCorrect": false,
+          "rationale": "This assumes all components contribute equally to the unit vector's magnitude, which is incorrect for this curve."
+        },
+        {
+          "text": "$\\langle 1, 1, \\frac{2}{3} \\rangle$",
+          "isCorrect": false,
+          "rationale": "This mistakenly uses the values of the position vector $\\mathbf{r}(1)$ instead of the derivative $\\mathbf{r}'(1)$."
+        }
+      ],
+      "hint": "Differentiate the position vector, evaluate it at $t=1$, and then divide by its magnitude.",
+      "section": "12.2"
+    },
+    {
+      "question": "Given the curve $\\mathbf{r}(t) = \\langle a \\cos(\\omega t), a \\sin(\\omega t), bt \\rangle$, what is the speed of the particle?",
+      "answerOptions": [
+        {
+          "text": "$\\sqrt{a^2 \\omega^2 + b^2}$",
+          "isCorrect": true,
+          "rationale": "The derivative is $\\langle -a \\omega \\sin(\\omega t), a \\omega \\cos(\\omega t), b \\rangle$. Squaring and summing gives $a^2 \\omega^2 (\\sin^2(\\omega t) + \\cos^2(\\omega t)) + b^2 = a^2 \\omega^2 + b^2$."
+        },
+        {
+          "text": "$a \\omega + b$",
+          "isCorrect": false,
+          "rationale": "This ignores the Pythagorean theorem required for vector magnitude, simply adding the coefficients of the components."
+        },
+        {
+          "text": "$\\sqrt{a^2 + b^2}$",
+          "isCorrect": false,
+          "rationale": "This error occurs if one forgets to apply the chain rule to the $\\omega t$ term inside the trigonometric functions."
+        },
+        {
+          "text": "$\\omega \\sqrt{a^2 + b^2}$",
+          "isCorrect": false,
+          "rationale": "This incorrectly assumes that the $\\omega$ factor applies to the vertical $z$ component as well."
+        }
+      ],
+      "hint": "Differentiate each component (remembering the chain rule for the trigonometric parts) and find the magnitude.",
+      "section": "12.2"
+    },
+    {
+      "question": "Which vector in the Frenet-Serret frame is defined as the cross product $\\mathbf{B}(t) = \\mathbf{T}(t) \\times \\mathbf{N}(t)$?",
+      "answerOptions": [
+        {
+          "text": "The Unit Binormal Vector",
+          "isCorrect": true,
+          "rationale": "By definition, the binormal vector completes the right-handed orthonormal triad by taking the cross product of the tangent and normal vectors."
+        },
+        {
+          "text": "The Unit Tangent Vector",
+          "isCorrect": false,
+          "rationale": "The unit tangent vector is typically defined as the normalized derivative of the position vector, not as a cross product of the other frame vectors."
+        },
+        {
+          "text": "The Principal Normal Vector",
+          "isCorrect": false,
+          "rationale": "The principal normal vector is defined by the normalization of the derivative of the unit tangent vector."
+        },
+        {
+          "text": "The Velocity Vector",
+          "isCorrect": false,
+          "rationale": "The velocity vector is the derivative of the position vector and is not necessarily a unit vector."
+        }
+      ],
+      "hint": "Consider which vector completes the orthogonal triad in a right-handed system.",
+      "section": "12.3"
+    },
+    {
+      "question": "What is the curvature $\\kappa$ of a straight line?",
+      "answerOptions": [
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "A curvature of 1 would imply a circle with a radius of 1, whereas a line has no bend."
+        },
+        {
+          "text": "$\\infty$",
+          "isCorrect": false,
+          "rationale": "Infinite curvature would imply an infinitely sharp turn, which is the opposite of a straight path."
+        },
+        {
+          "text": "$0$",
+          "isCorrect": true,
+          "rationale": "Curvature measures how sharply a curve bends; since a straight line does not bend, its unit tangent vector is constant and its derivative is zero."
+        },
+        {
+          "text": "It depends on the slope of the line.",
+          "isCorrect": false,
+          "rationale": "Regardless of the orientation or slope, a line remains straight and thus has no change in the direction of its tangent vector."
+        }
+      ],
+      "hint": "Recall how much the direction of the tangent vector changes as you move along a straight path.",
+      "section": "12.3"
+    },
+    {
+      "question": "The osculating plane at a point on a curve is spanned by which two vectors?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{N}(t)$ and $\\mathbf{B}(t)$",
+          "isCorrect": false,
+          "rationale": "This pair of vectors spans the normal plane, which is perpendicular to the direction of motion."
+        },
+        {
+          "text": "$\\mathbf{T}(t)$ and $\\mathbf{N}(t)$",
+          "isCorrect": true,
+          "rationale": "The osculating plane contains the tangent and normal vectors, providing the best local planar approximation of the curve."
+        },
+        {
+          "text": "$\\mathbf{T}(t)$ and $\\mathbf{B}(t)$",
+          "isCorrect": false,
+          "rationale": "This pair of vectors defines the rectifying plane, not the osculating plane."
+        },
+        {
+          "text": "$\\mathbf{r}'(t)$ and $\\mathbf{r}'''(t)$",
+          "isCorrect": false,
+          "rationale": "The osculating plane is defined by the first two derivatives' directions, but the standard spanning set uses the unit tangent and normal vectors."
+        }
+      ],
+      "hint": "Think of the plane that 'kisses' the curve and contains the direction of turning.",
+      "section": "12.3"
+    },
+    {
+      "question": "For a curve lying entirely within a single plane, what can be concluded about its torsion function $\\tau$?",
+      "answerOptions": [
+        {
+          "text": "$\\tau$ is always positive.",
+          "isCorrect": false,
+          "rationale": "Torsion measures the twist out of a plane; a planar curve has no such twist, regardless of the sign."
+        },
+        {
+          "text": "$\\tau$ is identically zero.",
+          "isCorrect": true,
+          "rationale": "Torsion measures how much a curve twists out of its osculating plane; if the curve is planar, the binormal vector is constant, making its derivative zero."
+        },
+        {
+          "text": "$\\tau$ is equal to the curvature $\\kappa$.",
+          "isCorrect": false,
+          "rationale": "Curvature and torsion are independent properties; one measures bending and the other measures twisting."
+        },
+        {
+          "text": "$\\tau$ is constant but non-zero.",
+          "isCorrect": false,
+          "rationale": "A non-zero torsion would imply the curve is leaving its current plane of motion, which contradicts it being a planar curve."
+        }
+      ],
+      "hint": "Torsion measures the degree of 'twisting' out of the current plane.",
+      "section": "12.3"
+    },
+    {
+      "question": "What is the radius of the osculating circle for a curve at a point where the curvature is $\\kappa$?",
+      "answerOptions": [
+        {
+          "text": "$\\kappa$",
+          "isCorrect": false,
+          "rationale": "Curvature is the reciprocal of the radius, so $\\kappa$ represents the sharpness, not the distance to the center."
+        },
+        {
+          "text": "$1/\\kappa$",
+          "isCorrect": true,
+          "rationale": "The radius of curvature is defined as the reciprocal of the curvature, representing the radius of the circle that best fits the curve at that point."
+        },
+        {
+          "text": "$\\kappa^2$",
+          "isCorrect": false,
+          "rationale": "The relationship between radius and curvature is linear and inverse, not quadratic."
+        },
+        {
+          "text": "$2\\pi / \\kappa$",
+          "isCorrect": false,
+          "rationale": "This expression incorrectly incorporates the circumference formula into the definition of the radius of curvature."
+        }
+      ],
+      "hint": "Recall the relationship found when calculating the curvature of a circle of radius $a$.",
+      "section": "12.3"
+    },
+    {
+      "question": "If $\\mathbf{T}(t)$ and $\\mathbf{r}'(t)$ are known, how is $\\mathbf{N}(t)$ calculated?",
+      "answerOptions": [
+        {
+          "text": "By normalizing $\\mathbf{T}'(t)$",
+          "isCorrect": true,
+          "rationale": "The unit normal vector is defined as the unit vector in the direction of the derivative of the unit tangent vector."
+        },
+        {
+          "text": "By taking $\\mathbf{r}'(t) \\times \\mathbf{r}''(t)$",
+          "isCorrect": false,
+          "rationale": "This cross product results in a vector parallel to the binormal vector, not the normal vector."
+        },
+        {
+          "text": "By normalizing $\\mathbf{r}''(t)$",
+          "isCorrect": false,
+          "rationale": "The second derivative of position is not necessarily in the same direction as the derivative of the unit tangent vector unless speed is constant."
+        },
+        {
+          "text": "By calculating $\\mathbf{B}(t) \\times \\mathbf{T}(t)$",
+          "isCorrect": false,
+          "rationale": "While this yields the correct direction in a right-handed system, the standard definition is based on the change of the tangent vector."
+        }
+      ],
+      "hint": "Think about the definition of the normal vector as it relates to the rate of change of direction.",
+      "section": "12.3"
+    }
+  ],
+  "questionCount": 54,
+  "exportedAt": "2026-09-16T11:16:09",
+  "source": "Curated from 303/quiz_source, six questions per section"
+}

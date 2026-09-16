@@ -1,0 +1,738 @@
+{
+  "title": "MATH 303 — §11.1 Three-Dimensional Cartesian Space",
+  "section": "11.1",
+  "questions": [
+    {
+      "question": "In a right-handed coordinate system, if you curl the fingers of your right hand from the positive $y$-axis toward the positive $z$-axis, in which direction does your thumb point?",
+      "answerOptions": [
+        {
+          "text": "The positive $x$-axis",
+          "isCorrect": true,
+          "rationale": "Following the cyclic order of the right-hand rule, moving from $y$ to $z$ results in the thumb pointing toward the positive $x$ direction."
+        },
+        {
+          "text": "The negative $x$-axis",
+          "isCorrect": false,
+          "rationale": "This would occur if the coordinate system were left-handed or if the rotation was from $z$ to $y$."
+        },
+        {
+          "text": "The positive $y$-axis",
+          "isCorrect": false,
+          "rationale": "The resulting direction must be orthogonal to both the $y$ and $z$ axes."
+        },
+        {
+          "text": "The origin",
+          "isCorrect": false,
+          "rationale": "The right-hand rule determines a directional vector along an axis, not a single point like the origin."
+        }
+      ],
+      "hint": "Consider the cyclic nature of the axes $x \\to y \\to z \\to x$.",
+      "section": "11.1"
+    },
+    {
+      "question": "What is the distance between a point $P(x, y, z)$ and the $z$-axis in $\\mathbb{R}^3$?",
+      "answerOptions": [
+        {
+          "text": "$\\sqrt{x^2 + y^2}$",
+          "isCorrect": true,
+          "rationale": "The distance to an axis is the length of the segment perpendicular to that axis; for the $z$-axis, the $z$-coordinate remains constant while the horizontal distance is calculated using $x$ and $y$."
+        },
+        {
+          "text": "$|z|$",
+          "isCorrect": false,
+          "rationale": "This represents the distance from the point to the $xy$-plane, not the $z$-axis."
+        },
+        {
+          "text": "$\\sqrt{x^2 + y^2 + z^2}$",
+          "isCorrect": false,
+          "rationale": "This is the formula for the distance from the point to the origin $(0,0,0)$."
+        },
+        {
+          "text": "$\\sqrt{y^2 + z^2}$",
+          "isCorrect": false,
+          "rationale": "This represents the distance from the point to the $x$-axis."
+        }
+      ],
+      "hint": "Think about the coordinates of the point on the $z$-axis that is closest to $(x, y, z)$.",
+      "section": "11.1"
+    },
+    {
+      "question": "Which set of conditions describes the intersection of the sphere $(x-1)^2 + (y+2)^2 + (z-3)^2 = 25$ with the $xz$-plane?",
+      "answerOptions": [
+        {
+          "text": "$(x-1)^2 + (z-3)^2 = 21$ and $y=0$",
+          "isCorrect": true,
+          "rationale": "In the $xz$-plane, $y=0$; substituting this into the sphere equation gives $(x-1)^2 + (0+2)^2 + (z-3)^2 = 25$, which simplifies to $(x-1)^2 + (z-3)^2 = 21$."
+        },
+        {
+          "text": "$(x-1)^2 + (z-3)^2 = 25$ and $y=0$",
+          "isCorrect": false,
+          "rationale": "This fails to account for the constant $y$-term squared that must be subtracted from the radius squared."
+        },
+        {
+          "text": "$(x-1)^2 + (y+2)^2 = 16$ and $z=0$",
+          "isCorrect": false,
+          "rationale": "This describes the intersection with the $xy$-plane, not the $xz$-plane."
+        },
+        {
+          "text": "$x=1$ and $z=3$ and $y=0$",
+          "isCorrect": false,
+          "rationale": "This describes a single point, but the intersection of a sphere and a plane is generally a circle."
+        }
+      ],
+      "hint": "Recall the equation of the $xz$-plane and substitute that value into the sphere's equation.",
+      "section": "11.1"
+    },
+    {
+      "question": "A sphere is centered at $(3, 8, 1)$ and is tangent to the $xy$-plane. What is the equation of this sphere?",
+      "answerOptions": [
+        {
+          "text": "$(x-3)^2 + (y-8)^2 + (z-1)^2 = 1$",
+          "isCorrect": true,
+          "rationale": "If a sphere is tangent to the $xy$-plane ($z=0$), its radius must equal the absolute value of the $z$-coordinate of its center, which is $|1|=1$."
+        },
+        {
+          "text": "$(x-3)^2 + (y-8)^2 + (z-1)^2 = 9$",
+          "isCorrect": false,
+          "rationale": "This uses the $x$-coordinate for the radius, which would make the sphere tangent to the $yz$-plane."
+        },
+        {
+          "text": "$(x-3)^2 + (y-8)^2 + (z-1)^2 = 64$",
+          "isCorrect": false,
+          "rationale": "This uses the $y$-coordinate for the radius, which would make the sphere tangent to the $xz$-plane."
+        },
+        {
+          "text": "$(x-3)^2 + (y-8)^2 + (z-1)^2 = 0$",
+          "isCorrect": false,
+          "rationale": "A radius of zero defines a single point rather than a sphere."
+        }
+      ],
+      "hint": "Tangency to a plane means the distance from the center to that plane is exactly the radius.",
+      "section": "11.1"
+    },
+    {
+      "question": "Describe the geometric object in $\\mathbb{R}^3$ defined by the simultaneous equations $x^2 + y^2 = 4$ and $z = 5$.",
+      "answerOptions": [
+        {
+          "text": "A circle in the plane $z=5$",
+          "isCorrect": true,
+          "rationale": "The first equation defines a cylinder, and the second restricts it to a specific horizontal plane, resulting in a circle centered at $(0,0,5)$."
+        },
+        {
+          "text": "A circular cylinder of radius 2",
+          "isCorrect": false,
+          "rationale": "A cylinder would require $z$ to be unconstrained, but here $z$ is fixed at 5."
+        },
+        {
+          "text": "A sphere centered at $(0,0,5)$ with radius 2",
+          "isCorrect": false,
+          "rationale": "A sphere equation would involve $z$ in the squared terms, such as $(z-5)^2$."
+        },
+        {
+          "text": "A line parallel to the $z$-axis",
+          "isCorrect": false,
+          "rationale": "A line is formed by the intersection of two planes or a point and a direction, not a circle equation and a plane."
+        }
+      ],
+      "hint": "Consider how the restriction on $z$ affects the 'extrusion' of the 2D curve.",
+      "section": "11.1"
+    },
+    {
+      "question": "What is the reflection of the point $(2, -3, 4)$ across the $xz$-plane?",
+      "answerOptions": [
+        {
+          "text": "$(2, 3, 4)$",
+          "isCorrect": true,
+          "rationale": "Reflecting across the $xz$-plane ($y=0$) changes the sign of the $y$-coordinate while leaving $x$ and $z$ unchanged."
+        },
+        {
+          "text": "$(-2, -3, 4)$",
+          "isCorrect": false,
+          "rationale": "This is a reflection across the $yz$-plane, where the $x$-coordinate changes sign."
+        },
+        {
+          "text": "$(2, -3, -4)$",
+          "isCorrect": false,
+          "rationale": "This is a reflection across the $xy$-plane, where the $z$-coordinate changes sign."
+        },
+        {
+          "text": "$(-2, 3, -4)$",
+          "isCorrect": false,
+          "rationale": "This represents a reflection through the origin rather than across a specific plane."
+        }
+      ],
+      "hint": "In the $xz$-plane, the value of $y$ is zero. Reflection involves moving the same distance to the opposite side of that plane.",
+      "section": "11.1"
+    },
+    {
+      "question": "Which of the following equations represents a plane that is parallel to the $yz$-plane and passes through the point $(7, -2, 5)$?",
+      "answerOptions": [
+        {
+          "text": "$x = 7$",
+          "isCorrect": true,
+          "rationale": "A plane parallel to the $yz$-plane must have a constant $x$ value for all its points."
+        },
+        {
+          "text": "$y = -2$",
+          "isCorrect": false,
+          "rationale": "This represents a plane parallel to the $xz$-plane."
+        },
+        {
+          "text": "$z = 5$",
+          "isCorrect": false,
+          "rationale": "This represents a plane parallel to the $xy$-plane."
+        },
+        {
+          "text": "$x + y + z = 10$",
+          "isCorrect": false,
+          "rationale": "This represents a tilted plane that is not parallel to any coordinate plane."
+        }
+      ],
+      "hint": "Identify which variable must be held constant to remain equidistant from the $yz$-plane.",
+      "section": "11.1"
+    },
+    {
+      "question": "Determine the distance between the points $P_1(1, 2, 3)$ and $P_2(3, -1, 9)$.",
+      "answerOptions": [
+        {
+          "text": "7",
+          "isCorrect": true,
+          "rationale": "Applying the distance formula: $\\sqrt{(3-1)^2 + (-1-2)^2 + (9-3)^2} = \\sqrt{2^2 + (-3)^2 + 6^2} = \\sqrt{4+9+36} = \\sqrt{49} = 7$."
+        },
+        {
+          "text": "$\\sqrt{11}$",
+          "isCorrect": false,
+          "rationale": "This error occurs if one adds the differences before squaring them or uses incorrect coordinates."
+        },
+        {
+          "text": "$\\sqrt{53}$",
+          "isCorrect": false,
+          "rationale": "This might result from a calculation error in squaring the differences, such as treating $(-3)^2$ as $-9$."
+        },
+        {
+          "text": "49",
+          "isCorrect": false,
+          "rationale": "This is the square of the distance, forgetting to take the square root at the final step."
+        }
+      ],
+      "hint": "Use the 3D extension of the Pythagorean theorem.",
+      "section": "11.1"
+    },
+    {
+      "question": "In which octant do all three coordinates $(x, y, z)$ have negative values?",
+      "answerOptions": [
+        {
+          "text": "There is no standard numerical naming for octants other than the first, but it is one of the eight regions.",
+          "isCorrect": true,
+          "rationale": "While the first octant ($x,y,z \\ge 0$) is standard, the other seven are typically described by the signs of their coordinates rather than universally accepted numbers 2-8."
+        },
+        {
+          "text": "The third octant",
+          "isCorrect": false,
+          "rationale": "In 2D, the third quadrant is $(-,-)$, but octant numbering is not standardized beyond the first."
+        },
+        {
+          "text": "The eighth octant",
+          "isCorrect": false,
+          "rationale": "Although some conventions might label it this way, the source material only specifically defines the first octant."
+        },
+        {
+          "text": "The fourth octant",
+          "isCorrect": false,
+          "rationale": "Octant numbering is generally not covered beyond the definition of the first octant in introductory multivariable calculus."
+        }
+      ],
+      "hint": "The source material mentions that there are eight regions but only specifically names the first.",
+      "section": "11.1"
+    },
+    {
+      "question": "What is the projection of the point $(3, -4, 5)$ onto the $y$-axis?",
+      "answerOptions": [
+        {
+          "text": "$(0, -4, 0)$",
+          "isCorrect": true,
+          "rationale": "Projecting onto an axis means setting all coordinates except the one corresponding to that axis to zero."
+        },
+        {
+          "text": "$(3, 0, 5)$",
+          "isCorrect": false,
+          "rationale": "This is the projection onto the $xz$-plane, not the $y$-axis."
+        },
+        {
+          "text": "$(0, 0, 5)$",
+          "isCorrect": false,
+          "rationale": "This is the projection onto the $z$-axis."
+        },
+        {
+          "text": "$(3, -4, 0)$",
+          "isCorrect": false,
+          "rationale": "This is the projection onto the $xy$-plane."
+        }
+      ],
+      "hint": "On the $y$-axis, what must the values of $x$ and $z$ be?",
+      "section": "11.1"
+    },
+    {
+      "question": "Which equation represents a cylinder in $\\mathbb{R}^3$ whose cross-sections parallel to the $xz$-plane are circles?",
+      "answerOptions": [
+        {
+          "text": "$x^2 + z^2 = r^2$",
+          "isCorrect": true,
+          "rationale": "The absence of the $y$ variable allows the circular curve in the $xz$-plane to be extruded along the $y$-axis."
+        },
+        {
+          "text": "$x^2 + y^2 = r^2$",
+          "isCorrect": false,
+          "rationale": "This cylinder's cross-sections parallel to the $xy$-plane are circles; it extrudes along the $z$-axis."
+        },
+        {
+          "text": "$y^2 + z^2 = r^2$",
+          "isCorrect": false,
+          "rationale": "This cylinder's cross-sections parallel to the $yz$-plane are circles; it extrudes along the $x$-axis."
+        },
+        {
+          "text": "$x^2 + y^2 + z^2 = r^2$",
+          "isCorrect": false,
+          "rationale": "This equation represents a sphere, not a cylinder."
+        }
+      ],
+      "hint": "Identify which variable should be 'missing' and which two should form a circular relation.",
+      "section": "11.1"
+    },
+    {
+      "question": "A point $P$ is moved 3 units in the negative $x$ direction, 2 units in the positive $y$ direction, and 5 units in the negative $z$ direction from the origin. What are its coordinates?",
+      "answerOptions": [
+        {
+          "text": "$(-3, 2, -5)$",
+          "isCorrect": true,
+          "rationale": "Starting at $(0,0,0)$, the changes in position directly correspond to the values of the ordered triple $(x, y, z)$."
+        },
+        {
+          "text": "$(3, -2, 5)$",
+          "isCorrect": false,
+          "rationale": "This reverses the directions specified in the prompt."
+        },
+        {
+          "text": "$(-3, -2, -5)$",
+          "isCorrect": false,
+          "rationale": "This incorrectly assigns a negative direction to the $y$ movement."
+        },
+        {
+          "text": "$(3, 2, 5)$",
+          "isCorrect": false,
+          "rationale": "This assumes all movements are in the positive direction."
+        }
+      ],
+      "hint": "Assign the signs based on the direction relative to the positive axes.",
+      "section": "11.1"
+    },
+    {
+      "question": "What is the equation of the $xz$-plane?",
+      "answerOptions": [
+        {
+          "text": "$y = 0$",
+          "isCorrect": true,
+          "rationale": "The $xz$-plane consists of all points where the $y$-coordinate is zero, allowing $x$ and $z$ to vary freely."
+        },
+        {
+          "text": "$x = 0$",
+          "isCorrect": false,
+          "rationale": "This is the equation of the $yz$-plane."
+        },
+        {
+          "text": "$z = 0$",
+          "isCorrect": false,
+          "rationale": "This is the equation of the $xy$-plane."
+        },
+        {
+          "text": "$x + z = 0$",
+          "isCorrect": false,
+          "rationale": "This represents a plane containing the $y$-axis but tilted 45 degrees relative to the $x$ and $z$ axes."
+        }
+      ],
+      "hint": "Consider which coordinate is always zero for any point sitting on the plane formed by the $x$ and $z$ axes.",
+      "section": "11.1"
+    },
+    {
+      "question": "The equation $x^2 + y^2 + z^2 - 4x + 6y = 3$ represents a sphere. What is its radius?",
+      "answerOptions": [
+        {
+          "text": "4",
+          "isCorrect": true,
+          "rationale": "Completing the square: $(x-2)^2 + (y+3)^2 + z^2 = 3 + 4 + 9 = 16$. The radius is $\\sqrt{16} = 4$."
+        },
+        {
+          "text": "$\\sqrt{3}$",
+          "isCorrect": false,
+          "rationale": "This assumes the constant on the right is $r^2$ without completing the square on the left."
+        },
+        {
+          "text": "16",
+          "isCorrect": false,
+          "rationale": "This is the value of $r^2$ after completing the square, not the radius itself."
+        },
+        {
+          "text": "2",
+          "isCorrect": false,
+          "rationale": "This might come from an error in completing the square or taking the square root twice."
+        }
+      ],
+      "hint": "You must complete the square for the $x$ and $y$ terms to put the equation in standard form.",
+      "section": "11.1"
+    },
+    {
+      "question": "Which of the following describes the region in $\\mathbb{R}^3$ where $x^2 + y^2 + z^2 > 1$?",
+      "answerOptions": [
+        {
+          "text": "The set of all points outside a sphere of radius 1 centered at the origin.",
+          "isCorrect": true,
+          "rationale": "The expression $x^2 + y^2 + z^2$ represents the square of the distance from the origin; being greater than 1 means the distance is greater than 1."
+        },
+        {
+          "text": "The set of all points inside a sphere of radius 1 centered at the origin.",
+          "isCorrect": false,
+          "rationale": "This would be represented by the inequality $x^2 + y^2 + z^2 < 1$."
+        },
+        {
+          "text": "A solid ball of radius 1.",
+          "isCorrect": false,
+          "rationale": "A solid ball includes the boundary and the interior, represented by $\\le 1$."
+        },
+        {
+          "text": "The surface of a sphere with radius 1.",
+          "isCorrect": false,
+          "rationale": "The surface is defined by the equality $x^2 + y^2 + z^2 = 1$."
+        }
+      ],
+      "hint": "Relate the algebraic expression to the definition of distance from the origin.",
+      "section": "11.1"
+    },
+    {
+      "question": "If a point is in the first octant and is 4 units from the $xy$-plane, 3 units from the $xz$-plane, and 2 units from the $yz$-plane, what are its coordinates?",
+      "answerOptions": [
+        {
+          "text": "$(2, 3, 4)$",
+          "isCorrect": true,
+          "rationale": "The distance from the $yz$-plane is $x$, the distance from the $xz$-plane is $y$, and the distance from the $xy$-plane is $z$."
+        },
+        {
+          "text": "$(4, 3, 2)$",
+          "isCorrect": false,
+          "rationale": "This incorrectly maps the distance to the $xy$-plane to the $x$-coordinate."
+        },
+        {
+          "text": "$(3, 4, 2)$",
+          "isCorrect": false,
+          "rationale": "This misidentifies which coordinate corresponds to each plane distance."
+        },
+        {
+          "text": "$(2, 4, 3)$",
+          "isCorrect": false,
+          "rationale": "This swaps the $y$ and $z$ coordinates relative to their respective planes."
+        }
+      ],
+      "hint": "Recall that the distance of $(x, y, z)$ to the plane $x=0$ is the value of the $x$ coordinate.",
+      "section": "11.1"
+    },
+    {
+      "question": "How many coordinate planes are there in the three-dimensional Cartesian system?",
+      "answerOptions": [
+        {
+          "text": "3",
+          "isCorrect": true,
+          "rationale": "There are three principal coordinate planes defined by the pairs of axes: $xy$, $yz$, and $xz$."
+        },
+        {
+          "text": "8",
+          "isCorrect": false,
+          "rationale": "This is the number of octants created by the intersection of the planes, not the number of planes themselves."
+        },
+        {
+          "text": "6",
+          "isCorrect": false,
+          "rationale": "One might think of the faces of a cube, but there are only three fundamental infinite planes defined by the axes."
+        },
+        {
+          "text": "Infinite",
+          "isCorrect": false,
+          "rationale": "While there are infinite planes in 3D space, there are only three standard *coordinate* planes."
+        }
+      ],
+      "hint": "Think about the unique pairings of the three axes $x$, $y$, and $z$.",
+      "section": "11.1"
+    },
+    {
+      "question": "Identify the shape defined by the equation $z = y^2$ in $\\mathbb{R}^3$.",
+      "answerOptions": [
+        {
+          "text": "A parabolic cylinder",
+          "isCorrect": true,
+          "rationale": "Since $x$ is missing, the parabola $z=y^2$ in the $yz$-plane is extruded along the $x$-axis."
+        },
+        {
+          "text": "A parabola",
+          "isCorrect": false,
+          "rationale": "A parabola is a 2D curve; in 3D space, this equation defines a surface."
+        },
+        {
+          "text": "A circular cylinder",
+          "isCorrect": false,
+          "rationale": "A circular cylinder requires a sum of squares of two variables, such as $x^2 + y^2 = r^2$."
+        },
+        {
+          "text": "A plane",
+          "isCorrect": false,
+          "rationale": "A plane is defined by linear equations like $ax + by + cz = d$."
+        }
+      ],
+      "hint": "Consider the shape in 2D and then 'extrude' it along the missing variable's axis.",
+      "section": "11.1"
+    },
+    {
+      "question": "What is the intersection of the two planes $x=2$ and $y=3$?",
+      "answerOptions": [
+        {
+          "text": "A line parallel to the $z$-axis",
+          "isCorrect": true,
+          "rationale": "The intersection fixes $x$ and $y$, leaving $z$ free to take any value, which describes a vertical line."
+        },
+        {
+          "text": "A point $(2, 3, 0)$",
+          "isCorrect": false,
+          "rationale": "This is only one point on the line of intersection, which exists for all values of $z$."
+        },
+        {
+          "text": "A plane parallel to the $xy$-plane",
+          "isCorrect": false,
+          "rationale": "Two non-parallel planes intersect in a line, not another plane."
+        },
+        {
+          "text": "The origin",
+          "isCorrect": false,
+          "rationale": "The origin $(0,0,0)$ does not satisfy either equation $x=2$ or $y=3$."
+        }
+      ],
+      "hint": "If two variables are fixed, which variable remains free to change?",
+      "section": "11.1"
+    },
+    {
+      "question": "Which of the following points is equidistant from the $xy$-plane and the $yz$-plane?",
+      "answerOptions": [
+        {
+          "text": "$(5, 2, 5)$",
+          "isCorrect": true,
+          "rationale": "The distance to the $xy$-plane is $|z|=5$ and the distance to the $yz$-plane is $|x|=5$. Since $5=5$, it is equidistant."
+        },
+        {
+          "text": "$(5, 5, 2)$",
+          "isCorrect": false,
+          "rationale": "The distance to the $xy$-plane is 2 and the $yz$-plane is 5; these are not equal."
+        },
+        {
+          "text": "$(2, 5, 5)$",
+          "isCorrect": false,
+          "rationale": "The distance to the $xy$-plane is 5 and the $yz$-plane is 2; these are not equal."
+        },
+        {
+          "text": "$(0, 5, 0)$",
+          "isCorrect": false,
+          "rationale": "The distance to both planes is 0, but this point lies on the axis rather than being a generic example of equidistance in 3D space."
+        }
+      ],
+      "hint": "Check if the absolute value of the $x$ coordinate equals the absolute value of the $z$ coordinate.",
+      "section": "11.1"
+    },
+    {
+      "question": "What is the standard equation of a sphere with center $(a, b, c)$ and radius $r$?",
+      "answerOptions": [
+        {
+          "text": "$(x-a)^2 + (y-b)^2 + (z-c)^2 = r^2$",
+          "isCorrect": true,
+          "rationale": "This is derived from the distance formula, representing all points $(x,y,z)$ at a fixed distance $r$ from $(a,b,c)$."
+        },
+        {
+          "text": "$(x+a)^2 + (y+b)^2 + (z+c)^2 = r^2$",
+          "isCorrect": false,
+          "rationale": "This would represent a sphere centered at $(-a, -b, -c)$."
+        },
+        {
+          "text": "$(x-a) + (y-b) + (z-c) = r$",
+          "isCorrect": false,
+          "rationale": "This is a linear equation representing a plane, not a sphere."
+        },
+        {
+          "text": "$(x-a)^2 + (y-b)^2 + (z-c)^2 = r$",
+          "isCorrect": false,
+          "rationale": "The right side must be the square of the radius according to the distance formula derivation."
+        }
+      ],
+      "hint": "The formula is a direct result of squaring the 3D distance formula.",
+      "section": "11.1"
+    },
+    {
+      "question": "The region described by $x=0, y \\ge 0, z \\ge 0$ corresponds to which geometric object?",
+      "answerOptions": [
+        {
+          "text": "The first quadrant of the $yz$-plane",
+          "isCorrect": true,
+          "rationale": "Setting $x=0$ places the points in the $yz$-plane, and the non-negative constraints on $y$ and $z$ define the first quadrant of that plane."
+        },
+        {
+          "text": "The first octant of $\\mathbb{R}^3$",
+          "isCorrect": false,
+          "rationale": "The first octant requires $x \\ge 0$, but here $x$ is specifically fixed at 0."
+        },
+        {
+          "text": "A line along the $y$-axis",
+          "isCorrect": false,
+          "rationale": "A line would require $z$ to be fixed as well, but here $z$ can be any non-negative value."
+        },
+        {
+          "text": "The entire $yz$-plane",
+          "isCorrect": false,
+          "rationale": "The entire plane would allow $y$ and $z$ to be negative."
+        }
+      ],
+      "hint": "Identify the plane first, then look at the restrictions on the remaining variables.",
+      "section": "11.1"
+    },
+    {
+      "question": "If a sphere has the equation $x^2 + y^2 + z^2 = 9$ and it is shifted 2 units along the positive $x$-axis, what is the new equation?",
+      "answerOptions": [
+        {
+          "text": "$(x-2)^2 + y^2 + z^2 = 9$",
+          "isCorrect": true,
+          "rationale": "Shifting a graph in the positive direction along an axis involves replacing the variable with (variable - shift)."
+        },
+        {
+          "text": "$(x+2)^2 + y^2 + z^2 = 9$",
+          "isCorrect": false,
+          "rationale": "This would represent a shift 2 units in the negative $x$ direction."
+        },
+        {
+          "text": "$x^2 + y^2 + z^2 = 11$",
+          "isCorrect": false,
+          "rationale": "This changes the radius of the sphere rather than its position."
+        },
+        {
+          "text": "$x^2 + y^2 + z^2 - 2 = 9$",
+          "isCorrect": false,
+          "rationale": "Shifts must occur inside the squared term associated with the axis of movement."
+        }
+      ],
+      "hint": "Recall how function transformations work for shifting coordinates.",
+      "section": "11.1"
+    },
+    {
+      "question": "What geometric feature do the points $(1, 0, 0)$, $(0, 1, 0)$, and $(0, 0, 1)$ share?",
+      "answerOptions": [
+        {
+          "text": "They are all exactly 1 unit from the origin.",
+          "isCorrect": true,
+          "rationale": "Using the distance formula from $(0,0,0)$, each point results in $\\sqrt{1^2+0^2+0^2} = 1$."
+        },
+        {
+          "text": "They all lie in the $xy$-plane.",
+          "isCorrect": false,
+          "rationale": "The point $(0, 0, 1)$ lies on the $z$-axis and has a non-zero $z$ coordinate, so it is not in the $xy$-plane."
+        },
+        {
+          "text": "They all lie on the same line.",
+          "isCorrect": false,
+          "rationale": "These three points are on three different mutually perpendicular axes."
+        },
+        {
+          "text": "They all have a $z$-coordinate of 1.",
+          "isCorrect": false,
+          "rationale": "Only the third point has a $z$-coordinate of 1; the others have 0."
+        }
+      ],
+      "hint": "Calculate the distance of each point from $(0, 0, 0)$.",
+      "section": "11.1"
+    },
+    {
+      "question": "A cylinder is defined by $y^2 + z^2 = 16$. Along which axis is this cylinder oriented?",
+      "answerOptions": [
+        {
+          "text": "The $x$-axis",
+          "isCorrect": true,
+          "rationale": "The missing variable $x$ means the circular cross-section in the $yz$-plane is extended infinitely in both directions along the $x$-axis."
+        },
+        {
+          "text": "The $y$-axis",
+          "isCorrect": false,
+          "rationale": "Orientation along the $y$-axis would require $y$ to be the missing variable."
+        },
+        {
+          "text": "The $z$-axis",
+          "isCorrect": false,
+          "rationale": "Orientation along the $z$-axis would require $z$ to be the missing variable."
+        },
+        {
+          "text": "The origin",
+          "isCorrect": false,
+          "rationale": "Orientation refers to a line or axis of symmetry, not a single point."
+        }
+      ],
+      "hint": "The 'axis' of a cylinder corresponds to the variable that is not constrained by the equation.",
+      "section": "11.1"
+    },
+    {
+      "question": "Which of the following describes the set of points satisfying $z = -2$ in $\\mathbb{R}^3$?",
+      "answerOptions": [
+        {
+          "text": "A plane parallel to the $xy$-plane, 2 units below it.",
+          "isCorrect": true,
+          "rationale": "The equation $z=k$ always represents a horizontal plane relative to the $xy$-coordinate system."
+        },
+        {
+          "text": "A line passing through $(0, 0, -2)$. ",
+          "isCorrect": false,
+          "rationale": "A single equation in 3D usually defines a surface (like a plane), not a line."
+        },
+        {
+          "text": "A plane parallel to the $xz$-plane.",
+          "isCorrect": false,
+          "rationale": "A plane parallel to the $xz$-plane would be defined by a constant $y$ value."
+        },
+        {
+          "text": "A point in the third octant.",
+          "isCorrect": false,
+          "rationale": "This equation describes an infinite set of points forming a plane, not a single point."
+        }
+      ],
+      "hint": "Think about the orientation of the $z$-axis relative to the ground ($xy$-plane).",
+      "section": "11.1"
+    },
+    {
+      "question": "Find the distance from the point $(4, -2, 6)$ to the $xz$-plane.",
+      "answerOptions": [
+        {
+          "text": "2",
+          "isCorrect": true,
+          "rationale": "The distance to the $xz$-plane ($y=0$) is given by the absolute value of the $y$-coordinate, $|-2| = 2$."
+        },
+        {
+          "text": "4",
+          "isCorrect": false,
+          "rationale": "This is the distance to the $yz$-plane."
+        },
+        {
+          "text": "6",
+          "isCorrect": false,
+          "rationale": "This is the distance to the $xy$-plane."
+        },
+        {
+          "text": "$\\sqrt{56}$",
+          "isCorrect": false,
+          "rationale": "This is the distance from the point to the origin."
+        }
+      ],
+      "hint": "Determine which coordinate determines the 'height' or 'depth' relative to the plane where $y=0$.",
+      "section": "11.1"
+    }
+  ],
+  "questionCount": 27,
+  "exportedAt": "2026-09-16T11:16:09",
+  "source": "303/quiz_source/11.1-quiz-source.json"
+}

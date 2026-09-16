@@ -1,0 +1,671 @@
+{
+  "title": "MATH 303 — §11.5 Lines and Planes in Space",
+  "section": "11.5",
+  "questions": [
+    {
+      "question": "A line in $R^3$ passes through the point $P_0(1, -2, 3)$ and is parallel to the vector $\\vec{v} = \\langle 4, 0, -1 \\rangle$. Which set of parametric equations correctly describes this line?",
+      "answerOptions": [
+        {
+          "text": "$x = 1 + 4t, y = -2, z = 3 - t$",
+          "isCorrect": true,
+          "rationale": "These equations correctly use the point coordinates as constants and the direction vector components as coefficients for the parameter $t$."
+        },
+        {
+          "text": "$x = 4 + t, y = -2t, z = -1 + 3t$",
+          "isCorrect": false,
+          "rationale": "This swap represents a common error where the point and direction vector components are interchanged."
+        },
+        {
+          "text": "$x = 1 + 4t, y = -2 + t, z = 3 - t$",
+          "isCorrect": false,
+          "rationale": "The $y$ component of the direction vector is zero, meaning the $y$ value should remain constant, not vary with $t$."
+        },
+        {
+          "text": "$x = 1 - 4t, y = -2, z = 3 + t$",
+          "isCorrect": false,
+          "rationale": "While this describes a parallel line, the signs of the direction vector components are inconsistently applied compared to the standard form."
+        }
+      ],
+      "hint": "Recall how the components of the direction vector relate to the coefficients of the parameter $t$.",
+      "section": "11.5"
+    },
+    {
+      "question": "If two lines in $R^3$ are not parallel and do not intersect, what are they called?",
+      "answerOptions": [
+        {
+          "text": "Skew lines",
+          "isCorrect": true,
+          "rationale": "In three-dimensional space, lines that are neither parallel nor intersecting exist in different planes and are termed skew."
+        },
+        {
+          "text": "Orthogonal lines",
+          "isCorrect": false,
+          "rationale": "Orthogonality refers to the angle between directions, but orthogonal lines can still intersect or be skew."
+        },
+        {
+          "text": "Asymptotic lines",
+          "isCorrect": false,
+          "rationale": "This term refers to curves that approach a limit, rather than the relative spatial arrangement of two straight lines."
+        },
+        {
+          "text": "Coplanar lines",
+          "isCorrect": false,
+          "rationale": "If lines are coplanar, they must either intersect or be parallel; skew lines are fundamentally non-coplanar."
+        }
+      ],
+      "hint": "Think about the unique geometric arrangement possible in 3D that doesn't exist in 2D.",
+      "section": "11.5"
+    },
+    {
+      "question": "Given a plane with the equation $3x - 5y + z = 12$, what is a normal vector $\\vec{n}$ to this plane?",
+      "answerOptions": [
+        {
+          "text": "$\\vec{n} = \\langle 3, -5, 1 \\rangle$",
+          "isCorrect": true,
+          "rationale": "The coefficients of $x, y,$ and $z$ in the general linear equation of a plane directly represent the components of its normal vector."
+        },
+        {
+          "text": "$\\vec{n} = \\langle 3, 5, 1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The sign of the $y$ coefficient must be preserved when extracting the normal vector components."
+        },
+        {
+          "text": "$\\vec{n} = \\langle 1/3, -1/5, 1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "Taking the reciprocals of the coefficients is a common procedural error not grounded in the definition of the normal vector."
+        },
+        {
+          "text": "$\\vec{n} = \\langle 3, -5, -12 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The constant $d$ on the right side of the equation does not contribute to the direction of the normal vector."
+        }
+      ],
+      "hint": "Look at the coefficients of the variables in the general linear equation.",
+      "section": "11.5"
+    },
+    {
+      "question": "To find the equation of a plane containing three non-collinear points $A, B,$ and $C$, what is the standard first step?",
+      "answerOptions": [
+        {
+          "text": "Find two vectors in the plane, such as $\\vec{AB}$ and $\\vec{AC}$, and calculate their cross product.",
+          "isCorrect": true,
+          "rationale": "The cross product of two vectors lying within the plane produces the necessary normal vector perpendicular to that plane."
+        },
+        {
+          "text": "Calculate the dot product of vectors $\\vec{AB}$ and $\\vec{AC}$ to find the normal vector.",
+          "isCorrect": false,
+          "rationale": "The dot product results in a scalar, not a vector, and cannot define the orientation of the plane."
+        },
+        {
+          "text": "Average the coordinates of points $A, B,$ and $C$ to find the normal vector.",
+          "isCorrect": false,
+          "rationale": "Averaging coordinates finds the centroid, which is a point, not a direction vector normal to the plane."
+        },
+        {
+          "text": "Find the distance between points $A$ and $B$ to use as the plane's coefficient.",
+          "isCorrect": false,
+          "rationale": "Distance is a scalar quantity and does not provide the directional information required for a normal vector."
+        }
+      ],
+      "hint": "Consider which vector operation produces a result perpendicular to two given vectors.",
+      "section": "11.5"
+    },
+    {
+      "question": "What happens if you attempt to find the intersection of a line and a plane, and the resulting equation for the parameter $t$ is $0 = 5$?",
+      "answerOptions": [
+        {
+          "text": "The line is parallel to the plane and does not intersect it.",
+          "isCorrect": true,
+          "rationale": "A contradiction like $0 = 5$ indicates there is no value of $t$ that satisfies both equations, meaning no intersection point exists."
+        },
+        {
+          "text": "The line lies entirely within the plane.",
+          "isCorrect": false,
+          "rationale": "If the line lies within the plane, the substitution would result in an identity like $0 = 0$, valid for all $t$."
+        },
+        {
+          "text": "The line is perpendicular to the plane.",
+          "isCorrect": false,
+          "rationale": "Perpendicularity would still result in a unique intersection point unless the line is also at infinity."
+        },
+        {
+          "text": "The intersection point is at the origin $(0, 0, 0)$.",
+          "isCorrect": false,
+          "rationale": "The origin would be a specific point found by a unique value of $t$, not a mathematical contradiction."
+        }
+      ],
+      "hint": "Think about what a mathematical contradiction implies about the existence of a solution.",
+      "section": "11.5"
+    },
+    {
+      "question": "Which of the following describes the shortest distance $D$ from a point $S$ to a plane with normal $\\vec{n}$ and a known point $P$ on the plane?",
+      "answerOptions": [
+        {
+          "text": "$D = \\frac{|\\vec{PS} \\cdot \\vec{n}|}{||\\vec{n}||}$",
+          "isCorrect": true,
+          "rationale": "The shortest distance is the magnitude of the scalar projection of the vector $\\vec{PS}$ onto the normal vector $\\vec{n}$."
+        },
+        {
+          "text": "$D = ||\\vec{PS} \\times \\vec{n}||$",
+          "isCorrect": false,
+          "rationale": "The cross product magnitude relates to the area of a parallelogram, not the perpendicular distance to a plane."
+        },
+        {
+          "text": "$D = \\vec{PS} \\cdot \\vec{n}$",
+          "isCorrect": false,
+          "rationale": "Distance must be a non-negative scalar, and the dot product alone does not account for the magnitude of the normal vector."
+        },
+        {
+          "text": "$D = \\frac{||\\vec{n}||}{|\\vec{PS} \\cdot \\vec{n}|}$",
+          "isCorrect": false,
+          "rationale": "This formula incorrectly places the magnitude of the normal vector in the numerator, inverting the projection logic."
+        }
+      ],
+      "hint": "Focus on the concept of projecting a connecting vector onto the normal direction.",
+      "section": "11.5"
+    },
+    {
+      "question": "True or False: If two different planes have normal vectors $\\vec{n_1}$ and $\\vec{n_2}$ such that $\\vec{n_1} = k\\vec{n_2}$ for some scalar $k \\ne 0$, then the planes are parallel.",
+      "answerOptions": [
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "Normal vectors that are scalar multiples of each other point in the same (or opposite) direction, meaning the planes they define are parallel."
+        },
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "If the normal vectors are parallel, the planes themselves must share the same orientation and thus be parallel."
+        }
+      ],
+      "hint": "Recall the relationship between the orientation of a plane and the direction of its normal vector.",
+      "section": "11.5"
+    },
+    {
+      "question": "Find the direction vector $\\vec{v}$ for the line of intersection of the planes $x + y + z = 1$ and $x - 2y + 3z = 2$.",
+      "answerOptions": [
+        {
+          "text": "$\\vec{v} = \\langle 5, -2, -3 \\rangle$",
+          "isCorrect": true,
+          "rationale": "The direction of the intersection line is found by the cross product of the normal vectors $\\vec{n_1} = \\langle 1, 1, 1 \\rangle$ and $\\vec{n_2} = \\langle 1, -2, 3 \\rangle$."
+        },
+        {
+          "text": "$\\vec{v} = \\langle 1, 1, 1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is simply the normal vector of the first plane, which is perpendicular to the line of intersection, not parallel to it."
+        },
+        {
+          "text": "$\\vec{v} = \\langle 2, -1, 4 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This result comes from adding the normal vectors, which does not yield the direction of the line of intersection."
+        },
+        {
+          "text": "$\\vec{v} = \\langle 0, 0, 0 \\rangle$",
+          "isCorrect": false,
+          "rationale": "A zero vector would imply the planes are parallel and do not intersect in a line, which is not the case here."
+        }
+      ],
+      "hint": "Consider how the line of intersection relates to the normal vectors of both planes.",
+      "section": "11.5"
+    },
+    {
+      "question": "The scalar equation of a plane is $2(x - 1) + 4(y + 3) - (z - 5) = 0$. Which point is guaranteed to lie on this plane based on the equation's structure?",
+      "answerOptions": [
+        {
+          "text": "$(1, -3, 5)$",
+          "isCorrect": true,
+          "rationale": "The standard scalar form $a(x-x_0) + b(y-y_0) + c(z-z_0) = 0$ uses the point $P_0(x_0, y_0, z_0)$ as its anchor."
+        },
+        {
+          "text": "$(2, 4, -1)$",
+          "isCorrect": false,
+          "rationale": "These values represent the components of the normal vector, not necessarily a point on the plane."
+        },
+        {
+          "text": "$(-1, 3, -5)$",
+          "isCorrect": false,
+          "rationale": "This reflects a sign error when extracting the point coordinates from the $(x - x_0)$ terms."
+        },
+        {
+          "text": "$(0, 0, 0)$",
+          "isCorrect": false,
+          "rationale": "Substituting $(0,0,0)$ into the equation does not yield zero, showing the plane does not pass through the origin."
+        }
+      ],
+      "hint": "Look for the specific values being subtracted from the variables $x, y,$ and $z$.",
+      "section": "11.5"
+    },
+    {
+      "question": "What is the distance between the point $(2, 2, 3)$ and the $xy$-plane?",
+      "answerOptions": [
+        {
+          "text": "3",
+          "isCorrect": true,
+          "rationale": "The $xy$-plane is defined by $z = 0$, so the distance from any point to this plane is the absolute value of its $z$-coordinate."
+        },
+        {
+          "text": "2",
+          "isCorrect": false,
+          "rationale": "This is the distance to the $yz$-plane or $xz$-plane, but the $xy$-plane distance depends solely on the $z$ height."
+        },
+        {
+          "text": "$\\sqrt{17}$",
+          "isCorrect": false,
+          "rationale": "This looks like a calculation for the distance from the origin to a projection, rather than the perpendicular distance to the coordinate plane."
+        },
+        {
+          "text": "0",
+          "isCorrect": false,
+          "rationale": "This would only be true if the point's $z$-coordinate were zero, meaning it actually sat on the $xy$-plane."
+        }
+      ],
+      "hint": "Recall the equation that defines the $xy$-plane in 3D space.",
+      "section": "11.5"
+    },
+    {
+      "question": "When checking if two lines $\\vec{r}(u)$ and $\\vec{s}(v)$ intersect, you find values for $u$ and $v$ that satisfy the $x$ and $y$ equations. What is the necessary next step?",
+      "answerOptions": [
+        {
+          "text": "Plug $u$ and $v$ into the $z$ equation to check for consistency.",
+          "isCorrect": true,
+          "rationale": "Since there are three equations (for $x, y, z$) but only two variables $(u, v)$, the third equation must be verified to ensure a true intersection exists."
+        },
+        {
+          "text": "Set $u = v$ and solve for the intersection point.",
+          "isCorrect": false,
+          "rationale": "The parameters $u$ and $v$ are independent and do not need to be equal for the lines to intersect at the same spatial point."
+        },
+        {
+          "text": "Calculate the cross product of the direction vectors.",
+          "isCorrect": false,
+          "rationale": "While the cross product helps find a normal vector, it does not confirm if two specific lines share a common point."
+        },
+        {
+          "text": "Conclude they intersect because a solution exists for two of the coordinates.",
+          "isCorrect": false,
+          "rationale": "This is a common error; lines in 3D can 'miss' each other in the third dimension, making them skew."
+        }
+      ],
+      "hint": "Consider that you have more equations than unknowns in this system.",
+      "section": "11.5"
+    },
+    {
+      "question": "How can the plane $x + 2y - z = 4$ be described as a two-parameter set of points?",
+      "answerOptions": [
+        {
+          "text": "$\\langle s, t, s + 2t - 4 \\rangle$",
+          "isCorrect": true,
+          "rationale": "By letting $x = s$ and $y = t$, and solving the plane equation for $z$, we obtain $z = x + 2y - 4$, which corresponds to this vector form."
+        },
+        {
+          "text": "$\\langle 1, 2, -1 \\rangle + t\\langle 4, 0, 0 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This form describes a line, not a plane, as it only utilizes one parameter."
+        },
+        {
+          "text": "$\\langle s, t, 4 - s - 2t \\rangle$",
+          "isCorrect": false,
+          "rationale": "Solving for $z$ in $x + 2y - z = 4$ gives $z = x + 2y - 4$, not $4 - x - 2y$; this reflects a basic algebraic sign error."
+        },
+        {
+          "text": "$\\langle s, s, s \\rangle$",
+          "isCorrect": false,
+          "rationale": "This represents a single line passing through the origin, which cannot describe the entirety of a 2D plane."
+        }
+      ],
+      "hint": "Try setting two variables to parameters and solving for the third using the plane's equation.",
+      "section": "11.5"
+    },
+    {
+      "question": "A line is parallel to the $z$-axis and passes through $(5, -1, 0)$. What are its parametric equations?",
+      "answerOptions": [
+        {
+          "text": "$x = 5, y = -1, z = t$",
+          "isCorrect": true,
+          "rationale": "Parallelism to the $z$-axis means the direction vector is $\\langle 0, 0, 1 \\rangle$, keeping $x$ and $y$ constant while $z$ varies."
+        },
+        {
+          "text": "$x = 5t, y = -t, z = 0$",
+          "isCorrect": false,
+          "rationale": "These equations describe a line in the $xy$-plane that passes through the origin, not a line parallel to the $z$-axis."
+        },
+        {
+          "text": "$x = 5 + t, y = -1 + t, z = t$",
+          "isCorrect": false,
+          "rationale": "This line moves in all three dimensions and is not parallel to any single coordinate axis."
+        },
+        {
+          "text": "$x = t, y = t, z = 5$",
+          "isCorrect": false,
+          "rationale": "This line is parallel to the $xy$-plane at a height of $z=5$, but it is not parallel to the $z$-axis."
+        }
+      ],
+      "hint": "Consider what the direction vector must be for a line that only changes in the vertical ($z$) direction.",
+      "section": "11.5"
+    },
+    {
+      "question": "True or False: If two lines are both perpendicular to the same plane, then the lines must be parallel to each other.",
+      "answerOptions": [
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "Both lines must share the same direction as the plane's normal vector (or its opposite), making them parallel."
+        },
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "In 3D Euclidean geometry, two lines orthogonal to the same flat surface are oriented in the same direction."
+        }
+      ],
+      "hint": "Visualize the direction vectors of the lines relative to the normal vector of the plane.",
+      "section": "11.5"
+    },
+    {
+      "question": "Which vector operation is used to determine if a line and a plane are parallel?",
+      "answerOptions": [
+        {
+          "text": "The dot product of the line's direction vector and the plane's normal vector is zero.",
+          "isCorrect": true,
+          "rationale": "If the line's direction is perpendicular to the plane's normal, the line must be parallel to the plane itself."
+        },
+        {
+          "text": "The cross product of the line's direction vector and the plane's normal vector is zero.",
+          "isCorrect": false,
+          "rationale": "A zero cross product means the vectors are parallel, which would imply the line is perpendicular to the plane."
+        },
+        {
+          "text": "The dot product of the line's direction vector and the plane's normal vector is one.",
+          "isCorrect": false,
+          "rationale": "A dot product of one has no specific geometric meaning regarding parallelism unless both vectors are unit vectors, and even then, it implies they are parallel."
+        },
+        {
+          "text": "The sum of the line's direction vector and the plane's normal vector is zero.",
+          "isCorrect": false,
+          "rationale": "Vector addition does not determine parallelism or orthogonality in this context."
+        }
+      ],
+      "hint": "Think about the relationship between a line lying 'flat' against a surface and the vector sticking 'straight up' from that surface.",
+      "section": "11.5"
+    },
+    {
+      "question": "Find the point where the line $\\vec{r}(t) = \\langle 1 + t, 2t, 3 - t \\rangle$ intersects the $xz$-plane.",
+      "answerOptions": [
+        {
+          "text": "$(1, 0, 3)$",
+          "isCorrect": true,
+          "rationale": "The $xz$-plane requires $y=0$. Setting $2t = 0$ gives $t = 0$, and substituting $t=0$ back into the line equation yields $(1, 0, 3)$."
+        },
+        {
+          "text": "$(0, -2, 4)$",
+          "isCorrect": false,
+          "rationale": "This would be the intersection with the $yz$-plane (where $x=0$), resulting from setting $1+t=0$."
+        },
+        {
+          "text": "$(4, 6, 0)$",
+          "isCorrect": false,
+          "rationale": "This would be the intersection with the $xy$-plane (where $z=0$), resulting from setting $3-t=0$."
+        },
+        {
+          "text": "$(1, 2, 3)$",
+          "isCorrect": false,
+          "rationale": "This point on the line does not have a $y$-coordinate of zero, so it cannot be on the $xz$-plane."
+        }
+      ],
+      "hint": "Determine which coordinate must be zero for any point on the $xz$-plane.",
+      "section": "11.5"
+    },
+    {
+      "question": "What is the shortest distance between the two skew lines $\\vec{L_1}$ and $\\vec{L_2}$?",
+      "answerOptions": [
+        {
+          "text": "The magnitude of the projection of a vector connecting the lines onto a vector perpendicular to both.",
+          "isCorrect": true,
+          "rationale": "This process isolates the component of the distance that is strictly perpendicular to both directions, which is the shortest path."
+        },
+        {
+          "text": "The distance between the two points where the parameters $u$ and $v$ are equal to zero.",
+          "isCorrect": false,
+          "rationale": "The base points $(t=0)$ are arbitrary and generally do not represent the closest approach of the lines."
+        },
+        {
+          "text": "The magnitude of the cross product of the two direction vectors.",
+          "isCorrect": false,
+          "rationale": "The cross product magnitude represents area; it must be used as a denominator in the projection formula, not as the distance itself."
+        },
+        {
+          "text": "The difference between the constant $d$ values of the planes containing them.",
+          "isCorrect": false,
+          "rationale": "While related, the distance depends on the normalized normal vector, not just the raw difference in coefficients."
+        }
+      ],
+      "hint": "Recall the multi-step process involving a normal vector produced by the cross product of directions.",
+      "section": "11.5"
+    },
+    {
+      "question": "True or False: The general linear equation $ax + by + cz = d$ always describes a plane that passes through the origin if $d = 0$.",
+      "answerOptions": [
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "If $d=0$, the coordinates $(0, 0, 0)$ satisfy the equation $a(0) + b(0) + c(0) = 0$, confirming the origin is on the plane."
+        },
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "Whenever the constant term in a linear equation of variables is zero, the origin $(0,0,0)$ is a solution."
+        }
+      ],
+      "hint": "Substitute the coordinates $(0, 0, 0)$ into the equation and see if it holds.",
+      "section": "11.5"
+    },
+    {
+      "question": "Given a direction vector $\\vec{v} = \\langle a, b, c \\rangle$, what does it mean if $b = 0$?",
+      "answerOptions": [
+        {
+          "text": "The line is parallel to the $xz$-plane.",
+          "isCorrect": true,
+          "rationale": "If the $y$-component of the direction is zero, the line does not move in the $y$-direction, keeping it parallel to any plane where $y$ is constant."
+        },
+        {
+          "text": "The line is parallel to the $y$-axis.",
+          "isCorrect": false,
+          "rationale": "Parallelism to the $y$-axis would require $a=0$ and $c=0$, with $b$ being the only non-zero component."
+        },
+        {
+          "text": "The line is perpendicular to the $xz$-plane.",
+          "isCorrect": false,
+          "rationale": "Perpendicularity to the $xz$-plane would mean the direction vector is $\\langle 0, 1, 0 \\rangle$, so $b$ would be the only non-zero component."
+        },
+        {
+          "text": "The line passes through the origin.",
+          "isCorrect": false,
+          "rationale": "A direction vector component being zero dictates the line's orientation, but not its position relative to the origin."
+        }
+      ],
+      "hint": "Consider which coordinate plane the line 'stays away from' if its $y$-value never changes.",
+      "section": "11.5"
+    },
+    {
+      "question": "In the vector equation of a plane $\\vec{n} \\cdot (\\vec{r} - \\vec{r_0}) = 0$, what does the term $(\\vec{r} - \\vec{r_0})$ represent?",
+      "answerOptions": [
+        {
+          "text": "A vector that lies entirely within the plane.",
+          "isCorrect": true,
+          "rationale": "By subtracting the position vector of a known point on the plane from a general point on the plane, we get a vector contained within the plane's surface."
+        },
+        {
+          "text": "The normal vector to the plane.",
+          "isCorrect": false,
+          "rationale": "The normal vector is $\\vec{n}$; the term $(\\vec{r} - \\vec{r_0})$ is specifically constructed to be perpendicular to $\\vec{n}$."
+        },
+        {
+          "text": "The distance from the origin to the plane.",
+          "isCorrect": false,
+          "rationale": "The distance is a scalar value, whereas $(\\vec{r} - \\vec{r_0})$ is a vector."
+        },
+        {
+          "text": "The direction vector of a line intersecting the plane.",
+          "isCorrect": false,
+          "rationale": "While it is a vector, its definition here is specific to the set of all points defining the plane's surface."
+        }
+      ],
+      "hint": "Think about the vector created by connecting any two points that both belong to the same plane.",
+      "section": "11.5"
+    },
+    {
+      "question": "Two planes are given by $x + 2y + 2z = 5$ and $x + 2y + 2z = 10$. What is the relationship between them?",
+      "answerOptions": [
+        {
+          "text": "They are parallel and distinct.",
+          "isCorrect": true,
+          "rationale": "They share the same normal vector $\\langle 1, 2, 2 \\rangle$ but have different constants $d$, meaning they never intersect."
+        },
+        {
+          "text": "They are identical planes.",
+          "isCorrect": false,
+          "rationale": "Identical planes would require the equations to be scalar multiples of each other, including the constant term $d$."
+        },
+        {
+          "text": "They intersect at a line.",
+          "isCorrect": false,
+          "rationale": "Intersection at a line requires the normal vectors to be non-parallel, which is not the case here."
+        },
+        {
+          "text": "They are perpendicular to each other.",
+          "isCorrect": false,
+          "rationale": "Perpendicularity requires the dot product of the normal vectors to be zero; here it is $1+4+4=9$."
+        }
+      ],
+      "hint": "Compare the coefficients of the variables and the constants on the right side.",
+      "section": "11.5"
+    },
+    {
+      "question": "If you are given the direction vectors of two lines, $\\vec{v_1}$ and $\\vec{v_2}$, what condition confirms the lines are parallel?",
+      "answerOptions": [
+        {
+          "text": "$\\vec{v_1} = c\\vec{v_2}$ for some constant $c$.",
+          "isCorrect": true,
+          "rationale": "Parallel vectors must point in the same or exactly opposite directions, meaning they are scalar multiples of each other."
+        },
+        {
+          "text": "$\\vec{v_1} \\cdot \\vec{v_2} = 0$.",
+          "isCorrect": false,
+          "rationale": "A zero dot product indicates the vectors are perpendicular, not parallel."
+        },
+        {
+          "text": "$\\vec{v_1} + \\vec{v_2} = \\vec{0}$.",
+          "isCorrect": false,
+          "rationale": "This is a special case of parallelism (opposite directions), but it is not the only condition for parallelism."
+        },
+        {
+          "text": "The magnitude $|\\vec{v_1}|$ equals the magnitude $|\\vec{v_2}|$.",
+          "isCorrect": false,
+          "rationale": "Vectors can have the same length but point in entirely different directions."
+        }
+      ],
+      "hint": "Recall the definition of parallel vectors in terms of scalar multiplication.",
+      "section": "11.5"
+    },
+    {
+      "question": "Which coordinate plane is the line $\\vec{r}(t) = \\langle 4, 2-t, 1+t \\rangle$ parallel to?",
+      "answerOptions": [
+        {
+          "text": "The $yz$-plane.",
+          "isCorrect": true,
+          "rationale": "Since the $x$-component is a constant (4), the direction vector $\\langle 0, -1, 1 \\rangle$ has an $x$-component of zero, making the line parallel to the plane $x=0$."
+        },
+        {
+          "text": "The $xy$-plane.",
+          "isCorrect": false,
+          "rationale": "Parallelism to the $xy$-plane would require the $z$-component of the direction vector to be zero, but it is $1$."
+        },
+        {
+          "text": "The $xz$-plane.",
+          "isCorrect": false,
+          "rationale": "Parallelism to the $xz$-plane would require the $y$-component of the direction vector to be zero, but it is $-1$."
+        },
+        {
+          "text": "No coordinate plane.",
+          "isCorrect": false,
+          "rationale": "Because one component of the direction vector is zero, the line must be parallel to one of the coordinate planes."
+        }
+      ],
+      "hint": "Identify which component of the direction vector is zero and what that implies about the line's movement.",
+      "section": "11.5"
+    },
+    {
+      "question": "True or False: If $\\vec{n_1}$ and $\\vec{n_2}$ are the normal vectors of two intersecting planes, then the line of intersection is perpendicular to both $\\vec{n_1}$ and $\\vec{n_2}$.",
+      "answerOptions": [
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "The line of intersection lies in both planes; therefore, its direction must be orthogonal to the normal vectors of both planes."
+        },
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "The line of intersection is contained within both planes, so its direction vector must satisfy the perpendicularity condition for both normals."
+        }
+      ],
+      "hint": "Think about the relationship between a line inside a plane and that plane's normal vector.",
+      "section": "11.5"
+    },
+    {
+      "question": "Calculate the constant $d$ for a plane that contains the point $(1, 2, 3)$ and has a normal vector $\\vec{n} = \\langle 2, -1, 4 \\rangle$.",
+      "answerOptions": [
+        {
+          "text": "12",
+          "isCorrect": true,
+          "rationale": "Using $ax + by + cz = d$: $2(1) + (-1)(2) + 4(3) = 2 - 2 + 12 = 12$."
+        },
+        {
+          "text": "14",
+          "isCorrect": false,
+          "rationale": "This value might be reached by accidentally adding the $y$ term instead of subtracting it ($2+2+12$)."
+        },
+        {
+          "text": "0",
+          "isCorrect": false,
+          "rationale": "A $d$ of 0 would mean the plane passes through the origin, which $(1, 2, 3)$ is not."
+        },
+        {
+          "text": "6",
+          "isCorrect": false,
+          "rationale": "This could result from failing to multiply the $z$ components correctly ($2 - 2 + 6$)."
+        }
+      ],
+      "hint": "Plug the point's coordinates into the general linear equation $ax+by+cz=d$.",
+      "section": "11.5"
+    },
+    {
+      "question": "What is the primary difference between a direction vector for a line and a normal vector for a plane?",
+      "answerOptions": [
+        {
+          "text": "A direction vector is parallel to the object, while a normal vector is perpendicular to the object.",
+          "isCorrect": true,
+          "rationale": "A line is defined by the direction it follows, whereas a plane is defined by the direction it faces away from."
+        },
+        {
+          "text": "A direction vector has a magnitude of 1, while a normal vector can have any magnitude.",
+          "isCorrect": false,
+          "rationale": "Both types of vectors can have any non-zero magnitude; their role is determined by their orientation, not their length."
+        },
+        {
+          "text": "A direction vector requires three points to define, while a normal vector requires only two.",
+          "isCorrect": false,
+          "rationale": "Direction vectors can be found with two points, and normal vectors are often found using two vectors (three points)."
+        },
+        {
+          "text": "Direction vectors are only used in $R^2$, while normal vectors are used in $R^3$.",
+          "isCorrect": false,
+          "rationale": "Both vectors are essential tools for describing geometry in three-dimensional space ($R^3$)."
+        }
+      ],
+      "hint": "Consider the geometric orientation of the vector relative to the object it describes.",
+      "section": "11.5"
+    }
+  ],
+  "questionCount": 26,
+  "exportedAt": "2026-09-16T11:16:09",
+  "source": "303/quiz_source/11.5-quiz-source.json"
+}

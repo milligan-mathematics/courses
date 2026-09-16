@@ -1,0 +1,701 @@
+{
+  "title": "MATH 303 — §11.4 The Cross Product",
+  "section": "11.4",
+  "questions": [
+    {
+      "question": "Given two non-zero vectors $\\mathbf{u}$ and $\\mathbf{v}$ in $\\mathbb{R}^3$, what geometric value is represented by the magnitude $|\\mathbf{u} \\times \\mathbf{v}|$?",
+      "answerOptions": [
+        {
+          "text": "The area of the parallelogram formed by the two vectors.",
+          "isCorrect": true,
+          "rationale": "The magnitude formula $|\\mathbf{u}| |\\mathbf{v}| \\sin\\theta$ matches the geometric formula for the area of a parallelogram with sides $|\\mathbf{u}|$ and $|\\mathbf{v}|."
+        },
+        {
+          "text": "The volume of the parallelepiped formed by the two vectors and the origin.",
+          "isCorrect": false,
+          "rationale": "Volume requires three vectors and is associated with the triple scalar product, not just the magnitude of a single cross product."
+        },
+        {
+          "text": "The length of the projection of $\\mathbf{u}$ onto $\\mathbf{v}$.",
+          "isCorrect": false,
+          "rationale": "Projections are related to the dot product and involve the cosine of the angle, not the sine."
+        },
+        {
+          "text": "The area of the triangle formed by the two vectors.",
+          "isCorrect": false,
+          "rationale": "The magnitude of the cross product represents the full parallelogram; a triangle would be exactly half of this value."
+        }
+      ],
+      "hint": "Consider the shape 'spawned' when two vectors are placed tail-to-tail.",
+      "section": "11.4"
+    },
+    {
+      "question": "Which of the following is the correct result of the cross product of the standard unit vectors $\\mathbf{k} \\times \\mathbf{j}$?",
+      "answerOptions": [
+        {
+          "text": "$-\\mathbf{i}$",
+          "isCorrect": true,
+          "rationale": "Based on the cyclic permutation rule, $\\mathbf{j} \\times \\mathbf{k} = \\mathbf{i}$; since the cross product is anticommutative, reversing the order yields the negative."
+        },
+        {
+          "text": "$\\mathbf{i}$",
+          "isCorrect": false,
+          "rationale": "This ignores the anticommutative property and follows the order of $\\mathbf{j} \\times \\mathbf{k}$ instead."
+        },
+        {
+          "text": "$\\mathbf{0}$",
+          "isCorrect": false,
+          "rationale": "The cross product only results in the zero vector if the vectors are parallel; $\\mathbf{k}$ and $\\mathbf{j}$ are orthogonal."
+        },
+        {
+          "text": "$-\\mathbf{k}$",
+          "isCorrect": false,
+          "rationale": "The result of a cross product must be orthogonal to both inputs, and $\\mathbf{k}$ cannot be orthogonal to itself."
+        }
+      ],
+      "hint": "Recall the right-hand rule and the cyclic order of $\\mathbf{i}, \\mathbf{j}, \\mathbf{k}$.",
+      "section": "11.4"
+    },
+    {
+      "question": "If $\\mathbf{u}$ and $\\mathbf{v}$ are parallel vectors, what is the value of $\\mathbf{u} \\times \\mathbf{v}$?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{0}$",
+          "isCorrect": true,
+          "rationale": "Parallel vectors have an angle of $0$ or $\\pi$, making $\\sin\\theta = 0$ in the magnitude formula."
+        },
+        {
+          "text": "The dot product $\\mathbf{u} \\cdot \\mathbf{v}$.",
+          "isCorrect": false,
+          "rationale": "The dot product results in a scalar, whereas the cross product must result in a vector, even if it is the zero vector."
+        },
+        {
+          "text": "A unit vector normal to the plane of the vectors.",
+          "isCorrect": false,
+          "rationale": "Parallel vectors do not define a unique plane and cannot 'spawn' a parallelogram with area."
+        },
+        {
+          "text": "$|\\mathbf{u}||\\mathbf{v}|\\mathbf{n}$",
+          "isCorrect": false,
+          "rationale": "This formula applies when the vectors are orthogonal (where $\\sin\\theta = 1$), not when they are parallel."
+        }
+      ],
+      "hint": "Think about the sine of the angle between two lines that never diverge.",
+      "section": "11.4"
+    },
+    {
+      "question": "According to the properties of the cross product, what is the result of $\\mathbf{u} \\cdot (\\mathbf{u} \\times \\mathbf{v})$?",
+      "answerOptions": [
+        {
+          "text": "$0$",
+          "isCorrect": true,
+          "rationale": "The vector $\\mathbf{u} \\times \\mathbf{v}$ is by definition orthogonal to $\\mathbf{u}$, and the dot product of two orthogonal vectors is zero."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "A dot product of $1$ would imply the vectors are unit vectors and parallel, which contradicts the property that the cross product is orthogonal to its factors."
+        },
+        {
+          "text": "$|\\mathbf{u}|^2 |\\mathbf{v}| \\sin\\theta$",
+          "isCorrect": false,
+          "rationale": "This confuses the magnitude of the cross product with the operation of dotting it back into one of its component vectors."
+        },
+        {
+          "text": "A vector orthogonal to both $\\mathbf{u}$ and $\\mathbf{v}$.",
+          "isCorrect": false,
+          "rationale": "The dot product always results in a scalar quantity, not a vector."
+        }
+      ],
+      "hint": "Consider the relationship between the direction of a cross product and its original vectors.",
+      "section": "11.4"
+    },
+    {
+      "question": "When computing $\\mathbf{u} \\times \\mathbf{v}$ using a $3 \\times 3$ determinant, which component's calculation involves a subtraction in the cofactor expansion formula (i.e., the term is negated)?",
+      "answerOptions": [
+        {
+          "text": "The $\\mathbf{j}$ component.",
+          "isCorrect": true,
+          "rationale": "In the standard expansion of a $3 \\times 3$ determinant along the first row, the second term (the $\\mathbf{j}$ term) is subtracted."
+        },
+        {
+          "text": "The $\\mathbf{i}$ component.",
+          "isCorrect": false,
+          "rationale": "The first term in the expansion is positive according to the checkerboard pattern of signs in determinants."
+        },
+        {
+          "text": "The $\\mathbf{k}$ component.",
+          "isCorrect": false,
+          "rationale": "The third term in the expansion follows a positive sign in the cofactor expansion along the top row."
+        },
+        {
+          "text": "None of the components are negated.",
+          "isCorrect": false,
+          "rationale": "Determinant expansion along a row always follows an alternating $+ - +$ sign pattern."
+        }
+      ],
+      "hint": "Recall the standard formula for expanding a $3 \\times 3$ matrix along the top row.",
+      "section": "11.4"
+    },
+    {
+      "question": "How is the volume of a parallelepiped defined by vectors $\\mathbf{u}, \\mathbf{v},$ and $\\mathbf{w}$ calculated?",
+      "answerOptions": [
+        {
+          "text": "$|\\mathbf{u} \\cdot (\\mathbf{v} \\times \\mathbf{w})|$",
+          "isCorrect": true,
+          "rationale": "The absolute value of the triple scalar product provides the volume of the 3D shape formed by the three vectors."
+        },
+        {
+          "text": "$|\\mathbf{u} \\times (\\mathbf{v} \\times \\mathbf{w})|$",
+          "isCorrect": false,
+          "rationale": "This operation (a vector triple product) results in a vector, whereas volume must be a scalar quantity."
+        },
+        {
+          "text": "$\\mathbf{u} \\cdot \\mathbf{v} \\cdot \\mathbf{w}$",
+          "isCorrect": false,
+          "rationale": "The dot product is an operation between two vectors only; you cannot 'dot' three vectors together in a single operation."
+        },
+        {
+          "text": "$\\frac{1}{2} |\\mathbf{u} \\cdot (\\mathbf{v} \\times \\mathbf{w})|$",
+          "isCorrect": false,
+          "rationale": "Dividing by two would find the volume of a related tetrahedral or triangular prism, not the full parallelepiped."
+        }
+      ],
+      "hint": "This quantity is known as the triple scalar product.",
+      "section": "11.4"
+    },
+    {
+      "question": "Find the cross product $\\mathbf{u} \\times \\mathbf{v}$ where $\\mathbf{u} = \\langle 1, 0, 2 \\rangle$ and $\\mathbf{v} = \\langle 0, 1, 3 \\rangle$.",
+      "answerOptions": [
+        {
+          "text": "$\\langle -2, -3, 1 \\rangle$",
+          "isCorrect": true,
+          "rationale": "Expanding the determinant: $\\mathbf{i}(0-2) - \\mathbf{j}(3-0) + \\mathbf{k}(1-0) = -2\\mathbf{i} - 3\\mathbf{j} + 1\\mathbf{k}$."
+        },
+        {
+          "text": "$\\langle -2, 3, 1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This is a common error resulting from forgetting to negate the $\\mathbf{j}$ component in the determinant expansion."
+        },
+        {
+          "text": "$\\langle 2, 3, -1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This result corresponds to $\\mathbf{v} \\times \\mathbf{u}$, which is the negative of the correct answer."
+        },
+        {
+          "text": "$\\langle 0, 0, 6 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This result suggests a simple component-wise multiplication, which is not how the cross product is defined."
+        }
+      ],
+      "hint": "Set up the $3 \\times 3$ determinant with $\\mathbf{i}, \\mathbf{j}, \\mathbf{k}$ on the top row.",
+      "section": "11.4"
+    },
+    {
+      "question": "If the triple scalar product of three non-zero vectors is exactly zero, what can be concluded about the vectors?",
+      "answerOptions": [
+        {
+          "text": "The vectors are coplanar.",
+          "isCorrect": true,
+          "rationale": "A volume of zero means the vectors lie in the same 2D plane and do not extend into a 3D shape."
+        },
+        {
+          "text": "The vectors are all mutually orthogonal.",
+          "isCorrect": false,
+          "rationale": "If vectors were mutually orthogonal, the triple scalar product would be the product of their magnitudes, which is non-zero."
+        },
+        {
+          "text": "One of the vectors must be the zero vector.",
+          "isCorrect": false,
+          "rationale": "While a zero vector would result in a zero product, the question specifies the vectors are non-zero."
+        },
+        {
+          "text": "The vectors are all parallel to each other.",
+          "isCorrect": false,
+          "rationale": "While parallel vectors are coplanar, not all coplanar vectors need to be parallel to result in a zero volume."
+        }
+      ],
+      "hint": "Think about what happens to the volume of a box if you 'squash' it flat.",
+      "section": "11.4"
+    },
+    {
+      "question": "Calculate the area of a triangle with vertices at $(0,0,0)$, $(2,0,0)$, and $(0,3,0)$.",
+      "answerOptions": [
+        {
+          "text": "$3$",
+          "isCorrect": true,
+          "rationale": "The vectors are $\\mathbf{u} = \\langle 2,0,0 \\rangle$ and $\\mathbf{v} = \\langle 0,3,0 \\rangle$. $\\mathbf{u} \\times \\mathbf{v} = \\langle 0,0,6 \\rangle$. Area is $\\frac{1}{2}|\\langle 0,0,6 \\rangle| = 3$."
+        },
+        {
+          "text": "$6$",
+          "isCorrect": false,
+          "rationale": "This is the area of the parallelogram formed by the vectors; the triangle's area is half of that."
+        },
+        {
+          "text": "$\\sqrt{13}$",
+          "isCorrect": false,
+          "rationale": "This is likely calculated by applying the Pythagorean theorem to the coordinates incorrectly rather than using the cross product."
+        },
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "This would only be correct if the points were collinear, but these points form a right triangle in the $xy$-plane."
+        }
+      ],
+      "hint": "Form two vectors from the origin and use half the magnitude of their cross product.",
+      "section": "11.4"
+    },
+    {
+      "question": "What is the physical interpretation of the magnitude of the torque vector $\\boldsymbol{\\tau} = \\mathbf{r} \\times \\mathbf{F}$?",
+      "answerOptions": [
+        {
+          "text": "The effectiveness of a force in causing rotation about a pivot point.",
+          "isCorrect": true,
+          "rationale": "Torque measures the rotational 'push', calculated as the product of the lever arm, the force, and the sine of the angle."
+        },
+        {
+          "text": "The total work done by the force over the distance $\\mathbf{r}$.",
+          "isCorrect": false,
+          "rationale": "Work is defined by the dot product $\\mathbf{F} \\cdot \\mathbf{r}$, which is a scalar quantity."
+        },
+        {
+          "text": "The linear acceleration of the object along the vector $\\mathbf{r}$.",
+          "isCorrect": false,
+          "rationale": "Acceleration is a result of net force in linear dynamics, whereas torque specifically relates to rotational dynamics."
+        },
+        {
+          "text": "The velocity of the pivot point.",
+          "isCorrect": false,
+          "rationale": "Torque relates to force and position, not the rate of change of the pivot point's position."
+        }
+      ],
+      "hint": "Consider what happens when you use a wrench to turn a bolt.",
+      "section": "11.4"
+    },
+    {
+      "question": "Which property describes the relationship $\\mathbf{u} \\times (\\mathbf{v} + \\mathbf{w}) = (\\mathbf{u} \\times \\mathbf{v}) + (\\mathbf{u} \\times \\mathbf{w})$?",
+      "answerOptions": [
+        {
+          "text": "Distributive Property",
+          "isCorrect": true,
+          "rationale": "The distributive property allows the cross product to be applied to each term within a vector sum individually."
+        },
+        {
+          "text": "Anticommutative Property",
+          "isCorrect": false,
+          "rationale": "Anticommutativity refers to the sign change when the order of the cross product is reversed: $\\mathbf{u} \\times \\mathbf{v} = -(\\mathbf{v} \\times \\mathbf{u})$."
+        },
+        {
+          "text": "Associative Property",
+          "isCorrect": false,
+          "rationale": "The cross product is generally not associative; $\\mathbf{u} \\times (\\mathbf{v} \\times \\mathbf{w}) \\neq (\\mathbf{u} \\times \\mathbf{v}) \\times \\mathbf{w}$."
+        },
+        {
+          "text": "Scalar Triple Identity",
+          "isCorrect": false,
+          "rationale": "This identity relates the dot and cross product in a specific sequence, not the distribution of a cross product over a sum."
+        }
+      ],
+      "hint": "This property is similar to how multiplication interacts with addition in basic algebra.",
+      "section": "11.4"
+    },
+    {
+      "question": "To find a normal vector to a plane containing points $A, B,$ and $C$, which operation should be performed?",
+      "answerOptions": [
+        {
+          "text": "$\\vec{AB} \\times \\vec{AC}$",
+          "isCorrect": true,
+          "rationale": "The cross product of two vectors lying within the plane results in a vector orthogonal to both, which is the definition of a normal vector."
+        },
+        {
+          "text": "$\\vec{AB} \\cdot \\vec{AC}$",
+          "isCorrect": false,
+          "rationale": "The dot product results in a scalar, which cannot serve as a directional normal vector for a plane."
+        },
+        {
+          "text": "$\\vec{AB} + \\vec{AC}$",
+          "isCorrect": false,
+          "rationale": "Adding the vectors produces another vector within the same plane, not one perpendicular to it."
+        },
+        {
+          "text": "$\\frac{\\vec{AB}}{|\\vec{AC}|}$",
+          "isCorrect": false,
+          "rationale": "Dividing a vector by the magnitude of another is a scaling operation and does not change the plane the vector lies in."
+        }
+      ],
+      "hint": "A normal vector must be perpendicular to the surface of the plane.",
+      "section": "11.4"
+    },
+    {
+      "question": "Simplify the expression: $(2\\mathbf{i}) \\times (5\\mathbf{j})$.",
+      "answerOptions": [
+        {
+          "text": "$10\\mathbf{k}$",
+          "isCorrect": true,
+          "rationale": "Using scalar associativity: $(2)(5)(\\mathbf{i} \\times \\mathbf{j}) = 10(\\mathbf{k}) = 10\\mathbf{k}$."
+        },
+        {
+          "text": "$10$",
+          "isCorrect": false,
+          "rationale": "The cross product results in a vector, not a scalar value like $10$."
+        },
+        {
+          "text": "$-10\\mathbf{k}$",
+          "isCorrect": false,
+          "rationale": "This follows the wrong order for the unit vectors; $\\mathbf{i} \\times \\mathbf{j}$ is positive $\\mathbf{k}$."
+        },
+        {
+          "text": "$\\mathbf{0}$",
+          "isCorrect": false,
+          "rationale": "The vectors $\\mathbf{i}$ and $\\mathbf{j}$ are orthogonal, not parallel, so their cross product is non-zero."
+        }
+      ],
+      "hint": "Apply the scalar multiplication property first, then the unit vector cross product rule.",
+      "section": "11.4"
+    },
+    {
+      "question": "What happens to the direction of the cross product if you swap the order of the two vectors?",
+      "answerOptions": [
+        {
+          "text": "The direction is reversed.",
+          "isCorrect": true,
+          "rationale": "This is the anticommutative property: $\\mathbf{u} \\times \\mathbf{v} = -(\\mathbf{v} \\times \\mathbf{u})$."
+        },
+        {
+          "text": "The direction remains the same.",
+          "isCorrect": false,
+          "rationale": "This would be true if the cross product were commutative, but the right-hand rule dictates the direction depends on order."
+        },
+        {
+          "text": "The resulting vector becomes orthogonal to the original cross product.",
+          "isCorrect": false,
+          "rationale": "The new vector is collinear with the original but points in the opposite direction."
+        },
+        {
+          "text": "The resulting vector becomes a zero vector.",
+          "isCorrect": false,
+          "rationale": "Swapping the order of non-parallel vectors does not change their angle or magnitudes, so the product remains non-zero."
+        }
+      ],
+      "hint": "Consider the name of the property $\\mathbf{a} \\times \\mathbf{b} = -(\\mathbf{b} \\times \\mathbf{a})$.",
+      "section": "11.4"
+    },
+    {
+      "question": "In the context of the right-hand rule for $\\mathbf{u} \\times \\mathbf{v}$, where should your thumb point?",
+      "answerOptions": [
+        {
+          "text": "In the direction of the resulting vector $\\mathbf{u} \\times \\mathbf{v}$.",
+          "isCorrect": true,
+          "rationale": "According to the rule, curling fingers from $\\mathbf{u}$ to $\\mathbf{v}$ leaves the thumb pointing in the direction of the cross product."
+        },
+        {
+          "text": "In the direction of the first vector $\\mathbf{u}$.",
+          "isCorrect": false,
+          "rationale": "The fingers should start at $\\mathbf{u}$, but the thumb indicates the result of the operation."
+        },
+        {
+          "text": "In the direction of the second vector $\\mathbf{v}$.",
+          "isCorrect": false,
+          "rationale": "The fingers curl toward $\\mathbf{v}$, but the thumb points perpendicular to the plane of both vectors."
+        },
+        {
+          "text": "Toward the origin.",
+          "isCorrect": false,
+          "rationale": "The thumb points away from the plane formed by the vectors, not necessarily toward the origin."
+        }
+      ],
+      "hint": "Recall the physical gesture used to determine vector orientation.",
+      "section": "11.4"
+    },
+    {
+      "question": "What is the result of $\\mathbf{i} \\times \\mathbf{i}$?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{0}$",
+          "isCorrect": true,
+          "rationale": "Any vector is parallel to itself, and the cross product of parallel vectors is the zero vector."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "This is the result of the dot product $\\mathbf{i} \\cdot \\mathbf{i}$, not the cross product."
+        },
+        {
+          "text": "$\\mathbf{k}$",
+          "isCorrect": false,
+          "rationale": "$\\mathbf{k}$ is the result of $\\mathbf{i} \\times \\mathbf{j}$, which involves two different, orthogonal unit vectors."
+        },
+        {
+          "text": "$-\\mathbf{k}$",
+          "isCorrect": false,
+          "rationale": "This would be the result of $\\mathbf{j} \\times \\mathbf{i}$, not a vector crossed with itself."
+        }
+      ],
+      "hint": "Consider the angle between a vector and itself.",
+      "section": "11.4"
+    },
+    {
+      "question": "Given $\\mathbf{u} = \\langle u_1, u_2, u_3 \\rangle$ and $\\mathbf{v} = \\langle v_1, v_2, v_3 \\rangle$, which expression represents the $\\mathbf{k}$-component of $\\mathbf{u} \\times \\mathbf{v}$?",
+      "answerOptions": [
+        {
+          "text": "$u_1 v_2 - u_2 v_1$",
+          "isCorrect": true,
+          "rationale": "This corresponds to the $2 \\times 2$ determinant associated with the $\\mathbf{k}$ unit vector in the expansion."
+        },
+        {
+          "text": "$u_2 v_3 - u_3 v_2$",
+          "isCorrect": false,
+          "rationale": "This represents the $\\mathbf{i}$-component of the cross product."
+        },
+        {
+          "text": "$u_1 v_3 - u_3 v_1$",
+          "isCorrect": false,
+          "rationale": "This expression, when negated, represents the $\\mathbf{j}$-component of the cross product."
+        },
+        {
+          "text": "$u_1 v_1 + u_2 v_2 + u_3 v_3$",
+          "isCorrect": false,
+          "rationale": "This is the formula for the dot product, which results in a single scalar value."
+        }
+      ],
+      "hint": "Look at the $2 \\times 2$ determinant that remains when the row and column containing $\\mathbf{k}$ are removed.",
+      "section": "11.4"
+    },
+    {
+      "question": "True or False: The triple scalar product $\\mathbf{u} \\cdot (\\mathbf{v} \\times \\mathbf{w})$ can be negative.",
+      "answerOptions": [
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "The determinant can be negative depending on the orientation of the vectors; however, for volume calculations, we take the absolute value."
+        },
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "While volume is always positive, the operation itself is a scalar value that can be negative if the vectors form a left-handed system."
+        }
+      ],
+      "hint": "Think about the properties of determinants and the requirement of absolute values for geometric volume.",
+      "section": "11.4"
+    },
+    {
+      "question": "If vector $\\mathbf{r}$ is 1 unit long and force $\\mathbf{F}$ is 10 units long, what is the maximum possible magnitude of the torque?",
+      "answerOptions": [
+        {
+          "text": "$10$",
+          "isCorrect": true,
+          "rationale": "Max torque occurs when $\\mathbf{r}$ and $\\mathbf{F}$ are perpendicular ($\\%\\sin 90^\\circ = 1$), resulting in $(1)(10)(1) = 10$."
+        },
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "Zero is the minimum torque, occurring when the force is applied parallel to the lever arm."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "This would only be true if the force magnitude were also 1 and the vectors were orthogonal."
+        },
+        {
+          "text": "$100$",
+          "isCorrect": false,
+          "rationale": "This would involve squaring values or multiplication of incorrect magnitudes."
+        }
+      ],
+      "hint": "At what angle is the sine function at its maximum?",
+      "section": "11.4"
+    },
+    {
+      "question": "Which operation is equivalent to $\\mathbf{u} \\cdot (\\mathbf{v} \\times \\mathbf{w})$ based on the Scalar Triple Product Identity?",
+      "answerOptions": [
+        {
+          "text": "$(\\mathbf{u} \\times \\mathbf{v}) \\cdot \\mathbf{w}$",
+          "isCorrect": true,
+          "rationale": "The identity states that the dot and cross product symbols can be interchanged in the triple scalar product without changing the result."
+        },
+        {
+          "text": "$(\\mathbf{u} \\cdot \\mathbf{v}) \\times \\mathbf{w}$",
+          "isCorrect": false,
+          "rationale": "This is mathematically undefined because $\\mathbf{u} \\cdot \\mathbf{v}$ is a scalar, and you cannot take a cross product of a scalar and a vector."
+        },
+        {
+          "text": "$\\mathbf{u} \\times (\\mathbf{v} \\cdot \\mathbf{w})$",
+          "isCorrect": false,
+          "rationale": "This is mathematically undefined as it attempts a cross product between a vector and a scalar result."
+        },
+        {
+          "text": "$\\mathbf{v} \\cdot (\\mathbf{u} \\times \\mathbf{w})$",
+          "isCorrect": false,
+          "rationale": "While similar, this changes the cyclic order and would result in the negative of the original product due to anticommutativity."
+        }
+      ],
+      "hint": "The identity allows you to swap the dot and the cross symbols.",
+      "section": "11.4"
+    },
+    {
+      "question": "If 2D vectors are embedded in $\\mathbb{R}^3$ to find the area of a parallelogram, what is the value assigned to their $z$-components?",
+      "answerOptions": [
+        {
+          "text": "$0$",
+          "isCorrect": true,
+          "rationale": "2D vectors in the $xy$-plane are represented in 3D by setting the third component (the $z$-axis) to zero."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "Setting the $z$-component to 1 would shift the parallelogram off the origin and is not the standard way to calculate 2D areas."
+        },
+        {
+          "text": "Their respective magnitudes.",
+          "isCorrect": false,
+          "rationale": "The $z$-component should be a constant reflecting their lack of vertical depth, not a variable based on length."
+        },
+        {
+          "text": "The angle $\\theta$ between them.",
+          "isCorrect": false,
+          "rationale": "Coordinates must be lengths/positions, not angular values."
+        }
+      ],
+      "hint": "Think about where 2D vectors lie in a 3D coordinate system.",
+      "section": "11.4"
+    },
+    {
+      "question": "A student calculates $\\mathbf{u} \\times \\mathbf{v} = \\langle 4, 7, -2 \\rangle$. What is the result of $\\mathbf{v} \\times \\mathbf{u}$?",
+      "answerOptions": [
+        {
+          "text": "$\\langle -4, -7, 2 \\rangle$",
+          "isCorrect": true,
+          "rationale": "Due to anticommutativity, reversing the order of the cross product flips the sign of every component."
+        },
+        {
+          "text": "$\\langle 4, 7, -2 \\rangle$",
+          "isCorrect": false,
+          "rationale": "This assumes commutativity, which does not apply to vector cross products."
+        },
+        {
+          "text": "$\\langle -4, 7, -2 \\rangle$",
+          "isCorrect": false,
+          "rationale": "Reversing the order negates the entire vector, not just a single component."
+        },
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "The result is only zero if the vectors were parallel; changing the order does not make them parallel."
+        }
+      ],
+      "hint": "Apply the anticommutative property.",
+      "section": "11.4"
+    },
+    {
+      "question": "What is the resulting torque if the force is applied exactly at the pivot point ($|\\mathbf{r}| = 0$)?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbf{0}$",
+          "isCorrect": true,
+          "rationale": "If the lever arm is zero, the magnitude of the torque ($|\\mathbf{r}||\\mathbf{F}|\\sin\\theta$) becomes zero."
+        },
+        {
+          "text": "The magnitude of the force $\\mathbf{F}$.",
+          "isCorrect": false,
+          "rationale": "Torque is a product of force and distance; without distance, no rotational force is generated."
+        },
+        {
+          "text": "Infinity.",
+          "isCorrect": false,
+          "rationale": "Leverage increases with distance; at the center of rotation, leverage is non-existent, not infinite."
+        },
+        {
+          "text": "A unit vector in the direction of $\\mathbf{F}$.",
+          "isCorrect": false,
+          "rationale": "The result must be zero as there is no moment arm to create rotation."
+        }
+      ],
+      "hint": "Consider the effect of trying to open a door by pushing on the hinges.",
+      "section": "11.4"
+    },
+    {
+      "question": "What is the result of the cross product $(\\mathbf{i} + \\mathbf{j}) \\times \\mathbf{k}$?",
+      "answerOptions": [
+        {
+          "text": "$-\\mathbf{j} + \\mathbf{i}$",
+          "isCorrect": true,
+          "rationale": "By distribution: $(\\mathbf{i} \\times \\mathbf{k}) + (\\mathbf{j} \\times \\mathbf{k}) = (-\\mathbf{j}) + (\\mathbf{i})$."
+        },
+        {
+          "text": "$\\mathbf{j} - \\mathbf{i}$",
+          "isCorrect": false,
+          "rationale": "This is the result of $\\mathbf{k} \\times (\\mathbf{i} + \\mathbf{j})$, reversing the correct sign due to anticommutativity."
+        },
+        {
+          "text": "$\\mathbf{i} + \\mathbf{j}$",
+          "isCorrect": false,
+          "rationale": "This incorrectly assumes the cross product behaves like multiplication by 1."
+        },
+        {
+          "text": "$\\mathbf{0}$",
+          "isCorrect": false,
+          "rationale": "The vector $\\mathbf{i} + \\mathbf{j}$ lies in the $xy$-plane and is thus orthogonal to $\\mathbf{k}$, not parallel."
+        }
+      ],
+      "hint": "Distribute the cross product across the sum and use unit vector identities.",
+      "section": "11.4"
+    },
+    {
+      "question": "Calculate the determinant for the triple scalar product where $\\mathbf{u} = \\langle 1, 0, 0 \\rangle, \\mathbf{v} = \\langle 0, 1, 0 \\rangle, \\mathbf{w} = \\langle 0, 0, 1 \\rangle$.",
+      "answerOptions": [
+        {
+          "text": "$1$",
+          "isCorrect": true,
+          "rationale": "This represents the volume of a unit cube, where the determinant of the identity matrix is 1."
+        },
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "The vectors are the standard basis for $\\mathbb{R}^3$ and are not coplanar, so the volume must be non-zero."
+        },
+        {
+          "text": "$\\langle 0, 0, 1 \\rangle$",
+          "isCorrect": false,
+          "rationale": "The triple scalar product results in a scalar value, not a vector."
+        },
+        {
+          "text": "$-1$",
+          "isCorrect": false,
+          "rationale": "The standard order $(\\mathbf{i}, \\mathbf{j}, \\mathbf{k})$ forms a right-handed system with a positive determinant."
+        }
+      ],
+      "hint": "Consider the volume of a cube with side lengths of 1.",
+      "section": "11.4"
+    },
+    {
+      "question": "For a 2D area calculation, Professor Lundholm's shortcut involves a $2 \\times 2$ determinant. How does this relate to the 3D cross product formula?",
+      "answerOptions": [
+        {
+          "text": "It matches the magnitude of the $\\mathbf{k}$-component of the 3D cross product.",
+          "isCorrect": true,
+          "rationale": "When $z$-components are zero, the $\\mathbf{i}$ and $\\mathbf{j}$ components of the cross product vanish, leaving only the $\\mathbf{k}$ component."
+        },
+        {
+          "text": "It is the square root of the 3D cross product magnitude.",
+          "isCorrect": false,
+          "rationale": "The shortcut is a direct calculation of the final area, not a root of the 3D result."
+        },
+        {
+          "text": "It is exactly double the 3D result.",
+          "isCorrect": false,
+          "rationale": "The two methods yield the exact same numerical result for area."
+        },
+        {
+          "text": "It represents the dot product of the 2D vectors.",
+          "isCorrect": false,
+          "rationale": "The $2 \\times 2$ determinant calculates area (sine-based), whereas the dot product relates to projection (cosine-based)."
+        }
+      ],
+      "hint": "Look at the expansion of a $3 \\times 3$ cross product where both third-row entries are zero.",
+      "section": "11.4"
+    }
+  ],
+  "questionCount": 26,
+  "exportedAt": "2026-09-16T11:16:09",
+  "source": "303/quiz_source/11.4-quiz-source.json"
+}
