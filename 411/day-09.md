@@ -261,6 +261,14 @@ reading: "Section 3.2, the \\(\\prod\\) convention through the binomial series f
   </div>
 </div>
 
+<div class="readout">
+  <p><strong>Three of today's problems &mdash; 3.2.12, 3.2.13 and 3.2.14(b) &mdash; tell you to use a computer algebra
+    system.</strong> There is a companion page for those, <em>for after you have handed the set in</em>: it gives the
+    answers, runs the plots and sums live so you can check your own against them, and takes a hard look at which of
+    your conclusions the plot actually supported.
+    <a href="day-09-cas.html">Day 09 CAS review &rarr;</a></p>
+</div>
+
 <div class="bring-to-class">
   <h2>Bring to class</h2>
   <ol>

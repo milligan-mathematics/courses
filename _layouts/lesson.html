@@ -34,7 +34,12 @@ LR499.* from inline scripts at parse time.
 
         <header class="day-header">
             <div class="day-eyebrow">
-                <span class="day-badge">Session {{ page.lesson }}</span>
+                {% comment %}
+                Most lesson pages are numbered sessions in a unit, but a one-off companion
+                (e.g. a 411 CAS page) needs its own label, so `badge` overrides the default.
+                {% endcomment %}
+                {% capture default_badge %}Session {{ page.lesson }}{% endcapture %}
+                <span class="day-badge">{{ page.badge | default: default_badge }}</span>
                 <span class="day-chapter">{{ page.unit }}</span>
             </div>
             <h1>{{ page.lesson_title }}</h1>
@@ -54,7 +59,7 @@ LR499.* from inline scripts at parse time.
             <a class="day-nav-prev" href="{{ page.prev | prepend: site.baseurl }}">&larr; {{ page.prev_title }}</a>
             {% else %}<span></span>{% endif %}
 
-            <a class="day-nav-index" href="{{ page.index_url | prepend: site.baseurl }}">All sessions</a>
+            <a class="day-nav-index" href="{{ page.index_url | prepend: site.baseurl }}">{{ page.index_label | default: "All sessions" }}</a>
 
             {% if page.next %}
             <a class="day-nav-next" href="{{ page.next | prepend: site.baseurl }}">{{ page.next_title }} &rarr;</a>

@@ -37,6 +37,7 @@ Nothing on these pages answers an assigned problem for you.
   <a class="day-card" href="day-07.html"><span class="n">Day 7</span><span class="t">Power Series and the Exponential</span></a>
   <a class="day-card" href="day-08.html"><span class="n">Day 8</span><span class="t">Power Series and Differential Equations</span></a>
   <a class="day-card" href="day-09.html"><span class="n">Day 9</span><span class="t">Newton's Binomial Series</span></a>
+  <a class="day-card" href="day-09-cas.html"><span class="n">Day 09 CAS review</span><span class="t">Reading What the Machine Shows You</span></a>
   <a class="day-card" href="day-10.html"><span class="n">Day 10</span><span class="t">The Basel Problem and Euler's Formula</span></a>
   <a class="day-card" href="day-11.html"><span class="n">Day 11</span><span class="t">Power Series Workshop</span></a>
 </div>
