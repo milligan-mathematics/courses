@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asteroids on a Torus &mdash; MATH 304 &sect;1.1</title>
+  <meta name="description"
+    content="A playable Asteroids game rendered twice at once: as the flat rectangle with its edges identified, and as the torus you get by gluing them. A companion to Section 1.1.">
+  <style>
+    :root {
+      --orange: #F36E24;
+      --burnt: #CD5920;
+      --blue: #009CDE;
+      --green: #00A868;
+      --sun: #F9A01B;
+      --ink: #1a1a1a;
+      --muted: #6E6E6E;
+      --line: #e2e6ec;
+      --page: #f7fafc;
+      --card: #ffffff;
+      --space: #0b1220;
+      --font: 'Franklin Gothic Book', 'Franklin Gothic', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--page);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---------------------------------------------------------------
+       The stage is sized to be exactly one 16:9 screenful. Everything
+       needed to play is inside it; the written notes sit below the fold
+       so that projecting the page shows only the demo.
+       --------------------------------------------------------------- */
+    .stage {
+      position: relative;
+      width: min(100vw, calc(100vh * 16 / 9));
+      height: min(100vh, calc(100vw * 9 / 16));
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      padding: clamp(6px, 1.1vh, 16px) clamp(8px, 1.2vw, 22px);
+      gap: clamp(4px, 0.8vh, 12px);
+    }
+
+    /* ---------------- top bar ---------------- */
+    .bar {
+      display: flex;
+      align-items: baseline;
+      gap: clamp(8px, 1.4vw, 20px);
+      flex: 0 0 auto;
+    }
+
+    .bar .back {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: clamp(0.62rem, 1.05vh, 0.85rem);
+      white-space: nowrap;
+    }
+
+    .bar .back:hover {
+      color: var(--orange);
+    }
+
+    .bar h1 {
+      margin: 0;
+      font-size: clamp(0.95rem, 2.5vh, 1.75rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .bar .tag {
+      font-size: clamp(0.6rem, 1.05vh, 0.82rem);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .hud {
+      margin-left: auto;
+      display: flex;
+      align-items: baseline;
+      gap: clamp(10px, 1.6vw, 26px);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .hud .k {
+      font-size: clamp(0.5rem, 0.95vh, 0.68rem);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-right: 0.4em;
+    }
+
+    .hud .v {
+      font-size: clamp(0.85rem, 2.1vh, 1.4rem);
+      font-weight: 700;
+    }
+
+    .hud .lives {
+      color: var(--orange);
+      letter-spacing: 0.12em;
+    }
+
+    /* ---------------- the two panels ---------------- */
+    .panels {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(8px, 1.2vw, 20px);
+      min-width: 0;
+    }
+
+    .panel {
+      min-height: 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(2px, 0.5vh, 7px);
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-size: clamp(0.7rem, 1.6vh, 1.02rem);
+      font-weight: 700;
+    }
+
+    .panel h2 em {
+      font-style: normal;
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    .legend {
+      display: flex;
+      gap: clamp(8px, 1vw, 18px);
+      font-size: clamp(0.55rem, 1.05vh, 0.76rem);
+      color: var(--muted);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4em;
+      white-space: nowrap;
+    }
+
+    .chip {
+      width: 0.85em;
+      height: 0.85em;
+      border-radius: 2px;
+      display: inline-block;
+    }
+
+    .chip.b {
+      background: var(--blue);
+    }
+
+    .chip.g {
+      background: var(--green);
+    }
+
+    .chip.o {
+      background: var(--orange);
+    }
+
+    .box {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .box canvas {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--space);
+      border-radius: 10px;
+      display: block;
+      touch-action: none;
+    }
+
+    #torus {
+      cursor: grab;
+    }
+
+    #torus.drag {
+      cursor: grabbing;
+    }
+
+    /* ---------------- key hints ---------------- */
+    .keys {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: clamp(6px, 1vw, 16px);
+      flex-wrap: wrap;
+      font-size: clamp(0.55rem, 1.05vh, 0.78rem);
+      color: var(--muted);
+    }
+
+    .keys b {
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    kbd {
+      font-family: inherit;
+      font-size: 0.92em;
+      border: 1px solid var(--line);
+      border-bottom-width: 2px;
+      border-radius: 4px;
+      padding: 0.05em 0.42em;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .keys button {
+      font: inherit;
+      font-size: inherit;
+      color: var(--muted);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.16em 0.8em;
+      cursor: pointer;
+    }
+
+    .keys button:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .keys .scrollhint {
+      margin-left: auto;
+    }
+
+    /* ---------------- overlay ---------------- */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(11, 18, 32, 0.58);
+      border-radius: 10px;
+      z-index: 5;
+    }
+
+    .overlay[hidden] {
+      display: none;
+    }
+
+    .overlay .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--orange);
+      border-radius: 12px;
+      padding: clamp(14px, 3vh, 30px) clamp(18px, 3vw, 40px);
+      text-align: center;
+      max-width: min(34rem, calc(100% - 24px));
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .overlay h3 {
+      margin: 0 0 0.4em;
+      font-size: clamp(1rem, 2.8vh, 1.7rem);
+    }
+
+    .overlay p {
+      margin: 0.3em 0;
+      font-size: clamp(0.72rem, 1.6vh, 0.98rem);
+      color: var(--muted);
+    }
+
+    .overlay .go {
+      margin-top: 1em;
+      font: inherit;
+      font-size: clamp(0.78rem, 1.7vh, 1rem);
+      font-weight: 700;
+      background: var(--orange);
+      color: #fff;
+      border: 0;
+      border-radius: 8px;
+      padding: 0.6em 1.6em;
+      cursor: pointer;
+    }
+
+    .overlay .go:hover {
+      background: var(--burnt);
+    }
+
+    /* ---------------- notes below the fold ---------------- */
+    .notes {
+      max-width: 62rem;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .notes h2 {
+      font-size: 1.5rem;
+      margin: 2.2rem 0 0.6rem;
+    }
+
+    .notes h2:first-child {
+      margin-top: 0;
+    }
+
+    .notes p,
+    .notes li {
+      line-height: 1.65;
+      font-size: 1.02rem;
+    }
+
+    .notes ol,
+    .notes ul {
+      padding-left: 1.3rem;
+    }
+
+    .notes li {
+      margin: 0.55rem 0;
+    }
+
+    .notes .aside {
+      background: #fff;
+      border-left: 4px solid var(--blue);
+      border-radius: 0 8px 8px 0;
+      padding: 0.9rem 1.2rem;
+      margin: 1.4rem 0;
+    }
+
+    .notes .aside p:last-child {
+      margin-bottom: 0;
+    }
+
+    .notes .aside p:first-child {
+      margin-top: 0;
+    }
+
+    .notes footer {
+      margin-top: 3rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    /* Narrow screens: stack the two views and let the page scroll. */
+    @media (max-aspect-ratio: 1/1),
+    (max-width: 720px) {
+      .stage {
+        width: 100%;
+        height: auto;
+        padding: 12px;
+      }
+
+      .panels {
+        grid-template-columns: 1fr;
+      }
+
+      .box {
+        height: 58vw;
+        min-height: 240px;
+      }
+
+      .hud {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .bar {
+        flex-wrap: wrap;
+      }
+
+      /* nowrap is what keeps the 16:9 bar on one line; on a phone it is
+         only a source of horizontal overflow. */
+      .bar h1,
+      .bar .tag,
+      .bar .back,
+      .hud,
+      .legend span,
+      .keys span {
+        white-space: normal;
+      }
+
+      .keys .scrollhint {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="stage" id="stage">
+
+    <div class="bar">
+      <a class="back" href="index.html">&larr; MATH 304</a>
+      <h1>A Universe With No Edge</h1>
+      <span class="tag">&sect;1.1 &middot; Figures 1.1.2&ndash;1.1.3</span>
+      <div class="hud">
+        <div><span class="k">Score</span><span class="v" id="hud-score">0</span></div>
+        <div><span class="k">Wave</span><span class="v" id="hud-wave">1</span></div>
+        <div><span class="k">Ships</span><span class="v lives" id="hud-lives">&#9650;&#9650;&#9650;</span></div>
+      </div>
+    </div>
+
+    <div class="panels">
+      <section class="panel">
+        <h2>The screen &nbsp;<em>&mdash; a flat rectangle, edges identified</em></h2>
+        <div class="legend">
+          <span><i class="chip b"></i>left edge &equiv; right edge</span>
+          <span><i class="chip g"></i>top edge &equiv; bottom edge</span>
+          <span><i class="chip o"></i>you</span>
+        </div>
+        <div class="box" id="box-flat"><canvas id="flat"></canvas></div>
+      </section>
+
+      <section class="panel">
+        <h2>The same universe &nbsp;<em>&mdash; glued into a torus</em></h2>
+        <div class="legend">
+          <span><i class="chip b"></i>where the two vertical edges went</span>
+          <span><i class="chip g"></i>where the two horizontal edges went</span>
+        </div>
+        <div class="box" id="box-torus"><canvas id="torus"></canvas></div>
+      </section>
+
+      <div class="overlay" id="overlay">
+        <div class="card">
+          <h3 id="ov-title">Asteroids, on a finite world</h3>
+          <p id="ov-body">Fly off any edge and you come back on the other side. Both pictures are the same
+            universe &mdash; watch what your ship does on the donut.</p>
+          <button class="go" id="ov-go" type="button">Start</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="keys">
+      <span><kbd>&larr;</kbd><kbd>&rarr;</kbd> turn</span>
+      <span><kbd>&uarr;</kbd> thrust</span>
+      <span><kbd>space</kbd> fire</span>
+      <span><kbd>P</kbd> pause</span>
+      <span><kbd>R</kbd> restart</span>
+      <span>drag the donut to turn it</span>
+      <button id="btn-spin" type="button">spin: on</button>
+      <span class="scrollhint">notes below &darr;</span>
+    </div>
+
+  </div>
+
+  <div class="notes">
+    <h2>What this is showing</h2>
+    <p>The left panel is the video screen from Figure 1.1.2: a rectangle whose top edge has been identified,
+      point by point, with its bottom edge, and whose left edge has been identified with its right. The ship
+      never reaches a wall, because there are no walls to reach. It also never escapes, because the total
+      area is fixed. The world is <strong>finite and yet has no boundary points</strong> &mdash; every point,
+      including the ones sitting on a marked edge, has a small neighborhood around it that looks like an
+      ordinary disk of the plane. Watch an asteroid cross an edge: the two half-pictures on opposite sides
+      are one asteroid, and nothing happens to it as it passes.</p>
+
+    <p>The right panel performs the gluing described in the reading. Bend the rectangle to bring the top edge
+      down onto the bottom edge and you get a cylinder; the left and right edges have become the two boundary
+      circles of that cylinder. Bend the cylinder around and glue those two circles and you get the torus.
+      The <span style="color:#00A868;font-weight:700">green</span> circle on the donut is where the
+      horizontal edges ended up, and the <span style="color:#009CDE;font-weight:700">blue</span> circle is
+      where the vertical edges ended up. Every one of the four corners of the rectangle is the same single
+      point, where those two circles cross.</p>
+
+    <p>It is worth knowing which part of the screen is which part of the donut. The top and bottom edges of
+      the rectangle both became the green circle running around the outer rim, so the most visible ridge of
+      the donut is exactly the line your ship crosses when it wraps vertically &mdash; watch the two panels
+      together at that moment. The middle row of the screen, by contrast, ends up on the inner wall of the
+      hole. Objects the donut is hiding are still drawn, as a faint outline on top of the surface, so that a
+      ship round the back reads as <em>behind</em> rather than as gone.</p>
+
+    <div class="aside">
+      <p><strong>One honest caveat.</strong> The donut is a picture of the <em>topology</em>, not of the
+        geometry. On the surface of a real donut in space, the outer rim is stretched and the inner rim is
+        pinched &mdash; distances there are not the distances the game uses. The game's physics run on the
+        flat rectangle, where a ship at the inner rim and a ship at the outer rim move at exactly the same
+        speed. That flat torus cannot be placed in three-dimensional space without distortion, which is why
+        we can only ever draw it as a donut. Chapters 7 and 8 come back to this.</p>
+    </div>
+
+    <h2>Try this while you play</h2>
+    <ol>
+      <li><strong>Park on a corner.</strong> Drift the ship into a corner of the rectangle and stop. You will
+        see four pieces of a ship, one in each corner. On the donut there is exactly one ship. Four pictures,
+        one point.</li>
+      <li><strong>Fire straight along an edge.</strong> A bullet fired exactly horizontally comes back to
+        where it started. Fired at a slight angle, it does not &mdash; it returns to the same horizontal
+        line at a shifted position, then again, and again. When does such a path ever close up, and when
+        does it wander forever without repeating?</li>
+      <li><strong>Find yourself.</strong> Turn off the spin, drive the ship around the screen, and keep
+        track of where it is on the donut. Crossing the left edge takes you the long way around the hole.
+        Crossing the top edge takes you around the tube.</li>
+      <li><strong>Change one gluing.</strong> Suppose the left edge were glued to the right edge upside
+        down, so that leaving at the top left brought you back at the bottom right. That is still a finite
+        world with no boundary, but it is no longer a torus. What is it, and why can it not be built in
+        three-dimensional space?</li>
+    </ol>
+
+    <h2>Why any of this matters</h2>
+    <p>Section 1.1 is asking you to stop assuming that "finite" and "has an edge" are the same claim, and to
+      stop assuming that a universe must sit inside some larger space in order to be curved or connected up
+      in a strange way. The two-dimensional beings on this screen can do complete geometry and complete
+      physics without ever suspecting there is a third dimension to bend into. They could, however, discover
+      the gluing from the inside: fly in a straight line long enough and you arrive back home, facing the
+      same way. That experiment is available to us too, and is the reason cosmic topology is a subject at
+      all.</p>
+
+    <footer>
+      MATH 304 &middot; Modern Geometry &middot; a companion to Section 1.1 of <em>Geometry with an
+        Introduction to Cosmic Topology</em>. Nothing here answers an assigned problem for you.
+      &nbsp;<a href="index.html">Back to the course page</a>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      /* =============================================================
+         The world. Everything the game knows about is a point in the
+         rectangle [0,W] x [0,H] with both pairs of edges identified.
+         y increases downward, as on any canvas.
+         ============================================================= */
+      const W = 800, H = 600, TAU = Math.PI * 2;
+
+      const wrapX = x => ((x % W) + W) % W;
+      const wrapY = y => ((y % H) + H) % H;
+
+      /* Shortest displacement on a circle of circumference L: the whole
+         point of the identification, and the reason a bullet at the far
+         right can hit a rock at the far left. */
+      function dw(a, b, L) {
+        let d = b - a;
+        if (d > L / 2) d -= L; else if (d < -L / 2) d += L;
+        return d;
+      }
+      function torDist(x1, y1, x2, y2) {
+        const dx = dw(x1, x2, W), dy = dw(y1, y2, H);
+        return Math.hypot(dx, dy);
+      }
+
+      /* ---------------- tuning ---------------- */
+      const TURN = 3.5;        // rad/s
+      const ACC = 300;         // world units / s^2
+      const VMAX = 380;
+      const DRAG = 0.84;       // velocity retained per second
+      const SHIP_R = 11;
+      const BULLET_V = 430;
+      const BULLET_LIFE = 1.15;
+      const FIRE_GAP = 0.17;
+      const MAX_BULLETS = 5;
+      const AST_R = { 3: 44, 2: 25, 1: 14 };
+      const AST_PTS = { 3: 20, 2: 50, 1: 100 };
+
+      /* ---------------- state ---------------- */
+      const state = {
+        ship: { x: W / 2, y: H / 2, a: -Math.PI / 2, vx: 0, vy: 0, alive: true, invuln: 0, thrusting: false },
+        asteroids: [], bullets: [], parts: [],
+        score: 0, lives: 3, wave: 1,
+        running: false, paused: false, over: false,
+        respawn: 0, waveGap: 0, fireCD: 0
+      };
+      let clock = 0;
+
+      function makeAsteroid(x, y, size) {
+        const r = AST_R[size];
+        const n = 8 + size + ((Math.random() * 3) | 0);
+        const shape = [];
+        for (let i = 0; i < n; i++) shape.push(0.70 + Math.random() * 0.52);
+        const sp = (28 + Math.random() * 42) * (size === 3 ? 1 : size === 2 ? 1.4 : 1.85);
+        const ang = Math.random() * TAU;
+        return {
+          x: x, y: y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
+          r: r, size: size, shape: shape,
+          rot: Math.random() * TAU, spin: (Math.random() - 0.5) * 1.3
+        };
+      }
+
+      function startWave(n) {
+        state.asteroids.length = 0;
+        for (let i = 0; i < n; i++) {
+          let x = 0, y = 0, tries = 0;
+          do {
+            x = Math.random() * W; y = Math.random() * H; tries++;
+          } while (tries < 80 && torDist(x, y, state.ship.x, state.ship.y) < 190);
+          state.asteroids.push(makeAsteroid(x, y, 3));
+        }
+      }
+
+      function resetGame() {
+        state.score = 0; state.lives = 3; state.wave = 1;
+        state.over = false; state.paused = false;
+        state.bullets.length = 0; state.parts.length = 0;
+        state.respawn = 0; state.waveGap = 0; state.fireCD = 0;
+        placeShip();
+        state.ship.invuln = 2.2;
+        startWave(5);                       // five rocks, as in Figure 1.1.2
+        syncHud();
+      }
+
+      function placeShip() {
+        const s = state.ship;
+        s.x = W / 2; s.y = H / 2; s.vx = 0; s.vy = 0; s.a = -Math.PI / 2;
+        s.alive = true; s.thrusting = false;
+      }
+
+      function burst(x, y, n, spread, tint) {
+        for (let i = 0; i < n; i++) {
+          const a = Math.random() * TAU, v = spread * (0.25 + Math.random());
+          state.parts.push({
+            x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v,
+            life: 0.45 + Math.random() * 0.55, max: 1, tint: tint
+          });
+        }
+      }
+
+      function splitAsteroid(i) {
+        const a = state.asteroids[i];
+        state.score += AST_PTS[a.size];
+        state.asteroids.splice(i, 1);
+        burst(a.x, a.y, a.size === 3 ? 14 : a.size === 2 ? 10 : 7, 90 + 30 * a.size, '#c8d4e4');
+        if (a.size > 1) {
+          for (let k = 0; k < 2; k++) {
+            const c = makeAsteroid(a.x, a.y, a.size - 1);
+            c.vx += a.vx * 0.45; c.vy += a.vy * 0.45;
+            state.asteroids.push(c);
+          }
+        }
+        syncHud();
+      }
+
+      function killShip() {
+        const s = state.ship;
+        burst(s.x, s.y, 26, 150, '#F9A01B');
+        s.alive = false;
+        state.lives--;
+        if (state.lives <= 0) {
+          state.over = true;
+          showOverlay('Game over',
+            'Final score ' + state.score + ' on wave ' + state.wave +
+            '. The rocks are still out there, going around forever.', 'Play again');
+        } else {
+          state.respawn = 1.5;
+        }
+        syncHud();
+      }
+
+      /* ---------------- input ---------------- */
+      const keys = Object.create(null);
+      const GAME_KEYS = {
+        ArrowLeft: 1, ArrowRight: 1, ArrowUp: 1, ArrowDown: 1, Space: 1,
+        KeyA: 1, KeyD: 1, KeyW: 1, KeyS: 1
+      };
+
+      window.addEventListener('keydown', function (e) {
+        if (GAME_KEYS[e.code]) e.preventDefault();
+        if (e.repeat) return;
+        keys[e.code] = true;
+        if (e.code === 'KeyP' && state.running && !state.over) togglePause();
+        if (e.code === 'KeyR') { resetGame(); state.running = true; hideOverlay(); }
+        if (e.code === 'Space' && (!state.running || state.over)) startOrRestart();
+      });
+      window.addEventListener('keyup', function (e) {
+        if (GAME_KEYS[e.code]) e.preventDefault();
+        keys[e.code] = false;
+      });
+      window.addEventListener('blur', function () {
+        for (const k in keys) keys[k] = false;
+        if (state.running && !state.over) { state.paused = true; showPause(); }
+      });
+
+      const left = () => keys.ArrowLeft || keys.KeyA;
+      const right = () => keys.ArrowRight || keys.KeyD;
+      const thrust = () => keys.ArrowUp || keys.KeyW;
+      const firing = () => keys.Space;
+
+      /* ---------------- simulation ---------------- */
+      function update(dt) {
+        clock += dt;
+
+        /* Rocks and debris drift whether or not anyone is playing, so the
+           page is never a still image. */
+        for (const a of state.asteroids) {
+          a.x = wrapX(a.x + a.vx * dt);
+          a.y = wrapY(a.y + a.vy * dt);
+          a.rot += a.spin * dt;
+        }
+        for (let i = state.parts.length - 1; i >= 0; i--) {
+          const p = state.parts[i];
+          p.life -= dt;
+          if (p.life <= 0) { state.parts.splice(i, 1); continue; }
+          p.x = wrapX(p.x + p.vx * dt);
+          p.y = wrapY(p.y + p.vy * dt);
+          p.vx *= Math.pow(0.4, dt); p.vy *= Math.pow(0.4, dt);
+        }
+
+        if (!state.running || state.over) return;
+
+        const s = state.ship;
+
+        if (!s.alive) {
+          state.respawn -= dt;
+          if (state.respawn <= 0) { placeShip(); s.invuln = 2.2; }
+        } else {
+          if (left()) s.a -= TURN * dt;
+          if (right()) s.a += TURN * dt;
+          s.thrusting = !!thrust();
+          if (s.thrusting) {
+            s.vx += Math.cos(s.a) * ACC * dt;
+            s.vy += Math.sin(s.a) * ACC * dt;
+            if (Math.random() < dt * 30) {
+              burst(s.x - Math.cos(s.a) * 12, s.y - Math.sin(s.a) * 12, 1, 40, '#F36E24');
+            }
+          }
+          const sp = Math.hypot(s.vx, s.vy);
+          if (sp > VMAX) { s.vx *= VMAX / sp; s.vy *= VMAX / sp; }
+          const k = Math.pow(DRAG, dt);
+          s.vx *= k; s.vy *= k;
+          s.x = wrapX(s.x + s.vx * dt);
+          s.y = wrapY(s.y + s.vy * dt);
+          if (s.invuln > 0) s.invuln -= dt;
+
+          state.fireCD -= dt;
+          if (firing() && state.fireCD <= 0 && state.bullets.length < MAX_BULLETS) {
+            state.fireCD = FIRE_GAP;
+            state.bullets.push({
+              x: wrapX(s.x + Math.cos(s.a) * 15),
+              y: wrapY(s.y + Math.sin(s.a) * 15),
+              vx: s.vx * 0.4 + Math.cos(s.a) * BULLET_V,
+              vy: s.vy * 0.4 + Math.sin(s.a) * BULLET_V,
+              life: BULLET_LIFE
+            });
+          }
+        }
+
+        for (let i = state.bullets.length - 1; i >= 0; i--) {
+          const b = state.bullets[i];
+          b.life -= dt;
+          if (b.life <= 0) { state.bullets.splice(i, 1); continue; }
+          b.x = wrapX(b.x + b.vx * dt);
+          b.y = wrapY(b.y + b.vy * dt);
+        }
+
+        /* Collisions use the wrapped distance, which is the only
+           distance this world actually has. */
+        outer:
+        for (let i = state.bullets.length - 1; i >= 0; i--) {
+          const b = state.bullets[i];
+          for (let j = state.asteroids.length - 1; j >= 0; j--) {
+            const a = state.asteroids[j];
+            if (torDist(b.x, b.y, a.x, a.y) < a.r) {
+              state.bullets.splice(i, 1);
+              splitAsteroid(j);
+              continue outer;
+            }
+          }
+        }
+
+        if (s.alive && s.invuln <= 0) {
+          for (let j = state.asteroids.length - 1; j >= 0; j--) {
+            const a = state.asteroids[j];
+            if (torDist(s.x, s.y, a.x, a.y) < a.r * 0.82 + SHIP_R) {
+              splitAsteroid(j);
+              killShip();
+              break;
+            }
+          }
+        }
+
+        if (state.asteroids.length === 0) {
+          state.waveGap -= dt;
+          if (state.waveGap <= 0) {
+            state.wave++;
+            startWave(Math.min(4 + state.wave, 11));
+            state.waveGap = 0;
+            syncHud();
+          }
+        } else {
+          state.waveGap = 1.3;
+        }
+      }
+
+      /* =============================================================
+         Panel 1: the rectangle. Every object is drawn in up to nine
+         places, because a disk straddling an edge genuinely appears on
+         both sides -- that is the identification, not a special case.
+         ============================================================= */
+      const fcv = document.getElementById('flat');
+      const fctx = fcv.getContext('2d');
+      const boxFlat = document.getElementById('box-flat');
+
+      const STARS = [];
+      for (let i = 0; i < 110; i++) {
+        STARS.push({ x: Math.random() * W, y: Math.random() * H, r: Math.random() < 0.15 ? 1.6 : 0.9, a: 0.12 + Math.random() * 0.3 });
+      }
+
+      const SHIP_POLY = [[16, 0], [-11, 10], [-6, 0], [-11, -10]];
+
+      let flatS = 1;  // css px per world unit
+
+      /* Resizing a canvas clears it and is not free, so only touch the
+         backing store when the box has actually changed size. */
+      const sizeCache = new WeakMap();
+      function fitCanvas(cv, box, aspect) {
+        const bw = box.clientWidth, bh = box.clientHeight;
+        if (bw <= 0 || bh <= 0) return null;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const prev = sizeCache.get(cv);
+        if (prev && prev.bw === bw && prev.bh === bh && prev.dpr === dpr) return prev;
+        let cw = bw, ch = bw / aspect;
+        if (ch > bh) { ch = bh; cw = bh * aspect; }
+        cv.style.width = cw + 'px';
+        cv.style.height = ch + 'px';
+        cv.width = Math.max(1, Math.round(cw * dpr));
+        cv.height = Math.max(1, Math.round(ch * dpr));
+        const size = { cw: cw, ch: ch, dpr: dpr, bw: bw, bh: bh };
+        sizeCache.set(cv, size);
+        return size;
+      }
+
+      function drawFlat() {
+        const size = fitCanvas(fcv, boxFlat, W / H);
+        if (!size) return;
+        const g = fctx, s = size.cw / W;
+        flatS = s;
+        g.setTransform(size.dpr * s, 0, 0, size.dpr * s, 0, 0);
+        const LW = 1.6 / s;
+
+        g.fillStyle = '#0b1220';
+        g.fillRect(0, 0, W, H);
+
+        for (const st of STARS) {
+          g.globalAlpha = st.a;
+          g.fillStyle = '#ffffff';
+          g.fillRect(st.x, st.y, st.r / s * 1.4, st.r / s * 1.4);
+        }
+        g.globalAlpha = 1;
+
+        g.save();
+        g.beginPath(); g.rect(0, 0, W, H); g.clip();
+
+        drawIdentifiedEdges(g, s);
+
+        for (const p of state.parts) {
+          const al = Math.max(0, Math.min(1, p.life / 0.7));
+          ghost(p.x, p.y, 6, function (x, y) {
+            g.globalAlpha = al;
+            g.fillStyle = p.tint;
+            const r = 2.2 / s;
+            g.fillRect(x - r, y - r, r * 2, r * 2);
+          });
+        }
+        g.globalAlpha = 1;
+
+        g.lineJoin = 'round';
+        for (const a of state.asteroids) {
+          ghost(a.x, a.y, a.r + 4, function (x, y) {
+            g.save();
+            g.translate(x, y); g.rotate(a.rot);
+            g.beginPath();
+            const n = a.shape.length;
+            for (let i = 0; i < n; i++) {
+              const ang = i / n * TAU, rr = a.r * a.shape[i];
+              const px = Math.cos(ang) * rr, py = Math.sin(ang) * rr;
+              if (i === 0) g.moveTo(px, py); else g.lineTo(px, py);
+            }
+            g.closePath();
+            g.fillStyle = 'rgba(146,164,190,0.16)';
+            g.fill();
+            g.strokeStyle = '#c3d0e2';
+            g.lineWidth = LW * 1.25;
+            g.stroke();
+            g.restore();
+          });
+        }
+
+        for (const b of state.bullets) {
+          ghost(b.x, b.y, 6, function (x, y) {
+            g.beginPath();
+            g.arc(x, y, 3.2 / s * 1.3, 0, TAU);
+            g.fillStyle = '#F9A01B';
+            g.fill();
+          });
+        }
+
+        const sh = state.ship;
+        const blink = sh.invuln > 0 && (Math.floor(clock * 12) % 2 === 0);
+        if (sh.alive && !blink) {
+          ghost(sh.x, sh.y, 22, function (x, y) {
+            g.save();
+            g.translate(x, y); g.rotate(sh.a);
+            if (sh.thrusting && Math.floor(clock * 30) % 2 === 0) {
+              g.beginPath();
+              g.moveTo(-8, 5.5); g.lineTo(-20 - Math.random() * 6, 0); g.lineTo(-8, -5.5);
+              g.closePath();
+              g.fillStyle = '#F9A01B';
+              g.fill();
+            }
+            g.beginPath();
+            g.moveTo(SHIP_POLY[0][0], SHIP_POLY[0][1]);
+            for (let i = 1; i < SHIP_POLY.length; i++) g.lineTo(SHIP_POLY[i][0], SHIP_POLY[i][1]);
+            g.closePath();
+            g.fillStyle = 'rgba(243,110,36,0.32)';
+            g.fill();
+            g.strokeStyle = '#F36E24';
+            g.lineWidth = LW * 1.6;
+            g.stroke();
+            g.restore();
+          });
+        }
+
+        g.restore();
+      }
+
+      /* Run a draw callback at every translate of an object that could
+         be visible. At most four of the nine land on screen at once. */
+      function ghost(x, y, r, fn) {
+        for (let ix = -1; ix <= 1; ix++) {
+          const gx = x + ix * W;
+          if (gx + r < 0 || gx - r > W) continue;
+          for (let iy = -1; iy <= 1; iy++) {
+            const gy = y + iy * H;
+            if (gy + r < 0 || gy - r > H) continue;
+            fn(gx, gy);
+          }
+        }
+      }
+
+      /* The standard topologist's markings: one arrow on the pair of
+         edges glued to each other, two arrows on the other pair. */
+      function drawIdentifiedEdges(g, s) {
+        /* Sit the marked lines a little inside the border so the
+           arrowheads are not half cut off by the clip. */
+        const w = 3.2 / s, inset = 16;
+        g.lineCap = 'round';
+
+        g.strokeStyle = '#009CDE'; g.lineWidth = w;
+        g.beginPath();
+        g.moveTo(inset, 0); g.lineTo(inset, H);
+        g.moveTo(W - inset, 0); g.lineTo(W - inset, H);
+        g.stroke();
+        chevrons(g, inset, H / 2, 0, 1, 1, w, '#009CDE');
+        chevrons(g, W - inset, H / 2, 0, 1, 1, w, '#009CDE');
+
+        g.strokeStyle = '#00A868'; g.lineWidth = w;
+        g.beginPath();
+        g.moveTo(0, inset); g.lineTo(W, inset);
+        g.moveTo(0, H - inset); g.lineTo(W, H - inset);
+        g.stroke();
+        chevrons(g, W / 2, inset, 1, 0, 2, w, '#00A868');
+        chevrons(g, W / 2, H - inset, 1, 0, 2, w, '#00A868');
+      }
+
+      function chevrons(g, cx, cy, dx, dy, count, w, color) {
+        const L = 12, gap = 11;
+        g.strokeStyle = color; g.lineWidth = w;
+        for (let k = 0; k < count; k++) {
+          const off = (k - (count - 1) / 2) * gap;
+          const bx = cx + dx * off, by = cy + dy * off;
+          g.beginPath();
+          g.moveTo(bx - dx * L + dy * L, by - dy * L + dx * L);
+          g.lineTo(bx, by);
+          g.lineTo(bx - dx * L - dy * L, by - dy * L - dx * L);
+          g.stroke();
+        }
+      }
+
+      /* =============================================================
+         Panel 2: the torus. Parametrised straight off the rectangle,
+             u = 2*pi*x/W   (around the hole)
+             v = -2*pi*y/H  (around the tube, so that "down" on the
+                             screen is down on the near face)
+         Quads and sprites go into one depth-sorted list, so a ship on
+         the far side is hidden by the surface, exactly as it should be.
+         ============================================================= */
+      const tcv = document.getElementById('torus');
+      const tctx = tcv.getContext('2d');
+      const boxTorus = document.getElementById('box-torus');
+
+      const RR = 1.0, rr = 0.42;
+      const NU = 48, NV = 24, NQ = NU * NV;
+      const K3 = 0.0046;   // world units -> torus units, for sprite size
+      const NOFF = 0.022;  // lift sprites off the surface
+      const CAM_D = 6.0, CAM_F = 4.0;
+
+      const bx = new Float32Array(NQ), by = new Float32Array(NQ), bz = new Float32Array(NQ);
+      const cnx = new Float32Array(NQ), cny = new Float32Array(NQ), cnz = new Float32Array(NQ);
+      const rzArr = new Float32Array(NQ);
+      const pxArr = new Float32Array(NQ), pyArr = new Float32Array(NQ);
+      const allD = new Float32Array(NQ + 1024);
+      const qs = new Float32Array(NQ);
+      const order = [];
+      const ents = [];
+
+      for (let i = 0; i < NU; i++) {
+        const u = i / NU * TAU, cu = Math.cos(u), su = Math.sin(u);
+        const uc = (i + 0.5) / NU * TAU, ccu = Math.cos(uc), csu = Math.sin(uc);
+        for (let j = 0; j < NV; j++) {
+          const v = j / NV * TAU, cv = Math.cos(v), sv = Math.sin(v);
+          const k = i * NV + j;
+          const rad = RR + rr * cv;
+          bx[k] = rad * cu; by[k] = rad * su; bz[k] = rr * sv;
+          const vc = (j + 0.5) / NV * TAU, ccv = Math.cos(vc), csv = Math.sin(vc);
+          cnx[k] = ccv * ccu; cny[k] = ccv * csu; cnz[k] = csv;
+        }
+      }
+
+      let yaw = 0.55, elev = 0.95, spinning = true;
+      let CA = 1, SA = 0, CE = 1, SE = 0, CX = 0, CY = 0, SC = 100;
+
+      function projPt(x, y, z) {
+        const X = x * CA - y * SA;
+        const Y1 = x * SA + y * CA;
+        const Y = Y1 * CE + z * SE;
+        const Z = -Y1 * SE + z * CE;
+        const s = CAM_F / (CAM_D - Z);
+        return [CX + X * s * SC, CY - Y * s * SC, CAM_D - Z, s];
+      }
+
+      /* Local frame on the surface above a world point, plus the
+         projections of a little polygon drawn in that tangent plane. */
+      function sprite(x, y, pts) {
+        const u = x / W * TAU, v = -y / H * TAU;
+        const cu = Math.cos(u), su = Math.sin(u), cv = Math.cos(v), sv = Math.sin(v);
+        const rad = RR + rr * cv;
+        const nX = cv * cu, nY = cv * su, nZ = sv;
+        const ox = rad * cu + NOFF * nX, oy = rad * su + NOFF * nY, oz = rr * sv + NOFF * nZ;
+        const euX = -su, euY = cu, euZ = 0;
+        const evX = -sv * cu, evY = -sv * su, evZ = cv;
+        const centre = projPt(ox, oy, oz);
+        if (!pts) return { centre: centre, verts: null };
+        const verts = [];
+        for (let i = 0; i < pts.length; i++) {
+          const A = pts[i][0] * K3, B = -pts[i][1] * K3;
+          verts.push(projPt(
+            ox + A * euX + B * evX,
+            oy + A * euY + B * evY,
+            oz + A * euZ + B * evZ));
+        }
+        return { centre: centre, verts: verts };
+      }
+
+      function rotatePoly(poly, ang, scale) {
+        const c = Math.cos(ang), s = Math.sin(ang), out = [];
+        for (let i = 0; i < poly.length; i++) {
+          const a = poly[i][0] * scale, b = poly[i][1] * scale;
+          out.push([a * c - b * s, a * s + b * c]);
+        }
+        return out;
+      }
+
+      function drawTorus() {
+        const size = fitCanvas(tcv, boxTorus, W / H);
+        if (!size) return;
+        const g = tctx;
+        g.setTransform(size.dpr, 0, 0, size.dpr, 0, 0);
+        g.clearRect(0, 0, size.cw, size.ch);
+        g.fillStyle = '#0b1220';
+        g.fillRect(0, 0, size.cw, size.ch);
+
+        CA = Math.cos(yaw); SA = Math.sin(yaw);
+        CE = Math.cos(elev); SE = Math.sin(elev);
+        CX = size.cw / 2; CY = size.ch / 2;
+        SC = Math.min(size.cw, size.ch) * 0.45;
+
+        /* The light is fixed relative to the camera, so instead of
+           rotating 1152 normals we rotate the light backwards once. */
+        const lx = -0.42, ly = 0.55, lz = 0.72;
+        const lY1 = ly * CE - lz * SE;
+        const lZ1 = ly * SE + lz * CE;
+        const Lx = lx * CA + lY1 * SA;
+        const Ly = -lx * SA + lY1 * CA;
+        const Lz = lZ1;
+
+        for (let k = 0; k < NQ; k++) {
+          const x = bx[k], y = by[k], z = bz[k];
+          const X = x * CA - y * SA;
+          const Y1 = x * SA + y * CA;
+          const Y = Y1 * CE + z * SE;
+          const Z = -Y1 * SE + z * CE;
+          rzArr[k] = Z;
+          const s = CAM_F / (CAM_D - Z);
+          pxArr[k] = CX + X * s * SC;
+          pyArr[k] = CY - Y * s * SC;
+          const nd = cnx[k] * Lx + cny[k] * Ly + cnz[k] * Lz;
+          qs[k] = nd > 0 ? nd : 0;
+        }
+
+        for (let i = 0; i < NU; i++) {
+          const i1 = (i + 1) % NU;
+          for (let j = 0; j < NV; j++) {
+            const j1 = (j + 1) % NV;
+            const q = i * NV + j;
+            allD[q] = CAM_D - 0.25 * (rzArr[q] + rzArr[i1 * NV + j] + rzArr[i1 * NV + j1] + rzArr[i * NV + j1]);
+          }
+        }
+
+        /* --- the moving things --- */
+        ents.length = 0;
+
+        for (const p of state.parts) {
+          const sp = sprite(p.x, p.y, null);
+          ents.push({ d: sp.centre[2] - 0.004, kind: 0, c: sp.centre, tint: p.tint, a: Math.max(0, Math.min(1, p.life / 0.7)) });
+        }
+        for (const b of state.bullets) {
+          const sp = sprite(b.x, b.y, null);
+          ents.push({ d: sp.centre[2] - 0.004, kind: 1, c: sp.centre });
+        }
+        for (const a of state.asteroids) {
+          const poly = [];
+          const n = a.shape.length;
+          for (let i = 0; i < n; i++) {
+            const ang = i / n * TAU + a.rot, rad = a.r * a.shape[i];
+            poly.push([Math.cos(ang) * rad, Math.sin(ang) * rad]);
+          }
+          const sp = sprite(a.x, a.y, poly);
+          ents.push({ d: sp.centre[2] - 0.004, kind: 2, v: sp.verts });
+        }
+        const sh = state.ship;
+        const blink = sh.invuln > 0 && (Math.floor(clock * 12) % 2 === 0);
+        if (sh.alive && !blink) {
+          const sp = sprite(sh.x, sh.y, rotatePoly(SHIP_POLY, sh.a, 1));
+          let flame = null;
+          if (sh.thrusting && Math.floor(clock * 30) % 2 === 0) {
+            flame = sprite(sh.x, sh.y, rotatePoly([[-8, 5.5], [-20, 0], [-8, -5.5]], sh.a, 1)).verts;
+          }
+          ents.push({ d: sp.centre[2] - 0.006, kind: 3, v: sp.verts, flame: flame });
+        }
+
+        const nEnt = Math.min(ents.length, allD.length - NQ);
+        for (let k = 0; k < nEnt; k++) allD[NQ + k] = ents[k].d;
+
+        order.length = NQ + nEnt;
+        for (let k = 0; k < NQ + nEnt; k++) order[k] = k;
+        order.sort(function (a, b) { return allD[b] - allD[a]; });   // far first
+
+        g.lineJoin = 'round';
+        g.lineCap = 'round';
+        for (let n = 0; n < order.length; n++) {
+          const k = order[n];
+          if (k < NQ) drawQuad(g, k);
+          else drawEnt(g, ents[k - NQ]);
+        }
+
+        /* Anything round the back is correctly hidden by the surface,
+           which is honest but leaves students unable to match the two
+           pictures. Trace every object faintly on top: a hidden ship
+           then reads as "behind the donut" rather than "gone". */
+        for (let n = 0; n < nEnt; n++) {
+          const e = ents[n];
+          if (e.kind === 0) continue;
+          if (e.kind === 1) {
+            g.globalAlpha = 0.30;
+            g.beginPath();
+            g.arc(e.c[0], e.c[1], Math.max(1.4, 4.2 * e.c[3] * SC * K3 * 1.3), 0, TAU);
+            g.strokeStyle = '#F9A01B';
+            g.lineWidth = 1.2;
+          } else if (e.kind === 2) {
+            g.globalAlpha = 0.24;
+            polyPath(g, e.v);
+            g.strokeStyle = '#dce5f1';
+            g.lineWidth = 1.3;
+          } else {
+            g.globalAlpha = 0.45;
+            polyPath(g, e.v);
+            g.strokeStyle = '#FF8A3D';
+            g.lineWidth = 2;
+          }
+          g.stroke();
+        }
+        g.globalAlpha = 1;
+      }
+
+      function drawQuad(g, q) {
+        const i = (q / NV) | 0, j = q - i * NV;
+        const i1 = (i + 1) % NU, j1 = (j + 1) % NV;
+        const k00 = q, k10 = i1 * NV + j, k11 = i1 * NV + j1, k01 = i * NV + j1;
+
+        const sh = 0.13 + 0.87 * qs[q];
+        const col = 'rgb(' + ((18 + 128 * sh) | 0) + ',' + ((28 + 144 * sh) | 0) + ',' + ((44 + 162 * sh) | 0) + ')';
+        g.beginPath();
+        g.moveTo(pxArr[k00], pyArr[k00]);
+        g.lineTo(pxArr[k10], pyArr[k10]);
+        g.lineTo(pxArr[k11], pyArr[k11]);
+        g.lineTo(pxArr[k01], pyArr[k01]);
+        g.closePath();
+        g.fillStyle = col;
+        g.fill();
+        g.strokeStyle = col;      // hides the hairline seams between quads
+        g.lineWidth = 1;
+        g.stroke();
+
+        // constant-u curve: the vertical edges of the rectangle live at i = 0
+        if (i === 0 || i % 8 === 0) {
+          g.beginPath();
+          g.moveTo(pxArr[k00], pyArr[k00]);
+          g.lineTo(pxArr[k01], pyArr[k01]);
+          g.strokeStyle = i === 0 ? '#009CDE' : 'rgba(255,255,255,0.12)';
+          g.lineWidth = i === 0 ? 2.6 : 1;
+          g.stroke();
+        }
+        // constant-v curve: the horizontal edges of the rectangle live at j = 0
+        if (j === 0 || j % 6 === 0) {
+          g.beginPath();
+          g.moveTo(pxArr[k00], pyArr[k00]);
+          g.lineTo(pxArr[k10], pyArr[k10]);
+          g.strokeStyle = j === 0 ? '#00A868' : 'rgba(255,255,255,0.12)';
+          g.lineWidth = j === 0 ? 2.6 : 1;
+          g.stroke();
+        }
+      }
+
+      function polyPath(g, v) {
+        g.beginPath();
+        g.moveTo(v[0][0], v[0][1]);
+        for (let i = 1; i < v.length; i++) g.lineTo(v[i][0], v[i][1]);
+        g.closePath();
+      }
+
+      function drawEnt(g, e) {
+        if (e.kind === 0) {
+          g.globalAlpha = e.a;
+          g.fillStyle = e.tint;
+          const r = Math.max(0.8, 2.4 * e.c[3] * SC * K3 * 1.6);
+          g.fillRect(e.c[0] - r, e.c[1] - r, r * 2, r * 2);
+          g.globalAlpha = 1;
+          return;
+        }
+        if (e.kind === 1) {
+          const r = Math.max(1.4, 4.2 * e.c[3] * SC * K3 * 1.3);
+          g.beginPath();
+          g.arc(e.c[0], e.c[1], r, 0, TAU);
+          g.fillStyle = '#F9A01B';
+          g.fill();
+          return;
+        }
+        if (e.kind === 2) {
+          polyPath(g, e.v);
+          g.fillStyle = 'rgba(146,164,190,0.34)';
+          g.fill();
+          g.strokeStyle = '#d3dded';
+          g.lineWidth = 1.6;
+          g.stroke();
+          return;
+        }
+        if (e.kind === 3) {
+          if (e.flame) {
+            polyPath(g, e.flame);
+            g.fillStyle = '#F9A01B';
+            g.fill();
+          }
+          polyPath(g, e.v);
+          g.fillStyle = 'rgba(243,110,36,0.55)';
+          g.fill();
+          g.strokeStyle = '#FF8A3D';
+          g.lineWidth = 2;
+          g.stroke();
+        }
+      }
+
+      /* ---------------- dragging the donut ---------------- */
+      let dragging = false, lastPX = 0, lastPY = 0;
+      tcv.addEventListener('pointerdown', function (e) {
+        dragging = true;
+        spinning = false;
+        btnSpin.textContent = 'spin: off';
+        lastPX = e.clientX; lastPY = e.clientY;
+        tcv.classList.add('drag');
+        tcv.setPointerCapture(e.pointerId);
+      });
+      tcv.addEventListener('pointermove', function (e) {
+        if (!dragging) return;
+        yaw += (e.clientX - lastPX) * 0.008;
+        elev += (e.clientY - lastPY) * 0.006;
+        elev = Math.max(0.12, Math.min(1.45, elev));
+        lastPX = e.clientX; lastPY = e.clientY;
+      });
+      function endDrag(e) {
+        if (!dragging) return;
+        dragging = false;
+        tcv.classList.remove('drag');
+        try { tcv.releasePointerCapture(e.pointerId); } catch (err) { /* already gone */ }
+      }
+      tcv.addEventListener('pointerup', endDrag);
+      tcv.addEventListener('pointercancel', endDrag);
+
+      const btnSpin = document.getElementById('btn-spin');
+      btnSpin.addEventListener('click', function () {
+        spinning = !spinning;
+        btnSpin.textContent = 'spin: ' + (spinning ? 'on' : 'off');
+      });
+
+      /* ---------------- HUD and overlay ---------------- */
+      const hudScore = document.getElementById('hud-score');
+      const hudWave = document.getElementById('hud-wave');
+      const hudLives = document.getElementById('hud-lives');
+      const overlay = document.getElementById('overlay');
+      const ovTitle = document.getElementById('ov-title');
+      const ovBody = document.getElementById('ov-body');
+      const ovGo = document.getElementById('ov-go');
+
+      function syncHud() {
+        hudScore.textContent = state.score;
+        hudWave.textContent = state.wave;
+        hudLives.textContent = state.lives > 0 ? '▲'.repeat(state.lives) : '—';
+      }
+
+      function showOverlay(title, body, button) {
+        ovTitle.textContent = title;
+        ovBody.textContent = body;
+        ovGo.textContent = button;
+        overlay.hidden = false;
+      }
+      function hideOverlay() { overlay.hidden = true; }
+
+      function showPause() {
+        showOverlay('Paused', 'The rocks are holding still. Press P or the button to carry on.', 'Resume');
+      }
+
+      function togglePause() {
+        state.paused = !state.paused;
+        if (state.paused) showPause(); else hideOverlay();
+      }
+
+      function startOrRestart() {
+        if (state.over || !state.running) {
+          resetGame();
+          state.running = true;
+        } else if (state.paused) {
+          state.paused = false;
+        }
+        hideOverlay();
+      }
+
+      ovGo.addEventListener('click', startOrRestart);
+
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden && state.running && !state.over && !state.paused) {
+          state.paused = true;
+          showPause();
+        }
+      });
+
+      /* ---------------- main loop ---------------- */
+      let last = 0;
+      function frame(ts) {
+        requestAnimationFrame(frame);
+        let dt = (ts - last) / 1000;
+        last = ts;
+        if (!isFinite(dt) || dt < 0) dt = 0;
+        dt = Math.min(dt, 0.05);
+
+        if (!state.paused) update(dt);
+        if (spinning && !dragging) yaw += 0.11 * dt;
+
+        drawFlat();
+        drawTorus();
+      }
+
+      /* Attract mode: five rocks drifting before anyone presses a key,
+         just like the figure in the reading. */
+      state.ship.alive = false;
+      startWave(5);
+      syncHud();
+      requestAnimationFrame(frame);
+    })();
+  </script>
+
+</body>
+
+</html>

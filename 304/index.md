@@ -4,6 +4,10 @@ title: "MATH 304: Modern Geometry"
 parent: Home
 nav_order: 304
 activities:
+  - title: "Asteroids on a Torus"
+    url: "asteroids-torus.html"
+    type: "Interactive Demo"
+    description: "Section 1.1's video screen, made playable. The same game runs twice at once - as the flat rectangle with its edges identified, and as the torus you get by gluing them - so you can watch a finite universe with no boundary points from both sides."
   - title: "Wheel-Of-Names"
     url: "wheel-of-names.html"
     type: "Interactive Demo"
@@ -26,6 +30,9 @@ Nothing on these pages answers an assigned problem for you.
   <a class="day-card" href="day-01.html"><span class="n">Day 1</span><span class="t">The Postulate That Wouldn't Behave</span></a>
   <a class="day-card" href="day-02.html"><span class="n">Day 2</span><span class="t">Life as a Two-Dimensional Bug</span></a>
 </div>
+
+Section 1.1 opens with a video screen whose edges wrap around. [Play it](asteroids-torus.html) &mdash; the
+rectangle and the torus it glues up to are drawn side by side, so you can see the same ship in both at once.
 
 ## Chapter 2 · The Complex Plane
 
