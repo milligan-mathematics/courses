@@ -287,6 +287,7 @@
             <div class="setup-field">
                 <label for="quiz-select">Question set</label>
                 <select id="quiz-select">
+                    <optgroup label="MATH 303">
                     <option value="303-test1-review">MATH 303 — Test 1 Review (§§11.1–12.3)</option>
                     <option value="303-11-1">MATH 303 — §11.1 Three-Dimensional Cartesian Space</option>
                     <option value="303-11-2">MATH 303 — §11.2 Vectors and Vector Algebra</option>
@@ -297,6 +298,20 @@
                     <option value="303-12-1">MATH 303 — §12.1 Vector Functions and Their Derivatives</option>
                     <option value="303-12-2">MATH 303 — §12.2 Arc Length and Unit Tangent Vectors</option>
                     <option value="303-12-3">MATH 303 — §12.3 Curvature, Torsion, and Frenet-Serret</option>
+                    </optgroup>
+                    <optgroup label="MATH 411">
+                    <option value="411-days-1-10-review">MATH 411 — Review: Days 1–10</option>
+                    <option value="411-day-01">MATH 411 — Day 1: Depressing the Cubic</option>
+                    <option value="411-day-02">MATH 411 — Day 2: Pólya and Fermat's Little Theorem</option>
+                    <option value="411-day-03">MATH 411 — Day 3: What the Rationals Can't Do</option>
+                    <option value="411-day-04">MATH 411 — Day 4: The Archimedean Property</option>
+                    <option value="411-day-05">MATH 411 — Day 5: Newton and Leibniz</option>
+                    <option value="411-day-06">MATH 411 — Day 6: The Brachistochrone</option>
+                    <option value="411-day-07">MATH 411 — Day 7: Power Series and the Exponential</option>
+                    <option value="411-day-08">MATH 411 — Day 8: Power Series and Differential Equations</option>
+                    <option value="411-day-09">MATH 411 — Day 9: Newton's Binomial Series</option>
+                    <option value="411-day-10">MATH 411 — Day 10: The Basel Problem and Euler's Formula</option>
+                    </optgroup>
                 </select>
             </div>
             <div class="setup-field">
@@ -507,10 +522,16 @@
             runTimer(questionDuration);
         }
 
+        // 303 sections are numbered (§11.1); 411 uses class days ("Day 3"), which take no § sign.
+        function sectionLabel(section) {
+            if (!section) return '';
+            return /^\d/.test(section) ? `§${section}` : section;
+        }
+
         function renderQuestion(index) {
             const q = quizData.questions[order[index]];
             const shuffleMap = answerShuffles[index];
-            document.getElementById('section-badge').textContent = q.section ? `§${q.section}` : '';
+            document.getElementById('section-badge').textContent = sectionLabel(q.section);
             document.getElementById('question-text').innerHTML = q.question;
             const grid = document.getElementById('answer-grid');
             grid.innerHTML = '';
@@ -566,7 +587,7 @@
         async function renderReveal(index) {
             const q = quizData.questions[order[index]];
             const shuffleMap = answerShuffles[index];
-            document.getElementById('reveal-section-badge').textContent = q.section ? `§${q.section}` : '';
+            document.getElementById('reveal-section-badge').textContent = sectionLabel(q.section);
             document.getElementById('reveal-question-text').innerHTML = q.question;
 
             const snap = await get(ref(db, `games/${gameCode}/responses/${index}`));

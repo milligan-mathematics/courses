@@ -1,0 +1,708 @@
+{
+  "title": "MATH 411 — Day 4: The Archimedean Property",
+  "section": "Day 4",
+  "questions": [
+    {
+      "question": "Which mathematical statement formally represents the Archimedean Property for positive real numbers $a$ and $b$?",
+      "answerOptions": [
+        {
+          "text": "There exists a real number $x$ such that $x a = b$.",
+          "isCorrect": false,
+          "rationale": "While true in the field of real numbers, this is a property of division and field completeness rather than the Archimedean Property specifically."
+        },
+        {
+          "text": "There exists a positive integer $n$ such that $na > b$.",
+          "isCorrect": true,
+          "rationale": "This property asserts that no matter how small a positive value $a$ is, adding it to itself enough times will eventually exceed any finite value $b$."
+        },
+        {
+          "text": "For any $n \\in \\mathbb{N}$, $n(a-b) > 1$.",
+          "isCorrect": false,
+          "rationale": "This statement is only true under specific conditions where $a > b$, and it is a consequence used in proofs rather than the definition of the property itself."
+        },
+        {
+          "text": "For every positive integer $n$, $na < b$.",
+          "isCorrect": false,
+          "rationale": "This would imply that $b$ is an infinite bound relative to $a$, which contradicts the Archimedean principle that numbers are finite and comparable."
+        }
+      ],
+      "hint": "Think about how many times a smaller magnitude must be added to overcome a larger one.",
+      "section": "Day 4"
+    },
+    {
+      "question": "In the context of the Archimedean Property, what does the 'ocean and teaspoon' analogy physically demonstrate?",
+      "answerOptions": [
+        {
+          "text": "Any finite volume can be exhausted by repeated removal of a smaller finite volume.",
+          "isCorrect": true,
+          "rationale": "The analogy illustrates that even a tiny unit (teaspoon) can overcome a vast quantity (ocean) if applied a sufficient number of times (positive integer $n$)."
+        },
+        {
+          "text": "Continuous motion is required to fill the gaps between discrete measurements.",
+          "isCorrect": false,
+          "rationale": "This relates to Newton's assumptions about calculus rather than the specific principle of the Archimedean Property."
+        },
+        {
+          "text": "Infinitesimal quantities are required to measure large volumes accurately.",
+          "isCorrect": false,
+          "rationale": "The analogy actually reinforces the Archimedean nature of real numbers, which excludes the existence of actual infinitesimals."
+        },
+        {
+          "text": "The set of rational numbers is not sufficient to measure all physical volumes.",
+          "isCorrect": false,
+          "rationale": "The analogy focuses on the scale and reach of numbers within a system rather than the distinction between rational and irrational types."
+        }
+      ],
+      "hint": "Consider the relationship between a very large quantity and a very small, non-zero quantity.",
+      "section": "Day 4"
+    },
+    {
+      "question": "Historically, how has the status of the Archimedean Property changed in the development of the real number system?",
+      "answerOptions": [
+        {
+          "text": "It transitioned from an unproved assumption to a consequence of other axioms.",
+          "isCorrect": true,
+          "rationale": "Initially accepted as an obvious truth by Archimedes, modern foundations derive it from the deeper axiomatic structure of the real numbers."
+        },
+        {
+          "text": "It has always been considered the primary axiom from which all other real number properties are derived.",
+          "isCorrect": false,
+          "rationale": "The property is one of several used to define the real numbers, and it is often derived from the Least Upper Bound property."
+        },
+        {
+          "text": "It was discovered by Leibniz specifically to justify the use of differentials.",
+          "isCorrect": false,
+          "rationale": "Leibniz actually used objects that violated the Archimedean Property, known as infinitesimals."
+        },
+        {
+          "text": "It was originally a proven theorem that was later demoted to an unprovable axiom.",
+          "isCorrect": false,
+          "rationale": "Mathematical progress usually moves from assumptions toward rigorous proof from simpler axioms, not the reverse."
+        }
+      ],
+      "hint": "Look at how mathematicians from Archimedes to the 20th century viewed its foundational role.",
+      "section": "Day 4"
+    },
+    {
+      "question": "When proving the density of rationals (Theorem 2.0.11), why is it necessary to consider the case where $\\alpha - \\beta \\le 1$?",
+      "answerOptions": [
+        {
+          "text": "Because irrational numbers only exist within intervals of length 1 or less.",
+          "isCorrect": false,
+          "rationale": "Irrational numbers are distributed throughout the real line regardless of the interval's length."
+        },
+        {
+          "text": "Because a difference less than or equal to 1 does not guarantee an intervening integer.",
+          "isCorrect": true,
+          "rationale": "If the gap between two numbers is small, you must scale it up using the Archimedean Property to ensure the gap spans at least one integer."
+        },
+        {
+          "text": "Because the product of two real numbers is only rational if their difference is small.",
+          "isCorrect": false,
+          "rationale": "The rationality of a product is determined by the nature of the factors, not the distance between them."
+        },
+        {
+          "text": "Because the Archimedean Property only applies to numbers smaller than 1.",
+          "isCorrect": false,
+          "rationale": "The Archimedean Property applies to all positive real numbers regardless of their magnitude."
+        }
+      ],
+      "hint": "Think about what is required to ensure at least one whole number falls between two values.",
+      "section": "Day 4"
+    },
+    {
+      "question": "What is the defining characteristic of Leibniz's infinitesimals (${\\rm d}x$) regarding the Archimedean Property?",
+      "answerOptions": [
+        {
+          "text": "They are the only objects that can satisfy the Archimedean Property in non-standard analysis.",
+          "isCorrect": false,
+          "rationale": "Non-standard analysis provides a framework for infinitesimals, but they are specifically the objects that do NOT satisfy the Archimedean Property relative to standard reals."
+        },
+        {
+          "text": "They do not satisfy the property because no finite sum of ${\\rm d}x$ will ever exceed a positive real number.",
+          "isCorrect": true,
+          "rationale": "By definition, these 'infinitely small' quantities are non-zero yet smaller than any positive real number, failing the $na > b$ requirement."
+        },
+        {
+          "text": "They were used to prove that the Archimedean Property is false for all real numbers.",
+          "isCorrect": false,
+          "rationale": "The property holds for real numbers; infinitesimals were considered a separate class of mathematical objects."
+        },
+        {
+          "text": "They satisfy the property because they are simply very small rational numbers.",
+          "isCorrect": false,
+          "rationale": "Infinitesimals are explicitly defined as smaller than any real number, whereas all rational numbers are real."
+        }
+      ],
+      "hint": "Recall the bizarre behavior mentioned regarding adding a displacement to itself many times.",
+      "section": "Day 4"
+    },
+    {
+      "question": "According to the source, why did Newton 'postulate' that there were no holes in the number line?",
+      "answerOptions": [
+        {
+          "text": "To justify the concept of variable quantities generated by continuous motion.",
+          "isCorrect": true,
+          "rationale": "Newton believed that if the number system had gaps, continuous motion would be impossible as there would be no way to 'jump' over the holes."
+        },
+        {
+          "text": "To avoid using the Archimedean Property in his calculations of fluxions.",
+          "isCorrect": false,
+          "rationale": "Newton actually relied on the intuition behind these properties; he simply assumed the existence of real numbers to facilitate his physics."
+        },
+        {
+          "text": "Because he had discovered a logical proof that the rational numbers are complete.",
+          "isCorrect": false,
+          "rationale": "The rational numbers are not complete (they have holes), and Newton assumed their completeness rather than proving it."
+        },
+        {
+          "text": "To prove that all square roots of prime numbers are irrational.",
+          "isCorrect": false,
+          "rationale": "Newton's concern was the physical and geometric intuition of calculus rather than number theory proofs regarding irrationality."
+        }
+      ],
+      "hint": "Consider the physical intuition Newton used to describe how quantities change over time.",
+      "section": "Day 4"
+    },
+    {
+      "question": "Why does the source state that sketches of $\\mathbb{Q}$ and $\\mathbb{R}$ look identical despite their fundamental differences?",
+      "answerOptions": [
+        {
+          "text": "The 'holes' in $\\mathbb{Q}$ are so small and the points so densely packed that they cannot be visually separated.",
+          "isCorrect": true,
+          "rationale": "Because between any two rationals there is a real, and vice versa, any drawing lacks the resolution to show the missing irrational points."
+        },
+        {
+          "text": "Mathematical diagrams are required to be identical by convention to prevent confusion.",
+          "isCorrect": false,
+          "rationale": "The source explains this as a failure of our ability to sketch objects with such high density, not as a matter of convention."
+        },
+        {
+          "text": "The Archimedean Property ensures that the distance between any two rational numbers is zero.",
+          "isCorrect": false,
+          "rationale": "The distance between any two distinct rational numbers is always a positive real number."
+        },
+        {
+          "text": "Rational numbers and real numbers are actually the same set when viewed geometrically.",
+          "isCorrect": false,
+          "rationale": "They are distinct sets; the inability to distinguish them is a limitation of drawing, not an identity of the sets."
+        }
+      ],
+      "hint": "Think about the density of points on a line and the physical limitations of a drawing tool.",
+      "section": "Day 4"
+    },
+    {
+      "question": "Which of the following must be true for the sum of a rational number $r$ and an irrational number $i$?",
+      "answerOptions": [
+        {
+          "text": "The sum $r + i$ is always irrational.",
+          "isCorrect": true,
+          "rationale": "If the sum were rational, subtracting the rational $r$ would result in a rational value, contradicting the fact that $i$ is irrational."
+        },
+        {
+          "text": "The sum $r + i$ can be rational if $i$ is the square root of a rational number.",
+          "isCorrect": false,
+          "rationale": "The square root of a rational number (that is not a perfect square) is irrational, and adding a rational to it will never produce a rational result."
+        },
+        {
+          "text": "The sum $r + i$ is always rational because the rationals are dense in the reals.",
+          "isCorrect": false,
+          "rationale": "Density means rationals are found between any two reals, but it does not mean adding a rational to an irrational produces a rational."
+        },
+        {
+          "text": "The sum $r + i$ is irrational only if $r$ is non-zero.",
+          "isCorrect": false,
+          "rationale": "Even if $r=0$, the sum $0 + i = i$ remains irrational."
+        }
+      ],
+      "hint": "Consider what would happen if you assumed the result was rational and tried to solve for the irrational part.",
+      "section": "Day 4"
+    },
+    {
+      "question": "Is it possible for the sum of two irrational numbers to be a rational number?",
+      "answerOptions": [
+        {
+          "text": "Yes, but only if both irrational numbers are transcendental.",
+          "isCorrect": false,
+          "rationale": "Algebraic irrationals like $\\sqrt{2}$ and $-\\sqrt{2}$ can also sum to a rational number."
+        },
+        {
+          "text": "No, because the set of irrational numbers is closed under addition.",
+          "isCorrect": false,
+          "rationale": "Irrational numbers are not closed under addition, as shown by adding an irrational to its negative."
+        },
+        {
+          "text": "No, because the sum of two non-repeating decimals must be non-repeating.",
+          "isCorrect": false,
+          "rationale": "While individual decimals may be non-repeating, their sum can result in a repeating or terminating decimal (rational)."
+        },
+        {
+          "text": "Yes, for example, $\\sqrt{2} + (-\\sqrt{2}) = 0$, which is rational.",
+          "isCorrect": true,
+          "rationale": "Irrational numbers do not form a closed set under addition; adding an irrational number to its additive inverse always yields zero."
+        }
+      ],
+      "hint": "Think about additive inverses of irrational numbers.",
+      "section": "Day 4"
+    },
+    {
+      "question": "What is the logical result of the product of a non-zero rational number $q$ and an irrational number $x$?",
+      "answerOptions": [
+        {
+          "text": "The product $qx$ is always irrational.",
+          "isCorrect": true,
+          "rationale": "If $qx = r$ (where $r$ is rational), then $x = r/q$. Since the quotient of two rationals is rational, this would mean $x$ is rational, a contradiction."
+        },
+        {
+          "text": "The product $qx$ can be rational if $x$ is a specific type of irrational.",
+          "isCorrect": false,
+          "rationale": "By definition, no irrational number multiplied by a non-zero rational can become rational."
+        },
+        {
+          "text": "The product $qx$ is rational if $q$ is an integer.",
+          "isCorrect": false,
+          "rationale": "An integer multiplied by an irrational (like $2 \\cdot \\sqrt{2}$) is still irrational."
+        },
+        {
+          "text": "The product $qx$ is only irrational if $q$ is a prime number.",
+          "isCorrect": false,
+          "rationale": "The rationality of $q$ is what matters, not whether it is prime."
+        }
+      ],
+      "hint": "Assume the product is rational and try to isolate the irrational number using algebraic operations.",
+      "section": "Day 4"
+    },
+    {
+      "question": "In the proof sketch for the density of irrationals, how is the density of rationals (Part A) utilized?",
+      "answerOptions": [
+        {
+          "text": "By proving that every rational number is actually a hidden irrational number.",
+          "isCorrect": false,
+          "rationale": "Rational and irrational numbers are mutually exclusive sets; one cannot be the other."
+        },
+        {
+          "text": "By using the Archimedean Property to prove that all irrational numbers are integers.",
+          "isCorrect": false,
+          "rationale": "Integers are rational, whereas irrational numbers are by definition not rational."
+        },
+        {
+          "text": "By dividing the real numbers $\\alpha$ and $\\beta$ by a positive irrational number and finding a rational between those results.",
+          "isCorrect": true,
+          "rationale": "Scaling the interval by an irrational factor allows one to map a rational number back to an irrational one within the original bounds."
+        },
+        {
+          "text": "By showing that the difference between any two rationals must be irrational.",
+          "isCorrect": false,
+          "rationale": "The difference between two rationals is always rational."
+        }
+      ],
+      "hint": "Consider how you might transform the interval to use a property you already proved.",
+      "section": "Day 4"
+    },
+    {
+      "question": "Which mathematician successfully established a solid logical foundation for infinitesimals in the 20th century?",
+      "answerOptions": [
+        {
+          "text": "Abraham Robinson",
+          "isCorrect": true,
+          "rationale": "Robinson developed non-standard analysis, which provides the rigorous framework that 18th-century mathematicians like Leibniz lacked."
+        },
+        {
+          "text": "Isaac Newton",
+          "isCorrect": false,
+          "rationale": "Newton used infinitesimals intuitively but founded his calculus on the assumption of continuous motion without a modern logical basis for them."
+        },
+        {
+          "text": "Joseph-Louis Lagrange",
+          "isCorrect": false,
+          "rationale": "Lagrange introduced prime notation ($f'(x)$) as part of an effort to avoid the foundational issues of infinitesimals."
+        },
+        {
+          "text": "Archimedes",
+          "isCorrect": false,
+          "rationale": "While Archimedes used infinitesimal-like methods, he did not establish the 20th-century logical foundation mentioned in the text."
+        }
+      ],
+      "hint": "The text refers to this person as a 'logician' who revisited the saga in the twentieth century.",
+      "section": "Day 4"
+    },
+    {
+      "question": "According to the source, why is the existence of irrational numbers considered 'devastating' from a theoretical point of view?",
+      "answerOptions": [
+        {
+          "text": "Because the rational number system has 'holes' that make the justification of continuous motion impossible.",
+          "isCorrect": true,
+          "rationale": "The gaps in $\\mathbb{Q}$ mean that a variable cannot move 'continuously' without skipping over points where irrationals like $\\sqrt{2}$ should be."
+        },
+        {
+          "text": "Because they prove that the Archimedean Property is logically inconsistent.",
+          "isCorrect": false,
+          "rationale": "The Archimedean Property holds for both rational and real (including irrational) numbers."
+        },
+        {
+          "text": "Because it implies that calculus can only be performed using integers.",
+          "isCorrect": false,
+          "rationale": "Calculus requires a complete number system (the reals), not just integers or rationals."
+        },
+        {
+          "text": "Because irrational numbers cannot be approximated by rational numbers in practice.",
+          "isCorrect": false,
+          "rationale": "The source actually states the opposite: in practice, irrationals *can* be approximated by rationals quite easily."
+        }
+      ],
+      "hint": "Recall the problem Newton faced when trying to describe a quantity generated by continuous motion.",
+      "section": "Day 4"
+    },
+    {
+      "question": "If $a$ and $b$ are rational numbers, is it possible for $a^b$ to be irrational?",
+      "answerOptions": [
+        {
+          "text": "Yes, but only if the exponent $b$ is a negative integer.",
+          "isCorrect": false,
+          "rationale": "A rational number raised to a negative integer is just the reciprocal of a rational number, which is still rational."
+        },
+        {
+          "text": "No, because any number that can be written as a fraction raised to a fraction is rational.",
+          "isCorrect": false,
+          "rationale": "This is incorrect; $\\left(\\frac{1}{2}\\right)^{1/2} = \\frac{1}{\\sqrt{2}}$, which is irrational."
+        },
+        {
+          "text": "Yes, for example $2^{1/2}$ (the square root of 2) is irrational.",
+          "isCorrect": true,
+          "rationale": "While the base and exponent are rational, the resulting root of a non-perfect power is irrational."
+        },
+        {
+          "text": "No, because the set of rational numbers is closed under exponentiation.",
+          "isCorrect": false,
+          "rationale": "Rational numbers are not closed under exponentiation, as roots (fractional exponents) often produce irrationals."
+        }
+      ],
+      "hint": "Consider exponents that represent square roots.",
+      "section": "Day 4"
+    },
+    {
+      "question": "Regarding Problem 2.1.3, can the power of two irrational numbers ($a^b$) result in a rational number?",
+      "answerOptions": [
+        {
+          "text": "Yes, it is possible for two irrational numbers to produce a rational result through exponentiation.",
+          "isCorrect": true,
+          "rationale": "One can prove this using a non-constructive argument or specific examples like $(\\sqrt{2}^{\\sqrt{2}})^{\\sqrt{2}} = 2$."
+        },
+        {
+          "text": "Yes, but only if $a$ and $b$ are complex numbers.",
+          "isCorrect": false,
+          "rationale": "The property holds within the set of real irrational numbers."
+        },
+        {
+          "text": "No, because the transcendental nature of irrationals prevents them from becoming rational.",
+          "isCorrect": false,
+          "rationale": "Not all irrationals are transcendental, and even transcendental numbers can produce rational results under specific operations."
+        },
+        {
+          "text": "No, because an irrational base always yields an irrational result when raised to any power.",
+          "isCorrect": false,
+          "rationale": "An irrational base raised to zero is 1 (rational), and specifically chosen irrational exponents can also result in rationals."
+        }
+      ],
+      "hint": "Consider the scenario where you raise an irrational power to another power.",
+      "section": "Day 4"
+    },
+    {
+      "question": "In the nineteenth century, why did Lagrange's prime notation ($f'(x)$) become more popular than Leibniz's notation ($\\frac{{\\rm d}y}{{\\rm d}x}$)?",
+      "answerOptions": [
+        {
+          "text": "Because Leibniz's notation was found to be mathematically incorrect.",
+          "isCorrect": false,
+          "rationale": "Leibniz's notation was not incorrect in its results, but its foundational justification was shaky at the time."
+        },
+        {
+          "text": "Because prime notation allowed for easier calculation of the Archimedean Property.",
+          "isCorrect": false,
+          "rationale": "The Archimedean Property is a property of the number system, not a calculus operation facilitated by notation."
+        },
+        {
+          "text": "Because Leibniz's notation could not represent second derivatives.",
+          "isCorrect": false,
+          "rationale": "Leibniz's notation is perfectly capable of representing higher-order derivatives (e.g., $\\frac{{\\rm d}^2y}{{\\rm d}x^2}$)."
+        },
+        {
+          "text": "To distance calculus from the foundationally suspect use of infinitesimals.",
+          "isCorrect": true,
+          "rationale": "As foundations became a concern, the explicit 'differentials' in Leibniz's notation were seen as problematic compared to the functional approach of Lagrange."
+        }
+      ],
+      "hint": "Think about the 'foundational issues' mentioned in the text that came to the forefront.",
+      "section": "Day 4"
+    },
+    {
+      "question": "What happens when you repeatedly add the infinitesimal displacement ${\\rm d}x$ to itself, according to the 17th-century view?",
+      "answerOptions": [
+        {
+          "text": "The result will eventually exceed any real number by the Archimedean Property.",
+          "isCorrect": false,
+          "rationale": "Infinitesimals specifically do not satisfy the Archimedean Property relative to the real numbers."
+        },
+        {
+          "text": "The sum immediately becomes an irrational number.",
+          "isCorrect": false,
+          "rationale": "Adding infinitesimals results in other infinitesimals, not necessarily standard irrational real numbers."
+        },
+        {
+          "text": "The result will never exceed a fixed small real number, such as $10^{-1000}$.",
+          "isCorrect": true,
+          "rationale": "This highlights the non-Archimedean nature of infinitesimals; no matter how many times they are added, they remain 'infinitely small'."
+        },
+        {
+          "text": "The sum is always zero because ${\\rm d}x$ is effectively zero.",
+          "isCorrect": false,
+          "rationale": "Infinitesimals were taken to be 'not zero and yet smaller than any real number'."
+        }
+      ],
+      "hint": "Recall the 'bizarre' behavior mentioned regarding the magnitude of sums of ${\\rm d}x$.",
+      "section": "Day 4"
+    },
+    {
+      "question": "Which of the following describes the relationship between $\\mathbb{Q}$ and $\\mathbb{R}$ in terms of 'holes'?",
+      "answerOptions": [
+        {
+          "text": "$\\mathbb{Q}$ contains holes where irrational numbers like $\\sqrt{2}$ should be, while $\\mathbb{R}$ fills them.",
+          "isCorrect": true,
+          "rationale": "The set of real numbers is the completion of the rationals, meaning it includes all the limit points (the 'holes') missing from $\\mathbb{Q}$."
+        },
+        {
+          "text": "$\\mathbb{R}$ contains holes that can only be filled by using non-standard infinitesimals.",
+          "isCorrect": false,
+          "rationale": "Standard analysis considers $\\mathbb{R}$ to have no holes; infinitesimals exist in a different system (the hyperreals)."
+        },
+        {
+          "text": "Both $\\mathbb{Q}$ and $\\mathbb{R}$ have an infinite number of holes that can never be filled.",
+          "isCorrect": false,
+          "rationale": "The defining characteristic of $\\mathbb{R}$ in this context is that it is 'complete' and has no such holes."
+        },
+        {
+          "text": "The 'holes' in $\\mathbb{Q}$ are only theoretical and do not exist on the number line.",
+          "isCorrect": false,
+          "rationale": "The source explicitly states that all the holes in $\\mathbb{Q}$ 'really are there'."
+        }
+      ],
+      "hint": "Think about Newton's assumption regarding the continuity of the number line.",
+      "section": "Day 4"
+    },
+    {
+      "question": "What is the result of the sum of two rational numbers?",
+      "answerOptions": [
+        {
+          "text": "It is irrational if the denominators are different.",
+          "isCorrect": false,
+          "rationale": "Using a common denominator allows any two rational numbers to be added to form another rational number."
+        },
+        {
+          "text": "It is only rational if both numbers are integers.",
+          "isCorrect": false,
+          "rationale": "Non-integer rationals (like $1/2$ and $1/3$) also sum to a rational number ($5/6$)."
+        },
+        {
+          "text": "It can be irrational if the sum results in an infinite decimal.",
+          "isCorrect": false,
+          "rationale": "An infinite decimal can still be rational if it is repeating; the sum of rationals is always rational."
+        },
+        {
+          "text": "It is always rational.",
+          "isCorrect": true,
+          "rationale": "The set of rational numbers is closed under addition; the sum of two fractions can always be expressed as a new fraction."
+        }
+      ],
+      "hint": "Consider the closure property of the set of rational numbers under addition.",
+      "section": "Day 4"
+    },
+    {
+      "question": "If you are designing a bridge and need to use $\\sqrt{2}$, why does the existence of irrational numbers 'not really matter' practically?",
+      "answerOptions": [
+        {
+          "text": "Because irrational numbers can be approximated arbitrarily closely by rational numbers.",
+          "isCorrect": true,
+          "rationale": "Due to the density of rationals, one can use a rational value like $1.414$ that is close enough to $\\sqrt{2}$ to keep the error negligible."
+        },
+        {
+          "text": "Because all physical measurements are naturally irrational.",
+          "isCorrect": false,
+          "rationale": "Measurements are typically expressed as finite (rational) values, even if the 'true' value is irrational."
+        },
+        {
+          "text": "Because the Archimedean Property allows us to ignore irrational values entirely.",
+          "isCorrect": false,
+          "rationale": "The Archimedean Property describes the scale of numbers, but it doesn't eliminate the need for irrationals in theory."
+        },
+        {
+          "text": "Because modern engineering only uses the rational number system $\\mathbb{Q}$.",
+          "isCorrect": false,
+          "rationale": "While engineers use rational approximations, the underlying physics often relies on the real number system $\\mathbb{R}$."
+        }
+      ],
+      "hint": "Look for the distinction the source makes between 'practical matter' and 'theoretical point of view'.",
+      "section": "Day 4"
+    },
+    {
+      "question": "In Case 2 of the proof for Theorem 2.0.11, how is a positive integer $n$ chosen?",
+      "answerOptions": [
+        {
+          "text": "By the Archimedean Property such that $n(\\alpha - \\beta) > 1$.",
+          "isCorrect": true,
+          "rationale": "By choosing $n$ such that the scaled interval length is greater than 1, we guarantee the existence of an integer within that interval."
+        },
+        {
+          "text": "By finding a prime number that does not divide the difference $\\alpha - \\beta$.",
+          "isCorrect": false,
+          "rationale": "The primality of $n$ is irrelevant; only its magnitude relative to the reciprocal of the difference matters."
+        },
+        {
+          "text": "By assuming $n$ is an infinitesimal that satisfies ${\\rm d}x < \\alpha - \\beta$.",
+          "isCorrect": false,
+          "rationale": "The proof uses standard real numbers and the Archimedean Property, which excludes the use of infinitesimals."
+        },
+        {
+          "text": "By setting $n$ equal to the smallest integer greater than $\\alpha$.",
+          "isCorrect": false,
+          "rationale": "This $n$ would not necessarily scale the difference $(\\alpha - \\beta)$ to be greater than 1."
+        }
+      ],
+      "hint": "What condition must be met to ensure an integer falls between $n\\alpha$ and $n\\beta$?",
+      "section": "Day 4"
+    },
+    {
+      "question": "Which of the following was a consequence of the 'apparent simple assumption' that the number line has no holes?",
+      "answerOptions": [
+        {
+          "text": "The Archimedean Property was proven to be false for rational numbers.",
+          "isCorrect": false,
+          "rationale": "The Archimedean Property is true for both rational and real numbers."
+        },
+        {
+          "text": "Calculus was immediately abandoned until the 20th century.",
+          "isCorrect": false,
+          "rationale": "Calculus was highly successful and widely exploited in the 17th and 18th centuries despite its shaky foundations."
+        },
+        {
+          "text": "Mathematics returned to only using rational numbers to avoid errors.",
+          "isCorrect": false,
+          "rationale": "Mathematicians continued to use real numbers and irrationals because the rational system was 'not up to the task'."
+        },
+        {
+          "text": "It took 200 years to work out the resulting contradictions and paradoxes.",
+          "isCorrect": true,
+          "rationale": "Simply assuming completeness led to foundational puzzles that were only resolved in the 19th and 20th centuries."
+        }
+      ],
+      "hint": "Reflect on the historical timeline and the difficulties mentioned regarding the properties of $\\mathbb{R}$.",
+      "section": "Day 4"
+    },
+    {
+      "question": "In the Archimedean Property statement $na > b$, what type of number must $n$ be?",
+      "answerOptions": [
+        {
+          "text": "An irrational number",
+          "isCorrect": false,
+          "rationale": "The property is used to bridge the gap between the discrete (integers) and the continuous (reals)."
+        },
+        {
+          "text": "An infinitesimal",
+          "isCorrect": false,
+          "rationale": "Infinitesimals are non-Archimedean and are not used in the standard statement of this property."
+        },
+        {
+          "text": "A positive integer",
+          "isCorrect": true,
+          "rationale": "The property specifically relies on the ability to add a value to itself a finite whole number of times."
+        },
+        {
+          "text": "Any real number",
+          "isCorrect": false,
+          "rationale": "While $na > b$ can be solved for a real $n$, the Archimedean Property specifically asserts the existence of an integer $n$."
+        }
+      ],
+      "hint": "Check Principle 2.0.12 in the text.",
+      "section": "Day 4"
+    },
+    {
+      "question": "What role do our 'imaginations' play when studying $\\mathbb{Q}$ as distinct from $\\mathbb{R}$?",
+      "answerOptions": [
+        {
+          "text": "They are the source of the Archimedean Property itself.",
+          "isCorrect": false,
+          "rationale": "The Archimedean Property is a mathematical principle, while imagination is an aid to understanding its consequences."
+        },
+        {
+          "text": "They enable us to see the infinitesimals that are hidden in standard drawings.",
+          "isCorrect": false,
+          "rationale": "The discussion on imagination refers to the distinction between the rational and real lines, not the visualization of infinitesimals."
+        },
+        {
+          "text": "They allow us to conceptualize the differences that cannot be accurately sketched.",
+          "isCorrect": true,
+          "rationale": "Because sketches fail to show the 'holes' in $\\mathbb{Q}$, we must rely on mental models to distinguish the two systems."
+        },
+        {
+          "text": "They replace the need for logical proofs when dealing with irrationals.",
+          "isCorrect": false,
+          "rationale": "The source emphasizes that while sketches aid imagination, they are not a substitute for logical derivation and explicit assumptions."
+        }
+      ],
+      "hint": "Review the section discussing why sketches are 'at best' only aids.",
+      "section": "Day 4"
+    },
+    {
+      "question": "Why is the Archimedean Property no longer taken as an 'unproved axiom' in modern mathematics?",
+      "answerOptions": [
+        {
+          "text": "It is understood to be a consequence of other axioms, such as the completeness of the reals.",
+          "isCorrect": true,
+          "rationale": "Modern formalizations of the real number system derive the Archimedean property from more fundamental axioms like the Least Upper Bound property."
+        },
+        {
+          "text": "It was replaced by the Lagrange prime notation.",
+          "isCorrect": false,
+          "rationale": "Notation is a tool for expressing calculus, while the Archimedean Property is a fundamental structural property of numbers."
+        },
+        {
+          "text": "Archimedes provided a rigorous proof for it that was lost until recently.",
+          "isCorrect": false,
+          "rationale": "Archimedes accepted it as an intuitive truth; the logical derivation came much later in history."
+        },
+        {
+          "text": "It was proven false by the discovery of infinitesimals.",
+          "isCorrect": false,
+          "rationale": "The property remains true for the real number system; infinitesimals exist in an extended, non-Archimedean system."
+        }
+      ],
+      "hint": "Consider the transition in the understanding of mathematical foundations.",
+      "section": "Day 4"
+    },
+    {
+      "question": "Which of the following notations did Leibniz introduce to represent infinitely small displacements?",
+      "answerOptions": [
+        {
+          "text": "${\\rm d}x$ and ${\\rm d}y$",
+          "isCorrect": true,
+          "rationale": "Leibniz used these symbols to denote infinitesimal changes, which later became standard notation for derivatives in calculus."
+        },
+        {
+          "text": "$\\alpha$ and $\\beta$",
+          "isCorrect": false,
+          "rationale": "These are simply Greek letters used in the text to represent arbitrary real numbers."
+        },
+        {
+          "text": "$f'(x)$ and $y'$",
+          "isCorrect": false,
+          "rationale": "These prime notations were introduced by Lagrange in the 18th century."
+        },
+        {
+          "text": "$\\mathbb{Q}$ and $\\mathbb{R}$",
+          "isCorrect": false,
+          "rationale": "These symbols represent the sets of rational and real numbers, not infinitesimal displacements."
+        }
+      ],
+      "hint": "Identify the symbols used to form the derivative symbol commonly seen in calculus.",
+      "section": "Day 4"
+    }
+  ]
+}

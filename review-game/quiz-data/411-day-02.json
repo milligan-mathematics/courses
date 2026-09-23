@@ -1,0 +1,688 @@
+{
+  "title": "MATH 411 — Day 2: Pólya and Fermat's Little Theorem",
+  "section": "Day 2",
+  "questions": [
+    {
+      "question": "According to Polya's four steps, why is the reflection phase critical even after a successful solution?",
+      "answerOptions": [
+        {
+          "text": "It helps determine if any assumed conditions were unnecessary, potentially leading to a more general result.",
+          "isCorrect": true,
+          "rationale": "Evaluating if all assumptions were used allows a mathematician to see if the theorem applies to a broader range of cases."
+        },
+        {
+          "text": "It ensures the student can solve the exact same problem faster in the future.",
+          "isCorrect": false,
+          "rationale": "Speed in re-solving the same problem is less important than understanding the underlying patterns and generalizations."
+        },
+        {
+          "text": "It provides a mechanism to discard the problem and clear mental space for the next isolated challenge.",
+          "isCorrect": false,
+          "rationale": "The source explicitly states that problems should not be treated as isolated victories or forgotten after completion."
+        },
+        {
+          "text": "It is the only stage where the student is required to verify the arithmetic of the execution phase.",
+          "isCorrect": false,
+          "rationale": "Verification usually happens during or immediately after execution; reflection focuses on broader implications and conceptual growth."
+        }
+      ],
+      "hint": "Consider how looking back at your assumptions might reveal a theorem that is broader than the one you just proved.",
+      "section": "Day 2"
+    },
+    {
+      "question": "In the context of Fermat's Little Theorem, Step 3 involves the binomial coefficient ${p \\choose k}$. Why must $p$ divide ${p \\choose k}$ when $1 \\le k \\le p-1$ and $p$ is prime?",
+      "answerOptions": [
+        {
+          "text": "The value of $k!(p-k)!$ is always $1$ when $p$ is prime, leaving only $p!$ in the numerator.",
+          "isCorrect": false,
+          "rationale": "The factorial terms in the denominator are only 1 in the specific cases where $k=0$, $k=p$, or $p=2, k=1$."
+        },
+        {
+          "text": "The denominator $k!(p-k)!$ always contains a factor of $p$ that cancels with the numerator.",
+          "isCorrect": false,
+          "rationale": "If the denominator contained $p$, then $p$ would not necessarily divide the final integer result."
+        },
+        {
+          "text": "The factor of $p$ in the numerator $p!$ is not cancelled out by any factors in the denominator $k!(p-k)!$.",
+          "isCorrect": true,
+          "rationale": "Since $p$ is prime and all factors in $k!$ and $(p-k)!$ are strictly less than $p$, they cannot divide $p$ and thus cannot cancel it out."
+        },
+        {
+          "text": "The Fundamental Theorem of Arithmetic states that all binomial coefficients are products of primes.",
+          "isCorrect": false,
+          "rationale": "While true for all integers greater than 1, it doesn't explain why $p$ specifically must be one of those prime factors."
+        }
+      ],
+      "hint": "Think about the prime factors present in the expansion of $p!$ versus those in the products of integers smaller than $p$.",
+      "section": "Day 2"
+    },
+    {
+      "question": "If an integer $n$ is such that $n > 1$ and it cannot be written as a product of prime numbers, what conclusion can be drawn based on the Fundamental Theorem of Arithmetic?",
+      "answerOptions": [
+        {
+          "text": "The integer $n$ must be a negative integer or zero.",
+          "isCorrect": false,
+          "rationale": "The premise of the question specifies $n > 1$, which excludes negative integers and zero."
+        },
+        {
+          "text": "The integer $n$ must itself be a prime number.",
+          "isCorrect": true,
+          "rationale": "The theorem states that every integer greater than 1 is either prime or a product of primes; if it's not a product, it must be the former."
+        },
+        {
+          "text": "The integer $n$ has multiple unique prime decompositions.",
+          "isCorrect": false,
+          "rationale": "The theorem explicitly states that prime decompositions are unique, so multiple distinct sets of prime factors are impossible."
+        },
+        {
+          "text": "The Fundamental Theorem of Arithmetic does not apply to non-prime numbers.",
+          "isCorrect": false,
+          "rationale": "The theorem is specifically designed to describe the composition of all integers greater than 1, including composite ones."
+        }
+      ],
+      "hint": "Recall the two distinct categories the Fundamental Theorem of Arithmetic places every integer greater than 1 into.",
+      "section": "Day 2"
+    },
+    {
+      "question": "Consider Polya's iterative process. If a student executes a plan and finds the solution is incorrect, what is the 'fourth step' meant to facilitate?",
+      "answerOptions": [
+        {
+          "text": "It allows the student to change the initial assumptions of the problem to make it solvable.",
+          "isCorrect": false,
+          "rationale": "One must understand the original problem (Step 1) rather than changing it to suit a failed plan."
+        },
+        {
+          "text": "It is used to memorize the incorrect steps to ensure they are never repeated in any context.",
+          "isCorrect": false,
+          "rationale": "While avoiding errors is helpful, the primary purpose is active adjustment and understanding why the plan failed."
+        },
+        {
+          "text": "It serves as a restart point to choose a completely unrelated problem to solve instead.",
+          "isCorrect": false,
+          "rationale": "The process is meant to refine the current problem-solving attempt, not to encourage abandonment of the task."
+        },
+        {
+          "text": "It prompts the student to ask what went wrong to inform a new, more effective plan.",
+          "isCorrect": true,
+          "rationale": "Reflection during failure is used to diagnose errors and adjust the strategy for the next iteration of the cycle."
+        }
+      ],
+      "hint": "Think about how reflection helps bridge the gap between a failed execution and a better subsequent plan.",
+      "section": "Day 2"
+    },
+    {
+      "question": "Problem 1.3.4 generalizes Problem 1.3.3. If $p \\mid (a_1 \\cdot a_2 \\cdot \\ldots \\cdot a_n)$, which principle is most essential to proving that $p$ must divide at least one $a_k$?",
+      "answerOptions": [
+        {
+          "text": "The assumption that $n$ must be an even number.",
+          "isCorrect": false,
+          "rationale": "The divisibility property holds for any finite number of factors $n \\ge 2$."
+        },
+        {
+          "text": "The requirement that all $a_k$ must be prime numbers.",
+          "isCorrect": false,
+          "rationale": "The integers $a_k$ only need to be positive integers; they do not need to be prime for the result to hold."
+        },
+        {
+          "text": "The fact that $p$ is a prime number.",
+          "isCorrect": true,
+          "rationale": "This property is essential; for composite numbers, like $4 \\mid (2 \\cdot 6)$, the divisor does not necessarily divide either factor."
+        },
+        {
+          "text": "The condition that $p$ must be greater than the sum of all $a_k$.",
+          "isCorrect": false,
+          "rationale": "There is no restriction on the size of $p$ relative to the sum; it only relates to the product."
+        }
+      ],
+      "hint": "Consider what makes prime numbers unique when they divide a product of two or more integers.",
+      "section": "Day 2"
+    },
+    {
+      "question": "What is the specific meaning of 'mathematical maturity' as described in the text?",
+      "answerOptions": [
+        {
+          "text": "The ability to quickly calculate complex prime decompositions without a calculator.",
+          "isCorrect": false,
+          "rationale": "Maturity refers to conceptual growth and technique accumulation, not just speed or computational skill."
+        },
+        {
+          "text": "The process of accumulating facts and techniques to solve new problems and prove theorems.",
+          "isCorrect": true,
+          "rationale": "The text defines this maturation as gaining a body of knowledge where previous solutions become tools for future challenges."
+        },
+        {
+          "text": "Reaching a level where Polya's four steps are no longer necessary for problem solving.",
+          "isCorrect": false,
+          "rationale": "Polya's steps are presented as a fundamental methodology for mathematical thinking, not something one outgrows."
+        },
+        {
+          "text": "The accumulation of grade points through consistent performance in college courses.",
+          "isCorrect": false,
+          "rationale": "The text explicitly states that students are not there to accumulate grade points, but to learn and understand."
+        }
+      ],
+      "hint": "Look for a definition that emphasizes the cumulative nature of learning mathematics.",
+      "section": "Day 2"
+    },
+    {
+      "question": "Fermat's Little Theorem states that $p \\mid (n^p - n)$. If $p=3$, which of the following expressions is guaranteed to be divisible by 3 for any positive integer $n$?",
+      "answerOptions": [
+        {
+          "text": "$n^3 - 3$",
+          "isCorrect": false,
+          "rationale": "The second term must be the variable $n$, not the prime $p$."
+        },
+        {
+          "text": "$3^n - 3$",
+          "isCorrect": false,
+          "rationale": "This swaps the base and the exponent; the theorem requires the prime to be the exponent."
+        },
+        {
+          "text": "$n^2 - n$",
+          "isCorrect": false,
+          "rationale": "This would only be guaranteed if 2 were the prime in question."
+        },
+        {
+          "text": "$n^3 - n$",
+          "isCorrect": true,
+          "rationale": "This matches the theorem's structure $n^p - n$ where $p$ is the prime 3."
+        }
+      ],
+      "hint": "Identify the role of the prime number as an exponent in the formula provided by the theorem.",
+      "section": "Day 2"
+    },
+    {
+      "question": "Why does the text suggest that a solved problem is no reason to stop thinking about it?",
+      "answerOptions": [
+        {
+          "text": "Because the grade for a problem is only awarded after the reflection step is submitted.",
+          "isCorrect": false,
+          "rationale": "The text notes that maturation is about learning concepts, explicitly contrasting it with simply accumulating grade points."
+        },
+        {
+          "text": "Because most textbook solutions contain subtle errors that only reflection can reveal.",
+          "isCorrect": false,
+          "rationale": "The focus is on the student's own growth and the utility of the result, not on errors in textbooks."
+        },
+        {
+          "text": "Because the execution phase is usually incomplete until a formal proof is written.",
+          "isCorrect": false,
+          "rationale": "Even after a formal proof is done, the reflection step is necessary to see the broader scheme and future applications."
+        },
+        {
+          "text": "Because mathematics is cumulative, and a solved problem serves as a tool for future ones.",
+          "isCorrect": true,
+          "rationale": "The text emphasizes that yesterday's problems can be used to good effect in tomorrow's challenges."
+        }
+      ],
+      "hint": "Consider the relationship between the problems you solve today and the ones you will encounter tomorrow.",
+      "section": "Day 2"
+    },
+    {
+      "question": "In the binomial coefficient formula $\\frac{p!}{k!(p-k)!}$, if $p$ is a prime number and $k=1$, what is the result of the coefficient?",
+      "answerOptions": [
+        {
+          "text": "$p!$",
+          "isCorrect": false,
+          "rationale": "The denominator $(p-1)!$ cancels out all factors of $p!$ except for $p$ itself."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "This would be the result if $k=0$ or $k=p$."
+        },
+        {
+          "text": "$p - 1$",
+          "isCorrect": false,
+          "rationale": "The expansion of the factorial in the numerator leaves $p$ as the remaining factor after division by $(p-1)!$."
+        },
+        {
+          "text": "$p$",
+          "isCorrect": true,
+          "rationale": "Plugging $k=1$ into the formula gives $\\frac{p!}{1!(p-1)!}$, which simplifies directly to $p$."
+        }
+      ],
+      "hint": "Try expanding the factorials for a small prime like $p=3$ and $k=1$.",
+      "section": "Day 2"
+    },
+    {
+      "question": "True or False: The Fundamental Theorem of Arithmetic implies that the integer 14 can be decomposed into primes in more than one way if we ignore the order of factors.",
+      "answerOptions": [
+        {
+          "text": "True",
+          "isCorrect": false,
+          "rationale": "The uniqueness clause of the theorem prevents multiple distinct prime sets for the same integer."
+        },
+        {
+          "text": "False",
+          "isCorrect": true,
+          "rationale": "The theorem states the prime decomposition is unique up to the order of factors, meaning $2 \\cdot 7$ is the only possible set of prime factors."
+        }
+      ],
+      "hint": "Focus on the 'unique' property mentioned in Theorem 1.3.2.",
+      "section": "Day 2"
+    },
+    {
+      "question": "If a student uses all assumptions in a proof, but Polya asks 'Can you solve a similar problem with weaker assumptions?', what is the student being encouraged to do?",
+      "answerOptions": [
+        {
+          "text": "Make the problem harder by adding more assumptions.",
+          "isCorrect": false,
+          "rationale": "Adding assumptions 'strengthens' them, making the result less general rather than broader."
+        },
+        {
+          "text": "Find a way to prove the theorem without using any logic or previous results.",
+          "isCorrect": false,
+          "rationale": "Mathematical proof relies on logic; weakening assumptions refers to the initial 'givens' of the problem."
+        },
+        {
+          "text": "Conclude that the theorem is as general as it can possibly be.",
+          "isCorrect": false,
+          "rationale": "The prompt asks the student to *check* if it can be more general, not to assume it is already at its limit."
+        },
+        {
+          "text": "Remove unnecessary constraints to see if the theorem still holds under broader conditions.",
+          "isCorrect": true,
+          "rationale": "Weakening assumptions allows one to explore if the conclusion is true for a larger set of objects."
+        }
+      ],
+      "hint": "Think about whether a 'weaker' condition applies to more or fewer mathematical objects.",
+      "section": "Day 2"
+    },
+    {
+      "question": "Which of the following is an example of a composite number according to the definition provided in the text?",
+      "answerOptions": [
+        {
+          "text": "7",
+          "isCorrect": false,
+          "rationale": "7 is listed as an example of a prime number whose only factors are 1 and 7."
+        },
+        {
+          "text": "9",
+          "isCorrect": true,
+          "rationale": "The text lists 9 as a number that is not prime (composite) because it has factors other than 1 and itself (specifically 3)."
+        },
+        {
+          "text": "1",
+          "isCorrect": false,
+          "rationale": "The text defines a prime number as an integer 'greater than 1', and composite numbers are those that are not prime, typically excluding 1 from both categories."
+        },
+        {
+          "text": "2",
+          "isCorrect": false,
+          "rationale": "2 is the smallest prime number and is explicitly listed as such in the text."
+        }
+      ],
+      "hint": "Look for the integer in the list that has a factor other than 1 and itself.",
+      "section": "Day 2"
+    },
+    {
+      "question": "When proving Fermat's Little Theorem (Step 2), what is the relationship between Problem 1.3.3 and Problem 1.3.4?",
+      "answerOptions": [
+        {
+          "text": "1.3.4 contradicts 1.3.3 by showing that $p$ does not need to divide any of the factors.",
+          "isCorrect": false,
+          "rationale": "1.3.4 confirms that $p$ *must* divide at least one factor, which is consistent with 1.3.3."
+        },
+        {
+          "text": "1.3.4 uses the result of 1.3.3 to extend the property from two factors to any number of factors $n$.",
+          "isCorrect": true,
+          "rationale": "1.3.3 covers the base case $p \\mid (ab)$, and 1.3.4 generalizes this to a product of $n$ integers, likely using induction or repeated application."
+        },
+        {
+          "text": "1.3.3 and 1.3.4 are unrelated because one deals with prime numbers and the other with integers.",
+          "isCorrect": false,
+          "rationale": "Both problems specifically involve a prime number $p$ and its divisibility properties regarding products."
+        },
+        {
+          "text": "1.3.3 is a specific case that only works for even primes, while 1.3.4 works for odd primes.",
+          "isCorrect": false,
+          "rationale": "The theorems apply to all prime numbers, regardless of whether they are even or odd."
+        }
+      ],
+      "hint": "Consider how a result for a product of two items can be applied multiple times to a larger product.",
+      "section": "Day 2"
+    },
+    {
+      "question": "In the notation $p \\mid a$, what does it mean regarding the remainder of the division?",
+      "answerOptions": [
+        {
+          "text": "The remainder must be zero.",
+          "isCorrect": true,
+          "rationale": "The text defines $p \\mid a$ as $p$ dividing $a$ with no remainder."
+        },
+        {
+          "text": "The remainder is equal to $p-1$.",
+          "isCorrect": false,
+          "rationale": "This would represent a specific case of non-divisibility, not the definition of $p \\mid a$."
+        },
+        {
+          "text": "The remainder can be any integer smaller than $a$.",
+          "isCorrect": false,
+          "rationale": "Divisibility specifically implies the absence of a remainder (a remainder of zero)."
+        },
+        {
+          "text": "The remainder must be a prime number.",
+          "isCorrect": false,
+          "rationale": "A non-zero remainder would mean $p$ does not divide $a$ in this context."
+        }
+      ],
+      "hint": "Check the definition of the vertical bar notation provided in the source.",
+      "section": "Day 2"
+    },
+    {
+      "question": "What is the primary utility of Fermat's Little Theorem as mentioned at the end of the text?",
+      "answerOptions": [
+        {
+          "text": "It serves as the foundation for results in number theory and encryption.",
+          "isCorrect": true,
+          "rationale": "The text explicitly links the theorem to number theory and the field of encryption."
+        },
+        {
+          "text": "It provides a method to prove that all even numbers are products of primes.",
+          "isCorrect": false,
+          "rationale": "The Fundamental Theorem of Arithmetic already covers the prime decomposition of all integers greater than 1."
+        },
+        {
+          "text": "It is used to verify Polya's steps for solving geometry problems.",
+          "isCorrect": false,
+          "rationale": "The theorem is a result in number theory, and while it illustrates Polya's process, its utility is in its own mathematical domain."
+        },
+        {
+          "text": "It is used to calculate binomial coefficients for very large exponents.",
+          "isCorrect": false,
+          "rationale": "While related to binomial coefficients in its proof, its primary real-world application cited is different."
+        }
+      ],
+      "hint": "Look for the specific practical field mentioned in the final sentence of the lesson.",
+      "section": "Day 2"
+    },
+    {
+      "question": "If $p$ is a prime number and $k$ is an integer such that $1 \\le k \\le p-1$, why is it important that $k$ is not $0$ or $p$ for the divisibility $p \\mid {p \\choose k}$ to hold?",
+      "answerOptions": [
+        {
+          "text": "Because prime numbers cannot divide even numbers unless $p=2$.",
+          "isCorrect": false,
+          "rationale": "This is a true statement in some contexts but irrelevant to why the boundary binomial coefficients are not divisible by $p$."
+        },
+        {
+          "text": "Because the denominator becomes zero, making the expression undefined.",
+          "isCorrect": false,
+          "rationale": "For $k=0$ or $k=p$, the denominator is $0!p!$ or $p!0!$, both of which are equal to $p!$, which is defined."
+        },
+        {
+          "text": "Because ${p \\choose 0}$ and ${p \\choose p}$ are both equal to 1, and $p$ does not divide 1.",
+          "isCorrect": true,
+          "rationale": "The definition of binomial coefficients at the boundaries results in 1, which is only divisible by $p$ if $p=1$, but $p$ must be a prime (greater than 1)."
+        },
+        {
+          "text": "Because the formula $\\frac{p!}{k!(p-k)!}$ results in a negative number for those values.",
+          "isCorrect": false,
+          "rationale": "Factorials and binomial coefficients are non-negative; the formula results in 1, not a negative number."
+        }
+      ],
+      "hint": "Calculate the value of a binomial coefficient when the top and bottom numbers are the same.",
+      "section": "Day 2"
+    },
+    {
+      "question": "Polya describes the problem-solving process as iterative. What does this imply about the relationship between 'Formulate a plan' and 'Execute the plan'?",
+      "answerOptions": [
+        {
+          "text": "Execution is only possible if the plan uses all four of Polya's steps simultaneously.",
+          "isCorrect": false,
+          "rationale": "The steps are sequential (1 through 4), even if they form a repeating loop."
+        },
+        {
+          "text": "The plan must be perfectly formulated before any execution can begin.",
+          "isCorrect": false,
+          "rationale": "The iterative nature allows for trial and error, where initial plans are tested and refined."
+        },
+        {
+          "text": "Once the plan is executed, the process is finished and cannot be revisited.",
+          "isCorrect": false,
+          "rationale": "Iteration implies that the results of execution can lead back to a new plan."
+        },
+        {
+          "text": "A plan may need to be revised and re-executed multiple times based on the results of reflection.",
+          "isCorrect": true,
+          "rationale": "The fourth step (reflection) often reveals that the plan was insufficient, necessitating a new cycle."
+        }
+      ],
+      "hint": "Think about what happens when your initial attempt to solve a hard problem fails.",
+      "section": "Day 2"
+    },
+    {
+      "question": "True or False: According to the Fundamental Theorem of Arithmetic, the prime decomposition of 60 ($2 \\cdot 2 \\cdot 3 \\cdot 5$) is considered the same as ($5 \\cdot 2 \\cdot 3 \\cdot 2$).",
+      "answerOptions": [
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "The theorem states that the decomposition is unique 'up to the order of the factors,' meaning the sequence does not change the uniqueness of the set."
+        },
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "The uniqueness refers to the identity and count of the prime factors, not their specific arrangement."
+        }
+      ],
+      "hint": "Look closely at the phrase 'up to the order of the factors' in Theorem 1.3.2.",
+      "section": "Day 2"
+    },
+    {
+      "question": "In Problem 1.3.5, the property $p \\mid {p \\choose k}$ is established. How might this result be used in the proof of Fermat's Little Theorem (Step 4)?",
+      "answerOptions": [
+        {
+          "text": "It proves that $n^p$ is always equal to $n$ for prime $p$.",
+          "isCorrect": false,
+          "rationale": "The theorem states $p$ divides $(n^p - n)$, not that $n^p = n$ (unless working in modular arithmetic)."
+        },
+        {
+          "text": "It is likely used in the binomial expansion of $(n+1)^p$ to show that terms between $n^p$ and $1$ are divisible by $p$.",
+          "isCorrect": true,
+          "rationale": "Fermat's Little Theorem is often proved by induction using the binomial expansion of $(n+1)^p$, where the middle terms are binomial coefficients divisible by $p$."
+        },
+        {
+          "text": "It ensures that the prime decomposition of $n^p$ is always unique.",
+          "isCorrect": false,
+          "rationale": "Uniqueness is a general property of all integers from the FTA, not a result of this specific binomial property."
+        },
+        {
+          "text": "It is used to show that $p$ is always a factor of the variable $n$.",
+          "isCorrect": false,
+          "rationale": "The theorem applies for all $n$, many of which are not divisible by $p$ (e.g., if $p=3, n=2$)."
+        }
+      ],
+      "hint": "Think about how you might relate $(n+1)^p$ to $n^p$ using algebraic expansions.",
+      "section": "Day 2"
+    },
+    {
+      "question": "Which question does the text suggest a student should ask to see if their result is 'considerably more general than it at first appears'?",
+      "answerOptions": [
+        {
+          "text": "What is the prime decomposition of the answer?",
+          "isCorrect": false,
+          "rationale": "Prime decomposition applies to the integers involved, but not necessarily to the logic of the problem's generality."
+        },
+        {
+          "text": "Did your solution use everything that was assumed?",
+          "isCorrect": true,
+          "rationale": "If a solution does not use all assumptions, the result can be restated with only the necessary assumptions, making it more general."
+        },
+        {
+          "text": "Can you solve the problem in under five minutes?",
+          "isCorrect": false,
+          "rationale": "Efficiency in time is not a measure of the generality of a mathematical statement."
+        },
+        {
+          "text": "How many other problems can you find that look exactly like this one?",
+          "isCorrect": false,
+          "rationale": "While helpful for patterns, the text specifically points to the necessity of assumptions as the key to generality."
+        }
+      ],
+      "hint": "Focus on the role of assumptions and whether they were all utilized in the proof.",
+      "section": "Day 2"
+    },
+    {
+      "question": "If $p$ is prime and $p \\mid (a \\cdot b)$, the text states $p \\mid a$ or $p \\mid b$. Why does this logic fail if $p=4$ and $a=2, b=6$?",
+      "answerOptions": [
+        {
+          "text": "Because $a$ and $b$ must be greater than $p$ for the theorem to work.",
+          "isCorrect": false,
+          "rationale": "There is no requirement for $a$ or $b$ to be larger than $p$; for example, if $p=2, a=2, b=3$, the theorem holds."
+        },
+        {
+          "text": "Because $a \\cdot b = 12$ and 4 does not divide 12.",
+          "isCorrect": false,
+          "rationale": "4 actually does divide 12 ($4 \\cdot 3 = 12$), but the individual divisibility $4 \\mid 2$ or $4 \\mid 6$ is false."
+        },
+        {
+          "text": "Because 4 is not a prime number.",
+          "isCorrect": true,
+          "rationale": "The property only holds for primes; composite numbers can have their prime factors split between the two numbers in the product."
+        },
+        {
+          "text": "Because the Fundamental Theorem of Arithmetic only applies to odd numbers.",
+          "isCorrect": false,
+          "rationale": "The FTA applies to all integers greater than 1, both even and odd."
+        }
+      ],
+      "hint": "Recall the definition of a prime number and check if $p=4$ fits it.",
+      "section": "Day 2"
+    },
+    {
+      "question": "The text mentions that 'The nature of mathematics is cumulative.' How does the sequence of problems 1.3.3 through 1.3.7 illustrate this?",
+      "answerOptions": [
+        {
+          "text": "It demonstrates that once Fermat's Little Theorem is proven, the previous steps can be safely forgotten.",
+          "isCorrect": false,
+          "rationale": "The text warns *against* forgetting problems once they are solved, as they remain tools for the future."
+        },
+        {
+          "text": "It shows that prime numbers are the only numbers used in cumulative mathematics.",
+          "isCorrect": false,
+          "rationale": "While the examples use primes, the cumulative nature applies to all branches of mathematics."
+        },
+        {
+          "text": "Each problem serves as an isolated test to see if the student remembers the previous day's lecture.",
+          "isCorrect": false,
+          "rationale": "The text explicitly states problems are not isolated and are meant to build on each other."
+        },
+        {
+          "text": "The results of the earlier problems (Step 1, 2, and 3) are likely used as 'machinery' to prove the final theorem in 1.3.7.",
+          "isCorrect": true,
+          "rationale": "The sequence is described as a 'progression of results' where subsequent problems make use of previous ones."
+        }
+      ],
+      "hint": "Consider the meaning of 'machinery' in the context of building a mathematical proof.",
+      "section": "Day 2"
+    },
+    {
+      "question": "In the context of Polya's Step 4, what does it mean to ask: 'How does it fit into the broader scheme of other problems you have solved?'",
+      "answerOptions": [
+        {
+          "text": "It means checking if the answer is larger or smaller than the answers to previous problems.",
+          "isCorrect": false,
+          "rationale": "The 'scheme' refers to conceptual connections and patterns, not numerical comparisons of final answers."
+        },
+        {
+          "text": "It involves looking for underlying patterns or techniques that are common across different mathematical challenges.",
+          "isCorrect": true,
+          "rationale": "Connecting problems to known patterns is a key part of gaining mathematical maturity and building a toolkit of techniques."
+        },
+        {
+          "text": "It means organizing your notebook so that similar-looking problems are on the same page.",
+          "isCorrect": false,
+          "rationale": "Physical organization is not the focus; the goal is mental accumulation of concepts and methods."
+        },
+        {
+          "text": "It asks you to identify which problems were the easiest to solve so you can avoid hard ones later.",
+          "isCorrect": false,
+          "rationale": "The goal is to learn and understand, not to avoid challenging material."
+        }
+      ],
+      "hint": "Think about the 'patterns' and 'body of facts' the text mentions as part of the maturation process.",
+      "section": "Day 2"
+    },
+    {
+      "question": "Based on the definition of a prime number provided in the source, why is the number 6 not prime?",
+      "answerOptions": [
+        {
+          "text": "It has factors other than itself and 1, such as 2 and 3.",
+          "isCorrect": true,
+          "rationale": "A prime number's *only* factors are itself and 1; since 6 has 2 and 3 as factors, it fails the definition."
+        },
+        {
+          "text": "It is an even number, and all even numbers are composite.",
+          "isCorrect": false,
+          "rationale": "2 is an even number but it is prime; the definition of non-prime (composite) depends on factors, not just parity."
+        },
+        {
+          "text": "Its only factors are 6 and 1.",
+          "isCorrect": false,
+          "rationale": "If its only factors were 6 and 1, it *would* be prime by definition."
+        },
+        {
+          "text": "It is not greater than 1.",
+          "isCorrect": false,
+          "rationale": "6 is clearly greater than 1; this part of the prime definition is satisfied by 6."
+        }
+      ],
+      "hint": "Compare the factors of 6 to the specific criteria given for being a prime number.",
+      "section": "Day 2"
+    },
+    {
+      "question": "In the expression $\\frac{p!}{k!(p-k)!}$, if $p$ is prime, which factor in the numerator is guaranteed to remain after the division because it has no counterparts in the denominator?",
+      "answerOptions": [
+        {
+          "text": "The factor $(p-1)$.",
+          "isCorrect": false,
+          "rationale": "The factor $(p-1)$ could be cancelled out if $k$ or $p-k$ is large enough (e.g., if $k=p-1$, the denominator contains $(p-1)!$)."
+        },
+        {
+          "text": "The factor $p$.",
+          "isCorrect": true,
+          "rationale": "Since $k$ and $p-k$ are both less than $p$, their factorials only contain integers less than $p$, which cannot divide the prime $p$."
+        },
+        {
+          "text": "Every factor in the numerator remains because primes cannot be divided.",
+          "isCorrect": false,
+          "rationale": "The result of the binomial coefficient is an integer, meaning the entire denominator must cancel into the numerator; only the factor $p$ is guaranteed to be left as a factor of the final result."
+        },
+        {
+          "text": "The number 1.",
+          "isCorrect": false,
+          "rationale": "1 is in both the numerator and the denominator and is trivial in terms of divisibility."
+        }
+      ],
+      "hint": "Consider the range of values for $k$ ($1 \\le k \\le p-1$) and which specific integer in $p \\cdot (p-1) \\cdot \\ldots \\cdot 1$ is 'too big' for the denominator.",
+      "section": "Day 2"
+    },
+    {
+      "question": "What does the text suggest is a 'mistake' when flush with success after solving a problem?",
+      "answerOptions": [
+        {
+          "text": "Double-checking your work to ensure no errors were made.",
+          "isCorrect": false,
+          "rationale": "Verification is encouraged and is part of the overall process, not a mistake."
+        },
+        {
+          "text": "Moving on to the next problem immediately without reflecting on the solution.",
+          "isCorrect": true,
+          "rationale": "The text warns that neglecting the fourth step (reflection) when successful is a common error that hinders mathematical growth."
+        },
+        {
+          "text": "Refusing to accept that the plan might have failed.",
+          "isCorrect": false,
+          "rationale": "While that would be a mistake, the specific 'mistake' described for successful students is jumping to the next problem without thinking."
+        },
+        {
+          "text": "Using a prime number as a starting point for the next problem.",
+          "isCorrect": false,
+          "rationale": "The text uses prime numbers as a structured sequence precisely to show how problems build on each other."
+        }
+      ],
+      "hint": "Identify the behavior described after the phrase 'flush with success we usually move on'.",
+      "section": "Day 2"
+    }
+  ]
+}

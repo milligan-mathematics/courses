@@ -1,0 +1,276 @@
+{
+  "title": "MATH 411 — Day 8: Power Series and Differential Equations",
+  "section": "Day 8",
+  "questions": [
+    {
+      "question": "According to the source material, how is the exponential function $e^x$ defined for irrational values of $x$?",
+      "answerOptions": [
+        {
+          "text": "By the power series representation $e^x = \\sum_{n=0}^{\\infty} \\frac{x^n}{n!}$.",
+          "isCorrect": true,
+          "rationale": "The source defines the exponential function for all real numbers using this specific series expansion, which provides a consistent interpretation for irrational exponents."
+        },
+        {
+          "text": "As the limit of repeated multiplication of $e$ by itself.",
+          "isCorrect": false,
+          "rationale": "The text explicitly states that repeated multiplication is a meaningless concept when dealing with irrational exponents."
+        },
+        {
+          "text": "By calculating the $n$-th root of $e$ for very large values of $n$.",
+          "isCorrect": false,
+          "rationale": "Root-taking is the interpretation used for rational exponents in $\\mathbb{Q}$, but it does not apply to irrational exponents."
+        },
+        {
+          "text": "As the inverse of the natural logarithm for rational numbers only.",
+          "isCorrect": false,
+          "rationale": "While related, the text focuses on using power series to extend the definition beyond rational numbers."
+        }
+      ],
+      "hint": "Consider the mathematical tool used to approximate $e$ to any degree of accuracy.",
+      "section": "Day 8"
+    },
+    {
+      "question": "What is the interpretation of $4^{\\sqrt{2}}$ as provided in the text?",
+      "answerOptions": [
+        {
+          "text": "$4^{\\sqrt{2}} = \\sum_{n=0}^{\\infty} \\frac{4^n}{n!}$",
+          "isCorrect": false,
+          "rationale": "This is the series for $e^4$, not for a base of 4 raised to an irrational power."
+        },
+        {
+          "text": "$4^{\\sqrt{2}} = e^{\\sqrt{2} \\log 4} = \\sum_{n=0}^{\\infty} \\frac{(\\sqrt{2} \\log 4)^n}{n!}$",
+          "isCorrect": true,
+          "rationale": "The text explains that exponentiation with an irrational power is defined by converting the base to $e$ and using the series for the resulting exponent."
+        },
+        {
+          "text": "$4^{\\sqrt{2}} = \\prod_{j=1}^{\\sqrt{2}} 4$",
+          "isCorrect": false,
+          "rationale": "The text notes that taking the product of $\\sqrt{2}$ copies of a number is a meaningless concept."
+        },
+        {
+          "text": "$4^{\\sqrt{2}} = \\left(\\sqrt{4}\\right)^2 = 4$",
+          "isCorrect": false,
+          "rationale": "This confuses the irrational exponent $\\sqrt{2}$ with the integer exponent $1$ or a misunderstanding of root-taking."
+        }
+      ],
+      "hint": "Look for how the base is transformed to $e$ using logarithms.",
+      "section": "Day 8"
+    },
+    {
+      "question": "When using power series to integrate the 'bell-shaped' curve $f(x) = \\frac{1}{\\sqrt{2\\pi}}e^{-\\frac{x^2}{2}}$, what is the resulting general term for the series approximation?",
+      "answerOptions": [
+        {
+          "text": "$\\frac{(-1)^n b^{2n}}{n! 2^n}$",
+          "isCorrect": false,
+          "rationale": "This omits the integration step, which increases the power of $x$ and introduces a new denominator."
+        },
+        {
+          "text": "$\\frac{(-1)^n b^{2n+1}}{n! 2^n (2n+1)}$",
+          "isCorrect": true,
+          "rationale": "This follows from substituting $-x^2/2$ into the $e^x$ series and integrating the resulting $x^{2n}$ term from $0$ to $b$."
+        },
+        {
+          "text": "$\\frac{(-1)^n b^{2n+1}}{(2n+1)!}$",
+          "isCorrect": false,
+          "rationale": "This resembles the series for $\\sin x$ rather than the integrated normal distribution function."
+        },
+        {
+          "text": "$\\frac{b^{n}}{n!}$",
+          "isCorrect": false,
+          "rationale": "This is the standard series for $e^b$, failing to account for the square in the exponent or the integration process."
+        }
+      ],
+      "hint": "Recall that integrating $x^{2n}$ involves increasing the exponent and dividing by that new exponent.",
+      "section": "Day 8"
+    },
+    {
+      "question": "If a function $y = \\sum_{n=0}^{\\infty} a_n x^n$ satisfies the differential equation $\\frac{d^2y}{dx^2} = -y$, what is the recurrence relation for the coefficients?",
+      "answerOptions": [
+        {
+          "text": "$a_{n+2} = \\frac{a_n}{(n+2)!}$",
+          "isCorrect": false,
+          "rationale": "This ignores the negative sign in the differential equation and misapplies the factorial notation in the recurrence itself."
+        },
+        {
+          "text": "$a_{n+1} = \\frac{-a_n}{n+1}$",
+          "isCorrect": false,
+          "rationale": "This represents a first-order differential equation rather than the second-order equation $y'' = -y$."
+        },
+        {
+          "text": "$a_{n+2} = \\frac{-a_n}{(n+2)(n+1)}$",
+          "isCorrect": true,
+          "rationale": "Differentiating the series twice results in coefficients $(n+2)(n+1)a_{n+2}$, which must equal $-a_n$ to satisfy the equation."
+        },
+        {
+          "text": "$a_{n+2} = -(n+2)(n+1) a_n$",
+          "isCorrect": false,
+          "rationale": "This incorrectly places the polynomial factors in the numerator rather than the denominator."
+        }
+      ],
+      "hint": "Differentiating $x^{n+2}$ twice produces $(n+2)(n+1)x^n$.",
+      "section": "Day 8"
+    },
+    {
+      "question": "Which set of constants $a_0$ and $a_1$ applied to the series solution of $y'' = -y$ yields the power series for $\\sin x$?",
+      "answerOptions": [
+        {
+          "text": "$a_0 = 1, a_1 = 1$",
+          "isCorrect": false,
+          "rationale": "This would result in a sum of both sine and cosine series rather than just the sine function."
+        },
+        {
+          "text": "$a_0 = 0, a_1 = 0$",
+          "isCorrect": false,
+          "rationale": "This would result in the trivial solution $y = 0$, which is not the sine function."
+        },
+        {
+          "text": "$a_0 = 0, a_1 = 1$",
+          "isCorrect": true,
+          "rationale": "Since $\\sin(0) = 0$ and the derivative of $\\sin x$ at $0$ is $1$, $a_0$ must be $0$ and $a_1$ must be $1$."
+        },
+        {
+          "text": "$a_0 = 1, a_1 = 0$",
+          "isCorrect": false,
+          "rationale": "These values would yield the series for $\\cos x$, as the even-powered terms would remain while odd ones vanish."
+        }
+      ],
+      "hint": "Consider the value of $\\sin(0)$ and its first derivative at zero.",
+      "section": "Day 8"
+    },
+    {
+      "question": "How is the power series for $\\arctan x$ derived in the provided text?",
+      "answerOptions": [
+        {
+          "text": "By integrating the geometric series for $\\frac{1}{1+x^2}$.",
+          "isCorrect": true,
+          "rationale": "The text suggests using the geometric series for $\\frac{1}{1-x}$, substituting $-x^2$ to get $\\frac{1}{1+x^2}$, and then integrating."
+        },
+        {
+          "text": "By solving the differential equation $y'' = -y$ with different initial conditions.",
+          "isCorrect": false,
+          "rationale": "Solving $y'' = -y$ leads to trigonometric functions (sine and cosine), not the arctangent function."
+        },
+        {
+          "text": "By multiplying the series for $\\sin x$ and $\\cos x$.",
+          "isCorrect": false,
+          "rationale": "This would yield a series for $\\tan x$ or a related product, which is not how the text derives $\\arctan x$."
+        },
+        {
+          "text": "By applying the binomial theorem with $N = -1$.",
+          "isCorrect": false,
+          "rationale": "While the binomial theorem is discussed later, the text specifically instructs using the geometric series for this derivation."
+        }
+      ],
+      "hint": "It involves a known series that represents $\\frac{1}{1-x}$.",
+      "section": "Day 8"
+    },
+    {
+      "question": "Why is Leibniz's series $\\frac{\\pi}{4} = 1 - \\frac{1}{3} + \\frac{1}{5} - \\frac{1}{7} + \\dots$ described as having limited practical use for approximating $\\pi$?",
+      "answerOptions": [
+        {
+          "text": "It only provides an approximation for $\\pi^2$ rather than $\\pi$.",
+          "isCorrect": false,
+          "rationale": "The series specifically approximates $\\pi/4$ (and thus $\\pi$), not its square."
+        },
+        {
+          "text": "It converges too slowly.",
+          "isCorrect": true,
+          "rationale": "The text notes that even after 1000 terms, the approximation is only accurate to two decimal places."
+        },
+        {
+          "text": "It only works for rational values of $\\pi$.",
+          "isCorrect": false,
+          "rationale": "$\\pi$ is irrational; the series is intended to approximate its value regardless of its rationality."
+        },
+        {
+          "text": "It is mathematically incorrect for large values of $n$.",
+          "isCorrect": false,
+          "rationale": "The series is mathematically sound and convergent; its issue is efficiency, not accuracy in the limit."
+        }
+      ],
+      "hint": "Consider the number of terms required to achieve a high level of accuracy.",
+      "section": "Day 8"
+    },
+    {
+      "question": "According to the product notation convention established in the text, what is the value of $\\prod_{j=1}^{0} j$?",
+      "answerOptions": [
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "While an empty sum is $0$, an empty product is conventionally defined as $1$ to maintain consistency in formulas."
+        },
+        {
+          "text": "Undefined",
+          "isCorrect": false,
+          "rationale": "The text explicitly provides a definition for this case to avoid confusion in binomial expansions."
+        },
+        {
+          "text": "$j$",
+          "isCorrect": false,
+          "rationale": "The product must evaluate to a specific numerical value, and $j$ is the index variable."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": true,
+          "rationale": "The text defines this empty product as $1$ to be consistent with $0! = 1$ and the binomial coefficient formula."
+        }
+      ],
+      "hint": "This convention is analogous to the definition of zero factorial.",
+      "section": "Day 8"
+    },
+    {
+      "question": "How did Newton convince himself that the binomial series for $(1+x)^{1/2}$ was correct, despite not having a formal proof?",
+      "answerOptions": [
+        {
+          "text": "He integrated the series to find the area of a circle.",
+          "isCorrect": false,
+          "rationale": "Integration was his motivation for finding the series, but squaring it was his method of testing the series' validity."
+        },
+        {
+          "text": "He compared it to the known values of the sine series.",
+          "isCorrect": false,
+          "rationale": "The sine series is unrelated to the verification of the binomial expansion for square roots."
+        },
+        {
+          "text": "He used a computer algebra system to plot the first 15 terms.",
+          "isCorrect": false,
+          "rationale": "Newton lived in the 17th century, long before computer algebra systems existed; the text mentions these systems only for modern problems."
+        },
+        {
+          "text": "He squared the series and observed that it produced $1+x$.",
+          "isCorrect": true,
+          "rationale": "By multiplying the series by itself, Newton saw that higher-order terms like $x^2$ and $x^3$ had zero coefficients, leaving just $1+x$."
+        }
+      ],
+      "hint": "Think about the inverse operation of taking a square root.",
+      "section": "Day 8"
+    },
+    {
+      "question": "What happens to the binomial expansion $\\sum_{n=0}^{\\infty} \\binom{N}{n} x^n$ when $N$ is a non-negative integer?",
+      "answerOptions": [
+        {
+          "text": "The series converges only if $|x| < 1$.",
+          "isCorrect": false,
+          "rationale": "While true for non-integer $N$, for integer $N$, the series is a finite polynomial and converges for all $x$."
+        },
+        {
+          "text": "The series becomes equivalent to the geometric series.",
+          "isCorrect": false,
+          "rationale": "The geometric series is specifically $(1-x)^{-1}$, which has a negative integer exponent."
+        },
+        {
+          "text": "The series continues infinitely because $x$ is a real number.",
+          "isCorrect": false,
+          "rationale": "For non-negative integers $N$, the coefficients become zero once $n > N$."
+        },
+        {
+          "text": "The series terminates because $\\binom{N}{n} = 0$ for all $n > N$.",
+          "isCorrect": true,
+          "rationale": "When $n$ exceeds $N$, one of the factors in the product $\\prod_{j=0}^{n-1} (N-j)$ becomes zero, causing the term to vanish."
+        }
+      ],
+      "hint": "Consider what happens to the factor $(N-j)$ in the product formula when the index $j$ reaches $N$.",
+      "section": "Day 8"
+    }
+  ]
+}

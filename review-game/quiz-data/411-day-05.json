@@ -1,0 +1,698 @@
+{
+  "title": "MATH 411 — Day 5: Newton and Leibniz",
+  "section": "Day 5",
+  "questions": [
+    {
+      "question": "In Leibniz's 1684 paper, how did he initially conceptualize the differential $dx$ in relation to the difference $\\Delta x$?",
+      "answerOptions": [
+        {
+          "text": "$dx$ is defined as the limit of $\\Delta x$ as it approaches zero.",
+          "isCorrect": false,
+          "rationale": "The limit concept was a later formalization associated more with Newton's influence and subsequent mathematicians, not Leibniz's initial differential approach."
+        },
+        {
+          "text": "$dx$ is an infinitesimally small difference between two infinitely close but distinct points.",
+          "isCorrect": true,
+          "rationale": "Leibniz viewed $dx$ as the difference between values that are infinitely close, a concept he admitted was logically suspect but practically useful."
+        },
+        {
+          "text": "$dx$ is an absolute zero value used to simplify algebraic expressions.",
+          "isCorrect": false,
+          "rationale": "Leibniz specifically stated that while $dx$ is infinitesimally small, it is not zero."
+        },
+        {
+          "text": "$dx$ is a finite value representing the slope of a secant line.",
+          "isCorrect": false,
+          "rationale": "Leibniz reserved the term for the infinitesimal case, whereas a secant line refers to a finite difference $\\Delta x$."
+        }
+      ],
+      "hint": "Consider the distinction Leibniz made between finite differences and those that are 'infinitely close'.",
+      "section": "Day 5"
+    },
+    {
+      "question": "According to the source material, how would Leibniz and his contemporaries have interpreted the symbol $\\frac{dy}{dx}$?",
+      "answerOptions": [
+        {
+          "text": "As a symbolic representation of the limit of a difference quotient.",
+          "isCorrect": false,
+          "rationale": "While Newton suggested limit-like ideas, the literal quotient view was the primary interpretation for Leibniz's notation at the time."
+        },
+        {
+          "text": "As an actual quotient of two infinitesimal quantities.",
+          "isCorrect": true,
+          "rationale": "In the 17th century, the notation was viewed literally as a ratio of differentials rather than a single limit-based operator."
+        },
+        {
+          "text": "As a functional operator representing a derivative.",
+          "isCorrect": false,
+          "rationale": "The term 'derivative' and its modern functional interpretation were not coined until Lagrange in 1797."
+        },
+        {
+          "text": "As a constant value representing the curvature of a line.",
+          "isCorrect": false,
+          "rationale": "The notation specifically related the change in variables via the slope of the tangent line, not a constant curvature."
+        }
+      ],
+      "hint": "Think about the literal meaning of the notation before modern limit theory was established.",
+      "section": "Day 5"
+    },
+    {
+      "question": "Leibniz justified the product rule $d(xv) = xdv + vdx$ by considering the area of a rectangle. Which term did he discard to reach this final form?",
+      "answerOptions": [
+        {
+          "text": "$x\\,dv$",
+          "isCorrect": false,
+          "rationale": "This term represents a principal change in area and is essential to the final rule."
+        },
+        {
+          "text": "$\\frac{1}{2} dx\\,dv$",
+          "isCorrect": false,
+          "rationale": "Leibniz's geometric model identifies the corner rectangle as $dx\\,dv$, not a half-value."
+        },
+        {
+          "text": "$v\\,dx$",
+          "isCorrect": false,
+          "rationale": "This term represents the other principal side of the 'L-shaped' change in area and is retained."
+        },
+        {
+          "text": "$dx\\,dv$",
+          "isCorrect": true,
+          "rationale": "Leibniz reasoned that the product of two infinitesimals is 'quadratically' smaller than the other terms and can be ignored."
+        }
+      ],
+      "hint": "Consider which part of the 'L-shaped' region in the area model would be the smallest.",
+      "section": "Day 5"
+    },
+    {
+      "question": "Newton's approach to calculus, known as the 'Method of Fluxions,' was fundamentally based on which concept?",
+      "answerOptions": [
+        {
+          "text": "The summation of infinitely many discrete points.",
+          "isCorrect": false,
+          "rationale": "His method focused on the continuous 'flow' or rate of change rather than a discrete summation approach."
+        },
+        {
+          "text": "The motion of quantities changing over time.",
+          "isCorrect": true,
+          "rationale": "Newton viewed variables as 'fluents' that flow or change continuously, with 'fluxions' representing their rates of change."
+        },
+        {
+          "text": "The algebraic manipulation of finite differences.",
+          "isCorrect": false,
+          "rationale": "Newton sought to move beyond finite differences toward the concept of continuous change."
+        },
+        {
+          "text": "The static properties of geometric tangents.",
+          "isCorrect": false,
+          "rationale": "While he used tangents, his foundational logic was dynamic and time-dependent rather than purely static geometry."
+        }
+      ],
+      "hint": "Reflect on the terminology 'fluents' and 'fluxions' and what they imply about state.",
+      "section": "Day 5"
+    },
+    {
+      "question": "In the *Principia*, Newton 'proved' the Product Rule by incrementing and decrementing the sides of a rectangle $R = xv$. Why is this proof considered logically problematic?",
+      "answerOptions": [
+        {
+          "text": "It relies specifically on using symmetric increments of exactly $\\frac{1}{2}\\Delta x$ and $\\frac{1}{2}\\Delta v$.",
+          "isCorrect": true,
+          "rationale": "The algebraic cancellation that removes the higher-order term only works if the increments are perfectly centered; other increments do not yield the same result."
+        },
+        {
+          "text": "It contradicts Leibniz's rule for the differential of a product.",
+          "isCorrect": false,
+          "rationale": "Newton's result $\\Delta R = x\\Delta v + v\\Delta x$ actually aligns with Leibniz's findings; the problem lies in the proof's derivation."
+        },
+        {
+          "text": "It assumes that the rectangle $R$ is a constant rather than a flowing quantity.",
+          "isCorrect": false,
+          "rationale": "Newton explicitly defined $R$ as a 'flowing quantity' in his argument."
+        },
+        {
+          "text": "It fails to account for the existence of a tangent line.",
+          "isCorrect": false,
+          "rationale": "Newton's proof is an algebraic demonstration of area change and does not directly rely on the assumption of a tangent line."
+        }
+      ],
+      "hint": "Look at the specific fractional values Newton used to make the algebra work.",
+      "section": "Day 5"
+    },
+    {
+      "question": "What is the primary reason the source material suggests that Newton and Leibniz persevered despite the logical 'discomfort' of their methods?",
+      "answerOptions": [
+        {
+          "text": "They believed the limit concept had already been fully proven by Greek mathematicians.",
+          "isCorrect": false,
+          "rationale": "The source mentions that the limit concept as we know it was not yet fully established or defined during their time."
+        },
+        {
+          "text": "They were obtaining verifiably correct answers to previously intractable problems.",
+          "isCorrect": true,
+          "rationale": "The pragmatic success of calculus in solving hard problems outweighed the immediate need for rigorous logical foundations."
+        },
+        {
+          "text": "They were unaware that ignoring small errors was mathematically controversial.",
+          "isCorrect": false,
+          "rationale": "The text notes that both were aware of the logical difficulties; Newton even explicitly warned against scorning small errors."
+        },
+        {
+          "text": "They were competing to see who could invent the most complex notation.",
+          "isCorrect": false,
+          "rationale": "While there was a rivalry, their perseverance was driven by the utility of the math, not a desire for complexity."
+        }
+      ],
+      "hint": "Focus on the practical outcomes of using their 'calculus differentialis'.",
+      "section": "Day 5"
+    },
+    {
+      "question": "When applying Leibniz's rules to find the differential of $x^3$, which steps would a mathematician of that era follow using the Product Rule?",
+      "answerOptions": [
+        {
+          "text": "$d(x^2 \\cdot x) = x^2 dx + x d(x^2) = x^2 dx + x(2x dx) = 3x^2 dx$.",
+          "isCorrect": true,
+          "rationale": "This demonstrates the recursive application of the product rule to higher powers as shown in the source."
+        },
+        {
+          "text": "$d(x^3) = \\frac{x^3}{dx}$.",
+          "isCorrect": false,
+          "rationale": "This notation is incorrect; the differential $d(x^3)$ should be proportional to $dx$."
+        },
+        {
+          "text": "$d(x^3) = 3 \\int x^2 dx$.",
+          "isCorrect": false,
+          "rationale": "This mixes differentiation and integration notation in a way that does not represent a derivation of the power rule."
+        },
+        {
+          "text": "$d(x^3) = (x+dx)^3 - x^3 = 3x^2 dx + 3x(dx)^2 + (dx)^3 = 3x^2 dx$.",
+          "isCorrect": false,
+          "rationale": "While this is a binomial expansion method, the source specifically highlights using the Product Rule $d(xv) = xdv + vdx$ to derive it."
+        }
+      ],
+      "hint": "Consider how $x^3$ can be broken down into a product of $x^2$ and $x$.",
+      "section": "Day 5"
+    },
+    {
+      "question": "In the derivation of Snell's Law using calculus, what is the significance of the condition $dT = 0$?",
+      "answerOptions": [
+        {
+          "text": "It indicates that the velocity of light is constant in all media.",
+          "isCorrect": false,
+          "rationale": "The derivation relies on velocities $v_a$ and $v_w$ being different; $dT=0$ refers to the optimization of the path."
+        },
+        {
+          "text": "It shows that light travels in a straight line regardless of the medium.",
+          "isCorrect": false,
+          "rationale": "Snell's Law describes how light bends; $dT=0$ identifies the specific point on the boundary where this bend occurs."
+        },
+        {
+          "text": "It represents the point where the time function reaches its minimum value.",
+          "isCorrect": true,
+          "rationale": "Leibniz's 'New Method' was specifically for finding maxima and minima where the differential change is zero."
+        },
+        {
+          "text": "It means that the distance traveled by light is zero.",
+          "isCorrect": false,
+          "rationale": "$dT$ is the change in time; $dT=0$ occurs at a specific non-zero distance $x$."
+        }
+      ],
+      "hint": "Recall the title of Leibniz's paper regarding 'Maxima and Minima'.",
+      "section": "Day 5"
+    },
+    {
+      "question": "Which mathematician is credited in the text with coining the term 'derivative' in 1797?",
+      "answerOptions": [
+        {
+          "text": "Lagrange",
+          "isCorrect": true,
+          "rationale": "The source explicitly states that the term 'derivative' was not coined until 1797 by Lagrange."
+        },
+        {
+          "text": "Newton",
+          "isCorrect": false,
+          "rationale": "Newton used the term 'fluxion' to describe the rate of change."
+        },
+        {
+          "text": "Snell",
+          "isCorrect": false,
+          "rationale": "Snell is associated with the law of refraction, not the terminology of calculus."
+        },
+        {
+          "text": "Leibniz",
+          "isCorrect": false,
+          "rationale": "Leibniz used the term 'differential' and referred to his system as 'calculus differentialis'."
+        }
+      ],
+      "hint": "This individual introduced the term more than a century after the initial papers by Newton and Leibniz.",
+      "section": "Day 5"
+    },
+    {
+      "question": "Based on Leibniz's quotient rule, what is the expression for $d\\left(\\frac{v}{y}\\right)$?",
+      "answerOptions": [
+        {
+          "text": "$\\frac{y\\,dv + v\\,dy}{y^2}$",
+          "isCorrect": false,
+          "rationale": "This uses the addition sign from the product rule instead of the subtraction required for quotients."
+        },
+        {
+          "text": "$\\frac{y\\,dv - v\\,dy}{yy}$",
+          "isCorrect": true,
+          "rationale": "This follows the rule provided in Leibniz's paper as listed in the source material."
+        },
+        {
+          "text": "$\\frac{v\\,dy - y\\,dv}{y^2}$",
+          "isCorrect": false,
+          "rationale": "This is a common error where the order of the numerator terms is reversed."
+        },
+        {
+          "text": "$\\frac{dv}{dy}$",
+          "isCorrect": false,
+          "rationale": "This represents a derivative of $v$ with respect to $y$, not the differential of a quotient."
+        }
+      ],
+      "hint": "Look for the formula that involves the square of the denominator and a subtraction in the numerator.",
+      "section": "Day 5"
+    },
+    {
+      "question": "True or False: Leibniz's method for calculating $d(c)$ where $c$ is a constant was $d(c) = c - c = 0$.",
+      "answerOptions": [
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "The source explicitly provides this example of intuitive understanding for constants."
+        },
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "The text states that mathematicians in Leibniz's day understood intuitively that the difference of a constant from itself is zero."
+        }
+      ],
+      "hint": "Consider the simplest case of a difference applied to a value that does not change.",
+      "section": "Day 5"
+    },
+    {
+      "question": "In the derivation of Snell's Law, Fermat’s Principle of Least Time states that:",
+      "answerOptions": [
+        {
+          "text": "The angle of incidence is always equal to the angle of refraction.",
+          "isCorrect": false,
+          "rationale": "This is a description of reflection or a specific case, not the general principle of least time."
+        },
+        {
+          "text": "Light always travels in a straight line between two points in different media.",
+          "isCorrect": false,
+          "rationale": "Light actually bends at the interface to minimize time, so it does not stay in one single straight line from start to finish."
+        },
+        {
+          "text": "The speed of light is the same in air and water.",
+          "isCorrect": false,
+          "rationale": "The principle assumes different speeds ($v_a$ and $v_w$) which necessitates finding the fastest path."
+        },
+        {
+          "text": "Light travels the path that takes the minimum amount of time.",
+          "isCorrect": true,
+          "rationale": "This is the foundational principle used to set up the time equation $T$ which is then differentiated."
+        }
+      ],
+      "hint": "Focus on the optimization goal that light 'seeks' according to Fermat.",
+      "section": "Day 5"
+    },
+    {
+      "question": "Leibniz's notation $\\frac{dy}{dx}$ relates the differentials to which geometric feature of a curve?",
+      "answerOptions": [
+        {
+          "text": "The curvature at a single point.",
+          "isCorrect": false,
+          "rationale": "While related, the first derivative specifically represents the slope (direction) rather than the curvature (second derivative)."
+        },
+        {
+          "text": "The slope of the tangent line.",
+          "isCorrect": true,
+          "rationale": "Leibniz defined $dy$ and $dx$ as being related via the slope of the tangent line to the curve $y=f(x)$."
+        },
+        {
+          "text": "The area under the curve.",
+          "isCorrect": false,
+          "rationale": "While calculus deals with area, the specific ratio of differentials $dy/dx$ represents slope."
+        },
+        {
+          "text": "The length of the secant line.",
+          "isCorrect": false,
+          "rationale": "A secant line relates to finite differences $\\Delta y / \\Delta x$, whereas differentials relate to the tangent."
+        }
+      ],
+      "hint": "Think about the line that just 'touches' the curve at one point.",
+      "section": "Day 5"
+    },
+    {
+      "question": "What is the result of applying Leibniz's power rule to $x^{-n}$, where $n$ is a positive integer?",
+      "answerOptions": [
+        {
+          "text": "$d(x^{-n}) = -nx^{-n-1}dx$",
+          "isCorrect": true,
+          "rationale": "This follows from the general rule $d(x^a) = ax^{a-1}dx$ applied to the negative exponent $a = -n$."
+        },
+        {
+          "text": "$d(x^{-n}) = -nx^{n-1}dx$",
+          "isCorrect": false,
+          "rationale": "This incorrectly leaves the exponent as positive in the result."
+        },
+        {
+          "text": "$d(x^{-n}) = nx^{-n+1}dx$",
+          "isCorrect": false,
+          "rationale": "This error occurs if one adds to the exponent instead of subtracting one."
+        },
+        {
+          "text": "$d(x^{-n}) = -nx^{-n}dx$",
+          "isCorrect": false,
+          "rationale": "This fails to decrease the exponent by the required one unit."
+        }
+      ],
+      "hint": "Apply the rule $ax^{a-1}dx$ carefully to a negative value of $a$.",
+      "section": "Day 5"
+    },
+    {
+      "question": "Newton's definition of a 'fluxion' corresponds most closely to what modern concept?",
+      "answerOptions": [
+        {
+          "text": "The limits of integration.",
+          "isCorrect": false,
+          "rationale": "Fluxions are concerned with the instantaneous rate of change at any point, not the boundaries of an area."
+        },
+        {
+          "text": "The integral.",
+          "isCorrect": false,
+          "rationale": "A fluxion is a rate of change, which is the inverse process of integration."
+        },
+        {
+          "text": "The derivative.",
+          "isCorrect": true,
+          "rationale": "The source identifies the fluxion as the rate of change of a fluent, which we now call a derivative."
+        },
+        {
+          "text": "The function itself.",
+          "isCorrect": false,
+          "rationale": "The function itself is what Newton called a 'fluent'."
+        }
+      ],
+      "hint": "Think about the 'rate of change' of a quantity that is 'flowing'.",
+      "section": "Day 5"
+    },
+    {
+      "question": "According to the source, why is it 'logically untenable' to toss aside $dx\\,dv$ in the product rule proof?",
+      "answerOptions": [
+        {
+          "text": "Because the product rule only works if all terms are kept.",
+          "isCorrect": false,
+          "rationale": "The modern product rule actually matches the result where $dx\\,dv$ is removed; the objection is to the informal method of removal."
+        },
+        {
+          "text": "Because Leibniz proved that $dx\\,dv$ was equal to zero.",
+          "isCorrect": false,
+          "rationale": "Leibniz maintained that differentials were not zero, so $dx\\,dv$ could not be zero either."
+        },
+        {
+          "text": "Because $dx\\,dv$ is actually larger than $x\\,dv$.",
+          "isCorrect": false,
+          "rationale": "In the infinitesimal context, $dx\\,dv$ is indeed smaller; the issue is the logical justification for removal, not the size."
+        },
+        {
+          "text": "Because mathematical matters do not allow even the smallest errors to be scorned.",
+          "isCorrect": true,
+          "rationale": "The text cites Newton's dictum that small errors cannot be ignored, highlighting the lack of rigor in simply discarding 'infinitely smaller' quantities."
+        }
+      ],
+      "hint": "Recall Newton's famous quote about the importance of precision.",
+      "section": "Day 5"
+    },
+    {
+      "question": "Which of the following describes the 'L-shaped region' mentioned in the geometric explanation of the Product Rule?",
+      "answerOptions": [
+        {
+          "text": "The area between a tangent line and the x-axis.",
+          "isCorrect": false,
+          "rationale": "The L-shaped region specifically refers to the change in the product $xv$ represented as a rectangle."
+        },
+        {
+          "text": "The region created by subtracting a smaller rectangle from a larger one in Newton's proof.",
+          "isCorrect": false,
+          "rationale": "Newton's proof uses a centered increment/decrement approach rather than the 'L-shaped' addition used by Leibniz."
+        },
+        {
+          "text": "The area under a curved path of light in water.",
+          "isCorrect": false,
+          "rationale": "This refers to the Snell's Law application, not the geometric justification of the Product Rule."
+        },
+        {
+          "text": "The change in area of a rectangle when its sides $x$ and $v$ are increased by $dx$ and $dv$.",
+          "isCorrect": true,
+          "rationale": "The total area change $d(xv)$ is represented by the extra area added to the top and side of the original rectangle."
+        }
+      ],
+      "hint": "Visualize a rectangle growing in two directions simultaneously.",
+      "section": "Day 5"
+    },
+    {
+      "question": "In the derivation for Snell's Law, the time formula is given as $T = \\frac{\\sqrt{x^2+a^2}}{v_a} + \\frac{\\sqrt{(c-x)^2+b^2}}{v_w}$. What does the term $\\sqrt{x^2+a^2}$ represent?",
+      "answerOptions": [
+        {
+          "text": "The velocity of light in air.",
+          "isCorrect": false,
+          "rationale": "Velocity is represented by $v_a$, which is the divisor of the distance."
+        },
+        {
+          "text": "The distance traveled by light from point $A$ to the boundary.",
+          "isCorrect": true,
+          "rationale": "Using the Pythagorean theorem with coordinates $x$ and $a$, this represents the hypotenuse/path length in the first medium."
+        },
+        {
+          "text": "The sine of the angle of incidence.",
+          "isCorrect": false,
+          "rationale": "The sine is a ratio of the opposite side ($x$) to this hypotenuse, not the hypotenuse itself."
+        },
+        {
+          "text": "The horizontal distance from point $A$ to point $B$.",
+          "isCorrect": false,
+          "rationale": "The total horizontal distance is $c$; the term $\\sqrt{x^2+a^2}$ is a diagonal path length."
+        }
+      ],
+      "hint": "Look at the numerator of the first fraction in the time equation.",
+      "section": "Day 5"
+    },
+    {
+      "question": "Leibniz's rule for the differential of a sum is given as $d(z-y+w+x) = dz-dy+dw+dx$. This is described as an extension of which algebraic property?",
+      "answerOptions": [
+        {
+          "text": "$x^a x^b = x^{a+b}$",
+          "isCorrect": false,
+          "rationale": "This is an exponent rule, unrelated to the linear addition of differentials."
+        },
+        {
+          "text": "$a(b+c) = ab + ac$",
+          "isCorrect": false,
+          "rationale": "This is the distributive property of multiplication, which is not the basis for the sum rule in differentials."
+        },
+        {
+          "text": "$(x_2+y_2) - (x_1+y_1) = (x_2-x_1) + (y_2-y_1)$",
+          "isCorrect": true,
+          "rationale": "The source explains that the differential of a sum is a direct extension of the properties of finite differences."
+        },
+        {
+          "text": "$\\frac{a+b}{c} = \\frac{a}{c} + \\frac{b}{c}$",
+          "isCorrect": false,
+          "rationale": "While true, the differential sum rule is explicitly linked to the subtraction of two sets of variable states."
+        }
+      ],
+      "hint": "Think about how you would group terms when calculating the difference between two sums.",
+      "section": "Day 5"
+    },
+    {
+      "question": "How did Leibniz categorize the different orders of infinitesimals, such as $dx$ vs $dx\\,dv$?",
+      "answerOptions": [
+        {
+          "text": "He argued they were exactly equal in magnitude.",
+          "isCorrect": false,
+          "rationale": "He believed they were different, which allowed him to discard the 'more infinitely small' terms."
+        },
+        {
+          "text": "He viewed $dx\\,dv$ as a complex number.",
+          "isCorrect": false,
+          "rationale": "Leibniz's reasoning was based on orders of magnitude in real quantities, not complex numbers."
+        },
+        {
+          "text": "He considered $dx\\,dv$ to be a finite quantity.",
+          "isCorrect": false,
+          "rationale": "If $dx$ is infinitesimal, its product with another infinitesimal $dv$ cannot be finite."
+        },
+        {
+          "text": "He suggested $dx\\,dv$ might be 'quadratically' infinitely small compared to $dx$.",
+          "isCorrect": true,
+          "rationale": "The text notes he reasoned that products of infinitesimals were of a higher order of smallness and thus negligible."
+        }
+      ],
+      "hint": "Consider the term 'quadratically' as it appears in the source.",
+      "section": "Day 5"
+    },
+    {
+      "question": "According to the source, what assumption did both Newton and Leibniz make regarding the curves they studied?",
+      "answerOptions": [
+        {
+          "text": "That the area under any curve was always an integer.",
+          "isCorrect": false,
+          "rationale": "Calculus was specifically designed to handle the complex, non-integer values found in physics and geometry."
+        },
+        {
+          "text": "That all curves were composed of straight line segments.",
+          "isCorrect": false,
+          "rationale": "While they used infinitesimal segments, they were analyzing continuous, smooth curves."
+        },
+        {
+          "text": "That every curve could be expressed as a simple polynomial.",
+          "isCorrect": false,
+          "rationale": "They dealt with irrational and fractional quantities, not just simple polynomials."
+        },
+        {
+          "text": "That the curves always had tangent lines and were differentiable.",
+          "isCorrect": true,
+          "rationale": "The source notes that they assumed all quantities were differentiable, an assumption that would later lead to difficulties."
+        }
+      ],
+      "hint": "Recall what they assumed about the existence of the tangent line.",
+      "section": "Day 5"
+    },
+    {
+      "question": "In the derivation of Snell's Law, the final relationship $\\frac{\\sin\\theta_a}{v_a} = \\frac{\\sin\\theta_w}{v_w}$ is obtained from which intermediate algebraic step?",
+      "answerOptions": [
+        {
+          "text": "$\\sqrt{x^2+a^2} + \\sqrt{(c-x)^2+b^2} = 0$",
+          "isCorrect": false,
+          "rationale": "This would imply distances are zero or negative, which is not physically possible in this context."
+        },
+        {
+          "text": "$\\frac{v_a}{x} = \\frac{v_w}{c-x}$",
+          "isCorrect": false,
+          "rationale": "This ignores the hypotenuse terms which are necessary to define the sine of the angles."
+        },
+        {
+          "text": "$\\frac{1}{v_a} \\frac{x}{\\sqrt{x^2+a^2}} = \\frac{1}{v_w} \\frac{c-x}{\\sqrt{(c-x)^2+b^2}}$",
+          "isCorrect": true,
+          "rationale": "This step equates the components of the differentiated time function set to zero, with the fractions representing the sines of the angles."
+        },
+        {
+          "text": "$v_a \\sin\\theta_a = v_w \\sin\\theta_w$",
+          "isCorrect": false,
+          "rationale": "Snell's Law is a ratio of sine to velocity, not a product."
+        }
+      ],
+      "hint": "Identify the equation where the two parts of the differentiated time formula are set equal.",
+      "section": "Day 5"
+    },
+    {
+      "question": "What happens in Newton's product rule proof if you subtract the 'decremented' rectangle from the 'incremented' rectangle?",
+      "answerOptions": [
+        {
+          "text": "It results in $2xv + x\\Delta v + v\\Delta x$.",
+          "isCorrect": false,
+          "rationale": "This would be the result of addition, not subtraction."
+        },
+        {
+          "text": "It produces a remainder of $\\frac{\\Delta x \\Delta v}{2}$.",
+          "isCorrect": false,
+          "rationale": "The second-order term $\\frac{\\Delta x \\Delta v}{4}$ appears in both the incremented and decremented versions with the same sign, so it cancels during subtraction."
+        },
+        {
+          "text": "The terms $xv$ and $\\frac{\\Delta x \\Delta v}{4}$ cancel out, leaving $x\\Delta v + v\\Delta x$.",
+          "isCorrect": true,
+          "rationale": "The subtraction $[xv + \\frac{x\\Delta v}{2} + \\frac{v\\Delta x}{2} + \\dots] - [xv - \\frac{x\\Delta v}{2} - \\frac{v\\Delta x}{2} + \\dots]$ leaves the sum of the half-terms."
+        },
+        {
+          "text": "The result is exactly zero, proving the derivative is constant.",
+          "isCorrect": false,
+          "rationale": "Only the static and second-order terms cancel; the primary change terms remain."
+        }
+      ],
+      "hint": "Perform the subtraction of the two expanded algebraic expressions carefully.",
+      "section": "Day 5"
+    },
+    {
+      "question": "Leibniz's 1684 paper title mentions that his method is 'impeded neither by fractional nor by irrational quantities'. What does this suggest about the advancement of his calculus?",
+      "answerOptions": [
+        {
+          "text": "It was a simplification that only worked for linear functions.",
+          "isCorrect": false,
+          "rationale": "The mention of 'maxima and minima' and 'tangents' indicates it was intended for complex curves."
+        },
+        {
+          "text": "It was designed to avoid the use of algebra entirely.",
+          "isCorrect": false,
+          "rationale": "The method is deeply algebraic, using variables and systematic rules."
+        },
+        {
+          "text": "It was only applicable to whole numbers.",
+          "isCorrect": false,
+          "rationale": "The title explicitly states it is *not* impeded by fractions or irrationals."
+        },
+        {
+          "text": "It was more general and powerful than previous methods that only handled specific cases.",
+          "isCorrect": true,
+          "rationale": "By handling fractions and irrationals, Leibniz signaled that his 'differential' approach was a universal tool for geometry."
+        }
+      ],
+      "hint": "Focus on the 'neither... nor' part of the translated title.",
+      "section": "Day 5"
+    },
+    {
+      "question": "How does the source material characterize the current usage of Newton's and Leibniz's foundational approaches to calculus?",
+      "answerOptions": [
+        {
+          "text": "Newton's Method of Fluxions remains the primary way calculus is taught in modern universities.",
+          "isCorrect": false,
+          "rationale": "Modern calculus is primarily taught using limits and derivatives rather than fluxions."
+        },
+        {
+          "text": "Both approaches were abandoned entirely in the 18th century.",
+          "isCorrect": false,
+          "rationale": "They were not abandoned; their notation and results were retained while the underlying logic was eventually updated."
+        },
+        {
+          "text": "Leibniz's approach is now considered the only mathematically rigorous one.",
+          "isCorrect": false,
+          "rationale": "Leibniz's differentials were considered logically suspect for a long time until modern non-standard analysis."
+        },
+        {
+          "text": "Both have fallen out of favor as formal foundations but remain used as conceptual ways of thinking.",
+          "isCorrect": true,
+          "rationale": "While the limit concept (Newton's later influence) is the modern foundation, the 'infinitesimal' and 'flow' ideas are still used conceptually."
+        }
+      ],
+      "hint": "Look for the distinction between a 'foundation' and a 'way of thinking'.",
+      "section": "Day 5"
+    },
+    {
+      "question": "Which specific differential rule would be used first to derive the quotient rule $d\\left(\\frac{v}{y}\\right)$ from the product rule, according to the exercises?",
+      "answerOptions": [
+        {
+          "text": "$d(v) = d\\left(y \\cdot \\frac{v}{y}\\right)$",
+          "isCorrect": true,
+          "rationale": "By setting $v = y(v/y)$ and applying the product rule, one can solve for the differential of the quotient."
+        },
+        {
+          "text": "$d(v/y) = dy/dv$",
+          "isCorrect": false,
+          "rationale": "This is algebraically incorrect and does not follow from the product rule."
+        },
+        {
+          "text": "$d(v/y) = v\\,d(1/y) + (1/y)dv$",
+          "isCorrect": false,
+          "rationale": "While true, the simpler path suggested by historical methods is using the identity $v = y(v/y)$."
+        },
+        {
+          "text": "$d\\left(\\frac{v}{y}\\right) = \\frac{d(v)}{d(y)}$",
+          "isCorrect": false,
+          "rationale": "This is a common student error and not a valid differential rule."
+        }
+      ],
+      "hint": "Consider how you can rewrite the fraction as a product to apply the known product rule.",
+      "section": "Day 5"
+    }
+  ]
+}

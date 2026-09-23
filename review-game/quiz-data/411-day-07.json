@@ -1,0 +1,725 @@
+{
+  "title": "MATH 411 — Day 7: Power Series and the Exponential",
+  "section": "Day 7",
+  "questions": [
+    {
+      "question": "What was a standard technique in the 18th century for representing functions like $f(x) = \\sin x$ that cannot be expressed as finite polynomials?",
+      "answerOptions": [
+        {
+          "text": "Using only geometric representations without algebraic formulas.",
+          "isCorrect": false,
+          "rationale": "The focus of the passage is on the algebraic manipulation of series as 'polynomial-like' objects."
+        },
+        {
+          "text": "Treating them as 'infinite polynomials' or power series.",
+          "isCorrect": true,
+          "rationale": "The source material notes that mathematicians of that era manipulated these objects as if they were polynomials to handle functions with infinite roots."
+        },
+        {
+          "text": "Restricting the domain to avoid the need for series.",
+          "isCorrect": false,
+          "rationale": "The text discusses expanding the representation of functions rather than restricting their domains."
+        },
+        {
+          "text": "Approximating them with only the first two terms of a series.",
+          "isCorrect": false,
+          "rationale": "While truncation is a modern numerical method, the text highlights the conceptual shift to infinite power series representations."
+        }
+      ],
+      "hint": "Consider how 18th-century mathematicians viewed the extension of finite algebraic expressions.",
+      "section": "Day 7"
+    },
+    {
+      "question": "According to the text, why can $f(x) = \\sin x$ NOT be expressed as a standard polynomial?",
+      "answerOptions": [
+        {
+          "text": "A polynomial can only have finitely many roots, while the sine function has infinitely many.",
+          "isCorrect": true,
+          "rationale": "The source explicitly states that the set of roots $\\{n\\pi | n \\in \\mathbb{Z}\\}$ is infinite, which is impossible for a finite degree polynomial."
+        },
+        {
+          "text": "The coefficients of a sine polynomial would all be irrational numbers.",
+          "isCorrect": false,
+          "rationale": "The text focuses on the number of roots rather than the nature of the coefficients."
+        },
+        {
+          "text": "Polynomials are only defined for positive integers, while sine is defined for all real numbers.",
+          "isCorrect": false,
+          "rationale": "Polynomials are defined for all real numbers; this is not the reason for the limitation."
+        },
+        {
+          "text": "The sine function is periodic, and polynomials are always strictly increasing or decreasing.",
+          "isCorrect": false,
+          "rationale": "Polynomials can oscillate, but the critical distinction mentioned in the text is the number of roots."
+        }
+      ],
+      "hint": "Look at the fundamental property of roots for polynomials of a specific degree.",
+      "section": "Day 7"
+    },
+    {
+      "question": "What is the general form of a power series centered at $a$ as defined in the source?",
+      "answerOptions": [
+        {
+          "text": "$\\sum_{n=0}^\\infty (a_n x - a)^n$",
+          "isCorrect": false,
+          "rationale": "The variable part must be $(x-a)^n$ scaled by a coefficient $a_n$."
+        },
+        {
+          "text": "$\\sum_{n=0}^\\infty a_n(x+a)^n$",
+          "isCorrect": false,
+          "rationale": "The standard definition uses subtraction to shift the center to the value $a$."
+        },
+        {
+          "text": "$\\sum_{n=1}^\\infty a_n x^{n-a}$",
+          "isCorrect": false,
+          "rationale": "Power series involve integer powers of the binomial $(x-a)$, not variable exponents or shifting in the exponent."
+        },
+        {
+          "text": "$\\sum_{n=0}^\\infty a_n(x-a)^n$",
+          "isCorrect": true,
+          "rationale": "This formula represents the standard definition provided in Definition 3.2.1."
+        }
+      ],
+      "hint": "Recall the notation used to represent the shifting of a function's center.",
+      "section": "Day 7"
+    },
+    {
+      "question": "Why is summation notation described as the 'most advantageous' way to represent a series?",
+      "answerOptions": [
+        {
+          "text": "It is the only notation that permits the use of ellipses.",
+          "isCorrect": false,
+          "rationale": "Ellipses are used as an alternative to summation notation when a general formula is not practical."
+        },
+        {
+          "text": "It allows for the calculation of infinite sums using only basic arithmetic.",
+          "isCorrect": false,
+          "rationale": "While it simplifies representation, the calculation of the sum still requires analytical methods."
+        },
+        {
+          "text": "It automatically ensures the series will converge.",
+          "isCorrect": false,
+          "rationale": "Summation notation is a representational tool and does not guarantee convergence properties."
+        },
+        {
+          "text": "It provides a clear formula for the general term, removing doubt about the pattern.",
+          "isCorrect": true,
+          "rationale": "The source mentions that this notation ensures there is no doubt about the pattern of the terms."
+        }
+      ],
+      "hint": "Consider how one determines the tenth or hundredth term of a sequence.",
+      "section": "Day 7"
+    },
+    {
+      "question": "In the derivation of the geometric series, what is the result of multiplying $(1-x)$ by $(1+x+x^2+\\cdots)$?",
+      "answerOptions": [
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "A result of 0 would imply the series itself is 0, which contradicts the expansion."
+        },
+        {
+          "text": "$1-x^n$",
+          "isCorrect": false,
+          "rationale": "This result applies to a finite geometric sum, but for an infinite series, the terms continue indefinitely."
+        },
+        {
+          "text": "$x$",
+          "isCorrect": false,
+          "rationale": "The subtraction of $(x+x^2+x^3+\\cdots)$ from $(1+x+x^2+\\cdots)$ leaves only the initial constant term."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": true,
+          "rationale": "The distribution of $(1-x)$ causes all terms except the first '1' to cancel out algebraically."
+        }
+      ],
+      "hint": "Think about what happens to the intermediate powers of $x$ when you subtract the shifted series.",
+      "section": "Day 7"
+    },
+    {
+      "question": "Substituting $x = \\frac{1}{10}$ into the geometric series $\\sum_{n=0}^\\infty x^n$ yields which value?",
+      "answerOptions": [
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "The sum of positive terms starting with 1 must result in a value greater than 1."
+        },
+        {
+          "text": "$\\frac{1}{9}$",
+          "isCorrect": false,
+          "rationale": "The text notes that $0.111\\ldots = \\frac{1}{9}$, but the series starts at $n=0$ (the term '1'), leading to $1.111\\ldots$."
+        },
+        {
+          "text": "$\\frac{10}{9}$",
+          "isCorrect": true,
+          "rationale": "Substituting into the formula $\\frac{1}{1-x}$ gives $\\frac{1}{0.9}$, which is equivalent to $\\frac{10}{9}$."
+        },
+        {
+          "text": "$\\frac{9}{10}$",
+          "isCorrect": false,
+          "rationale": "This is the value of $1-x$, rather than its reciprocal."
+        }
+      ],
+      "hint": "Apply the fractional form $\\frac{1}{1-x}$ to the decimal $0.1$.",
+      "section": "Day 7"
+    },
+    {
+      "question": "What does the text identify as a problem with 'formal manipulations' of the geometric series at $x=2$?",
+      "answerOptions": [
+        {
+          "text": "It results in a value of zero, which is impossible for a power series.",
+          "isCorrect": false,
+          "rationale": "The result is actually negative, which is the source of the logical conflict."
+        },
+        {
+          "text": "The coefficients $a_n$ become undefined.",
+          "isCorrect": false,
+          "rationale": "The coefficients of the geometric series are all 1 and remain well-defined regardless of $x$."
+        },
+        {
+          "text": "It leads to the questionable result that $-1 = 1+2+4+8+\\cdots$.",
+          "isCorrect": true,
+          "rationale": "Plugging $x=2$ into $\\frac{1}{1-x}$ yields $-1$, but the infinite sum of positive powers of 2 clearly does not equal $-1$."
+        },
+        {
+          "text": "The series becomes a finite polynomial.",
+          "isCorrect": false,
+          "rationale": "The series remains infinite; the issue is that the sum does not behave logically at that value."
+        }
+      ],
+      "hint": "Evaluate the formula $\\frac{1}{1-x}$ at the given value and compare it to the sum of positive terms.",
+      "section": "Day 7"
+    },
+    {
+      "question": "When solving the Initial Value Problem $\\frac{dy}{dx}=y$ with $y(0)=1$, what recurrence relation is found for the coefficients $a_n$?",
+      "answerOptions": [
+        {
+          "text": "$a_n = \\frac{a_{n-1}}{n!}$",
+          "isCorrect": false,
+          "rationale": "While the final coefficient involves a factorial, the step-by-step relation only involves $n$."
+        },
+        {
+          "text": "$a_n = a_{n-1}$",
+          "isCorrect": false,
+          "rationale": "This would result in the geometric series, whose derivative is not itself."
+        },
+        {
+          "text": "$a_n = \\frac{a_{n-1}}{n}$",
+          "isCorrect": true,
+          "rationale": "Differentiating the power series and equating it to the original series leads to $n a_n = a_{n-1}$."
+        },
+        {
+          "text": "$a_n = n a_{n-1}$",
+          "isCorrect": false,
+          "rationale": "This would lead to $a_n = n!$, which would cause the series terms to grow too rapidly."
+        }
+      ],
+      "hint": "Look at the relationship between the coefficient of $x^{n-1}$ in the derivative and the coefficient of $x^{n-1}$ in the original function.",
+      "section": "Day 7"
+    },
+    {
+      "question": "What is the resulting power series for the function $E(x)$ derived from the differential equation $\\frac{dy}{dx}=y$?",
+      "answerOptions": [
+        {
+          "text": "$\\sum_{n=0}^\\infty n! x^n$",
+          "isCorrect": false,
+          "rationale": "This series diverges for almost all $x$ and does not satisfy the differential equation."
+        },
+        {
+          "text": "$\\sum_{n=0}^\\infty x^n$",
+          "isCorrect": false,
+          "rationale": "This is the geometric series, not the solution to $y'=y$."
+        },
+        {
+          "text": "$\\sum_{n=1}^\\infty \\frac{x^n}{n}$",
+          "isCorrect": false,
+          "rationale": "This series corresponds to a logarithmic function, not the exponential function $E(x)$."
+        },
+        {
+          "text": "$\\sum_{n=0}^\\infty \\frac{x^n}{n!}$",
+          "isCorrect": true,
+          "rationale": "Using the relation $a_n = \\frac{a_0}{n!}$ and the initial condition $a_0=1$, we arrive at this general form."
+        }
+      ],
+      "hint": "Consider the series where each term's derivative produces the previous term, including the $n!$ denominator.",
+      "section": "Day 7"
+    },
+    {
+      "question": "Which property of $E(x)$ is demonstrated by the equation $E(x+y) = E(x)E(y)$?",
+      "answerOptions": [
+        {
+          "text": "Property 1",
+          "isCorrect": false,
+          "rationale": "Property 1 states $E(0)=1$."
+        },
+        {
+          "text": "Property 6",
+          "isCorrect": false,
+          "rationale": "Property 6 deals with rational exponents $E(m/n)$."
+        },
+        {
+          "text": "Property 4",
+          "isCorrect": false,
+          "rationale": "Property 4 relates $E(-x)$ to the reciprocal of $E(x)$."
+        },
+        {
+          "text": "Property 2",
+          "isCorrect": true,
+          "rationale": "The source explicitly labels the additive-to-multiplicative relationship as Property 2."
+        }
+      ],
+      "hint": "This property is essential for the exponential law of indices.",
+      "section": "Day 7"
+    },
+    {
+      "question": "In the proof of $E(x)E(y) = E(x+y)$, which algebraic theorem is used to simplify the sum of terms like $\\frac{1}{n!} \\sum_{k=0}^n \\binom{n}{k} x^k y^{n-k}$?",
+      "answerOptions": [
+        {
+          "text": "The Binomial Theorem",
+          "isCorrect": true,
+          "rationale": "The expansion of $(x+y)^n$ is exactly the form found within the grouped terms of the series product."
+        },
+        {
+          "text": "The Fundamental Theorem of Algebra",
+          "isCorrect": false,
+          "rationale": "This theorem concerns roots of polynomials, not expansions of binomial powers."
+        },
+        {
+          "text": "The Ratio Test",
+          "isCorrect": false,
+          "rationale": "The Ratio Test is a tool for convergence, not for algebraic expansion of products."
+        },
+        {
+          "text": "The Pythagorean Identity",
+          "isCorrect": false,
+          "rationale": "This identity relates to trigonometric functions, not power series expansions."
+        }
+      ],
+      "hint": "Think of the formula used to expand $(a+b)^n$.",
+      "section": "Day 7"
+    },
+    {
+      "question": "True or False: The text states that a series centered around a value $a \\neq 0$ can be obtained by shifting a series centered at $0$.",
+      "answerOptions": [
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "The source explicitly mentions that we focus on series centered at 0 because others can be obtained by shifting."
+        },
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "The text confirms that shifting is the method used to translate series between different centers."
+        }
+      ],
+      "hint": "The definition mentions that series centered at $a$ are related to the behavior of $\\sum a_n x^n$.",
+      "section": "Day 7"
+    },
+    {
+      "question": "Based on Property 4, what is the value of the product $E(x) \\cdot E(-x)$?",
+      "answerOptions": [
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "The product of a function and its reciprocal cannot be zero unless the function is undefined."
+        },
+        {
+          "text": "$E(x^2)$",
+          "isCorrect": false,
+          "rationale": "This would violate the property $E(x+y)=E(x)E(y)$, which implies $E(x-x)=E(0)=1$."
+        },
+        {
+          "text": "$E(2x)$",
+          "isCorrect": false,
+          "rationale": "This would result from $E(x) \\cdot E(x)$, not $E(x) \\cdot E(-x)$."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": true,
+          "rationale": "Since $E(-x) = \\frac{1}{E(x)}$, their product is $E(x) \\cdot \\frac{1}{E(x)} = 1$."
+        }
+      ],
+      "hint": "Combine Property 2 ($E(x+y)$) with the specific case where $y = -x$.",
+      "section": "Day 7"
+    },
+    {
+      "question": "What does Property 5 state regarding the relationship between $E(1/n)$ and $E(1)$?",
+      "answerOptions": [
+        {
+          "text": "$E(1/n) = n \\cdot E(1)$",
+          "isCorrect": false,
+          "rationale": "Multiplication by $n$ would correspond to an addition in the argument, not a fractional exponent."
+        },
+        {
+          "text": "$E(1/n) = E(1)^n$",
+          "isCorrect": false,
+          "rationale": "Raising to the $n$-th power corresponds to $E(n)$, not $E(1/n)$."
+        },
+        {
+          "text": "$E(1/n) = \\frac{1}{n} E(1)$",
+          "isCorrect": false,
+          "rationale": "The relationship is exponential/root-based, not linear."
+        },
+        {
+          "text": "$E(1/n) = \\sqrt[n]{E(1)}$",
+          "isCorrect": true,
+          "rationale": "This matches Property 5, which extends the power properties to unit fractions."
+        }
+      ],
+      "hint": "Consider the inverse operation of raising $E(1/n)$ to the $n$-th power.",
+      "section": "Day 7"
+    },
+    {
+      "question": "Which of the following is Property 6 as described in the source?",
+      "answerOptions": [
+        {
+          "text": "$E(\\frac{m}{n}) = \\frac{E(m)}{E(n)}$",
+          "isCorrect": false,
+          "rationale": "This would imply $E(m-n)$, not $E(m/n)$."
+        },
+        {
+          "text": "$E(\\frac{m}{n}) = (E(1))^{m/n}$",
+          "isCorrect": true,
+          "rationale": "Property 6 generalizes the previous properties to all rational numbers $m/n$."
+        },
+        {
+          "text": "$E(\\frac{m}{n}) = E(m) \\cdot E(\\frac{1}{n})$",
+          "isCorrect": false,
+          "rationale": "While true by Property 2, Property 6 specifically relates the value to the base $E(1)$."
+        },
+        {
+          "text": "$E(\\frac{m}{n}) = \\frac{m}{n} E(1)$",
+          "isCorrect": false,
+          "rationale": "The function $E(x)$ follows exponential laws, not linear proportionality."
+        }
+      ],
+      "hint": "This property summarizes the behavior of $E(x)$ for all rational inputs.",
+      "section": "Day 7"
+    },
+    {
+      "question": "Why did the author use ellipses (the three dots) in the description of series expansion?",
+      "answerOptions": [
+        {
+          "text": "To indicate that the series has a finite ending point.",
+          "isCorrect": false,
+          "rationale": "Ellipses specifically indicate that the series continues infinitely."
+        },
+        {
+          "text": "To show that the series is a formal object that cannot be summed.",
+          "isCorrect": false,
+          "rationale": "The text discusses summing series; ellipses are just a shorthand for the notation."
+        },
+        {
+          "text": "To signal that the terms of the series are all equal to zero.",
+          "isCorrect": false,
+          "rationale": "Ellipses are used for non-zero terms that follow an established pattern."
+        },
+        {
+          "text": "To represent remaining terms when the formula is not practical to write.",
+          "isCorrect": true,
+          "rationale": "The text states that when writing a formula is not practical, ellipses can be used if enough terms are provided to clarify the pattern."
+        }
+      ],
+      "hint": "Consider the purpose of using '...' in a long sequence of numbers.",
+      "section": "Day 7"
+    },
+    {
+      "question": "What is the specific value of $a_0$ in the solution to the Initial Value Problem $\\frac{dy}{dx}=y$ with $y(0)=1$?",
+      "answerOptions": [
+        {
+          "text": "$e$",
+          "isCorrect": false,
+          "rationale": "The value $e$ is $E(1)$, whereas $a_0$ is the value at $x=0$."
+        },
+        {
+          "text": "Undefined",
+          "isCorrect": false,
+          "rationale": "The value is clearly determined by the initial condition $y(0)=1$."
+        },
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "If $a_0 = 0$, then $y(0)$ would be $0$, contradicting the initial condition."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": true,
+          "rationale": "Setting $x=0$ in the series $a_0 + a_1x + a_2x^2 + \\dots$ makes all terms zero except $a_0$, which must equal $y(0)$."
+        }
+      ],
+      "hint": "Evaluate the power series at $x=0$ and set it equal to the given initial condition.",
+      "section": "Day 7"
+    },
+    {
+      "question": "In the expansion of $E(x)E(y)$, what is the coefficient of the $x^1 y^1$ term before using the binomial notation?",
+      "answerOptions": [
+        {
+          "text": "$\\frac{2}{2!}$",
+          "isCorrect": false,
+          "rationale": "This would represent the term after applying binomial coefficients, not the raw product."
+        },
+        {
+          "text": "$\\frac{1}{1!1!}$",
+          "isCorrect": true,
+          "rationale": "The product of $\\frac{x^1}{1!}$ and $\\frac{y^1}{1!}$ results in the coefficient $\\frac{1}{1!1!}$."
+        },
+        {
+          "text": "$\\frac{1}{2!}$",
+          "isCorrect": false,
+          "rationale": "This is the coefficient of the whole $(x+y)^2$ group after factoring out from the binomial terms."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "While $1!$ is $1$, the coefficient is a product of two denominators from the independent series."
+        }
+      ],
+      "hint": "Look at the product of the first-degree terms from the two separate series for $E(x)$ and $E(y)$.",
+      "section": "Day 7"
+    },
+    {
+      "question": "What is the relationship between the functions $E(x)$ and $e^x$ according to the text's 'Comment'?",
+      "answerOptions": [
+        {
+          "text": "They are different functions that only agree at $x=0$.",
+          "isCorrect": false,
+          "rationale": "The properties derived (Property 1-6) are identical to the properties of $e^x$."
+        },
+        {
+          "text": "$E(x)$ is the inverse of $e^x$.",
+          "isCorrect": false,
+          "rationale": "The inverse of $e^x$ is the natural logarithm, not the power series solution to $y'=y$."
+        },
+        {
+          "text": "They are the same function, though the series derivation is used to emphasize technique.",
+          "isCorrect": true,
+          "rationale": "The note mentions that 'a few seconds of thought' should convince the reader that $y(x)=e^x$ is the solution."
+        },
+        {
+          "text": "$E(x)$ is a linear approximation of $e^x$.",
+          "isCorrect": false,
+          "rationale": "$E(x)$ is an infinite series that represents the function exactly (within its convergence)."
+        }
+      ],
+      "hint": "The text suggests the solution to $dy/dx = y$ is likely familiar from earlier calculus.",
+      "section": "Day 7"
+    },
+    {
+      "question": "When substituting $x=1$ into the geometric series $\\sum_{n=0}^\\infty x^n$, what 'questionable' result is obtained?",
+      "answerOptions": [
+        {
+          "text": "$1 = 0$",
+          "isCorrect": false,
+          "rationale": "The text highlights division by zero rather than a direct contradiction of integers."
+        },
+        {
+          "text": "$\\infty = 0$",
+          "isCorrect": false,
+          "rationale": "The text lists the specific algebraic form $\\frac{1}{0}$ as the result."
+        },
+        {
+          "text": "$\\frac{1}{0} = 1 + 1 + 1 + \\cdots$",
+          "isCorrect": true,
+          "rationale": "The formula $\\frac{1}{1-x}$ becomes $\\frac{1}{0}$ at $x=1$, which leads to an infinite sum of 1s."
+        },
+        {
+          "text": "$0 = 1 - 1 + 1 - 1 + \\cdots$",
+          "isCorrect": false,
+          "rationale": "This result would occur if $x=-1$, not $x=1$."
+        }
+      ],
+      "hint": "Calculate the value of the denominator in the formula $\\frac{1}{1-x}$ when $x$ is 1.",
+      "section": "Day 7"
+    },
+    {
+      "question": "Which of the following describes the difference between a polynomial and a power series as presented in the text?",
+      "answerOptions": [
+        {
+          "text": "Polynomials are continuous, while power series are discrete.",
+          "isCorrect": false,
+          "rationale": "Both represent continuous functions (where they converge)."
+        },
+        {
+          "text": "Polynomials can represent sine functions, but power series cannot.",
+          "isCorrect": false,
+          "rationale": "The text states the exact opposite: sine cannot be a polynomial but can be a power series."
+        },
+        {
+          "text": "Polynomials use only positive integers, while power series use only negative integers.",
+          "isCorrect": false,
+          "rationale": "Both typically use non-negative integer powers of $x$."
+        },
+        {
+          "text": "A polynomial is finite by definition, while a power series is infinite.",
+          "isCorrect": true,
+          "rationale": "The text explicitly defines polynomials as finite and power series as 'infinite polynomials' which are more subtle objects."
+        }
+      ],
+      "hint": "Focus on the constraint regarding the number of terms.",
+      "section": "Day 7"
+    },
+    {
+      "question": "What does Property 3 conclude about the value $E(m)$ for a positive integer $m$?",
+      "answerOptions": [
+        {
+          "text": "$E(m) = m \\cdot E(1)$",
+          "isCorrect": false,
+          "rationale": "This would be true for a linear function, but $E(x)$ is an exponential function."
+        },
+        {
+          "text": "$E(m) = E(m-1) + E(1)$",
+          "isCorrect": false,
+          "rationale": "Property 2 states that addition in the argument leads to multiplication of the results."
+        },
+        {
+          "text": "$E(m) = \\frac{1}{E(m)}$",
+          "isCorrect": false,
+          "rationale": "This is a misinterpretation of the property for negative exponents (Property 4)."
+        },
+        {
+          "text": "$E(m) = (E(1))^m$",
+          "isCorrect": true,
+          "rationale": "This is a direct statement of Property 3, showing the power law for integers."
+        }
+      ],
+      "hint": "Relate the input $m$ to the repeated application of the addition property $E(1+1+\\dots+1)$.",
+      "section": "Day 7"
+    },
+    {
+      "question": "How does the author characterize the 'formal manipulations' used to obtain power series in the 18th century?",
+      "answerOptions": [
+        {
+          "text": "Highly suspect until problems of convergence are resolved.",
+          "isCorrect": true,
+          "rationale": "The text warns that these methods are 'highly suspect' due to contradictions like $\\frac{1}{0}$ or $-1$ resulting from divergent series."
+        },
+        {
+          "text": "Obsolete and no longer taught in modern calculus.",
+          "isCorrect": false,
+          "rationale": "The material is presented as a 'standard technique' and a core part of the history of analysis."
+        },
+        {
+          "text": "Only useful for trigonometric functions.",
+          "isCorrect": false,
+          "rationale": "The text shows they are also useful for the exponential function $E(x)$ and geometric series."
+        },
+        {
+          "text": "Flawless and logically rigorous for all real numbers.",
+          "isCorrect": false,
+          "rationale": "The text identifies several logical issues with formal manipulation, especially regarding $x=1$ and $x=2$."
+        }
+      ],
+      "hint": "Recall the author's warning about ignoring 'subtleties' for the time being.",
+      "section": "Day 7"
+    },
+    {
+      "question": "What is the coefficient of $x^3$ in the power series for $E(x)$?",
+      "answerOptions": [
+        {
+          "text": "$\\frac{1}{6}$",
+          "isCorrect": true,
+          "rationale": "The coefficient $a_3$ is $\\frac{1}{3!}$, and $3! = 3 \\times 2 \\times 1 = 6$."
+        },
+        {
+          "text": "$\\frac{1}{24}$",
+          "isCorrect": false,
+          "rationale": "This is the coefficient for $x^4$ ($1/4!$)."
+        },
+        {
+          "text": "$3$",
+          "isCorrect": false,
+          "rationale": "Coefficients in the $E(x)$ series decrease as $n$ increases; they do not increase."
+        },
+        {
+          "text": "$\\frac{1}{3}$",
+          "isCorrect": false,
+          "rationale": "This ignores the factorial requirement for the solution to the differential equation $y'=y$."
+        }
+      ],
+      "hint": "Calculate the factorial of the power $n=3$ and place it in the denominator.",
+      "section": "Day 7"
+    },
+    {
+      "question": "According to the source, why is the center of a power series often set to $0$?",
+      "answerOptions": [
+        {
+          "text": "Calculus only works for functions passing through the origin.",
+          "isCorrect": false,
+          "rationale": "Calculus is applicable everywhere; the choice of 0 is for convenience and generality."
+        },
+        {
+          "text": "It is impossible to center a power series at an irrational number.",
+          "isCorrect": false,
+          "rationale": "The definition $\\sum a_n(x-a)^n$ allows $a$ to be any value, including irrational numbers."
+        },
+        {
+          "text": "Polynomials cannot be defined if $a$ is not zero.",
+          "isCorrect": false,
+          "rationale": "Polynomials like $7-x+x^2$ are valid regardless of the value of $x$ or the 'center'."
+        },
+        {
+          "text": "Series centered at other values $a$ can be obtained by simply shifting a series centered at $0$.",
+          "isCorrect": true,
+          "rationale": "The source states that we focus on $x^n$ because other centers $a$ are just shifts of the zero-centered series."
+        }
+      ],
+      "hint": "Consider the relationship between $\\sum a_n x^n$ and $\\sum a_n (x-a)^n$.",
+      "section": "Day 7"
+    },
+    {
+      "question": "What is the common term used in the text to describe objects like $\\sum_{n=0}^\\infty a_n x^n$ before they are officially defined as power series?",
+      "answerOptions": [
+        {
+          "text": "Recursive functions",
+          "isCorrect": false,
+          "rationale": "While coefficients are found recursively, the object itself is termed an 'infinite polynomial'."
+        },
+        {
+          "text": "Infinite polynomials",
+          "isCorrect": true,
+          "rationale": "The text uses this phrase repeatedly to describe how 18th-century mathematicians viewed these series."
+        },
+        {
+          "text": "Taylor expansions",
+          "isCorrect": false,
+          "rationale": "The text introduces the concept generally as an 'infinite polynomial' rather than using the specific term 'Taylor expansion'."
+        },
+        {
+          "text": "Transcendental sums",
+          "isCorrect": false,
+          "rationale": "This term is not used in the provided source material."
+        }
+      ],
+      "hint": "Look for a phrase that combines a finite algebraic object with an infinite duration.",
+      "section": "Day 7"
+    },
+    {
+      "question": "In Property 2, why are the terms of $E(x)E(y)$ grouped by the sum of their powers (e.g., $x^0 y^3 + x^1 y^2 + x^2 y^1 + x^3 y^0$)?",
+      "answerOptions": [
+        {
+          "text": "Because only terms of the same power can be multiplied together.",
+          "isCorrect": false,
+          "rationale": "Any term from one series can be multiplied by any term from the other."
+        },
+        {
+          "text": "To prove that the series is convergent.",
+          "isCorrect": false,
+          "rationale": "Grouping is an algebraic rearrangement for the proof of the identity, not a test for convergence."
+        },
+        {
+          "text": "To demonstrate that the series is a geometric series.",
+          "isCorrect": false,
+          "rationale": "$E(x)$ is not a geometric series; the grouping is to show it follows exponential rules."
+        },
+        {
+          "text": "To align the product with the terms of $(x+y)^n$.",
+          "isCorrect": true,
+          "rationale": "Grouping by common total degree $n$ allows the application of the binomial theorem to form the terms of $E(x+y)$."
+        }
+      ],
+      "hint": "Think about how you collect 'like terms' when multiplying $(x+y)(x+y)$.",
+      "section": "Day 7"
+    }
+  ]
+}

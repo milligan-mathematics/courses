@@ -15,6 +15,21 @@ self-checks.
 
 Nothing on these pages answers an assigned problem for you.
 
+## Review Game
+
+<div class="resource-grid">
+  <a href="../review-game/host.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-green);">Live Game (Host)</div>
+    <h4>Review — Days 1–10</h4>
+    <p class="resource-desc">Start a live, Kahoot-style review game for the class — students join on their own devices. Pick the combined Days 1–10 set or drill a single day.</p>
+  </a>
+  <a href="../review-game/student.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">Join a Game</div>
+    <h4>Student Join Page</h4>
+    <p class="resource-desc">Enter the game code your instructor puts on the screen.</p>
+  </a>
+</div>
+
 ## Chapter 1 · Prologue
 
 <div class="day-grid">

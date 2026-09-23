@@ -1,0 +1,708 @@
+{
+  "title": "MATH 411 — Day 10: The Basel Problem and Euler's Formula",
+  "section": "Day 10",
+  "questions": [
+    {
+      "question": "What is the power series expansion for $f(x) = \\frac{\\sin x}{x}$ based on the Taylor series for sine?",
+      "answerOptions": [
+        {
+          "text": "$1 - \\frac{1}{2!}x^2 + \\frac{1}{4!}x^4 - \\cdots$",
+          "isCorrect": false,
+          "rationale": "This is the power series for $\\cos x$, which features even factorials in the denominators."
+        },
+        {
+          "text": "$x - \\frac{1}{3!}x^3 + \\frac{1}{5!}x^5 - \\cdots$",
+          "isCorrect": false,
+          "rationale": "This represents the power series for $\\sin x$ before it has been divided by $x$."
+        },
+        {
+          "text": "$1 + \\frac{1}{3!}x^2 + \\frac{1}{5!}x^4 + \\cdots$",
+          "isCorrect": false,
+          "rationale": "The power series for sine involves alternating signs, so the terms in this expansion should alternate between positive and negative."
+        },
+        {
+          "text": "$1 - \\frac{1}{3!}x^2 + \\frac{1}{5!}x^4 - \\cdots$",
+          "isCorrect": true,
+          "rationale": "Dividing each term of the standard $\\sin x$ series by $x$ reduces the power of each term by one, starting the series at $1$ instead of $x$."
+        }
+      ],
+      "hint": "Recall that the series for $\\sin x$ begins with $x$ and involves only odd powers.",
+      "section": "Day 10"
+    },
+    {
+      "question": "Which set represents the roots of the function $f(x) = \\frac{\\sin x}{x}$?",
+      "answerOptions": [
+        {
+          "text": "$x = 0, \\pm \\pi, \\pm 2\\pi, \\ldots$",
+          "isCorrect": false,
+          "rationale": "While $\\sin(0) = 0$, the function $\\frac{\\sin x}{x}$ is defined to be $1$ at $x=0$ by its power series expansion."
+        },
+        {
+          "text": "$x = \\pm 1, \\pm 2, \\pm 3, \\ldots$",
+          "isCorrect": false,
+          "rationale": "The zeros of the sine function occur at integer multiples of $\\pi$, not at simple integers."
+        },
+        {
+          "text": "$x = \\pm \\pi, \\pm 2\\pi, \\pm 3\\pi, \\ldots$",
+          "isCorrect": true,
+          "rationale": "The roots occur where $\\sin x = 0$, excluding $x = 0$ because the limit of $\\frac{\\sin x}{x}$ as $x \\to 0$ is $1$."
+        },
+        {
+          "text": "$x = \\pm \\frac{\\pi}{2}, \\pm \\frac{3\\pi}{2}, \\ldots$",
+          "isCorrect": false,
+          "rationale": "These are the roots of the $\\cos x$ function, not the $\\sin x$ function."
+        }
+      ],
+      "hint": "Consider where the numerator is zero, but remember that $x=0$ is a removable singularity.",
+      "section": "Day 10"
+    },
+    {
+      "question": "If a polynomial $p(x) = a_0 + a_1x + \\cdots + a_nx^n$ has non-zero roots $r_1, r_2, \\ldots, r_n$, how can it be factored?",
+      "answerOptions": [
+        {
+          "text": "$p(x) = a_0(x - r_1)(x - r_2)\\cdots(x - r_n)$",
+          "isCorrect": false,
+          "rationale": "While this includes $a_0$, the constant term produced by this expansion would be $a_0(-1)^n r_1 r_2 \\cdots r_n$ rather than $a_0$."
+        },
+        {
+          "text": "$p(x) = a_n(1 - \\frac{x}{r_1})(1 - \\frac{x}{r_2})\\cdots(1 - \\frac{x}{r_n})$",
+          "isCorrect": false,
+          "rationale": "Using $a_n$ as the lead multiplier would result in a constant term of $a_n$, which may not equal $a_0$."
+        },
+        {
+          "text": "$p(x) = (x - r_1)(x - r_2)\\cdots(x - r_n)$",
+          "isCorrect": false,
+          "rationale": "This factorization assumes the leading coefficient is $1$ and does not necessarily yield a constant term of $a_0$."
+        },
+        {
+          "text": "$p(x) = a_0(1 - \\frac{x}{r_1})(1 - \\frac{x}{r_2})\\cdots(1 - \\frac{x}{r_n})$",
+          "isCorrect": true,
+          "rationale": "This form ensures that the constant term is $a_0$ when $x=0$ and that each term $(1 - \\frac{x}{r_i})$ equals zero when $x = r_i$."
+        }
+      ],
+      "hint": "The factorization must evaluate to the constant term $a_0$ when $x$ is set to zero.",
+      "section": "Day 10"
+    },
+    {
+      "question": "How does the product of the terms $(1 - (\\frac{x}{n\\pi})^2)$ relate to the power series of $\\frac{\\sin x}{x}$?",
+      "answerOptions": [
+        {
+          "text": "It is an approximation that only holds for very small values of $x$.",
+          "isCorrect": false,
+          "rationale": "Euler assumed this infinite product was an exact identity for all $x$, not just an approximation."
+        },
+        {
+          "text": "It represents the square of the sine function's power series.",
+          "isCorrect": false,
+          "rationale": "The squared term in the parenthesis comes from the difference of squares of linear factors, not from squaring the entire series."
+        },
+        {
+          "text": "The roots $\\pm n\\pi$ are paired into terms $(1 - \\frac{x}{n\\pi})(1 + \\frac{x}{n\\pi}) = 1 - (\\frac{x}{n\\pi})^2$.",
+          "isCorrect": true,
+          "rationale": "By pairing the positive and negative roots of the sine function, the product of the linear factors simplifies into a difference of squares for each $n$."
+        },
+        {
+          "text": "The terms result from the fact that $\\sin x$ is an even function.",
+          "isCorrect": false,
+          "rationale": "While the function $\\frac{\\sin x}{x}$ is even, the product form is derived from its specific roots rather than general symmetry."
+        }
+      ],
+      "hint": "Think about the identity $(1-a)(1+a) = 1-a^2$ when applied to positive and negative roots.",
+      "section": "Day 10"
+    },
+    {
+      "question": "In the expansion of the infinite product $(1 - (\\frac{x}{\\pi})^2)(1 - (\\frac{x}{2\\pi})^2)(1 - (\\frac{x}{3\\pi})^2)\\cdots$, what is the coefficient of the $x^2$ term?",
+      "answerOptions": [
+        {
+          "text": "$-(\\frac{1}{\\pi^2} + \\frac{1}{4\\pi^2} + \\frac{1}{9\\pi^2} + \\cdots)$",
+          "isCorrect": true,
+          "rationale": "The $x^2$ term is formed by picking one $-(\\frac{x}{n\\pi})^2$ term from one factor and the constant $1$ from all other factors in the infinite product."
+        },
+        {
+          "text": "$\\frac{\\pi^2}{6}$",
+          "isCorrect": false,
+          "rationale": "This is the final value of the sum $\\sum \\frac{1}{n^2}$, not the coefficient of $x^2$ in the product expansion."
+        },
+        {
+          "text": "$-\\frac{1}{3!}$",
+          "isCorrect": false,
+          "rationale": "While this is the coefficient from the Taylor series, it is not the direct sum obtained from the product expansion before equating the two."
+        },
+        {
+          "text": "$\\frac{1}{\\pi^2} + \\frac{1}{4\\pi^2} + \\frac{1}{9\\pi^2} + \\cdots$",
+          "isCorrect": false,
+          "rationale": "Each quadratic term in the factors is negative, so their sum in the expansion must also be negative."
+        }
+      ],
+      "hint": "To get $x^2$, you must multiply one quadratic term by infinitely many ones.",
+      "section": "Day 10"
+    },
+    {
+      "question": "What is the exact value of the Basel Problem, $\\sum_{n=1}^{\\infty} \\frac{1}{n^2}$, as derived by Euler?",
+      "answerOptions": [
+        {
+          "text": "$\\frac{\\pi^2}{3}$",
+          "isCorrect": false,
+          "rationale": "This result would occur if the coefficient of $x^2$ in the Taylor series was $-1/3$ instead of $-1/6$."
+        },
+        {
+          "text": "$\\frac{\\pi^2}{6}$",
+          "isCorrect": true,
+          "rationale": "By equating the $x^2$ coefficient from the Taylor series ($-\\frac{1}{6}$) to the $x^2$ coefficient from the product expansion ($-\\frac{1}{\\pi^2} \\sum \\frac{1}{n^2}$), we find the sum is $\\frac{\\pi^2}{6}$."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "While the series converges to a finite value, it is known to be greater than $1$ since the first term itself is $1$."
+        },
+        {
+          "text": "$\\frac{\\pi}{6}$",
+          "isCorrect": false,
+          "rationale": "The derivation involves $\\pi^2$ because the roots are squared in the product expansion factors."
+        }
+      ],
+      "hint": "Consider the relationship between the Taylor series coefficient $-\\frac{1}{3!}$ and the sum of reciprocal roots.",
+      "section": "Day 10"
+    },
+    {
+      "question": "Which of the following is the correct statement of Euler's Formula?",
+      "answerOptions": [
+        {
+          "text": "$e^{i\\theta} = \\cos \\theta - i \\sin \\theta$",
+          "isCorrect": false,
+          "rationale": "This formula represents $e^{-i\\theta}$, which is the complex conjugate of Euler's formula."
+        },
+        {
+          "text": "$e^{i\\theta} = \\cos \\theta + i \\sin \\theta$",
+          "isCorrect": true,
+          "rationale": "This formula relates complex exponentials to trigonometric functions using the power series of $e^x$, $\\sin x$, and $\\cos x$."
+        },
+        {
+          "text": "$e^{i\\theta} = \\sin \\theta + i \\cos \\theta$",
+          "isCorrect": false,
+          "rationale": "The real part of the exponential series corresponds to the cosine series, not the sine series."
+        },
+        {
+          "text": "$e^{\\theta} = \\cos(i\\theta) + i \\sin(i\\theta)$",
+          "isCorrect": false,
+          "rationale": "Euler's formula describes an imaginary exponent resulting in real trigonometric components, not vice-versa."
+        }
+      ],
+      "hint": "Recall which trigonometric function represents the real part and which represents the imaginary part in the complex plane.",
+      "section": "Day 10"
+    },
+    {
+      "question": "Using Euler's Formula, how can the expression $e^{i(\\alpha + \\beta)}$ be expanded?",
+      "answerOptions": [
+        {
+          "text": "$(\\cos \\alpha + i \\sin \\alpha)(\\cos \\beta + i \\sin \\beta)$",
+          "isCorrect": true,
+          "rationale": "The properties of exponents allow $e^{i(\\alpha + \\beta)}$ to be written as $e^{i\\alpha} \\cdot e^{i\\beta}$, which can then be converted using Euler's formula."
+        },
+        {
+          "text": "$\\cos(\\alpha + \\beta) - i \\sin(\\alpha + \\beta)$",
+          "isCorrect": false,
+          "rationale": "The standard expansion of $e^{ix}$ uses a plus sign for the imaginary component, not a minus sign."
+        },
+        {
+          "text": "$e^{i\\alpha} + e^{i\\beta}$",
+          "isCorrect": false,
+          "rationale": "Exponents of a sum are equal to the product of the bases, not the sum of the bases."
+        },
+        {
+          "text": "$\\cos \\alpha \\cos \\beta + i \\sin \\alpha \\sin \\beta$",
+          "isCorrect": false,
+          "rationale": "This incorrectly assumes that the cosine and sine of a sum are simply the products of the individual cosines and sines."
+        }
+      ],
+      "hint": "Apply the rule $e^{a+b} = e^a e^b$ and then substitute the trigonometric equivalents.",
+      "section": "Day 10"
+    },
+    {
+      "question": "Based on the expansion of $(\\cos \\theta + i \\sin \\theta)^2$, what is the formula for $\\cos(2\\theta)$?",
+      "answerOptions": [
+        {
+          "text": "$\\cos^2 \\theta - \\sin^2 \\theta$",
+          "isCorrect": true,
+          "rationale": "Expanding the square yields $\\cos^2 \\theta + 2i \\sin \\theta \\cos \\theta + i^2 \\sin^2 \\theta$; since $i^2 = -1$, the real part is $\\cos^2 \\theta - \\sin^2 \\theta$."
+        },
+        {
+          "text": "$\\cos^2 \\theta + \\sin^2 \\theta$",
+          "isCorrect": false,
+          "rationale": "This expression is the Pythagorean identity, which equals $1$, not $\\cos(2\\theta)$."
+        },
+        {
+          "text": "$2 \\cos^2 \\theta + 1$",
+          "isCorrect": false,
+          "rationale": "The correct identity related to $\\cos^2 \\theta$ is $2 \\cos^2 \\theta - 1$, but this is not the direct result of the real part expansion without further substitution."
+        },
+        {
+          "text": "$2 \\cos \\theta \\sin \\theta$",
+          "isCorrect": false,
+          "rationale": "This represents the imaginary part of the expansion, which corresponds to $\\sin(2\\theta)$."
+        }
+      ],
+      "hint": "The real part of the squared complex expression corresponds to the cosine of the doubled angle.",
+      "section": "Day 10"
+    },
+    {
+      "question": "What is the result for $\\sin(2\\theta)$ when using Euler's formula to expand $e^{i2\\theta}$?",
+      "answerOptions": [
+        {
+          "text": "$2 \\sin \\theta$",
+          "isCorrect": false,
+          "rationale": "The double angle formula for sine requires both a sine and a cosine term in the product."
+        },
+        {
+          "text": "$2 \\cos \\theta \\sin \\theta$",
+          "isCorrect": true,
+          "rationale": "The imaginary part of $(\\cos \\theta + i \\sin \\theta)^2$ is $2i \\sin \\theta \\cos \\theta$, making the coefficient of $i$ equal to $\\sin(2\\theta)$."
+        },
+        {
+          "text": "$\\sin^2 \\theta - \\cos^2 \\theta$",
+          "isCorrect": false,
+          "rationale": "This is the negative of the $\\cos(2\\theta)$ formula and is not the imaginary component."
+        },
+        {
+          "text": "$\\cos^2 \\theta - \\sin^2 \\theta$",
+          "isCorrect": false,
+          "rationale": "This is the real part of the expansion, which corresponds to the cosine of the double angle."
+        }
+      ],
+      "hint": "Look for the coefficient of the imaginary unit $i$ in the squared expansion of the Euler form.",
+      "section": "Day 10"
+    },
+    {
+      "question": "Which of the following represents the identity for $\\cos(3\\theta)$ derived from Euler's Formula?",
+      "answerOptions": [
+        {
+          "text": "$3 \\cos^2 \\theta \\sin \\theta - \\sin^3 \\theta$",
+          "isCorrect": false,
+          "rationale": "This represents the imaginary part of the expansion, which corresponds to $\\sin(3\\theta)$."
+        },
+        {
+          "text": "$\\cos^3 \\theta - 3 \\cos \\theta \\sin^2 \\theta$",
+          "isCorrect": true,
+          "rationale": "Expanding $(\\cos \\theta + i \\sin \\theta)^3$ via the binomial theorem and taking the real part yields $\\cos^3 \\theta + 3i^2 \\cos \\theta \\sin^2 \\theta$."
+        },
+        {
+          "text": "$\\cos^3 \\theta - \\cos \\theta \\sin^2 \\theta$",
+          "isCorrect": false,
+          "rationale": "This omits the binomial coefficient of $3$ that arises during the expansion of a cube."
+        },
+        {
+          "text": "$\\cos^3 \\theta + 3 \\cos \\theta \\sin^2 \\theta$",
+          "isCorrect": false,
+          "rationale": "The $i^2$ term in the expansion makes the second term negative, not positive."
+        }
+      ],
+      "hint": "Identify the real terms in the binomial expansion of $(\\cos \\theta + i \\sin \\theta)^3$.",
+      "section": "Day 10"
+    },
+    {
+      "question": "In the expansion of $e^{i3\\theta}$, which term contributes to the $\\sin(3\\theta)$ identity?",
+      "answerOptions": [
+        {
+          "text": "$\\sin^3 \\theta - 3 \\cos^2 \\theta \\sin \\theta$",
+          "isCorrect": false,
+          "rationale": "This is the negative of the correct imaginary part."
+        },
+        {
+          "text": "$\\cos^3 \\theta - 3 \\cos \\theta \\sin^2 \\theta$",
+          "isCorrect": false,
+          "rationale": "This is the real part of the expansion and represents the $\\cos(3\\theta)$ identity."
+        },
+        {
+          "text": "$3 \\cos^2 \\theta \\sin \\theta + \\sin^3 \\theta$",
+          "isCorrect": false,
+          "rationale": "The term $(i \\sin \\theta)^3$ results in $-i \\sin^3 \\theta$, not positive $i \\sin^3 \\theta$."
+        },
+        {
+          "text": "$3 \\cos^2 \\theta \\sin \\theta - \\sin^3 \\theta$",
+          "isCorrect": true,
+          "rationale": "The imaginary part of $(\\cos \\theta + i \\sin \\theta)^3$ consists of $3 \\cos^2 \\theta (i \\sin \\theta) + (i \\sin \\theta)^3$, which simplifies to $i(3 \\cos^2 \\theta \\sin \\theta - \\sin^3 \\theta)$."
+        }
+      ],
+      "hint": "Focus on the terms that contain an odd power of $i$ in the cubic expansion.",
+      "section": "Day 10"
+    },
+    {
+      "question": "How can $\\sin(n\\theta)$ be expressed for any positive integer $n$ using Euler's formula?",
+      "answerOptions": [
+        {
+          "text": "$\\cos^n \\theta + \\sin^n \\theta$",
+          "isCorrect": false,
+          "rationale": "The expansion of a power of a sum follows the binomial theorem and is not a simple sum of powers."
+        },
+        {
+          "text": "$n \\sin \\theta \\cos^{n-1} \\theta$",
+          "isCorrect": false,
+          "rationale": "This is only the first term of the binomial expansion for the imaginary part and is not the complete formula."
+        },
+        {
+          "text": "$\\text{Re}((\\cos \\theta + i \\sin \\theta)^n)$",
+          "isCorrect": false,
+          "rationale": "The real part of the expansion represents $\\cos(n\\theta)$, not $\\sin(n\\theta)$."
+        },
+        {
+          "text": "$\\text{Im}((\\cos \\theta + i \\sin \\theta)^n)$",
+          "isCorrect": true,
+          "rationale": "By De Moivre's Theorem, $(\\cos \\theta + i \\sin \\theta)^n = \\cos(n\\theta) + i \\sin(n\\theta)$, so $\\sin(n\\theta)$ is the imaginary part."
+        }
+      ],
+      "hint": "Determine which part of the complex number result (real or imaginary) corresponds to the sine function.",
+      "section": "Day 10"
+    },
+    {
+      "question": "To derive the addition formula for $\\cos(\\alpha + \\beta)$, which part of the expansion of $e^{i\\alpha}e^{i\\beta}$ should be taken?",
+      "answerOptions": [
+        {
+          "text": "The magnitude of the product $e^{i\\alpha}e^{i\\beta}$",
+          "isCorrect": false,
+          "rationale": "The magnitude of $e^{ix}$ is always $1$ and does not provide the specific identity components."
+        },
+        {
+          "text": "The imaginary part of $(\\cos \\alpha + i \\sin \\alpha)(\\cos \\beta + i \\sin \\beta)$",
+          "isCorrect": false,
+          "rationale": "Taking the imaginary part would yield the formula for $\\sin(\\alpha + \\beta)$ instead of cosine."
+        },
+        {
+          "text": "The real part of $(\\cos \\alpha + i \\sin \\alpha) + (\\cos \\beta + i \\sin \\beta)$",
+          "isCorrect": false,
+          "rationale": "The addition of complex numbers does not represent the trigonometric identity for the cosine of a sum of angles."
+        },
+        {
+          "text": "The real part of $(\\cos \\alpha + i \\sin \\alpha)(\\cos \\beta + i \\sin \\beta)$",
+          "isCorrect": true,
+          "rationale": "Multiplying the complex forms and extracting the real part (terms without $i$) gives $\\cos \\alpha \\cos \\beta - \\sin \\alpha \\sin \\beta$, which is the identity for $\\cos(\\alpha + \\beta)$."
+        }
+      ],
+      "hint": "The product of the two complex numbers yields the sum of their arguments in the exponent.",
+      "section": "Day 10"
+    },
+    {
+      "question": "Which of the following is the correct identity for $\\sin(\\alpha - \\beta)$ derived via Euler's formula?",
+      "answerOptions": [
+        {
+          "text": "$\\sin \\alpha - \\sin \\beta$",
+          "isCorrect": false,
+          "rationale": "Trigonometric functions of a difference of angles are not equal to the difference of the functions of the individual angles."
+        },
+        {
+          "text": "$\\sin \\alpha \\cos \\beta - \\sin \\beta \\cos \\alpha$",
+          "isCorrect": true,
+          "rationale": "This is the imaginary part of $e^{i\\alpha}e^{-i\\beta}$, where the negative angle $\\beta$ leads to a sign change in the sine term."
+        },
+        {
+          "text": "$\\cos \\alpha \\cos \\beta + \\sin \\alpha \\sin \\beta$",
+          "isCorrect": false,
+          "rationale": "This is the identity for $\\cos(\\alpha - \\beta)$."
+        },
+        {
+          "text": "$\\sin \\alpha \\cos \\beta + \\sin \\beta \\cos \\alpha$",
+          "isCorrect": false,
+          "rationale": "This is the identity for the sine of a sum, $\\sin(\\alpha + \\beta)$."
+        }
+      ],
+      "hint": "Consider the expansion of $e^{i(\\alpha - \\beta)}$ and focus on the imaginary component.",
+      "section": "Day 10"
+    },
+    {
+      "question": "Why did Euler conclude that all roots of the power series for $\\frac{\\sin x}{x}$ are non-zero?",
+      "answerOptions": [
+        {
+          "text": "Because $\\pi$ is an irrational number.",
+          "isCorrect": false,
+          "rationale": "The irrationality of $\\pi$ is unrelated to whether $x=0$ is a root of the series expansion."
+        },
+        {
+          "text": "Because the constant term ($a_0$) of the power series is $1$.",
+          "isCorrect": true,
+          "rationale": "If a polynomial $p(x)$ has a root at $x=0$, then $p(0) = 0$, but the power series for $\\frac{\\sin x}{x}$ equals $1$ when $x=0$."
+        },
+        {
+          "text": "Because the function $\\sin x$ is never zero at $x=0$.",
+          "isCorrect": false,
+          "rationale": "Actually, $\\sin(0) = 0$; however, the function $\\frac{\\sin x}{x}$ has a limit of $1$ as $x$ approaches $0$."
+        },
+        {
+          "text": "Because the series only contains even powers of $x$.",
+          "isCorrect": false,
+          "rationale": "The presence of only even powers makes the function even, but does not inherently prevent $x=0$ from being a root."
+        }
+      ],
+      "hint": "Look at the value of the function's power series when $x$ is set to $0$.",
+      "section": "Day 10"
+    },
+    {
+      "question": "What is the second term (the $x^2$ term) in the power series expansion of $\\sin x$?",
+      "answerOptions": [
+        {
+          "text": "$-\\frac{1}{2!}x^2$",
+          "isCorrect": false,
+          "rationale": "This is the second term of the $\\cos x$ expansion, not the $\\sin x$ expansion."
+        },
+        {
+          "text": "$\\frac{1}{2!}x^2$",
+          "isCorrect": false,
+          "rationale": "Even powers with positive coefficients do not appear in the standard sine expansion."
+        },
+        {
+          "text": "The $x^2$ term does not exist in the expansion of $\\sin x$.",
+          "isCorrect": true,
+          "rationale": "The power series for $\\sin x$ contains only odd powers of $x$ ($x, x^3, x^5, \\ldots$)."
+        },
+        {
+          "text": "$-\\frac{1}{3!}x^2$",
+          "isCorrect": false,
+          "rationale": "While $-\\frac{1}{3!}x^3$ is a term in the $\\sin x$ series, the power of $x$ is $3$, not $2$."
+        }
+      ],
+      "hint": "Recall if the sine function is an even or odd function and how that affects its Taylor series.",
+      "section": "Day 10"
+    },
+    {
+      "question": "In the context of the Basel Problem derivation, what corresponds to $a_0$ in the power series for $1 - \\frac{1}{3!}x^2 + \\frac{1}{5!}x^4 - \\cdots$?",
+      "answerOptions": [
+        {
+          "text": "$-\\frac{1}{3!}$",
+          "isCorrect": false,
+          "rationale": "This value represents $a_1$ (if the series were in $x^2$) or $a_2$ (in the general power series expansion), not $a_0$."
+        },
+        {
+          "text": "$1$",
+          "isCorrect": true,
+          "rationale": "The constant term $a_0$ is the first term of the power series when it is written in standard polynomial form."
+        },
+        {
+          "text": "$0$",
+          "isCorrect": false,
+          "rationale": "If $a_0$ were $0$, then $x=0$ would be a root of the function."
+        },
+        {
+          "text": "$\\pi$",
+          "isCorrect": false,
+          "rationale": "$\\pi$ relates to the roots of the series, not the constant coefficient $a_0$."
+        }
+      ],
+      "hint": "The constant term is the value of the series when $x$ is zero.",
+      "section": "Day 10"
+    },
+    {
+      "question": "Which of the following describes the general formula for $\\cos(n\\theta)$?",
+      "answerOptions": [
+        {
+          "text": "$\\cos^n \\theta - \\sin^n \\theta$",
+          "isCorrect": false,
+          "rationale": "This formula only works for $n=2$ and is incorrect for higher values of $n$."
+        },
+        {
+          "text": "$\\text{Re}((\\cos \\theta + i \\sin \\theta)^n)$",
+          "isCorrect": true,
+          "rationale": "De Moivre's theorem states that $\\cos(n\\theta)$ is the real component of the $n$-th power of the complex number $\\cos \\theta + i \\sin \\theta$."
+        },
+        {
+          "text": "$n \\cos \\theta \\sin^{n-1} \\theta$",
+          "isCorrect": false,
+          "rationale": "This is a single term from a binomial expansion and does not represent the full identity."
+        },
+        {
+          "text": "$\\text{Im}((\\cos \\theta + i \\sin \\theta)^n)$",
+          "isCorrect": false,
+          "rationale": "The imaginary part represents $\\sin(n\\theta)$, not $\\cos(n\\theta)$."
+        }
+      ],
+      "hint": "Recall which trigonometric function is associated with the real axis in Euler's formula.",
+      "section": "Day 10"
+    },
+    {
+      "question": "If $e^{i\\theta} = \\cos \\theta + i \\sin \\theta$, what is the expansion of $e^{i(-\\theta)}$?",
+      "answerOptions": [
+        {
+          "text": "$\\sin \\theta - i \\cos \\theta$",
+          "isCorrect": false,
+          "rationale": "The real part remains associated with cosine, and the imaginary part with sine, regardless of the angle's sign."
+        },
+        {
+          "text": "$\\cos \\theta + i \\sin \\theta$",
+          "isCorrect": false,
+          "rationale": "This ignores the effect of the negative sign on the odd sine function."
+        },
+        {
+          "text": "$\\cos \\theta - i \\sin \\theta$",
+          "isCorrect": true,
+          "rationale": "Since $\\cos(-\\theta) = \\cos \\theta$ and $\\sin(-\\theta) = -\\sin \\theta$, the signs adjust accordingly in the Euler expansion."
+        },
+        {
+          "text": "$-\\cos \\theta - i \\sin \\theta$",
+          "isCorrect": false,
+          "rationale": "The cosine function is even, so $\\cos(-\\theta)$ should not produce a negative leading term."
+        }
+      ],
+      "hint": "Use the parity (even/odd properties) of the sine and cosine functions.",
+      "section": "Day 10"
+    },
+    {
+      "question": "How did Euler justify equating the infinite product to the power series for $\\frac{\\sin x}{x}$?",
+      "answerOptions": [
+        {
+          "text": "By proving the series converges uniformly on the entire real line.",
+          "isCorrect": false,
+          "rationale": "While convergence is important, the core of Euler's logic was the analogy between finite polynomials and infinite series."
+        },
+        {
+          "text": "By treating the infinite power series as an infinite-degree polynomial.",
+          "isCorrect": true,
+          "rationale": "Euler extended the properties of finite polynomials, such as factorization via roots, to infinite power series."
+        },
+        {
+          "text": "By showing that both expressions have the same derivative at $x=0$.",
+          "isCorrect": false,
+          "rationale": "Having the same derivative at one point is not sufficient to equate a whole product to a series."
+        },
+        {
+          "text": "By using the Addition formulas derived from Euler's formula.",
+          "isCorrect": false,
+          "rationale": "The addition formulas are a separate application of Euler's formula and were not the basis for the product factorization."
+        }
+      ],
+      "hint": "Think about how he generalized the behavior of standard polynomials to power series.",
+      "section": "Day 10"
+    },
+    {
+      "question": "What is the coefficient of $x^4$ in the series for $\\frac{\\sin x}{x}$?",
+      "answerOptions": [
+        {
+          "text": "$\\frac{1}{4!}$",
+          "isCorrect": false,
+          "rationale": "The sine series uses odd factorials from the original $\\sin x$ expansion, which remain odd after dividing by $x$."
+        },
+        {
+          "text": "$\\frac{1}{120}$",
+          "isCorrect": false,
+          "rationale": "While $5! = 120$, the standard notation used in the source material is factorial form, and $1/120$ is simply a decimal/fractional equivalent."
+        },
+        {
+          "text": "$\\frac{1}{5!}$",
+          "isCorrect": true,
+          "rationale": "In the series $1 - \\frac{x^2}{3!} + \\frac{x^4}{5!} - \\cdots$, the $x^4$ term is the third term, which has a denominator of $5!$."
+        },
+        {
+          "text": "$-\\frac{1}{5!}$",
+          "isCorrect": false,
+          "rationale": "The signs in the sine series alternate, and after $1$ (positive) and $x^2$ (negative), the $x^4$ term is positive."
+        }
+      ],
+      "hint": "Check the sequence of factorials and signs in the expansion of the sinc function.",
+      "section": "Day 10"
+    },
+    {
+      "question": "Which trigonometric identity is equivalent to $\\cos^2 \\theta - \\sin^2 \\theta$?",
+      "answerOptions": [
+        {
+          "text": "$1$",
+          "isCorrect": false,
+          "rationale": "The sum $\\cos^2 \\theta + \\sin^2 \\theta$ equals $1$, not the difference."
+        },
+        {
+          "text": "$\\cos(2\\theta)$",
+          "isCorrect": true,
+          "rationale": "This is the standard double-angle identity for cosine, which can be derived from the real part of $(e^{i\\theta})^2$."
+        },
+        {
+          "text": "$\\sin(2\\theta)$",
+          "isCorrect": false,
+          "rationale": "The sine double-angle identity is $2 \\sin \\theta \\cos \\theta$, not a difference of squares."
+        },
+        {
+          "text": "$\\cos(3\\theta)$",
+          "isCorrect": false,
+          "rationale": "The triple-angle identity for cosine involves cubic terms, not just squares."
+        }
+      ],
+      "hint": "This identity is the result of squaring the complex number representing $e^{i\\theta}$.",
+      "section": "Day 10"
+    },
+    {
+      "question": "In the expression $p(x) = a_0(1 - \\frac{x}{r_1})(1 - \\frac{x}{r_2})\\cdots$, what does $r_n$ represent?",
+      "answerOptions": [
+        {
+          "text": "The derivatives of the function at the origin.",
+          "isCorrect": false,
+          "rationale": "Roots and derivatives at the origin are distinct concepts in calculus."
+        },
+        {
+          "text": "The coefficients of the power series.",
+          "isCorrect": false,
+          "rationale": "Coefficients are typically denoted by $a_n$, whereas $r_n$ represents the zeros of the function."
+        },
+        {
+          "text": "The remainders of the polynomial division.",
+          "isCorrect": false,
+          "rationale": "In factorization, these values are roots that satisfy $p(r_n) = 0$, not remainders."
+        },
+        {
+          "text": "The non-zero roots of the polynomial or series.",
+          "isCorrect": true,
+          "rationale": "The terms $(1 - x/r_n)$ are designed to evaluate to zero when $x$ equals the root $r_n$."
+        }
+      ],
+      "hint": "Recall the definition of a root in the context of factoring a function.",
+      "section": "Day 10"
+    },
+    {
+      "question": "What happens to the term $(1 - (\\frac{x}{n\\pi})^2)$ when $x = n\\pi$?",
+      "answerOptions": [
+        {
+          "text": "It oscillates between $-1$ and $1$.",
+          "isCorrect": false,
+          "rationale": "The individual factor is a parabola in $x$, not an oscillating trigonometric function."
+        },
+        {
+          "text": "It becomes zero.",
+          "isCorrect": true,
+          "rationale": "Substituting $x = n\\pi$ gives $(1 - (n\\pi/n\\pi)^2) = 1 - 1 = 0$, confirming $n\\pi$ is a root."
+        },
+        {
+          "text": "It becomes infinite.",
+          "isCorrect": false,
+          "rationale": "The expression is a simple polynomial factor and does not have a denominator that goes to zero."
+        },
+        {
+          "text": "It becomes one.",
+          "isCorrect": false,
+          "rationale": "The term only becomes $1$ when $x=0$, not when $x$ is a root."
+        }
+      ],
+      "hint": "Substitute the value into the expression and solve.",
+      "section": "Day 10"
+    },
+    {
+      "question": "To find $\\cos 3\\theta$, one expands $(\\cos \\theta + i \\sin \\theta)^3$. What is the expanded form of the $i^2$ term in this binomial expansion?",
+      "answerOptions": [
+        {
+          "text": "$(i \\sin \\theta)^3$",
+          "isCorrect": false,
+          "rationale": "This is the fourth term of the expansion, containing $i^3$."
+        },
+        {
+          "text": "$3 \\cos \\theta (i \\sin \\theta)^2$",
+          "isCorrect": true,
+          "rationale": "Following the binomial theorem $(a+b)^3 = a^3 + 3a^2b + 3ab^2 + b^3$, the third term is $3ab^2$ where $b = i \\sin \\theta$."
+        },
+        {
+          "text": "$3 \\cos^2 \\theta (i \\sin \\theta)$",
+          "isCorrect": false,
+          "rationale": "This is the second term of the expansion, which contains $i$ to the first power, not $i^2$."
+        },
+        {
+          "text": "$\\cos^3 \\theta$",
+          "isCorrect": false,
+          "rationale": "This is the first term of the expansion, which contains no $i$ terms."
+        }
+      ],
+      "hint": "Consider the coefficients and powers in the binomial expansion of $(a+b)^3$.",
+      "section": "Day 10"
+    }
+  ]
+}

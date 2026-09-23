@@ -1,0 +1,266 @@
+{
+  "title": "MATH 411 — Day 1: Depressing the Cubic",
+  "section": "Day 1",
+  "questions": [
+    {
+      "question": "According to the source material, why might a mathematician consider a $2 \\times 2$ matrix to be a \"number\"?",
+      "answerOptions": [
+        {
+          "text": "Because matrices are only used to represent real numbers in higher dimensions.",
+          "isCorrect": false,
+          "rationale": "Matrices represent linear transformations and other structures, not just higher-dimensional real numbers."
+        },
+        {
+          "text": "Because the source material defines a \"number\" as anything that can be written in a grid.",
+          "isCorrect": false,
+          "rationale": "The source explicitly states it will not make the definition of a number explicit, rather than providing a grid-based definition."
+        },
+        {
+          "text": "Because all matrices can be reduced to a single scalar value through the determinant.",
+          "isCorrect": false,
+          "rationale": "While determinants are scalars, the text lists the matrix itself as a number, not just its determinant."
+        },
+        {
+          "text": "Because they can be treated as objects within a mathematical system similar to traditional numbers.",
+          "isCorrect": true,
+          "rationale": "The text suggests that the definition of a number is broader than typically taught, including various mathematical objects that behave according to specific rules."
+        }
+      ],
+      "hint": "Consider how the text challenges the student's initial, likely narrow, definition of what a number is.",
+      "section": "Day 1"
+    },
+    {
+      "question": "What is the primary purpose of the substitution $x = y - \\frac{b}{2a}$ in the derivation of the Quadratic Formula?",
+      "answerOptions": [
+        {
+          "text": "To eliminate the linear term of the quadratic equation.",
+          "isCorrect": true,
+          "rationale": "This substitution \"depresses\" the quadratic by removing the $x$ term, leaving an equation in the form $y^2 = k$."
+        },
+        {
+          "text": "To ensure that the leading coefficient $a$ becomes $1$.",
+          "isCorrect": false,
+          "rationale": "The coefficient $a$ is usually handled by dividing the entire equation by $a$ before the substitution is applied."
+        },
+        {
+          "text": "To convert the quadratic equation into a cubic equation.",
+          "isCorrect": false,
+          "rationale": "The substitution simplifies the current degree rather than increasing the complexity of the polynomial."
+        },
+        {
+          "text": "To factor the quadratic into two linear binomials immediately.",
+          "isCorrect": false,
+          "rationale": "Factoring usually requires knowing the roots first, whereas this substitution is a step to find those roots."
+        }
+      ],
+      "hint": "Think about what happens to the $x$ term when you complete the square or shift the variable.",
+      "section": "Day 1"
+    },
+    {
+      "question": "In the context of polynomial equations, what does it mean to \"depress\" a cubic equation?",
+      "answerOptions": [
+        {
+          "text": "To divide the entire polynomial by its leading coefficient.",
+          "isCorrect": false,
+          "rationale": "While often a preliminary step, depressing specifically refers to the removal of the second-highest degree term."
+        },
+        {
+          "text": "To transform the equation into a form where the quadratic term ($y^2$) is missing.",
+          "isCorrect": true,
+          "rationale": "A depressed cubic is defined as having the form $y^3 + py + q = 0$, where the squared term has been eliminated."
+        },
+        {
+          "text": "To find only the negative real roots of the equation.",
+          "isCorrect": false,
+          "rationale": "The term \"depressed\" refers to the algebraic form of the equation, not the sign or value of its solutions."
+        },
+        {
+          "text": "To reduce the degree of the polynomial from three to two.",
+          "isCorrect": false,
+          "rationale": "Depressing a polynomial changes its internal structure by removing a term, but it remains a cubic (degree three) equation."
+        }
+      ],
+      "hint": "Focus on which specific term is absent in the equation $y^3 + py + q = 0$.",
+      "section": "Day 1"
+    },
+    {
+      "question": "Which mathematician is credited in the text with providing the solution for the \"depressed cubic\" that Ferrari later utilized?",
+      "answerOptions": [
+        {
+          "text": "Newton",
+          "isCorrect": false,
+          "rationale": "Newton is not mentioned in this specific historical development of the cubic and quartic formulas."
+        },
+        {
+          "text": "Tartaglia",
+          "isCorrect": true,
+          "rationale": "The source identifies Tartaglia (the Stutterer) as the one who previously solved the depressed cubic."
+        },
+        {
+          "text": "Cardano",
+          "isCorrect": false,
+          "rationale": "Cardano was Ferrari's teacher and worked on these equations, but the solution for the depressed version is attributed to Tartaglia."
+        },
+        {
+          "text": "Leibniz",
+          "isCorrect": false,
+          "rationale": "Leibniz is mentioned earlier in the text regarding his view of differentials as numbers, not the cubic formula."
+        }
+      ],
+      "hint": "This mathematician was also known by a nickname related to a speech impediment.",
+      "section": "Day 1"
+    },
+    {
+      "question": "According to the source, why is it important for students to perform \"routine\" mathematical computations themselves?",
+      "answerOptions": [
+        {
+          "text": "To memorize the formulas so they never have to derive them again.",
+          "isCorrect": false,
+          "rationale": "The focus is on understanding the process and gaining insight, not just rote memorization."
+        },
+        {
+          "text": "To gain insight and develop confidence in their own abilities.",
+          "isCorrect": true,
+          "rationale": "The author argues that doing the work yourself provides understanding that is lost if all details are provided for you."
+        },
+        {
+          "text": "To ensure that the textbook remains as short as possible.",
+          "isCorrect": false,
+          "rationale": "While skipping steps does shorten the book, the primary reason given is the student's personal educational growth."
+        },
+        {
+          "text": "Because routine computations are the most difficult part of mathematics.",
+          "isCorrect": false,
+          "rationale": "The text describes them as routine precisely because they are standard, though they still require effort to understand."
+        }
+      ],
+      "hint": "The author mentions that providing every detail would \"rob\" the student of something.",
+      "section": "Day 1"
+    },
+    {
+      "question": "Based on the pattern provided for the quadratic and cubic, what substitution would be used to depress a polynomial of degree $n$ in the form $ax^n + bx^{n-1} + \\dots = 0$?",
+      "answerOptions": [
+        {
+          "text": "$x = y - \\frac{nb}{a}$",
+          "isCorrect": false,
+          "rationale": "This places the degree in the numerator, which would not result in the cancellation of the second-highest degree term."
+        },
+        {
+          "text": "$x = y - \\frac{b}{a^n}$",
+          "isCorrect": false,
+          "rationale": "The power of $a$ does not increase with the degree of the polynomial when performing this specific linear shift."
+        },
+        {
+          "text": "$x = y - \\frac{b}{2na}$",
+          "isCorrect": false,
+          "rationale": "This adds an extra factor of $2$ that is not present in the general formula for depressing a polynomial."
+        },
+        {
+          "text": "$x = y - \\frac{b}{na}$",
+          "isCorrect": true,
+          "rationale": "Generalizing from the quadratic ($2a$) and cubic ($3a$), the $x^{n-1}$ term is eliminated by shifting the variable by $\\frac{b}{na}$."
+        }
+      ],
+      "hint": "Look at the denominator of the constant being subtracted in the substitutions for $n=2$ and $n=3$.",
+      "section": "Day 1"
+    },
+    {
+      "question": "The text mentions that Ferrari's methods for solving equations eventually \"broke down entirely.\" At which degree polynomial did this occur?",
+      "answerOptions": [
+        {
+          "text": "Cubic (degree 3)",
+          "isCorrect": false,
+          "rationale": "The cubic was successfully solved by depressing it and using Tartaglia's previous work."
+        },
+        {
+          "text": "Septic (degree 7)",
+          "isCorrect": false,
+          "rationale": "While higher degrees also lack general algebraic solutions, the breakdown first occurred at the quintic level."
+        },
+        {
+          "text": "Quartic (degree 4)",
+          "isCorrect": false,
+          "rationale": "The text explicitly states that Ferrari and Cardano successfully solved the general quartic."
+        },
+        {
+          "text": "Quintic (degree 5)",
+          "isCorrect": true,
+          "rationale": "The source states that the methods used for quadratic, cubic, and quartic equations failed when applied to the general quintic."
+        }
+      ],
+      "hint": "It is the first degree for which there is no general formula using only radicals.",
+      "section": "Day 1"
+    },
+    {
+      "question": "In the alternative derivation of the Quadratic Formula (Problem 1.2.4), if $r_1$ and $r_2$ are roots of $ax^2 + bx + c = 0$, what is the value of $r_1 + r_2$?",
+      "answerOptions": [
+        {
+          "text": "$-\\frac{b}{a}$",
+          "isCorrect": true,
+          "rationale": "By expanding $a(x-r_1)(x-r_2)$ and comparing coefficients, the linear term shows that the sum of the roots is equal to $-b/a$."
+        },
+        {
+          "text": "$-\\frac{c}{a}$",
+          "isCorrect": false,
+          "rationale": "The ratio $c/a$ corresponds to the product of the roots ($r_1 r_2$), not the sum."
+        },
+        {
+          "text": "$\\frac{b}{a}$",
+          "isCorrect": false,
+          "rationale": "This neglects the negative sign that arises from the expansion $(x-r_1)(x-r_2) = x^2 - (r_1+r_2)x + r_1r_2$."
+        },
+        {
+          "text": "$\\frac{\\sqrt{b^2-4ac}}{2a}$",
+          "isCorrect": false,
+          "rationale": "This expression is related to the difference between the roots or the individual roots, not their sum."
+        }
+      ],
+      "hint": "Consider the relationship between the coefficients and the sum of roots in a monic polynomial.",
+      "section": "Day 1"
+    },
+    {
+      "question": "Which of the following does the author explicitly suggest as a productive way to handle a \"failure\" to solve a mathematical problem?",
+      "answerOptions": [
+        {
+          "text": "Berating the problem as \"stupid\" to vent frustration.",
+          "isCorrect": false,
+          "rationale": "The author specifically warns against this behavior, as it prevents the student from learning."
+        },
+        {
+          "text": "Seeking help from a classmate, instructor, or friend.",
+          "isCorrect": true,
+          "rationale": "The text encourages students to get help to overcome hurdles rather than letting personal insecurities take over."
+        },
+        {
+          "text": "Skipping the problem entirely and moving to the next chapter.",
+          "isCorrect": false,
+          "rationale": "The author emphasizes that every problem solved is a tool for later, suggesting that skipping them is detrimental."
+        },
+        {
+          "text": "Hiding the difficulty to maintain a sense of capability.",
+          "isCorrect": false,
+          "rationale": "The text states that many people do this, but they should avoid it because it interferes with their education."
+        }
+      ],
+      "hint": "The advice involves utilizing your social or academic environment to move past a 'hump'.",
+      "section": "Day 1"
+    },
+    {
+      "question": "Is the following statement true or false: Leibniz considered the differential $dx$ to be a number.",
+      "answerOptions": [
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "The source material specifically mentions Leibniz in the list of examples to illustrate that $dx$ can be viewed as a number."
+        },
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "The text explicitly asks if you consider $dx$ a number and confirms that Leibniz did."
+        }
+      ],
+      "hint": "Check the section in Lesson One where various mathematical objects are listed as 'numbers'.",
+      "section": "Day 1"
+    }
+  ]
+}

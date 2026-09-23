@@ -1,0 +1,698 @@
+{
+  "title": "MATH 411 — Day 3: What the Rationals Can't Do",
+  "section": "Day 3",
+  "questions": [
+    {
+      "question": "The text describes the set of real numbers, denoted as $\\mathbb{R}$, as 'badly named'. What is the reasoning provided for this characterization?",
+      "answerOptions": [
+        {
+          "text": "The set $\\mathbb{R}$ only contains numbers that can be measured with physical sticks, unlike 'imaginary' sets.",
+          "isCorrect": false,
+          "rationale": "While the text uses sticks for visualization, it explicitly states that 'real' does not refer to a unique physical reality compared to other sets like $\\mathbb{Q}$ or $\\mathbb{Z}$."
+        },
+        {
+          "text": "It is mathematically impossible to define what a 'real' number is compared to an 'unreal' number.",
+          "isCorrect": false,
+          "rationale": "The text does not claim the numbers are indefinable, but rather that the nomenclature is an anomaly similar to the 'Pythagorean Theorem'."
+        },
+        {
+          "text": "The set was named before the invention of calculus, when mathematicians did not yet understand irrationality.",
+          "isCorrect": false,
+          "rationale": "The text mentions calculus was invented in the $17$th century when numbers were thought to be 'thoroughly understood', but the naming anomaly is linked to historical tradition rather than a lack of understanding of irrationality."
+        },
+        {
+          "text": "The name implies they possess a higher level of existence than other number sets, which is not mathematically accurate.",
+          "isCorrect": true,
+          "rationale": "The source explains that real numbers are no more or less 'real' in the sense of existence than rational numbers or integers, making the name an historical anomaly."
+        }
+      ],
+      "hint": "Consider the comparison made between the 'existence' of real numbers and that of natural or rational numbers.",
+      "section": "Day 3"
+    },
+    {
+      "question": "According to the geometric visualizations presented, how is the multiplication of two lengths represented?",
+      "answerOptions": [
+        {
+          "text": "The area of a rectangle formed by placing the two lengths at right angles to each other.",
+          "isCorrect": true,
+          "rationale": "The text illustrates multiplication by placing a stick of length $2$ and length $3$ at right angles, resulting in an area of $6$."
+        },
+        {
+          "text": "The diagonal length of a square where the two segments form the sides.",
+          "isCorrect": false,
+          "rationale": "While diagonals are used to introduce irrational numbers, they are not the general representation for the operation of multiplication."
+        },
+        {
+          "text": "The ratio of one length when compared directly to the other.",
+          "isCorrect": false,
+          "rationale": "Comparing one length to another in terms of proportion is the definition provided for rational numbers (ratios), not multiplication."
+        },
+        {
+          "text": "The total length achieved by laying the two segments end-to-end.",
+          "isCorrect": false,
+          "rationale": "Laying segments end-to-end is used to visualize addition, as the lengths are combined linearly."
+        }
+      ],
+      "hint": "Think about how two dimensions (length and width) interact to create a product.",
+      "section": "Day 3"
+    },
+    {
+      "question": "Why is the set of rational numbers denoted by the symbol $\\mathbb{Q}$?",
+      "answerOptions": [
+        {
+          "text": "It refers to 'Quantity', distinguishing it from the 'Quality' of real numbers.",
+          "isCorrect": false,
+          "rationale": "The source identifies $\\mathbb{Q}$ specifically with quotients, not the concept of quantity versus quality."
+        },
+        {
+          "text": "It represents 'quotients', as every rational number is a ratio of two integers.",
+          "isCorrect": true,
+          "rationale": "The text states the set of rational numbers is denoted $\\mathbb{Q}$ for quotients, reflecting the comparison or ratio of integers."
+        },
+        {
+          "text": "It stands for the 'quantifiable' nature of these numbers on a line.",
+          "isCorrect": false,
+          "rationale": "While rational numbers are quantifiable, the symbol specifically refers to their mathematical definition as results of division."
+        },
+        {
+          "text": "It is an abbreviation for 'Quadratic', relating to the areas used in multiplication.",
+          "isCorrect": false,
+          "rationale": "The term 'quadratic' is unrelated to the symbol $\\mathbb{Q}$ according to the provided text."
+        }
+      ],
+      "hint": "Look for the mathematical term associated with the result of a division operation.",
+      "section": "Day 3"
+    },
+    {
+      "question": "In Theorem 2.0.4, given two rational numbers $\\frac{a}{b}$ and $\\frac{c}{d}$ where $a, b, c, d \\in \\mathbb{Z}$, what value of $\\alpha$ is proposed to show they share a common unit of measure?",
+      "answerOptions": [
+        {
+          "text": "$\\alpha = \\frac{1}{b+d}$",
+          "isCorrect": false,
+          "rationale": "Adding denominators is a common student error in fraction arithmetic and does not result in a common unit of measure."
+        },
+        {
+          "text": "$\\alpha = \\frac{1}{a+c}$",
+          "isCorrect": false,
+          "rationale": "Summing the numerators does not produce a common denominator suitable for dividing both fractions into integer pieces."
+        },
+        {
+          "text": "$\\alpha = \\frac{1}{bd}$",
+          "isCorrect": true,
+          "rationale": "Multiplying the denominators creates a common unit such that both $\\frac{a}{b}$ and $\\frac{c}{d}$ can be expressed as integer multiples of that unit."
+        },
+        {
+          "text": "$\\alpha = \\frac{ad}{bc}$",
+          "isCorrect": false,
+          "rationale": "This represents the ratio of the two fractions rather than a common divisor length."
+        }
+      ],
+      "hint": "The solution involves finding a common denominator that works for both $b$ and $d$ simultaneously.",
+      "section": "Day 3"
+    },
+    {
+      "question": "When proving that $\\sqrt{2}$ is irrational, what is the 'crucial assumption' made about the initial fraction $\\frac{a}{b}$?",
+      "answerOptions": [
+        {
+          "text": "That the fraction is in lowest terms, meaning at most one of the integers is even.",
+          "isCorrect": true,
+          "rationale": "Assuming the fraction is in lowest terms is vital because the subsequent logic shows both $a$ and $b$ must be even, creating the necessary contradiction."
+        },
+        {
+          "text": "That $a^2$ must be equal to $2b^2$ only if $a$ and $b$ are irrational.",
+          "isCorrect": false,
+          "rationale": "The equation $a^2 = 2b^2$ is derived from the assumption that $\\sqrt{2}$ is rational ($\\frac{a}{b}$), not that $a$ and $b$ are irrational."
+        },
+        {
+          "text": "That the variables $a$ and $b$ are both even integers.",
+          "isCorrect": false,
+          "rationale": "The proof eventually shows both are even, but the starting assumption is that the fraction is in lowest terms, meaning they cannot both be even."
+        },
+        {
+          "text": "That $b$ must be a prime number.",
+          "isCorrect": false,
+          "rationale": "There is no requirement for $b$ to be prime; the only necessary condition for the contradiction is the fraction's simplest form."
+        }
+      ],
+      "hint": "Recall the condition that ensures a fraction cannot be simplified any further.",
+      "section": "Day 3"
+    },
+    {
+      "question": "In the logical steps of the proof for the irrationality of $\\sqrt{2}$, if we establish that $a^2 = 2b^2$, why must $a$ also be even?",
+      "answerOptions": [
+        {
+          "text": "Because $a^2$ is a multiple of $2$, and only even numbers have even squares.",
+          "isCorrect": true,
+          "rationale": "The equation $a^2 = 2b^2$ shows $a^2$ is even; since the square of an odd number is odd, $a$ itself must be even."
+        },
+        {
+          "text": "Because $\\sqrt{2}$ is an even number by definition.",
+          "isCorrect": false,
+          "rationale": "Parity (even/odd) is a property of integers; irrational numbers like $\\sqrt{2}$ are neither even nor odd."
+        },
+        {
+          "text": "Because $b$ is assumed to be an even number in the initial step.",
+          "isCorrect": false,
+          "rationale": "The parity of $b$ is not assumed at this stage; it is deduced later in the proof after analyzing $a$."
+        },
+        {
+          "text": "Because the square of any integer is always an even number.",
+          "isCorrect": false,
+          "rationale": "The square of an odd number is always odd (e.g., $3^2 = 9$), so this is a false general statement."
+        }
+      ],
+      "hint": "Consider what the property of the square of a number tells us about the number itself.",
+      "section": "Day 3"
+    },
+    {
+      "question": "What 'mysterious' conclusion is reached by rotating the diagonal of a unit square down to the $x$-axis on a rational number line?",
+      "answerOptions": [
+        {
+          "text": "The diagonal becomes infinitely long as it approaches the $x$-axis.",
+          "isCorrect": false,
+          "rationale": "The length remains constant at $\\sqrt{2}$ as it is merely a rotation."
+        },
+        {
+          "text": "The $x$-axis must be redefined to only include integers to accommodate the rotation.",
+          "isCorrect": false,
+          "rationale": "Redefining the axis to integers would only create more holes and would not solve the problem of representing the diagonal's length."
+        },
+        {
+          "text": "The point $(\\sqrt{2}, 0)$ does not exist on that axis, implying the line has holes.",
+          "isCorrect": true,
+          "rationale": "Since $\\sqrt{2}$ is not rational, it does not correspond to any point on a line consisting only of rational numbers, creating a gap or 'hole'."
+        },
+        {
+          "text": "The endpoint of the diagonal lands precisely on a rational number close to $1.41$.",
+          "isCorrect": false,
+          "rationale": "While it lands near rational approximations, it never lands on a rational number because $\\sqrt{2}$ is irrational."
+        }
+      ],
+      "hint": "Think about whether a non-rational length can correspond to a coordinate on a line made only of rational points.",
+      "section": "Day 3"
+    },
+    {
+      "question": "Based on the text's discussion of the 'rational line', which of the following statements is true regarding the density of rational numbers?",
+      "answerOptions": [
+        {
+          "text": "The existence of a rational number between any two other rational numbers suggests the line is complete.",
+          "isCorrect": false,
+          "rationale": "The text argues that despite this property, the line is incomplete and contains infinitely many holes."
+        },
+        {
+          "text": "Only the integers are dense, while rational numbers are spaced apart by unit lengths.",
+          "isCorrect": false,
+          "rationale": "Integers are discrete and not dense; rational numbers have the property of having another number between any two."
+        },
+        {
+          "text": "Between any two rational numbers, there is always another rational number.",
+          "isCorrect": true,
+          "rationale": "The text identifies this as a chief property that rational numbers and points on a line seem to share, even though the rational line is ultimately 'holey'."
+        },
+        {
+          "text": "Rational numbers are not dense because there are finite gaps between any two fractions.",
+          "isCorrect": false,
+          "rationale": "Rational numbers are actually dense because there is always another rational between any two, though they still leave 'holes' for irrationals."
+        }
+      ],
+      "hint": "Consider the property that makes the rational numbers appear to be a continuous line at first glance.",
+      "section": "Day 3"
+    },
+    {
+      "question": "Which set of numbers is described as having symbols like $4^{\\sqrt{2}}$ that are difficult to interpret using standard rational arithmetic?",
+      "answerOptions": [
+        {
+          "text": "Natural numbers ($\\mathbb{N}$)",
+          "isCorrect": false,
+          "rationale": "Natural numbers have straightforward interpretation in exponents as repeated multiplication."
+        },
+        {
+          "text": "Integers ($\\mathbb{Z}$)",
+          "isCorrect": false,
+          "rationale": "Integer exponents are standard operations and do not pose the conceptual difficulty described in the source."
+        },
+        {
+          "text": "Irrational numbers",
+          "isCorrect": true,
+          "rationale": "The text highlights that since $\\sqrt{2}$ cannot be expressed as $\\frac{m}{n}$, the meaning of an irrational exponent is not immediately obvious."
+        },
+        {
+          "text": "Rational numbers ($\\mathbb{Q}$)",
+          "isCorrect": false,
+          "rationale": "Rational exponents are interpretable as powers and roots (e.g., $4^{m/n} = \\sqrt[n]{4^m}$)."
+        }
+      ],
+      "hint": "Focus on the type of exponent that breaks the standard rule of 'roots of powers'.",
+      "section": "Day 3"
+    },
+    {
+      "question": "In the proof provided for Theorem 2.0.4, if $\\alpha = \\frac{1}{bd}$, what is the value of $M$ such that $M\\alpha = \\frac{a}{b}$?",
+      "answerOptions": [
+        {
+          "text": "$M = abcd$",
+          "isCorrect": false,
+          "rationale": "This value is unnecessarily large and would not satisfy the requirement $M\\alpha = \\frac{a}{b}$."
+        },
+        {
+          "text": "$M = cb$",
+          "isCorrect": false,
+          "rationale": "$cb$ is the value assigned to $N$ to represent the second fraction $\\frac{c}{d}$ in the proof."
+        },
+        {
+          "text": "$M = b$",
+          "isCorrect": false,
+          "rationale": "Multiplying $b$ by $\\frac{1}{bd}$ would result in $\\frac{1}{d}$, not the target fraction $\\frac{a}{b}$."
+        },
+        {
+          "text": "$M = ad$",
+          "isCorrect": true,
+          "rationale": "Multiplying $ad$ by $\\frac{1}{bd}$ results in $\\frac{ad}{bd}$, which simplifies to $\\frac{a}{b}$."
+        }
+      ],
+      "hint": "Consider the numerator needed to cancel out the extra factor in the denominator of $\\alpha$ to return to the fraction $\\frac{a}{b}$.",
+      "section": "Day 3"
+    },
+    {
+      "question": "The text mentions that $\\pi$ is an 'exceptionally weird number'. According to the source, what is its geometric origin?",
+      "answerOptions": [
+        {
+          "text": "The ratio of the side of a square to its perimeter.",
+          "isCorrect": false,
+          "rationale": "This ratio is $1:4$, which is a simple rational number ($1/4$)."
+        },
+        {
+          "text": "The diagonal of a unit square.",
+          "isCorrect": false,
+          "rationale": "The diagonal of a unit square is used to introduce $\\sqrt{2}$, not $\\pi$."
+        },
+        {
+          "text": "The area of a rectangle with sides of length $1$ and $2$.",
+          "isCorrect": false,
+          "rationale": "The area of such a rectangle is $2$, which is a rational number."
+        },
+        {
+          "text": "The circumference of a circle with diameter $1$.",
+          "isCorrect": true,
+          "rationale": "The text explicitly defines $\\pi$ as the circumference of a circle with diameter $1$ and notes its complexity."
+        }
+      ],
+      "hint": "Look for the shape described as an 'extremely complex object' that only seems simple because it is familiar.",
+      "section": "Day 3"
+    },
+    {
+      "question": "Problem 2.0.7 asks to show that several numbers are irrational. Which of the following is NOT included in that specific list of examples?",
+      "answerOptions": [
+        {
+          "text": "$\\sqrt{3}$",
+          "isCorrect": false,
+          "rationale": "$\\sqrt{3}$ is the first example listed in Problem 2.0.7 to show as irrational."
+        },
+        {
+          "text": "$\\sqrt[3]{2}$",
+          "isCorrect": false,
+          "rationale": "The cube root of $2$ is included in the list of numbers in Problem 2.0.7."
+        },
+        {
+          "text": "$e$",
+          "isCorrect": true,
+          "rationale": "While $e$ is mentioned later as being irrational, it is not part of the specific list in Problem 2.0.7."
+        },
+        {
+          "text": "$i$ ($\\sqrt{-1}$)",
+          "isCorrect": false,
+          "rationale": "$i$ is explicitly listed as one of the numbers to show is irrational in the problem set."
+        }
+      ],
+      "hint": "Identify the constant that is mentioned as being difficult to prove irrational, separate from the practice problem list.",
+      "section": "Day 3"
+    },
+    {
+      "question": "What is the consequence of $a$ and $b$ both being even in the context of the proof for the irrationality of $\\sqrt{2}$?",
+      "answerOptions": [
+        {
+          "text": "It proves that $\\sqrt{2}$ is actually a rational number with a common factor of $2$.",
+          "isCorrect": false,
+          "rationale": "If it were rational, it would have to be expressible in lowest terms; finding they are both even contradicts the lowest-term premise."
+        },
+        {
+          "text": "It contradicts the initial assumption that the fraction was in lowest terms.",
+          "isCorrect": true,
+          "rationale": "A fraction in lowest terms cannot have two even numbers because they would share a common factor of $2$ and could be simplified further."
+        },
+        {
+          "text": "It shows that $a^2$ must be equal to $4k^2$.",
+          "isCorrect": false,
+          "rationale": "While $a^2 = 4k^2$ is a step in the proof, the significance of $a$ and $b$ being even is the contradiction it creates with the 'lowest terms' assumption."
+        },
+        {
+          "text": "It confirms that all irrational numbers are multiples of $2$.",
+          "isCorrect": false,
+          "rationale": "This is an incorrect generalization; the parity argument is specific to the contradiction within this particular proof."
+        }
+      ],
+      "hint": "Think about what happens to the 'simplest form' of a fraction if both the numerator and denominator are divisible by $2$.",
+      "section": "Day 3"
+    },
+    {
+      "question": "How does the text define a 'rational number' based on the visualization of comparing lengths?",
+      "answerOptions": [
+        {
+          "text": "A number that can be created through repeated addition only.",
+          "isCorrect": false,
+          "rationale": "Repeated addition refers to multiplication of whole numbers; rational numbers specifically involve the operation of division or comparison."
+        },
+        {
+          "text": "Any number that can be placed on a physical line segment.",
+          "isCorrect": false,
+          "rationale": "Irrational numbers like $\\sqrt{2}$ can also be represented as physical line segments, so this does not define rational numbers."
+        },
+        {
+          "text": "A number that represents the proportion or ratio of one whole number length to another.",
+          "isCorrect": true,
+          "rationale": "The text explains that numbers representing the ratio of one length to another (like $1$ to $2$) are called rational numbers."
+        },
+        {
+          "text": "The set of all numbers that were understood by the ancient Pythagoreans.",
+          "isCorrect": false,
+          "rationale": "While the Pythagoreans had beliefs about rational numbers, the mathematical definition is based on the ratio of integers."
+        }
+      ],
+      "hint": "The name 'rational' comes from a specific term used to compare two quantities.",
+      "section": "Day 3"
+    },
+    {
+      "question": "What does the text suggest about the amount of 'holes' in the rational number line?",
+      "answerOptions": [
+        {
+          "text": "There is only one hole, located precisely at $\\sqrt{2}$.",
+          "isCorrect": false,
+          "rationale": "The text explicitly mentions $\\sqrt{3}$, $\\sqrt{5}$, $\\pi$, and $e$ as other examples, implying many more exist."
+        },
+        {
+          "text": "There are infinitely many holes caused by irrational numbers.",
+          "isCorrect": true,
+          "rationale": "The text concludes that since many square roots, $\\pi$, and $e$ are irrational, the rational line has infinitely many holes."
+        },
+        {
+          "text": "The line contains a finite number of holes corresponding to common square roots.",
+          "isCorrect": false,
+          "rationale": "The source states there are 'Infinitely many' holes in the rational line."
+        },
+        {
+          "text": "The holes only appear when calculus is applied to the number line.",
+          "isCorrect": false,
+          "rationale": "The holes are a fundamental property of the rational numbers themselves, regardless of whether calculus is applied."
+        }
+      ],
+      "hint": "Consider the variety of irrational numbers mentioned, including roots and transcendental constants.",
+      "section": "Day 3"
+    },
+    {
+      "question": "Which of the following is given as an example of a number that is irrational but not derived from a square root of a positive integer?",
+      "answerOptions": [
+        {
+          "text": "$i$ ($\\sqrt{-1}$)",
+          "isCorrect": true,
+          "rationale": "The text lists $i$ in Problem 2.0.7; it is the square root of a negative integer, making it distinct from the other roots listed."
+        },
+        {
+          "text": "$\\sqrt{5}$",
+          "isCorrect": false,
+          "rationale": "$\\sqrt{5}$ is explicitly a square root of a positive integer."
+        },
+        {
+          "text": "The diagonal of a unit square.",
+          "isCorrect": false,
+          "rationale": "The diagonal of a unit square is exactly $\\sqrt{2}$, which is the square root of a positive integer."
+        },
+        {
+          "text": "$\\sqrt[3]{2}$",
+          "isCorrect": false,
+          "rationale": "This is a cube root, but the question specifies square roots of positive integers."
+        }
+      ],
+      "hint": "Look for the example that involves a negative value under the radical.",
+      "section": "Day 3"
+    },
+    {
+      "question": "True or False: The text claims that the 'real numbers' are more physically real than integers.",
+      "answerOptions": [
+        {
+          "text": "False",
+          "isCorrect": true,
+          "rationale": "The text states the name 'real' is an historical anomaly and they are no more or less real than natural numbers or integers."
+        },
+        {
+          "text": "True",
+          "isCorrect": false,
+          "rationale": "The text argues against this common misconception in the opening paragraph."
+        }
+      ],
+      "hint": "Recall the text's critique of the naming convention for $\\mathbb{R}$.",
+      "section": "Day 3"
+    },
+    {
+      "question": "If $a = 2k$ is substituted into the equation $a^2 = 2b^2$, what is the resulting equation after simplification?",
+      "answerOptions": [
+        {
+          "text": "$k^2 = 2b^2$",
+          "isCorrect": false,
+          "rationale": "Substituting $2k$ for $a$ gives $(2k)^2 = 4k^2$, so the factor of $4$ must be accounted for."
+        },
+        {
+          "text": "$k^2 = b^2$",
+          "isCorrect": false,
+          "rationale": "This fails to account for the coefficient of $2$ that remains after dividing $4$ by $2$."
+        },
+        {
+          "text": "$2k^2 = b^2$",
+          "isCorrect": true,
+          "rationale": "$4k^2 = 2b^2$ simplifies to $2k^2 = b^2$ by dividing both sides by $2$."
+        },
+        {
+          "text": "$4k^2 = b^2$",
+          "isCorrect": false,
+          "rationale": "The factor of $2$ on the right side ($2b^2$) was not correctly divided into the $4k^2$ on the left."
+        }
+      ],
+      "hint": "Square the expression $(2k)$ and then divide both sides of the equation by $2$.",
+      "section": "Day 3"
+    },
+    {
+      "question": "According to the source, why did $17$th-century mathematicians feel that numbers were 'thoroughly understood'?",
+      "answerOptions": [
+        {
+          "text": "Because they had just discovered the existence of irrational numbers like $\\pi$.",
+          "isCorrect": false,
+          "rationale": "Irrationality had been known since ancient times; the $17$th-century perspective was one of perceived completeness, not new discovery."
+        },
+        {
+          "text": "Because the set of real numbers had been perfectly defined in a non-mathematical sense.",
+          "isCorrect": false,
+          "rationale": "The text notes the name 'real' is an anomaly and does not imply a 'perfect definition' was reached in the $17$th century."
+        },
+        {
+          "text": "Because numbers were seen as simple tools that could be combined through addition, multiplication, subtraction, and division.",
+          "isCorrect": true,
+          "rationale": "The text suggests they believed numbers were simple and their basic operations (combining, repeated addition) were fully grasped."
+        },
+        {
+          "text": "Because they had proven that every point on a line corresponded exactly to a rational number.",
+          "isCorrect": false,
+          "rationale": "This is the very misconception that the text later deconstructs using the diagonal of a square."
+        }
+      ],
+      "hint": "Consider the basic operations like addition and multiplication that were assumed to be sufficient.",
+      "section": "Day 3"
+    },
+    {
+      "question": "The text notes that circles 'only seem simple because they are so familiar'. What is the broader implication of this statement regarding $\\pi$?",
+      "answerOptions": [
+        {
+          "text": "Circles are easier to understand than squares because of their symmetry.",
+          "isCorrect": false,
+          "rationale": "The text argues the opposite: that squares are simpler and circles are 'extremely complex'."
+        },
+        {
+          "text": "$\\pi$ is actually a simple rational number that is difficult to calculate.",
+          "isCorrect": false,
+          "rationale": "The text states $\\pi$ is irrational and very complex, contradicting the idea that it is rational."
+        },
+        {
+          "text": "Familiar objects in geometry always have rational properties.",
+          "isCorrect": false,
+          "rationale": "The circle is familiar but results in $\\pi$, which is irrational, proving familiar objects can have non-rational properties."
+        },
+        {
+          "text": "The complexity of the circle as a geometric object is reflected in the complexity of the number $\\pi$.",
+          "isCorrect": true,
+          "rationale": "Because the circle itself is complex, one would expect the number derived from it ($\\pi$) to be complex as well."
+        }
+      ],
+      "hint": "Think about the relationship between a geometric shape and the numbers used to describe its dimensions.",
+      "section": "Day 3"
+    },
+    {
+      "question": "In the visualization where $\\sqrt{2}$ is compared to the rational line, what is the 'Conclusion' reached about the point $(\\sqrt{2}, 0)$?",
+      "answerOptions": [
+        {
+          "text": "It exists only when the diagonal is in a vertical position.",
+          "isCorrect": false,
+          "rationale": "The point $(\\sqrt{2}, 0)$ is on the $x$-axis; the diagonal's position determines where its end lands, but the gap in the axis remains."
+        },
+        {
+          "text": "It simply doesn't exist on the $x$-axis if that axis only contains rational numbers.",
+          "isCorrect": true,
+          "rationale": "Because the rational number line only contains points corresponding to fractions, there is no point for an irrational value like $\\sqrt{2}$."
+        },
+        {
+          "text": "It is the point where the rational and irrational lines intersect.",
+          "isCorrect": false,
+          "rationale": "The text describes a 'rational number line' that lacks irrational points, not an intersection of two separate lines."
+        },
+        {
+          "text": "It is a point that exists but is impossible to measure accurately.",
+          "isCorrect": false,
+          "rationale": "The text goes further, stating the point simply 'does not exist' on the rational number line."
+        }
+      ],
+      "hint": "Recall the definition of the 'rational number line' as consisting only of fractions.",
+      "section": "Day 3"
+    },
+    {
+      "question": "If we follow the proof logic for $\\sqrt{3}$'s irrationality, what would be the parity/divisibility concern for the fraction $\\frac{a}{b}$?",
+      "answerOptions": [
+        {
+          "text": "Both $a$ and $b$ would have to be divisible by $3$.",
+          "isCorrect": true,
+          "rationale": "Similar to how the $\\sqrt{2}$ proof shows $a$ and $b$ are even (divisible by $2$), a $\\sqrt{3}$ proof would show both are divisible by $3$, contradicting 'lowest terms'."
+        },
+        {
+          "text": "Both $a$ and $b$ would have to be even.",
+          "isCorrect": false,
+          "rationale": "This specifically applies to $\\sqrt{2}$; for $\\sqrt{3}$, the concern would be divisibility by $3$."
+        },
+        {
+          "text": "$a^2$ would be equal to $2b^2$.",
+          "isCorrect": false,
+          "rationale": "$a^2 = 3b^2$ would be the starting point for $\\sqrt{3}$, not $2b^2$."
+        },
+        {
+          "text": "Only the numerator $a$ would be divisible by $3$.",
+          "isCorrect": false,
+          "rationale": "If only $a$ were divisible by $3$, the fraction could still be in lowest terms; both must be divisible to create a contradiction."
+        }
+      ],
+      "hint": "Think about the prime number $3$ in the equation $a^2 = 3b^2$ and how it mirrors the role of $2$ in the provided proof.",
+      "section": "Day 3"
+    },
+    {
+      "question": "Which set of numbers contains all the others mentioned in the text ($\\mathbb{Q}, \\mathbb{Z}, \\mathbb{N}$)?",
+      "answerOptions": [
+        {
+          "text": "The set of complex numbers ($\\mathbb{C}$)",
+          "isCorrect": false,
+          "rationale": "While $\\mathbb{C}$ is larger, the text focuses on the set of 'Real' numbers as the encompassing set for rationals, integers, and natural numbers."
+        },
+        {
+          "text": "The set of natural numbers ($\\mathbb{N}$)",
+          "isCorrect": false,
+          "rationale": "$\\mathbb{N}$ is the smallest set mentioned and is contained within the others, rather than containing them."
+        },
+        {
+          "text": "The set of real numbers ($\\mathbb{R}$)",
+          "isCorrect": true,
+          "rationale": "The text introduces $\\mathbb{R}$ and explains it includes rational numbers, integers, and natural numbers, as well as irrational ones."
+        },
+        {
+          "text": "The set of irrational numbers",
+          "isCorrect": false,
+          "rationale": "Irrational numbers do not include $\\mathbb{Q}, \\mathbb{Z},$ or $\\mathbb{N}$; they are mutually exclusive with rational numbers."
+        }
+      ],
+      "hint": "Identify the set that the text calls 'badly named' and contrasts with rational and natural numbers.",
+      "section": "Day 3"
+    },
+    {
+      "question": "Why does the text mention the 'Pythagorean Theorem' as a historical anomaly?",
+      "answerOptions": [
+        {
+          "text": "Because Pythagoras did not actually believe in irrational numbers.",
+          "isCorrect": false,
+          "rationale": "While Pythagoras had a conviction about rationals, the point of the analogy is the naming of the theorem, not his beliefs."
+        },
+        {
+          "text": "Because the theorem only works for rational lengths, which is a common misconception.",
+          "isCorrect": false,
+          "rationale": "The theorem works for all lengths; the text notes the naming anomaly as the relevant point."
+        },
+        {
+          "text": "Because the theorem was known and understood long before Pythagoras lived.",
+          "isCorrect": true,
+          "rationale": "The text uses this analogy to explain that names in mathematics, like 'real numbers', are often historical accidents rather than accurate descriptions."
+        },
+        {
+          "text": "Because Pythagoras was the first to represent numbers as sticks.",
+          "isCorrect": false,
+          "rationale": "The source does not credit Pythagoras with the stick visualization; it focuses on the naming convention."
+        }
+      ],
+      "hint": "Look for the comparison regarding when the theorem was actually discovered versus the person it is named after.",
+      "section": "Day 3"
+    },
+    {
+      "question": "What does the symbol $\\mathbb{Z}$ represent in the provided set notation?",
+      "answerOptions": [
+        {
+          "text": "The set of complex numbers.",
+          "isCorrect": false,
+          "rationale": "The set of complex numbers is denoted by $\\mathbb{C}$ in the provided notation."
+        },
+        {
+          "text": "The set of integers.",
+          "isCorrect": true,
+          "rationale": "According to the LaTeX definitions provided at the beginning of the text, $\\mathbb{Z}$ is defined as the set of integers."
+        },
+        {
+          "text": "Rational numbers that are non-fractions.",
+          "isCorrect": false,
+          "rationale": "While integers are rational, they are specifically defined as their own set $\\mathbb{Z}$, distinct from the broader set $\\mathbb{Q}$."
+        },
+        {
+          "text": "Zero numbers only.",
+          "isCorrect": false,
+          "rationale": "$\\mathbb{Z}$ includes all integers, both positive, negative, and zero."
+        }
+      ],
+      "hint": "This set includes both positive and negative whole numbers.",
+      "section": "Day 3"
+    },
+    {
+      "question": "According to the text, what happened when the 'solid reasoning' of the $\\sqrt{2}$ proof led to a conclusion that was 'nonsense'?",
+      "answerOptions": [
+        {
+          "text": "The initial assumption that $\\sqrt{2}$ could be expressed as a fraction must be false.",
+          "isCorrect": true,
+          "rationale": "Since the logic is sound but the result is impossible, the only remaining source of error is the starting assumption (that $\\sqrt{2}$ is rational)."
+        },
+        {
+          "text": "Mathematicians realized that math itself was inconsistent.",
+          "isCorrect": false,
+          "rationale": "The text maintains that the reasoning was 'all solid', pointing to a specific faulty premise rather than the field of mathematics."
+        },
+        {
+          "text": "The error was identified in the step where $a^2$ was assumed to be even.",
+          "isCorrect": false,
+          "rationale": "The text invites the reader to check the steps again, affirming they are correct."
+        },
+        {
+          "text": "The definition of an 'even number' had to be changed to include square roots.",
+          "isCorrect": false,
+          "rationale": "The proof relies on the standard definition of even numbers; no redefinition was required."
+        }
+      ],
+      "hint": "When a logical argument with sound steps leads to an impossible result, consider the very first premise.",
+      "section": "Day 3"
+    }
+  ]
+}
