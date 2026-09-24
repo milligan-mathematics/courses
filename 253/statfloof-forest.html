@@ -3660,14 +3660,23 @@
             // ============================================================
             //  Trail highlighting
             // ============================================================
-            const trailLinks = Array.from(document.querySelectorAll('#trail a'));
+            const trail = $('trail');
+            const trailLinks = Array.from(trail.querySelectorAll('a'));
+            // Scroll only the trail bar sideways. scrollIntoView would also start a
+            // programmatic scroll of the page, which cancels the reader's own scrolling.
+            function centerInTrail(a) {
+                if (trail.scrollWidth <= trail.clientWidth) return;
+                const tr = trail.getBoundingClientRect(), ar = a.getBoundingClientRect();
+                const left = trail.scrollLeft + (ar.left - tr.left) - (trail.clientWidth - ar.width) / 2;
+                trail.scrollTo({ left, behavior: reduceMotion ? 'auto' : 'smooth' });
+            }
             const secObs = new IntersectionObserver((ents) => {
                 ents.forEach((en) => {
                     if (!en.isIntersecting) return;
                     trailLinks.forEach((a) => {
                         const on = a.getAttribute('href') === '#' + en.target.id;
                         a.classList.toggle('active', on);
-                        if (on) a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
+                        if (on) centerInTrail(a);
                     });
                 });
             }, { rootMargin: '-40% 0px -55% 0px' });
