@@ -4,6 +4,10 @@ title: "MATH 253: Fundamental Concepts II"
 parent: Home
 nav_order: 253
 activities:
+  - title: "Statfloof Forest"
+    url: "statfloof-forest.html"
+    type: "Ch. 15 Launch"
+    description: "Nobody has ever counted the Statfloofs. Tag some, let a night pass, grab a random handful, and estimate the whole population, then recapture hundreds of times, tinker with the plan, and break the method's assumptions on purpose."
   - title: "Test 1 Review Games"
     url: "test-1-review-games.html"
     type: "Ch. 8 & 9 Review"

@@ -1,0 +1,3696 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statfloof Forest - Milligan Mathematics</title>
+    <meta name="description"
+        content="A small-group expedition that opens Chapter 15: estimate a population you can never fully see, using capture and recapture, random samples, dot plots, and the spread of estimates.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --night: #07130e;
+            --night2: #0c1d15;
+            --moss: #12281d;
+            --moss2: #1a3727;
+            --moss3: #24492f;
+            --fern: #4f9a5e;
+            --leaf: #9fe0a0;
+            --glow: #ffd35c;
+            --glow2: #ffe9a3;
+            --parch: #f5ecd6;
+            --parch2: #eadcbc;
+            --ink: #2a251c;
+            --ink2: #5e5443;
+            --bark: #6b4a32;
+            --danger: #ff7a66;
+            --ok: #7ee08a;
+            --text: #e9f1e6;
+            --muted: #a9bcaa;
+            --team: #ff4fa3;
+            --radius: 18px;
+            --f-head: 'Fredoka', 'Trebuchet MS', sans-serif;
+            --f-body: 'Nunito', 'Segoe UI', sans-serif;
+            --f-hand: 'Caveat', 'Comic Sans MS', cursive;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 76px;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--f-body);
+            font-size: 17px;
+            line-height: 1.6;
+            color: var(--text);
+            background:
+                radial-gradient(1200px 600px at 10% 20%, rgba(79, 154, 94, 0.10), transparent 60%),
+                radial-gradient(900px 700px at 90% 60%, rgba(255, 211, 92, 0.05), transparent 60%),
+                linear-gradient(180deg, var(--night2), var(--night) 40%, #050e0a);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: var(--glow);
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: var(--f-head);
+            font-weight: 600;
+            line-height: 1.2;
+            margin: 0 0 0.5em;
+        }
+
+        p {
+            margin: 0 0 0.9em;
+        }
+
+        .wrap {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+        }
+
+        /* ---------- top bar & trail ---------- */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(7, 19, 14, 0.86);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(159, 224, 160, 0.12);
+        }
+
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            height: 60px;
+        }
+
+        .topbar .home {
+            font-family: var(--f-head);
+            font-weight: 600;
+            color: var(--muted);
+            text-decoration: none;
+            white-space: nowrap;
+            font-size: 0.95rem;
+        }
+
+        .topbar .home:hover {
+            color: var(--glow);
+        }
+
+        .trail {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 4px 2px;
+        }
+
+        .trail::-webkit-scrollbar {
+            display: none;
+        }
+
+        .trail a {
+            position: relative;
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: var(--muted);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 4px 8px 4px 4px;
+            border-radius: 999px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .trail a .stone {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: var(--moss2);
+            border: 2px solid var(--moss3);
+            font-family: var(--f-head);
+            font-size: 0.8rem;
+            color: var(--leaf);
+            transition: all 0.2s;
+        }
+
+        .trail a .lbl {
+            display: none;
+        }
+
+        .trail a.active {
+            color: var(--glow2);
+            background: rgba(255, 211, 92, 0.10);
+        }
+
+        .trail a.active .lbl {
+            display: inline;
+        }
+
+        .trail a.active .stone,
+        .trail a.done .stone {
+            background: var(--glow);
+            border-color: var(--glow2);
+            color: var(--ink);
+        }
+
+        .trail .dash {
+            flex: 0 0 14px;
+            height: 2px;
+            background: repeating-linear-gradient(90deg, var(--moss3) 0 4px, transparent 4px 7px);
+        }
+
+        /* ---------- hero ---------- */
+        .hero {
+            position: relative;
+            min-height: min(88vh, 760px);
+            display: flex;
+            align-items: flex-end;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url('statfloof/forest-hero.jpg') center 35% / cover no-repeat;
+            transform: scale(1.06);
+            animation: drift 28s ease-in-out infinite alternate;
+            z-index: -2;
+        }
+
+        @keyframes drift {
+            to {
+                transform: scale(1.12) translate(-1.2%, -1%);
+            }
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background:
+                linear-gradient(180deg, rgba(7, 19, 14, 0.25) 0%, rgba(7, 19, 14, 0.1) 35%, rgba(7, 19, 14, 0.82) 72%, var(--night) 100%);
+        }
+
+        .fireflies {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .ff {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--glow2);
+            box-shadow: 0 0 10px 3px rgba(255, 220, 110, 0.7);
+            opacity: 0;
+            animation: ff 7s ease-in-out infinite;
+        }
+
+        @keyframes ff {
+            0% {
+                opacity: 0;
+                transform: translate(0, 0);
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+                transform: translate(var(--dx), var(--dy));
+            }
+
+            80% {
+                opacity: 0.9;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(calc(var(--dx) * -0.5), calc(var(--dy) * 1.4));
+            }
+        }
+
+        .hero-content {
+            padding: 0 0 56px;
+            width: 100%;
+        }
+
+        .kicker {
+            display: inline-block;
+            font-family: var(--f-head);
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            color: var(--glow);
+            background: rgba(7, 19, 14, 0.6);
+            border: 1px solid rgba(255, 211, 92, 0.35);
+            padding: 5px 12px;
+            border-radius: 999px;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.8rem, 9vw, 6.2rem);
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 12px;
+            color: #fffbea;
+            text-shadow: 0 0 40px rgba(255, 211, 92, 0.35), 0 4px 18px rgba(0, 0, 0, 0.6);
+        }
+
+        .hero h1 span {
+            color: var(--glow);
+        }
+
+        .hero .lede {
+            font-size: clamp(1.1rem, 2.4vw, 1.4rem);
+            max-width: 40rem;
+            color: #e3eedf;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        .mystery {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-top: 26px;
+            font-family: var(--f-hand);
+            font-size: 1.6rem;
+            color: var(--glow2);
+        }
+
+        .mystery b {
+            font-family: var(--f-head);
+            font-size: 2.2rem;
+            color: var(--glow);
+            min-width: 3ch;
+            display: inline-block;
+            text-align: center;
+        }
+
+        /* ---------- buttons & inputs ---------- */
+        .btn {
+            font: inherit;
+            font-family: var(--f-head);
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.01em;
+            border: none;
+            border-radius: 999px;
+            padding: 11px 20px;
+            cursor: pointer;
+            color: var(--ink);
+            background: var(--glow);
+            box-shadow: 0 4px 0 #b88f1d, 0 8px 24px rgba(255, 211, 92, 0.18);
+            transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            filter: brightness(1.06);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #b88f1d;
+        }
+
+        .btn:disabled {
+            cursor: not-allowed;
+            filter: grayscale(0.8) brightness(0.7);
+            transform: none;
+        }
+
+        .btn.ghost {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid rgba(233, 241, 230, 0.35);
+            box-shadow: none;
+        }
+
+        .btn.ghost:hover {
+            border-color: var(--glow);
+            color: var(--glow);
+        }
+
+        .btn.team {
+            background: var(--team);
+            color: #fff;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35), 0 8px 24px color-mix(in srgb, var(--team) 35%, transparent);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+        }
+
+        .btn.small {
+            font-size: 0.88rem;
+            padding: 7px 14px;
+        }
+
+        .btn:focus-visible,
+        input:focus-visible,
+        textarea:focus-visible,
+        button:focus-visible {
+            outline: 3px solid var(--glow2);
+            outline-offset: 2px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            font: inherit;
+            color: var(--ink);
+            background: #fffaf0;
+            border: 2px solid var(--parch2);
+            border-radius: 10px;
+            padding: 8px 12px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 78px;
+            resize: vertical;
+            font-family: var(--f-body);
+            font-size: 0.98rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--glow);
+        }
+
+        /* ---------- stations ---------- */
+        .station {
+            padding: 64px 0 24px;
+        }
+
+        .station-head {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .station-num {
+            flex: 0 0 auto;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-family: var(--f-head);
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: var(--ink);
+            background: radial-gradient(circle at 35% 30%, #fff3c4, var(--glow) 55%, #c99a22);
+            box-shadow: 0 0 0 5px rgba(255, 211, 92, 0.14), 0 0 30px rgba(255, 211, 92, 0.25);
+        }
+
+        .station-head h2 {
+            font-size: clamp(1.7rem, 4vw, 2.4rem);
+            margin: 0;
+            color: #fffbea;
+        }
+
+        .station-head .sub {
+            font-family: var(--f-hand);
+            font-size: 1.35rem;
+            color: var(--leaf);
+            line-height: 1.1;
+        }
+
+        .panel {
+            background: linear-gradient(180deg, rgba(26, 55, 39, 0.72), rgba(18, 40, 29, 0.72));
+            border: 1px solid rgba(159, 224, 160, 0.16);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .panel+.panel {
+            margin-top: 18px;
+        }
+
+        .parchment {
+            background:
+                radial-gradient(120% 90% at 0% 0%, rgba(255, 255, 255, 0.5), transparent 50%),
+                linear-gradient(180deg, var(--parch), #efe2c4);
+            color: var(--ink);
+            border-radius: 14px;
+            padding: 20px 22px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(107, 74, 50, 0.18);
+        }
+
+        .parchment h3,
+        .parchment h4 {
+            color: var(--ink);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        @media (max-width: 820px) {
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .talk {
+            margin-top: 18px;
+            background: rgba(7, 19, 14, 0.55);
+            border: 1px dashed rgba(255, 211, 92, 0.45);
+            border-radius: 14px;
+            padding: 16px 18px;
+        }
+
+        .talk h4 {
+            font-family: var(--f-hand);
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--glow);
+            margin: 0 0 6px;
+        }
+
+        .talk .q {
+            font-weight: 700;
+            margin: 12px 0 6px;
+            color: #f3f7ef;
+        }
+
+        .talk .q:first-of-type {
+            margin-top: 4px;
+        }
+
+        .talk textarea {
+            background: rgba(255, 250, 240, 0.96);
+        }
+
+        .lens {
+            margin-top: 16px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            background: rgba(159, 224, 160, 0.08);
+            border-left: 4px solid var(--leaf);
+            border-radius: 0 12px 12px 0;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            color: #d9e8d6;
+        }
+
+        .lens b {
+            color: var(--leaf);
+            font-family: var(--f-head);
+            font-weight: 600;
+        }
+
+        .locked {
+            position: relative;
+        }
+
+        .locked>.lock-veil {
+            display: flex;
+        }
+
+        .lock-veil {
+            display: none;
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            border-radius: var(--radius);
+            background: rgba(7, 19, 14, 0.82);
+            backdrop-filter: blur(3px);
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            font-family: var(--f-hand);
+            font-size: 1.7rem;
+            color: var(--glow2);
+        }
+
+        /* ---------- base camp ---------- */
+        .camp-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 820px) {
+            .camp-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        .field label,
+        .ctl-label {
+            display: block;
+            font-family: var(--f-head);
+            font-weight: 500;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .parchment .field label,
+        .parchment .ctl-label {
+            color: var(--ink2);
+        }
+
+        .swatches {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .swatch {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+            transition: transform 0.15s;
+        }
+
+        .swatch:hover {
+            transform: scale(1.08);
+        }
+
+        .swatch[aria-checked="true"] {
+            border-color: #fff;
+            transform: scale(1.12);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.4), 0 0 18px currentColor;
+        }
+
+        .code-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .code-row input {
+            width: 9rem;
+            font-family: var(--f-head);
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .badge-card {
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .badge-card img {
+            width: 132px;
+            height: 132px;
+            image-rendering: auto;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
+        }
+
+        .badge-card .team-name {
+            font-family: var(--f-head);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-top: 6px;
+        }
+
+        .badge-card .forest-line {
+            font-family: var(--f-hand);
+            font-size: 1.35rem;
+            color: var(--ink2);
+        }
+
+        .badge-card .stripe {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 10px;
+            background: var(--team);
+        }
+
+        /* ---------- question sort ---------- */
+        .qcards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 14px;
+        }
+
+        .qcard {
+            perspective: 900px;
+            min-height: 250px;
+        }
+
+        .qcard-inner {
+            position: relative;
+            height: 100%;
+            min-height: 250px;
+            transition: transform 0.6s cubic-bezier(.3, 1.4, .5, 1);
+            transform-style: preserve-3d;
+        }
+
+        .qcard.flipped .qcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .qface {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .qfront {
+            background: linear-gradient(180deg, var(--parch), #efe2c4);
+            color: var(--ink);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .qfront .qtext {
+            flex: 1;
+            font-weight: 700;
+            font-size: 1.02rem;
+        }
+
+        .qfront .qn {
+            font-family: var(--f-hand);
+            font-size: 1.3rem;
+            color: var(--bark);
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .qbtns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .qbtns button {
+            flex: 1;
+            font: inherit;
+            font-family: var(--f-head);
+            font-weight: 600;
+            font-size: 0.86rem;
+            border-radius: 10px;
+            padding: 8px 6px;
+            cursor: pointer;
+            border: 2px solid var(--ink2);
+            background: transparent;
+            color: var(--ink);
+        }
+
+        .qbtns button:hover {
+            background: var(--ink);
+            color: var(--parch);
+        }
+
+        .qback {
+            transform: rotateY(180deg);
+            background: linear-gradient(180deg, #1f4230, #173323);
+            border: 2px solid var(--fern);
+            font-size: 0.93rem;
+            overflow-y: auto;
+        }
+
+        .qback .verdict {
+            font-family: var(--f-head);
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+        }
+
+        .qback .verdict.yes {
+            color: var(--ok);
+        }
+
+        .qback .verdict.no {
+            color: var(--danger);
+        }
+
+        .qback .verdict.hmm {
+            color: var(--glow);
+        }
+
+        .qback .again {
+            margin-top: auto;
+            align-self: flex-start;
+            background: none;
+            border: none;
+            color: var(--muted);
+            font: inherit;
+            font-size: 0.82rem;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 6px 0 0;
+        }
+
+        .definition {
+            font-family: var(--f-hand);
+            font-size: 1.5rem;
+            line-height: 1.25;
+            color: var(--glow2);
+            border-left: 4px solid var(--glow);
+            padding: 4px 0 4px 16px;
+            margin: 6px 0 18px;
+        }
+
+        .scoreline {
+            margin-top: 14px;
+            font-family: var(--f-head);
+            color: var(--leaf);
+        }
+
+        /* ---------- forest canvas ---------- */
+        .forest-frame {
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid rgba(159, 224, 160, 0.2);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            background: #0c2118;
+        }
+
+        #forest {
+            display: block;
+            width: 100%;
+            height: 420px;
+            cursor: crosshair;
+        }
+
+        .hud {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            pointer-events: none;
+        }
+
+        .hud span {
+            background: rgba(7, 19, 14, 0.72);
+            border: 1px solid rgba(159, 224, 160, 0.25);
+            border-radius: 999px;
+            padding: 3px 12px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .hud span b {
+            color: var(--glow);
+        }
+
+        .hud span.tagged b {
+            color: var(--team);
+        }
+
+        .night {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            background: radial-gradient(circle at 78% 22%, rgba(255, 250, 220, 0.22) 0 40px, transparent 42px),
+                rgba(6, 10, 32, 0.84);
+            color: #e6ecff;
+            font-family: var(--f-hand);
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.7s ease;
+        }
+
+        .night.show {
+            opacity: 1;
+        }
+
+        .night small {
+            display: block;
+            font-family: var(--f-body);
+            font-size: 1rem;
+            color: #b8c4ea;
+        }
+
+        .ctl-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px 26px;
+            align-items: flex-end;
+            margin: 18px 0 6px;
+        }
+
+        .ctl {
+            flex: 1 1 200px;
+            min-width: 180px;
+        }
+
+        .ctl output {
+            font-family: var(--f-head);
+            font-weight: 600;
+            color: var(--glow);
+            font-size: 1.1rem;
+            margin-left: 6px;
+        }
+
+        .big-total {
+            font-family: var(--f-head);
+            font-size: 1.05rem;
+            color: var(--text);
+        }
+
+        .big-total b {
+            font-size: 2rem;
+            color: var(--team);
+            text-shadow: 0 0 18px color-mix(in srgb, var(--team) 50%, transparent);
+            margin: 0 4px;
+        }
+
+        .tray {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            min-height: 20px;
+            margin-top: 14px;
+            padding: 10px;
+            border-radius: 14px;
+            background: rgba(7, 19, 14, 0.5);
+            border: 1px solid rgba(159, 224, 160, 0.12);
+        }
+
+        .tray:empty {
+            display: none;
+        }
+
+        .fcell {
+            width: 52px;
+            height: 52px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            position: relative;
+            animation: popin 0.35s cubic-bezier(.3, 1.6, .5, 1) both;
+        }
+
+        .fcell img {
+            width: 48px;
+            height: 48px;
+        }
+
+        .fcell.tagged {
+            background: radial-gradient(circle, color-mix(in srgb, var(--team) 45%, transparent), transparent 70%);
+            box-shadow: inset 0 0 0 2px var(--team);
+        }
+
+        .fcell.zap img {
+            animation: zap 0.5s ease both;
+        }
+
+        @keyframes popin {
+            from {
+                transform: scale(0) translateY(10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: none;
+                opacity: 1;
+            }
+        }
+
+        @keyframes zap {
+            0% {
+                transform: scale(1);
+            }
+
+            40% {
+                transform: scale(1.35) rotate(-8deg);
+                filter: drop-shadow(0 0 10px var(--team));
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .step-note {
+            font-family: var(--f-hand);
+            font-size: 1.45rem;
+            color: var(--glow2);
+            min-height: 1.6em;
+            margin-top: 8px;
+        }
+
+        .color-shot {
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .color-shot img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .color-shot figcaption {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 30px 14px 10px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+            font-family: var(--f-hand);
+            font-size: 1.3rem;
+            color: #fff;
+        }
+
+        /* ---------- recapture ---------- */
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 14px 0 4px;
+        }
+
+        .chip {
+            background: rgba(7, 19, 14, 0.6);
+            border: 1px solid rgba(159, 224, 160, 0.25);
+            border-radius: 12px;
+            padding: 8px 14px;
+            font-weight: 700;
+            font-size: 0.92rem;
+        }
+
+        .chip b {
+            font-family: var(--f-head);
+            font-size: 1.5rem;
+            display: block;
+            line-height: 1.1;
+            color: var(--glow);
+        }
+
+        .chip.t b {
+            color: var(--team);
+        }
+
+        .reason ol {
+            padding-left: 1.3em;
+            margin: 0 0 12px;
+        }
+
+        .reason li {
+            margin-bottom: 8px;
+        }
+
+        .reason .est-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .reason .est-row input {
+            width: 8rem;
+            font-family: var(--f-head);
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .proportion {
+            display: grid;
+            gap: 14px;
+            margin-top: 12px;
+        }
+
+        .pbar-label {
+            font-weight: 700;
+            font-size: 0.92rem;
+            margin-bottom: 4px;
+        }
+
+        .pbar {
+            height: 26px;
+            border-radius: 8px;
+            background: repeating-linear-gradient(90deg, #d8ccb0 0 calc(var(--cell) - 1px), #c2b393 calc(var(--cell) - 1px) var(--cell));
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+        }
+
+        .pbar .fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            background: var(--team);
+            transition: width 0.8s cubic-bezier(.3, 1.2, .5, 1);
+        }
+
+        .pbar.unknown::after {
+            content: "?";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: var(--f-head);
+            font-weight: 700;
+            color: var(--ink2);
+        }
+
+        .pbar.unknown {
+            background: linear-gradient(90deg, #d8ccb0 70%, rgba(216, 204, 176, 0));
+        }
+
+        .equation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-family: var(--f-head);
+            font-size: 1.35rem;
+            margin: 14px 0 6px;
+            color: var(--ink);
+        }
+
+        .frac {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.1;
+        }
+
+        .frac span:first-child {
+            border-bottom: 2px solid currentColor;
+            padding: 0 6px 2px;
+        }
+
+        .frac span:last-child {
+            padding-top: 2px;
+        }
+
+        .frac .t {
+            color: color-mix(in srgb, var(--team) 80%, #000);
+        }
+
+        .verdict-line {
+            text-align: center;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .zero-alert {
+            background: rgba(255, 122, 102, 0.12);
+            border: 2px dashed var(--danger);
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: var(--ink);
+        }
+
+        /* ---------- field log ---------- */
+        .plot-wrap {
+            background: rgba(7, 19, 14, 0.55);
+            border-radius: 14px;
+            padding: 10px 10px 4px;
+            border: 1px solid rgba(159, 224, 160, 0.14);
+        }
+
+        svg.dotplot {
+            width: 100%;
+            height: auto;
+            display: block;
+            font-family: var(--f-body);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .stat {
+            background: rgba(7, 19, 14, 0.55);
+            border-radius: 12px;
+            padding: 10px 12px;
+            border: 1px solid rgba(159, 224, 160, 0.14);
+        }
+
+        .stat .k {
+            font-size: 0.74rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            font-weight: 800;
+        }
+
+        .stat .v {
+            font-family: var(--f-head);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 20px;
+            font-size: 0.88rem;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+
+        .legend i {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        .reveal-box {
+            margin-top: 16px;
+            border-radius: 14px;
+            padding: 16px 18px;
+            background: linear-gradient(135deg, rgba(255, 211, 92, 0.16), rgba(255, 211, 92, 0.04));
+            border: 1px solid rgba(255, 211, 92, 0.4);
+        }
+
+        .reveal-box .truth {
+            font-family: var(--f-head);
+            font-size: 1.3rem;
+        }
+
+        .reveal-box .truth b {
+            color: var(--glow);
+            font-size: 2rem;
+        }
+
+        .latest {
+            font-size: 0.95rem;
+            color: var(--muted);
+            min-height: 1.5em;
+        }
+
+        .latest b {
+            color: var(--text);
+        }
+
+        /* ---------- labs ---------- */
+        .lab-configs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 720px) {
+            .lab-configs {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .cfg {
+            border-radius: 14px;
+            padding: 14px 16px;
+            background: rgba(7, 19, 14, 0.55);
+            border-top: 5px solid var(--c);
+        }
+
+        .cfg h4 {
+            color: var(--c);
+            font-size: 1.15rem;
+        }
+
+        .presets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 6px 0 16px;
+        }
+
+        .preset {
+            font: inherit;
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: var(--text);
+            background: rgba(159, 224, 160, 0.1);
+            border: 1px solid rgba(159, 224, 160, 0.3);
+            border-radius: 999px;
+            padding: 6px 14px;
+            cursor: pointer;
+        }
+
+        .preset:hover {
+            background: rgba(255, 211, 92, 0.15);
+            border-color: var(--glow);
+        }
+
+        .row-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 0.92rem;
+        }
+
+        @media (max-width: 720px) {
+            .row-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .row-stats div {
+            background: rgba(7, 19, 14, 0.5);
+            border-radius: 10px;
+            padding: 8px 12px;
+            border-left: 4px solid var(--c);
+        }
+
+        .scenarios {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .scen {
+            font: inherit;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 14px;
+            padding: 14px;
+            color: var(--text);
+            background: rgba(7, 19, 14, 0.55);
+            border: 2px solid rgba(159, 224, 160, 0.18);
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .scen:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 211, 92, 0.5);
+        }
+
+        .scen[aria-pressed="true"] {
+            border-color: var(--glow);
+            background: rgba(255, 211, 92, 0.1);
+        }
+
+        .scen .ico {
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+
+        .scen .nm {
+            font-family: var(--f-head);
+            font-weight: 600;
+            font-size: 1.05rem;
+            display: block;
+            margin: 6px 0 2px;
+        }
+
+        .scen .st {
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+
+        .scen.solved .nm::after {
+            content: " ✓";
+            color: var(--ok);
+        }
+
+        .predict {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .predict button {
+            font: inherit;
+            font-family: var(--f-head);
+            font-weight: 600;
+            padding: 9px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 2px solid var(--ink2);
+            background: transparent;
+            color: var(--ink);
+        }
+
+        .predict button[aria-pressed="true"] {
+            background: var(--ink);
+            color: var(--parch);
+        }
+
+        .explain {
+            margin-top: 14px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: rgba(79, 154, 94, 0.14);
+            border-left: 5px solid var(--fern);
+            color: var(--ink);
+        }
+
+        .explain .hit {
+            font-family: var(--f-head);
+            font-weight: 600;
+        }
+
+        /* ---------- wild & chapter trail ---------- */
+        .wild-card {
+            border-radius: 16px;
+            padding: 18px;
+            background: rgba(7, 19, 14, 0.55);
+            border: 1px solid rgba(159, 224, 160, 0.16);
+        }
+
+        .wild-card .ico {
+            font-size: 2rem;
+        }
+
+        .wild-card h4 {
+            margin: 8px 0 6px;
+            color: var(--glow2);
+        }
+
+        .wild-card p {
+            font-size: 0.95rem;
+            color: #d6e4d3;
+            margin: 0;
+        }
+
+        .chapter-trail {
+            position: relative;
+            display: grid;
+            gap: 22px;
+            padding-left: 34px;
+        }
+
+        .chapter-trail::before {
+            content: "";
+            position: absolute;
+            left: 13px;
+            top: 8px;
+            bottom: 8px;
+            width: 4px;
+            background: repeating-linear-gradient(180deg, var(--glow) 0 10px, transparent 10px 18px);
+            opacity: 0.6;
+        }
+
+        .sign {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            background: linear-gradient(180deg, #7a5638, #5d412b);
+            border-radius: 12px;
+            padding: 16px 18px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.1);
+            color: #fff5e3;
+        }
+
+        .sign::before {
+            content: "";
+            position: absolute;
+            left: -30px;
+            top: 18px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--glow);
+            box-shadow: 0 0 16px var(--glow);
+        }
+
+        .sign h4 {
+            grid-column: 1 / -1;
+            font-size: 1.25rem;
+            margin: 0;
+            color: #fff5e3;
+        }
+
+        .sign h4 small {
+            font-family: var(--f-hand);
+            font-size: 1.3rem;
+            color: var(--glow2);
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .sign .did,
+        .sign .next {
+            font-size: 0.93rem;
+        }
+
+        .sign .did b,
+        .sign .next b {
+            display: block;
+            font-family: var(--f-head);
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 0.74rem;
+            color: var(--glow2);
+        }
+
+        @media (max-width: 640px) {
+            .sign {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        details.instructor {
+            margin-top: 40px;
+            border-radius: 14px;
+            background: rgba(7, 19, 14, 0.6);
+            border: 1px solid rgba(159, 224, 160, 0.16);
+            padding: 4px 18px;
+        }
+
+        details.instructor summary {
+            cursor: pointer;
+            font-family: var(--f-head);
+            font-weight: 600;
+            padding: 12px 0;
+            color: var(--muted);
+        }
+
+        details.instructor ul {
+            margin-top: 0;
+        }
+
+        details.instructor li {
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 50px 16px 60px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translate(-50%, 120px);
+            background: var(--glow);
+            color: var(--ink);
+            font-weight: 800;
+            padding: 10px 20px;
+            border-radius: 999px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.35s cubic-bezier(.3, 1.4, .5, 1);
+            z-index: 100;
+        }
+
+        .toast.show {
+            transform: translate(-50%, 0);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 560px) {
+            body {
+                font-size: 16px;
+            }
+
+            .panel {
+                padding: 16px;
+            }
+
+            .station {
+                padding-top: 48px;
+            }
+
+            .station-num {
+                width: 46px;
+                height: 46px;
+                font-size: 1.3rem;
+            }
+
+            .fcell {
+                width: 42px;
+                height: 42px;
+            }
+
+            .fcell img {
+                width: 38px;
+                height: 38px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .hero-bg,
+            .ff {
+                animation: none;
+            }
+
+            .fcell,
+            .fcell.zap img {
+                animation: none;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= TOP BAR ================= -->
+    <div class="topbar">
+        <div class="wrap topbar-inner">
+            <a class="home" href="index.html">&larr; Math 253</a>
+            <nav class="trail" id="trail" aria-label="Expedition stations">
+                <a href="#camp"><span class="stone">1</span><span class="lbl">Base camp</span></a><i class="dash"></i>
+                <a href="#questions"><span class="stone">2</span><span class="lbl">Questions</span></a><i
+                    class="dash"></i>
+                <a href="#capture"><span class="stone">3</span><span class="lbl">Capture</span></a><i class="dash"></i>
+                <a href="#recapture"><span class="stone">4</span><span class="lbl">Recapture</span></a><i
+                    class="dash"></i>
+                <a href="#log"><span class="stone">5</span><span class="lbl">Field log</span></a><i class="dash"></i>
+                <a href="#tinker"><span class="stone">6</span><span class="lbl">Tinker lab</span></a><i
+                    class="dash"></i>
+                <a href="#breaks"><span class="stone">7</span><span class="lbl">When it breaks</span></a><i
+                    class="dash"></i>
+                <a href="#wild"><span class="stone">8</span><span class="lbl">In the wild</span></a><i
+                    class="dash"></i>
+                <a href="#chapter"><span class="stone">9</span><span class="lbl">Ch. 15 trail</span></a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- ================= HERO ================= -->
+    <header class="hero">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div class="fireflies" id="fireflies" aria-hidden="true"></div>
+        <div class="wrap hero-content">
+            <div class="kicker">Math 253 &middot; Chapter 15 &middot; Field expedition</div>
+            <h1>Statfloof <span>Forest</span></h1>
+            <p class="lede">Nobody has ever counted the Statfloofs. They're shy, they look alike, and they spend
+                most of their lives underground. Today your team is going to estimate how many there are
+                anyway.</p>
+            <div class="hero-actions">
+                <a class="btn" href="#camp">Enter the forest &rarr;</a>
+                <a class="btn ghost" href="#chapter">What's this got to do with Ch. 15?</a>
+            </div>
+            <div class="mystery">Statfloofs in this forest: <b id="hero-count">???</b></div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- ================= 1 BASE CAMP ================= -->
+        <section class="station wrap" id="camp">
+            <div class="station-head">
+                <div class="station-num">1</div>
+                <div>
+                    <h2>Base Camp</h2>
+                    <div class="sub">Sign in, pick your tag color, find your forest.</div>
+                </div>
+            </div>
+
+            <div class="camp-grid">
+                <div class="panel">
+                    <p>A team of ecologists has hired your group to estimate the Statfloof population. Statfloofs
+                        come in two varieties, <b>black</b> and <b>white</b>. You can't see them all at once
+                        because they are always ducking in and out of their burrows. You can't tell one
+                        apart from another either, so there's no way to count them.</p>
+                    <p>What you <em>can</em> do is catch a few, mark them, let them go, and see how many marked
+                        ones turn up the next time you look. Ecologists call this <b>capture and recapture</b>.
+                    </p>
+
+                    <div class="field">
+                        <label for="team-name">Team name</label>
+                        <input type="text" id="team-name" maxlength="32" placeholder="e.g. The Floof Troop"
+                            style="width:100%">
+                    </div>
+                    <div class="field">
+                        <span class="ctl-label" id="swatch-label">Your tag color</span>
+                        <div class="swatches" id="swatches" role="radiogroup" aria-labelledby="swatch-label"></div>
+                    </div>
+                    <div class="field">
+                        <label for="forest-code">Forest code</label>
+                        <div class="code-row">
+                            <input type="text" id="forest-code" maxlength="12" value="253" autocomplete="off">
+                            <button class="btn small" id="btn-code">Travel there</button>
+                        </div>
+                        <p style="font-size:0.9rem;color:var(--muted);margin:8px 0 0">Your instructor will give
+                            everyone the same code, so every team studies <em>the same forest</em>. Then the class
+                            can compare estimates.</p>
+                    </div>
+                </div>
+
+                <div class="parchment badge-card">
+                    <div class="stripe"></div>
+                    <p style="font-family:var(--f-hand);font-size:1.3rem;margin:10px 0 0;color:var(--ink2)">
+                        Official Research Permit</p>
+                    <img id="badge-floof" alt="Your team's tagged Statfloof mascot">
+                    <div class="team-name" id="badge-team">Unnamed Team</div>
+                    <div class="forest-line">Studying Forest <b id="badge-code">253</b></div>
+                    <hr style="border:none;border-top:1px dashed rgba(94,84,67,0.4);margin:14px 0">
+                    <p style="font-size:0.92rem;text-align:left;margin:0"><b>Your mission:</b> estimate how many
+                        Statfloofs live here, and say how much you trust your estimate. By the end you'll
+                        have used every big idea in Chapter&nbsp;15 without reading a page of it.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 2 QUESTIONS ================= -->
+        <section class="station wrap" id="questions">
+            <div class="station-head">
+                <div class="station-num">2</div>
+                <div>
+                    <h2>The Ranger's Questions</h2>
+                    <div class="sub">Which of these need statistics to answer?</div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <p>The forest ranger left a stack of questions at base camp. Some of them have one fixed
+                    answer. Others are <b>statistical questions</b>:</p>
+                <div class="definition">A statistical question anticipates variability in the data and accounts
+                    for it in the answer.</div>
+                <p>Sort each card. Talk it over as a group before you flip it.</p>
+                <div class="qcards" id="qcards"></div>
+                <div class="scoreline" id="q-score"></div>
+
+                <div class="talk">
+                    <h4>Talk it over</h4>
+                    <div class="q">Write your own pair of Statfloof questions: one that's statistical and one
+                        that isn't. What makes the difference?</div>
+                    <textarea data-journal="pair"
+                        placeholder="Statistical: ...&#10;Not statistical: ...&#10;The difference is ..."></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 3 CAPTURE ================= -->
+        <section class="station wrap" id="capture">
+            <div class="station-head">
+                <div class="station-num">3</div>
+                <div>
+                    <h2>Capture &amp; Tag</h2>
+                    <div class="sub">Catch some, mark them, let them go.</div>
+                </div>
+            </div>
+
+            <div class="forest-frame">
+                <canvas id="forest" aria-label="Animated forest with Statfloofs popping in and out of burrows"
+                    role="img"></canvas>
+                <div class="hud">
+                    <span>Out right now: <b id="hud-vis">0</b></span>
+                    <span>In burrows: <b>???</b></span>
+                    <span class="tagged hidden" id="hud-tag-wrap">Tagged: <b id="hud-tag">0</b></span>
+                </div>
+                <div class="night" id="night">
+                    <div>Night falls. The Statfloofs scatter&hellip;<small>tagged and untagged all mixed
+                            together</small></div>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top:18px">
+                <div class="panel">
+                    <h3>Set your traps</h3>
+                    <p style="color:var(--muted);font-size:0.95rem">In the blocks version, every researcher swapped
+                        3 blocks for 3 of their own color. Here you choose. You can come back and re-tag any
+                        time.</p>
+                    <div class="ctl-row">
+                        <div class="ctl">
+                            <label class="ctl-label" for="res">Researchers on your team <output
+                                    id="res-out">4</output></label>
+                            <input type="range" id="res" min="1" max="8" value="4">
+                        </div>
+                        <div class="ctl">
+                            <label class="ctl-label" for="per">Floofs each researcher tags <output
+                                    id="per-out">5</output></label>
+                            <input type="range" id="per" min="1" max="10" value="5">
+                        </div>
+                    </div>
+                    <p class="big-total">Floofs to tag: <b id="m-total">20</b></p>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap">
+                        <button class="btn team" id="btn-capture">Capture &amp; tag</button>
+                        <button class="btn" id="btn-night" disabled>Let a night pass</button>
+                    </div>
+                    <div class="step-note" id="cap-note"></div>
+                    <div class="tray" id="tag-tray" aria-live="polite"></div>
+                </div>
+                <figure class="color-shot" style="margin:0">
+                    <img src="statfloof/tagged-team.jpg"
+                        alt="Illustration of Statfloofs in bright colors walking down a forest path"
+                        loading="lazy">
+                    <figcaption>Every team tags in its own color. Watch for yours in the forest.</figcaption>
+                </figure>
+            </div>
+
+            <div class="talk">
+                <h4>Talk it over</h4>
+                <div class="q">Why do ecologists use capture-recapture instead of counting every Statfloof in the
+                    forest?</div>
+                <textarea data-journal="q1"></textarea>
+                <div class="q">Why wait a night before recapturing? What would go wrong if you went straight back
+                    to the same spot?</div>
+                <textarea data-journal="q1b"></textarea>
+            </div>
+        </section>
+
+        <!-- ================= 4 RECAPTURE ================= -->
+        <section class="station wrap" id="recapture">
+            <div class="station-head">
+                <div class="station-num">4</div>
+                <div>
+                    <h2>Recapture &amp; Estimate</h2>
+                    <div class="sub">Grab a random handful. Count the tags. Think proportionally.</div>
+                </div>
+            </div>
+
+            <div class="panel locked" id="recap-panel">
+                <div class="lock-veil" id="recap-veil">Tag some Statfloofs at Station 3 and let a night pass
+                    first.</div>
+                <div class="ctl-row" style="margin-top:0">
+                    <div class="ctl" style="max-width:360px">
+                        <label class="ctl-label" for="n-size">Size of your handful (recapture) <output
+                                id="n-out">50</output></label>
+                        <input type="range" id="n-size" min="5" max="100" value="50">
+                    </div>
+                    <button class="btn team" id="btn-recap">Recapture 50 floofs</button>
+                </div>
+                <div class="tray" id="recap-tray" aria-live="polite"></div>
+                <div class="chips hidden" id="recap-chips">
+                    <div class="chip">caught<b id="c-n">0</b></div>
+                    <div class="chip t">wearing your tag<b id="c-m">0</b></div>
+                    <div class="chip">untagged<b id="c-u">0</b></div>
+                    <div class="chip">white floofs<b id="c-w">0</b></div>
+                </div>
+
+                <div class="parchment reason hidden" id="reason" style="margin-top:18px">
+                    <h3>Your team's reasoning</h3>
+                    <ol>
+                        <li>What fraction of your handful is wearing your tag? <b id="r-frac">&mdash;</b></li>
+                        <li>If the forest is well mixed, about that same fraction of <em>all</em> the Statfloofs is
+                            tagged. You know exactly how many tagged floofs are out there: <b id="r-M">&mdash;</b>.
+                        </li>
+                        <li>So <b id="r-M2">&mdash;</b> floofs make up about <b id="r-frac2">&mdash;</b> of the
+                            whole population. How many floofs is the whole population?</li>
+                    </ol>
+                    <div id="zero-box" class="zero-alert hidden">
+                        <b>Zero tagged floofs in your handful!</b> Your fraction is 0. What would that say about the
+                        size of the forest? Talk it over, then try recapturing again. Maybe with a bigger
+                        handful?
+                    </div>
+                    <div id="est-inputs">
+                        <div class="est-row">
+                            <label for="est" style="font-weight:700">Our estimate:</label>
+                            <input type="number" id="est" min="1" inputmode="numeric" placeholder="?">
+                            <span>Statfloofs</span>
+                        </div>
+                        <label for="est-why" style="font-weight:700;display:block;margin-bottom:4px">How we got
+                            it:</label>
+                        <textarea id="est-why" data-journal="q2why"
+                            placeholder="We noticed that..."></textarea>
+                        <div style="margin-top:10px"><button class="btn" id="btn-log">Log our estimate</button>
+                        </div>
+                    </div>
+
+                    <div id="check" class="hidden">
+                        <hr style="border:none;border-top:1px dashed rgba(94,84,67,0.4);margin:16px 0">
+                        <h4>Checking with a proportion</h4>
+                        <div class="proportion">
+                            <div>
+                                <div class="pbar-label">Your handful: <span id="p-m"></span> of <span
+                                        id="p-n"></span> tagged</div>
+                                <div class="pbar" id="pbar-sample">
+                                    <div class="fill"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="pbar-label">The whole forest: <span id="p-M"></span> tagged out of ???
+                                </div>
+                                <div class="pbar unknown" id="pbar-forest">
+                                    <div class="fill"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="equation" id="equation"></div>
+                        <p class="verdict-line" id="verdict-line"></p>
+                        <p style="font-size:0.93rem;margin:6px 0 0">Your estimate went into the <a href="#log"
+                                style="color:var(--bark);font-weight:700">Field Log</a>. Scroll down.</p>
+                    </div>
+                </div>
+
+                <div class="talk">
+                    <h4>Talk it over</h4>
+                    <div class="q">How did the number of tagged Statfloofs in your handful help you estimate the
+                        total population? What might happen to your estimate with a larger or smaller handful?
+                    </div>
+                    <textarea data-journal="q2"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 5 FIELD LOG ================= -->
+        <section class="station wrap" id="log">
+            <div class="station-head">
+                <div class="station-num">5</div>
+                <div>
+                    <h2>The Field Log</h2>
+                    <div class="sub">Do it again. And again. And again.</div>
+                </div>
+            </div>
+
+            <div class="panel locked" id="log-panel">
+                <div class="lock-veil" id="log-veil">Log your first estimate at Station 4 to open the Field Log.
+                </div>
+                <p>A real ecologist would never trust one handful. Every recapture gives a slightly different
+                    estimate, so keep recapturing and watch the pattern build. Each dot is one estimate.</p>
+                <div class="ctl-row" style="margin-top:0">
+                    <div class="ctl" style="max-width:300px">
+                        <label class="ctl-label" for="n-size2">Handful size <output id="n-out2">50</output></label>
+                        <input type="range" id="n-size2" min="5" max="100" value="50">
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                        <button class="btn team" id="btn-again">Recapture again</button>
+                        <button class="btn ghost small" id="btn-10">+10 quick</button>
+                        <button class="btn ghost small" id="btn-100">+100 quick</button>
+                        <button class="btn ghost small" id="btn-clear">Clear log</button>
+                    </div>
+                </div>
+                <div class="latest" id="latest"></div>
+                <div class="plot-wrap" style="margin-top:10px">
+                    <svg class="dotplot" id="log-plot" role="img" aria-label="Dot plot of population estimates"></svg>
+                </div>
+                <div class="legend">
+                    <span><i style="width:12px;height:12px;border-radius:50%;background:var(--team)"></i>one
+                        estimate</span>
+                    <span><svg width="14" height="12" style="vertical-align:middle;margin-right:6px">
+                            <path d="M7 1 L13 11 L1 11 Z" fill="#ffd35c" />
+                        </svg>mean (the balance point)</span>
+                    <span><i style="width:3px;height:14px;background:#9fe0a0"></i>median (the middle
+                        estimate)</span>
+                </div>
+                <div class="stats" id="log-stats"></div>
+                <p class="hidden" id="mean-note" style="font-size:0.88rem;color:var(--muted);margin:8px 0 0">*The
+                    mean and the &#9650; leave out handfuls that found no tags. Counting a zero-tag handful's
+                    estimate of &infin;, the mean would be infinite too. The median has no such problem.</p>
+
+                <div class="grid-2" style="margin-top:18px">
+                    <div class="parchment">
+                        <h4>Bonus field note: black or white?</h4>
+                        <p id="white-note" style="margin:0">Recapture a few times to find out.</p>
+                    </div>
+                    <div class="parchment">
+                        <h4>Look closely</h4>
+                        <ul style="margin:0;padding-left:1.2em;font-size:0.95rem">
+                            <li>Where do most of your estimates pile up?</li>
+                            <li>Are the estimates spread evenly on both sides of the pile, or is one side
+                                longer? Why might that be?</li>
+                            <li>Is the mean or the median bigger? What pulled it that way?</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="reveal-box">
+                    <div id="reveal-pre">
+                        <b>Before you peek:</b> report your team's best estimate to the class. The median of
+                        your field log is a good choice. Once every team has reported and your instructor gives
+                        the word:
+                        <div style="margin-top:10px"><button class="btn" id="btn-reveal">Reveal the true
+                                population</button></div>
+                    </div>
+                    <div id="reveal-post" class="hidden"></div>
+                </div>
+
+                <div class="talk">
+                    <h4>Talk it over</h4>
+                    <div class="q">How do randomness and chance affect the results of sampling?</div>
+                    <textarea data-journal="q3"></textarea>
+                    <div class="q">When the class compared estimates, were they close to the true population?
+                        Why were some closer than others?</div>
+                    <textarea data-journal="q4"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 6 TINKER LAB ================= -->
+        <section class="station wrap" id="tinker">
+            <div class="station-head">
+                <div class="station-num">6</div>
+                <div>
+                    <h2>The Tinker Lab</h2>
+                    <div class="sub">How do you get a better estimate?</div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <p>Welcome to the <b>Practice Meadow</b>, where we know for certain there are exactly
+                    <b style="color:var(--glow)">300</b> Statfloofs. Set up two different research plans. Each
+                    one runs 300 whole expeditions (tag, wait a night, recapture). Which plan's estimates
+                    bunch up closer to 300?</p>
+                <div class="ctl-label">Try a comparison</div>
+                <div class="presets" id="presets"></div>
+
+                <div class="lab-configs">
+                    <div class="cfg" style="--c:#6fd3ff">
+                        <h4>Plan A</h4>
+                        <label class="ctl-label" for="aM">Floofs tagged <output id="aM-out"></output></label>
+                        <input type="range" id="aM" min="2" max="100" value="15">
+                        <label class="ctl-label" for="an" style="margin-top:10px">Handful size <output
+                                id="an-out"></output></label>
+                        <input type="range" id="an" min="3" max="150" value="40">
+                    </div>
+                    <div class="cfg" style="--c:#ffa24d">
+                        <h4>Plan B</h4>
+                        <label class="ctl-label" for="bM">Floofs tagged <output id="bM-out"></output></label>
+                        <input type="range" id="bM" min="2" max="100" value="30">
+                        <label class="ctl-label" for="bn" style="margin-top:10px">Handful size <output
+                                id="bn-out"></output></label>
+                        <input type="range" id="bn" min="3" max="150" value="40">
+                    </div>
+                </div>
+                <div style="margin:16px 0 12px"><button class="btn" id="btn-lab">Run 300 expeditions for each
+                        plan</button></div>
+                <div class="plot-wrap">
+                    <svg class="dotplot" id="lab-plot" role="img"
+                        aria-label="Two dot plots comparing estimates from plan A and plan B"></svg>
+                </div>
+                <div class="row-stats" id="lab-stats"></div>
+                <p style="font-size:0.88rem;color:var(--muted);margin-top:10px">Under each dot plot is a <b>box
+                        plot</b>. The box holds the middle half of the estimates, and the line inside it is the
+                    median. A narrower box means the plan is more consistent. You'll build these by hand in
+                    Section 15.4.</p>
+
+                <div class="talk">
+                    <h4>Talk it over</h4>
+                    <div class="q">If each researcher tagged 6 Statfloofs instead of 3, how would that affect the
+                        accuracy of the estimates?</div>
+                    <textarea data-journal="q5"></textarea>
+                    <div class="q">What happens with a very small recapture handful? Why?</div>
+                    <textarea data-journal="q6"></textarea>
+                    <div class="q">Try "Same effort, spent differently." Did anything surprise you? Then: if
+                        we wanted better estimates next time, what would you change?</div>
+                    <textarea data-journal="q7"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 7 WHEN IT BREAKS ================= -->
+        <section class="station wrap" id="breaks">
+            <div class="station-head">
+                <div class="station-num">7</div>
+                <div>
+                    <h2>When the Method Breaks</h2>
+                    <div class="sub">Every method rests on assumptions. Break one and see what happens.</div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <p>Back in the Practice Meadow (300 floofs, 40 tagged, handfuls of 75), things don't always go
+                    to plan. Pick a problem, <b>predict</b> what it does to the estimates, then run it and
+                    compare with a fair forest.</p>
+                <div class="scenarios" id="scenarios"></div>
+
+                <div class="parchment" id="scen-detail">
+                    <p style="margin:0;font-family:var(--f-hand);font-size:1.4rem;color:var(--ink2)">&larr; Choose a
+                        problem above.</p>
+                </div>
+
+                <div class="plot-wrap hidden" id="scen-plot-wrap" style="margin-top:16px">
+                    <svg class="dotplot" id="scen-plot" role="img"
+                        aria-label="Dot plots comparing a fair forest with the chosen problem"></svg>
+                </div>
+
+                <div class="talk">
+                    <h4>Talk it over</h4>
+                    <div class="q">What factors could make a capture-recapture estimate inaccurate?</div>
+                    <textarea data-journal="q8"></textarea>
+                    <div class="q">What assumptions does the method make about the population? When might it not
+                        work well?</div>
+                    <textarea data-journal="q9"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 8 IN THE WILD ================= -->
+        <section class="station wrap" id="wild">
+            <div class="station-head">
+                <div class="station-num">8</div>
+                <div>
+                    <h2>Floofs in the Wild</h2>
+                    <div class="sub">This is a real method, and it's more than 100 years old.</div>
+                </div>
+            </div>
+
+            <div class="grid-2" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr))">
+                <div class="wild-card">
+                    <div class="ico" aria-hidden="true">🐟</div>
+                    <h4>Fish in the North Sea</h4>
+                    <p>In the 1890s the Danish biologist C.&nbsp;G.&nbsp;J. Petersen tagged plaice (a flatfish),
+                        released them, and used the tagged share of later catches to study the population.
+                    </p>
+                </div>
+                <div class="wild-card">
+                    <div class="ico" aria-hidden="true">🦆</div>
+                    <h4>Ducks with leg bands</h4>
+                    <p>In 1930 Frederick Lincoln used bird-banding returns to estimate North American waterfowl
+                        numbers. The simple estimate you used today is still called the
+                        <b>Lincoln&ndash;Petersen estimator</b>.</p>
+                </div>
+                <div class="wild-card">
+                    <div class="ico" aria-hidden="true">🐋</div>
+                    <h4>Tags you don't have to attach</h4>
+                    <p>Humpback whale tail flukes and tiger stripes are unique. Researchers treat a photo of a
+                        known animal as a "recapture," so nobody has to catch anything.</p>
+                </div>
+                <div class="wild-card">
+                    <div class="ico" aria-hidden="true">🏘️</div>
+                    <h4>Counting people</h4>
+                    <p>After a census, the U.S. Census Bureau independently re-surveys a sample of blocks and
+                        matches the two lists to estimate how many people the census missed. It's the same
+                        capture-recapture logic.</p>
+                </div>
+            </div>
+
+            <div class="talk">
+                <h4>Talk it over</h4>
+                <div class="q">Where else could capture-recapture work? Name a population or scenario. What would
+                    count as a "tag"?</div>
+                <textarea data-journal="q10"></textarea>
+                <div class="q">Teacher's lens: how would you run this with 6th or 7th graders? What would you
+                    keep, and what would you cut?</div>
+                <textarea data-journal="q11"></textarea>
+            </div>
+            <div class="lens">
+                <span aria-hidden="true" style="font-size:1.4rem">🍎</span>
+                <div><b>Standards connection.</b> Capture-recapture is a textbook fit for <b>7.SP.1</b> (random
+                    sampling tends to produce representative samples) and <b>7.SP.2</b> ("use data from a random
+                    sample to draw inferences about a population&hellip; generate multiple samples (or simulated
+                    samples) of the same size to gauge the variation in estimates"). You just did both.
+                </div>
+            </div>
+
+            <div class="panel" style="margin-top:20px">
+                <h3>Your team's field report</h3>
+                <p style="color:var(--muted)">Everything you've written on this page is saved in this browser. Copy
+                    it all as one report to paste wherever your instructor collects work.</p>
+                <button class="btn" id="btn-report">Copy our field report</button>
+            </div>
+        </section>
+
+        <!-- ================= 9 CHAPTER TRAIL ================= -->
+        <section class="station wrap" id="chapter">
+            <div class="station-head">
+                <div class="station-num">9</div>
+                <div>
+                    <h2>The Chapter 15 Trail</h2>
+                    <div class="sub">You already walked it. Here's the map.</div>
+                </div>
+            </div>
+
+            <div class="chapter-trail">
+                <div class="sign">
+                    <h4>15.1 Statistical questions &amp; samples <small>Stations 2 &amp; 4</small></h4>
+                    <div class="did"><b>Today</b>You told statistical questions apart from others, then answered
+                        a big one with a <em>random sample</em> of a population you couldn't see.</div>
+                    <div class="next"><b>Coming up</b>Class Activity 15-A: Statistical questions versus other
+                        questions. When is a sample representative?</div>
+                </div>
+                <div class="sign">
+                    <h4>15.2 Displaying data <small>Station 5</small></h4>
+                    <div class="did"><b>Today</b>Your field log was a <em>dot plot</em>: one dot per estimate,
+                        stacked so the shape of the data shows.</div>
+                    <div class="next"><b>Coming up</b>15-E and 15-F: critique misleading displays, then graph
+                        repeated random samples and read the data, between the data, and beyond the data.</div>
+                </div>
+                <div class="sign">
+                    <h4>15.3 The center of data <small>Station 5</small></h4>
+                    <div class="did"><b>Today</b>The &#9650; under your field log was the <em>mean</em>, the point
+                        where the dot plot would balance. The green line was the <em>median</em>.</div>
+                    <div class="next"><b>Coming up</b>15-L, 15-M, 15-O, 15-P: solve problems with the mean, see
+                        the mean as a balance point, and ask whether more than half can be above average.</div>
+                </div>
+                <div class="sign">
+                    <h4>15.4 Summarizing distributions <small>Stations 6 &amp; 7</small></h4>
+                    <div class="did"><b>Today</b>You compared plans by <em>how spread out</em> their estimates
+                        were, using box plots, and saw that a method with a bias shifts the whole distribution.
+                    </div>
+                    <div class="next"><b>Coming up</b>15-S, 15-U, 15-W: compare distributions (mercury in fish),
+                        build box plots, and measure spread with the mean absolute deviation.</div>
+                </div>
+            </div>
+
+            <details class="instructor">
+                <summary>For the instructor</summary>
+                <ul>
+                    <li><b>Forest codes.</b> Any code works. Each code seeds its own hidden population (140 to 340
+                        floofs) and its own black/white mix. Give the whole class one code so estimates are
+                        comparable. Use a new code for a second section or a second run.</li>
+                    <li><b>Collecting estimates.</b> Have each team put its first estimate and its field-log median
+                        on the board <em>before</em> anyone presses Reveal. A class dot plot of the medians is a
+                        nice bridge to 15.2.</li>
+                    <li><b>Pacing.</b> Stations 1&ndash;5 fit in about 30 minutes with groups of 3&ndash;4 sharing
+                        a laptop. Stations 6&ndash;7 make a good second half or homework. Station 9 is the
+                        wrap-up.</li>
+                    <li><b>Physical version.</b> This page works alongside the blocks. Do a real round first, then
+                        use Station 5 to show what hundreds of rounds look like.</li>
+                    <li><b>Math notes.</b> The estimate is the Lincoln&ndash;Petersen estimator
+                        <i>N&#770;</i>&nbsp;=&nbsp;<i>Mn</i>/<i>m</i>. It is skewed right and biased upward
+                        with small samples, which is why the mean usually sits to the right of the median. The
+                        number of tagged floofs in a handful is hypergeometric and symmetric in <i>M</i> and
+                        <i>n</i>, which explains the "same effort, spent differently" surprise in the Tinker
+                        Lab.</li>
+                    <li><b>Saved work.</b> Team name, color, and journal answers are kept in the browser's local
+                        storage on that device only. Nothing is sent anywhere.</li>
+                </ul>
+            </details>
+        </section>
+    </main>
+
+    <footer>
+        <a href="index.html">&larr; Back to Math 253</a> &middot; Statfloof illustrations from the original Statfloof
+        activity.
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            // ============================================================
+            //  Utilities
+            // ============================================================
+            const $ = (id) => document.getElementById(id);
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            function hashString(s) {
+                let h = 1779033703 ^ s.length;
+                for (let i = 0; i < s.length; i++) {
+                    h = Math.imul(h ^ s.charCodeAt(i), 3432918353);
+                    h = (h << 13) | (h >>> 19);
+                }
+                h = Math.imul(h ^ (h >>> 16), 2246822507);
+                h = Math.imul(h ^ (h >>> 13), 3266489909);
+                return (h ^ (h >>> 16)) >>> 0;
+            }
+
+            function mulberry32(a) {
+                return function () {
+                    a |= 0; a = (a + 0x6D2B79F5) | 0;
+                    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+                    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+                    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+                };
+            }
+
+            const fmt = (v) => (v === Infinity ? '∞' : Math.round(v).toLocaleString());
+            const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+            const lerp = (a, b, t) => a + (b - a) * t;
+
+            function toast(msg) {
+                const t = $('toast');
+                t.textContent = msg;
+                t.classList.add('show');
+                clearTimeout(toast._t);
+                toast._t = setTimeout(() => t.classList.remove('show'), 2200);
+            }
+
+            // Local storage (per-device convenience only)
+            const STORE_KEY = 'statfloof-forest-v1';
+            function loadStore() {
+                try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch (e) { return {}; }
+            }
+            function saveStore() {
+                try {
+                    localStorage.setItem(STORE_KEY, JSON.stringify({
+                        team: S.team, color: S.color, code: S.code, journal: S.journal
+                    }));
+                } catch (e) { /* storage unavailable; fine */ }
+            }
+
+            // ============================================================
+            //  State
+            // ============================================================
+            const TEAM_COLORS = [
+                { name: 'Fuchsia', hex: '#ff4fa3' },
+                { name: 'Sky', hex: '#3cc8f0' },
+                { name: 'Lime', hex: '#86e03c' },
+                { name: 'Tangerine', hex: '#ff8c2e' },
+                { name: 'Violet', hex: '#a77bff' },
+                { name: 'Gold', hex: '#ffd23f' }
+            ];
+
+            const stored = loadStore();
+            const S = {
+                team: stored.team || '',
+                color: stored.color || TEAM_COLORS[0].hex,
+                code: stored.code || '253',
+                journal: stored.journal || {},
+                N: 0, W: 0,
+                white: null,      // Uint8Array: 1 = white floof
+                tagged: null,     // Uint8Array: 1 = wearing our tag
+                M: 0,
+                mixed: false,     // a night has passed since tagging
+                log: [],          // {M, n, m, est, whites}
+                pending: null,    // current Station 4 recapture awaiting a logged estimate
+                firstLogged: false,
+                revealed: false
+            };
+
+            function setupForest(code) {
+                S.code = (code || '253').trim().toUpperCase() || '253';
+                const rng = mulberry32(hashString('statfloof:' + S.code));
+                S.N = 140 + Math.floor(rng() * 201);
+                const whiteFrac = 0.25 + rng() * 0.3;
+                S.W = Math.round(S.N * whiteFrac);
+                S.white = new Uint8Array(S.N);
+                const idx = Array.from({ length: S.N }, (_, i) => i);
+                for (let i = S.N - 1; i > 0; i--) {
+                    const j = Math.floor(rng() * (i + 1));
+                    [idx[i], idx[j]] = [idx[j], idx[i]];
+                }
+                for (let k = 0; k < S.W; k++) S.white[idx[k]] = 1;
+                S.tagged = new Uint8Array(S.N);
+                S.M = 0;
+                S.mixed = false;
+                S.log = [];
+                S.pending = null;
+                S.firstLogged = false;
+                S.revealed = false;
+                sampleIdx = new Int32Array(S.N);
+                for (let i = 0; i < S.N; i++) sampleIdx[i] = i;
+            }
+
+            let sampleIdx = null;
+            // Uniform random sample of n distinct floofs (partial Fisher-Yates)
+            function drawSample(n) {
+                n = Math.min(n, S.N);
+                const ids = [];
+                let m = 0, whites = 0;
+                for (let i = 0; i < n; i++) {
+                    const j = i + Math.floor(Math.random() * (S.N - i));
+                    const t = sampleIdx[i]; sampleIdx[i] = sampleIdx[j]; sampleIdx[j] = t;
+                    const id = sampleIdx[i];
+                    ids.push(id);
+                    if (S.tagged[id]) m++;
+                    if (S.white[id]) whites++;
+                }
+                return { ids, n, m, whites, M: S.M, est: m ? (S.M * n) / m : Infinity };
+            }
+
+            // ============================================================
+            //  Statfloof sprites (drawn once, reused everywhere)
+            // ============================================================
+            const SP = 128;
+            function jit(i) { const x = Math.sin(i * 12.9898 + 4.1) * 43758.5453; return x - Math.floor(x); }
+
+            function fuzz(g, cx, cy, rx, ry, tufts, amp, seed) {
+                g.beginPath();
+                const pts = tufts * 2;
+                for (let i = 0; i <= pts; i++) {
+                    const a = (i / pts) * Math.PI * 2 - Math.PI / 2;
+                    if (i === 0) {
+                        g.moveTo(cx + Math.cos(a) * rx, cy + Math.sin(a) * ry);
+                    } else if (i % 2 === 0) {
+                        const am = ((i - 1) / pts) * Math.PI * 2 - Math.PI / 2;
+                        const k = 1 + amp * (0.7 + 0.8 * jit(i + seed));
+                        g.quadraticCurveTo(cx + Math.cos(am) * rx * k, cy + Math.sin(am) * ry * k,
+                            cx + Math.cos(a) * rx, cy + Math.sin(a) * ry);
+                    }
+                }
+                g.closePath();
+            }
+
+            const PAL = {
+                black: { fur: '#26252e', fur2: '#46455a', edge: '#0b0a10', belly: '#f3efe6', ear: '#e0566f', iris: '#ffd23a', ring: '#f3efe6', mouth: '#0b0a10' },
+                white: { fur: '#efeadf', fur2: '#ffffff', edge: '#8f8672', belly: '#dcd1b8', ear: '#f39bb2', iris: '#e0a030', ring: '#b9ae96', mouth: '#5c5140' }
+            };
+
+            function makeSprite(variant, tagColor, blink) {
+                const c = document.createElement('canvas');
+                c.width = c.height = SP;
+                const g = c.getContext('2d');
+                g.scale(SP / 100, SP / 100);
+                const p = PAL[variant];
+                g.lineJoin = 'round';
+                g.lineCap = 'round';
+
+                // tail (ringed)
+                const tail = [[74, 80, 8], [81, 72, 7.6], [86, 62, 7.2], [88, 52, 6.8], [86, 43, 6.2], [82, 36, 5.6]];
+                tail.forEach(([x, y, r], i) => {
+                    fuzz(g, x, y, r, r, 7, 0.22, i * 7);
+                    g.fillStyle = i % 2 ? p.ring : p.fur;
+                    g.fill();
+                    g.strokeStyle = p.edge; g.lineWidth = 1.2; g.stroke();
+                });
+
+                // ears
+                [[[29, 42], [24, 15], [45, 30]], [[71, 42], [76, 15], [55, 30]]].forEach((tri, i) => {
+                    g.beginPath(); g.moveTo(...tri[0]); g.lineTo(...tri[1]); g.lineTo(...tri[2]); g.closePath();
+                    g.fillStyle = p.fur; g.fill(); g.strokeStyle = p.edge; g.lineWidth = 1.5; g.stroke();
+                    const cxm = (tri[0][0] + tri[1][0] + tri[2][0]) / 3, cym = (tri[0][1] + tri[1][1] + tri[2][1]) / 3;
+                    g.beginPath();
+                    tri.forEach(([x, y], k) => {
+                        const ix = cxm + (x - cxm) * 0.55, iy = cym + (y - cym) * 0.55 + 1.5;
+                        k ? g.lineTo(ix, iy) : g.moveTo(ix, iy);
+                    });
+                    g.closePath(); g.fillStyle = p.ear; g.fill();
+                });
+
+                // body (glows in team color when tagged)
+                g.save();
+                if (tagColor) { g.shadowColor = tagColor; g.shadowBlur = 9; }
+                fuzz(g, 50, 58, 31, 30, 22, 0.13, 3);
+                const grad = g.createRadialGradient(42, 44, 4, 50, 58, 36);
+                grad.addColorStop(0, p.fur2); grad.addColorStop(1, p.fur);
+                g.fillStyle = grad; g.fill();
+                g.restore();
+                fuzz(g, 50, 58, 31, 30, 22, 0.13, 3);
+                g.strokeStyle = tagColor || p.edge;
+                g.lineWidth = tagColor ? 2.4 : 1.5;
+                g.stroke();
+
+                // belly
+                fuzz(g, 50, 73, 17, 14, 13, 0.14, 11);
+                g.fillStyle = p.belly; g.fill();
+
+                // feet
+                [[39, 89], [61, 89]].forEach(([x, y]) => {
+                    g.beginPath(); g.ellipse(x, y, 7, 4, 0, 0, Math.PI * 2);
+                    g.fillStyle = p.fur2; g.fill(); g.strokeStyle = p.edge; g.lineWidth = 1.3; g.stroke();
+                });
+
+                // eyes
+                [[39, 51], [61, 51]].forEach(([x, y]) => {
+                    if (blink) {
+                        g.beginPath(); g.moveTo(x - 8, y + 1); g.quadraticCurveTo(x, y + 6, x + 8, y + 1);
+                        g.strokeStyle = variant === 'black' ? '#000' : '#3a3228'; g.lineWidth = 2.6; g.stroke();
+                        return;
+                    }
+                    g.beginPath(); g.arc(x, y, 9.8, 0, Math.PI * 2); g.fillStyle = '#131018'; g.fill();
+                    g.beginPath(); g.arc(x, y, 8.2, 0, Math.PI * 2); g.fillStyle = p.iris; g.fill();
+                    g.beginPath(); g.arc(x + 0.5, y + 0.6, 4.6, 0, Math.PI * 2); g.fillStyle = '#0c0a10'; g.fill();
+                    g.beginPath(); g.arc(x - 2.6, y - 3, 2.5, 0, Math.PI * 2); g.fillStyle = '#fff'; g.fill();
+                    g.beginPath(); g.arc(x + 2.8, y + 2.6, 1.1, 0, Math.PI * 2); g.fill();
+                });
+
+                // nose + mouth
+                g.beginPath(); g.ellipse(50, 61, 3.4, 2.4, 0, 0, Math.PI * 2); g.fillStyle = '#cf445d'; g.fill();
+                g.beginPath(); g.moveTo(46.5, 64.5); g.quadraticCurveTo(48.5, 67, 50, 64.2); g.quadraticCurveTo(51.5, 67, 53.5, 64.5);
+                g.strokeStyle = p.mouth; g.lineWidth = 1.2; g.stroke();
+
+                // ear tag
+                if (tagColor) {
+                    g.save();
+                    g.translate(74, 30); g.rotate(0.25);
+                    g.beginPath();
+                    const w = 15, h = 12, r = 3;
+                    g.moveTo(-w / 2 + r, 0); g.lineTo(w / 2 - r, 0); g.quadraticCurveTo(w / 2, 0, w / 2, r);
+                    g.lineTo(w / 2, h - r); g.quadraticCurveTo(w / 2, h, w / 2 - r, h); g.lineTo(-w / 2 + r, h);
+                    g.quadraticCurveTo(-w / 2, h, -w / 2, h - r); g.lineTo(-w / 2, r); g.quadraticCurveTo(-w / 2, 0, -w / 2 + r, 0);
+                    g.fillStyle = tagColor; g.fill(); g.strokeStyle = '#fff'; g.lineWidth = 1.8; g.stroke();
+                    g.beginPath(); g.arc(0, 3.4, 1.6, 0, Math.PI * 2); g.fillStyle = '#fff'; g.fill();
+                    g.restore();
+                }
+                return c;
+            }
+
+            const sprites = {};
+            const spriteURL = {};
+            function buildSprites() {
+                ['black', 'white'].forEach((v) => {
+                    [false, true].forEach((t) => {
+                        [false, true].forEach((b) => {
+                            const key = v + (t ? 'T' : '') + (b ? 'B' : '');
+                            sprites[key] = makeSprite(v, t ? S.color : null, b);
+                            if (!b) spriteURL[v + (t ? 'T' : '')] = sprites[key].toDataURL();
+                        });
+                    });
+                });
+            }
+            const spriteKey = (id, blink) => (S.white[id] ? 'white' : 'black') + (S.tagged[id] ? 'T' : '') + (blink ? 'B' : '');
+
+            // ============================================================
+            //  Hero fireflies
+            // ============================================================
+            (function fireflies() {
+                const box = $('fireflies');
+                for (let i = 0; i < 26; i++) {
+                    const f = document.createElement('i');
+                    f.className = 'ff';
+                    f.style.left = Math.random() * 100 + '%';
+                    f.style.top = 20 + Math.random() * 75 + '%';
+                    f.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px');
+                    f.style.setProperty('--dy', (Math.random() * 60 - 40) + 'px');
+                    f.style.animationDelay = (Math.random() * 7) + 's';
+                    f.style.animationDuration = (5 + Math.random() * 6) + 's';
+                    box.appendChild(f);
+                }
+            })();
+
+            // ============================================================
+            //  Base camp
+            // ============================================================
+            function applyTeam() {
+                document.documentElement.style.setProperty('--team', S.color);
+                buildSprites();
+                $('badge-floof').src = spriteURL[(hashString(S.team || 'x') % 2) ? 'blackT' : 'whiteT'];
+                $('badge-team').textContent = S.team || 'Unnamed Team';
+                $('badge-code').textContent = S.code;
+                document.querySelectorAll('.swatch').forEach((sw) => sw.setAttribute('aria-checked', sw.dataset.hex === S.color ? 'true' : 'false'));
+            }
+
+            TEAM_COLORS.forEach((c) => {
+                const b = document.createElement('button');
+                b.className = 'swatch';
+                b.type = 'button';
+                b.setAttribute('role', 'radio');
+                b.setAttribute('aria-label', c.name);
+                b.dataset.hex = c.hex;
+                b.style.background = c.hex;
+                b.style.color = c.hex;
+                b.addEventListener('click', () => { S.color = c.hex; applyTeam(); saveStore(); refreshTrays(); });
+                $('swatches').appendChild(b);
+            });
+
+            $('team-name').value = S.team;
+            $('team-name').addEventListener('input', (e) => { S.team = e.target.value.trim(); applyTeam(); saveStore(); });
+
+            $('forest-code').value = S.code;
+            function travel() {
+                const code = $('forest-code').value;
+                const norm = (code || '253').trim().toUpperCase() || '253';
+                if (norm === S.code && S.N) { toast('You are already in Forest ' + norm); return; }
+                if (S.log.length && !confirm('Traveling to a new forest clears your tags and field log. Go?')) return;
+                setupForest(code);
+                $('forest-code').value = S.code;
+                saveStore();
+                applyTeam();
+                resetExpeditionUI();
+                forest.respawnAll();
+                toast('Welcome to Forest ' + S.code);
+            }
+            $('btn-code').addEventListener('click', travel);
+            $('forest-code').addEventListener('keydown', (e) => { if (e.key === 'Enter') travel(); });
+
+            // ============================================================
+            //  Station 2: question sort
+            // ============================================================
+            const QUESTIONS = [
+                { q: 'How much does Biscuit, the ranger\'s pet Statfloof, weigh?', a: 'no', why: 'Biscuit is one floof with one weight. Weigh him and you\'re done. No variability to account for.' },
+                { q: 'How much do adult Statfloofs weigh?', a: 'yes', why: 'Different floofs weigh different amounts. A good answer describes that spread: "most weigh 2 to 3 kg, typically about 2.4."' },
+                { q: 'What color is the Statfloof hiding under that fern?', a: 'no', why: 'One floof, one answer: black or white. Just look.' },
+                { q: 'What fraction of the Statfloofs in the forest are white?', a: 'yes', why: 'Answering it means collecting data on many floofs, and the data vary. You\'ll estimate it from samples in Station 5.' },
+                { q: 'If your team grabs a random handful of 20 floofs, how many will be wearing your tag?', a: 'yes', why: 'Do it twice and you\'ll get different answers. The question expects that variability. (Compare with the poker-chip bag in Class Activity 15-A.)' },
+                { q: 'How far is it from base camp to Burrow Hill?', a: 'no', why: 'A single, fixed distance. Measure it once, carefully.' },
+                { q: 'How far does a Statfloof wander in a day?', a: 'yes', why: 'Different floofs, and different days for the same floof, give different distances. A good answer describes the typical distance and the spread.' },
+                { q: 'How many Statfloofs live in Statfloof Forest?', a: 'hmm', why: 'Good one to argue about! The population is one fixed number, like Biscuit\'s weight. But nobody can count it directly, and every way we have of answering it uses samples that vary (yours will). So an honest answer sounds like "about 300, give or take," which accounts for variability. It becomes a statistical question the moment we answer it with samples.' }
+            ];
+            const qAnswers = {};
+            function renderQuestions() {
+                const box = $('qcards');
+                box.innerHTML = '';
+                QUESTIONS.forEach((item, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'qcard';
+                    card.innerHTML =
+                        '<div class="qcard-inner">' +
+                        '<div class="qface qfront"><div class="qn">Card ' + (i + 1) + '</div><div class="qtext"></div>' +
+                        '<div class="qbtns"><button type="button" data-v="yes">Statistical</button><button type="button" data-v="no">Not statistical</button></div></div>' +
+                        '<div class="qface qback"><div class="verdict"></div><div class="why"></div><button type="button" class="again">flip back</button></div>' +
+                        '</div>';
+                    card.querySelector('.qtext').textContent = item.q;
+                    card.querySelectorAll('.qbtns button').forEach((b) => b.addEventListener('click', () => {
+                        const v = b.dataset.v;
+                        qAnswers[i] = v;
+                        const verdict = card.querySelector('.verdict');
+                        if (item.a === 'hmm') {
+                            verdict.className = 'verdict hmm';
+                            verdict.textContent = 'You said "' + (v === 'yes' ? 'statistical' : 'not statistical') + '". Both sides have a case.';
+                        } else if (v === item.a) {
+                            verdict.className = 'verdict yes';
+                            verdict.textContent = 'Yes, ' + (item.a === 'yes' ? 'statistical.' : 'not statistical.');
+                        } else {
+                            verdict.className = 'verdict no';
+                            verdict.textContent = 'Look again. This one is ' + (item.a === 'yes' ? 'statistical.' : 'not statistical.');
+                        }
+                        card.querySelector('.why').textContent = item.why;
+                        card.classList.add('flipped');
+                        scoreQuestions();
+                    }));
+                    card.querySelector('.again').addEventListener('click', () => card.classList.remove('flipped'));
+                    box.appendChild(card);
+                });
+            }
+            function scoreQuestions() {
+                const done = Object.keys(qAnswers).length;
+                let right = 0, graded = 0;
+                QUESTIONS.forEach((item, i) => {
+                    if (qAnswers[i] && item.a !== 'hmm') { graded++; if (qAnswers[i] === item.a) right++; }
+                });
+                $('q-score').textContent = done < QUESTIONS.length
+                    ? 'Sorted ' + done + ' of ' + QUESTIONS.length + ' cards.'
+                    : 'All sorted! ' + right + ' of ' + graded + ' clear-cut cards matched. Card 8 is the one to debate with the class.';
+            }
+
+            // ============================================================
+            //  The living forest (canvas)
+            // ============================================================
+            const forest = (function () {
+                const cv = $('forest');
+                const ctx = cv.getContext('2d');
+                let W = 0, H = 0, dpr = 1, bg = null, fg = null, burrows = [];
+                let agents = [], sparks = [], flies = [], last = 0, running = false, visible = false;
+                const visibleSet = new Set();
+                let speedBoost = 1;
+
+                function resize() {
+                    W = cv.clientWidth || 800;
+                    H = Math.round(clamp(W * 0.5, 280, 500));
+                    cv.style.height = H + 'px';
+                    dpr = Math.min(2, window.devicePixelRatio || 1);
+                    cv.width = Math.round(W * dpr);
+                    cv.height = Math.round(H * dpr);
+                    paintBackground();
+                    paintForeground();
+                    flies = Array.from({ length: 16 }, () => ({ x: Math.random() * W, y: Math.random() * H * 0.6, p: Math.random() * 6, vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 8 }));
+                    respawnAll();
+                }
+
+                function layer() {
+                    const c = document.createElement('canvas');
+                    c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
+                    const g = c.getContext('2d'); g.scale(dpr, dpr);
+                    return [c, g];
+                }
+
+                const gTop = () => H * 0.5;
+                const yMin = () => H * 0.58;
+                const yMax = () => H * 0.93;
+
+                function paintBackground() {
+                    const [c, g] = layer();
+                    const rng = mulberry32(99);
+                    let gr = g.createLinearGradient(0, 0, 0, H);
+                    gr.addColorStop(0, '#0b1f16'); gr.addColorStop(0.45, '#1a3a27'); gr.addColorStop(0.5, '#1d3f2a'); gr.addColorStop(1, '#10261a');
+                    g.fillStyle = gr; g.fillRect(0, 0, W, H);
+                    // glow at the vanishing point
+                    gr = g.createRadialGradient(W * 0.52, H * 0.42, 5, W * 0.52, H * 0.42, W * 0.45);
+                    gr.addColorStop(0, 'rgba(230,255,200,0.30)'); gr.addColorStop(1, 'rgba(230,255,200,0)');
+                    g.fillStyle = gr; g.fillRect(0, 0, W, H);
+                    // light shafts
+                    for (let i = 0; i < 5; i++) {
+                        const x = W * (0.25 + rng() * 0.5), w = 20 + rng() * 60;
+                        g.fillStyle = 'rgba(235,255,210,0.045)';
+                        g.beginPath(); g.moveTo(x, 0); g.lineTo(x + w, 0); g.lineTo(x + w * 2.6 + 60, H); g.lineTo(x + 40, H); g.fill();
+                    }
+                    // far trees
+                    for (let i = 0; i < 22; i++) {
+                        const x = rng() * W, w = 6 + rng() * 16, h = gTop() + rng() * 20;
+                        g.fillStyle = 'rgba(9,24,16,' + (0.45 + rng() * 0.4) + ')';
+                        g.fillRect(x, 0, w, h);
+                    }
+                    // ground
+                    gr = g.createLinearGradient(0, gTop(), 0, H);
+                    gr.addColorStop(0, '#1f412b'); gr.addColorStop(1, '#132c1d');
+                    g.fillStyle = gr; g.fillRect(0, gTop(), W, H - gTop());
+                    // path
+                    g.fillStyle = 'rgba(120,100,70,0.22)';
+                    g.beginPath(); g.moveTo(W * 0.49, gTop()); g.lineTo(W * 0.53, gTop());
+                    g.quadraticCurveTo(W * 0.62, H * 0.72, W * 0.7, H); g.lineTo(W * 0.36, H); g.quadraticCurveTo(W * 0.45, H * 0.72, W * 0.49, gTop()); g.fill();
+                    // mid trunks
+                    [[0.07, 34], [0.2, 20], [0.8, 22], [0.93, 36], [0.33, 12], [0.68, 13]].forEach(([fx, w]) => {
+                        const x = W * fx, s = W / 900, ww = w * s + 4;
+                        const base = gTop() + (w > 20 ? H * 0.12 : H * 0.03);
+                        const tg = g.createLinearGradient(x - ww, 0, x + ww, 0);
+                        tg.addColorStop(0, '#1b140e'); tg.addColorStop(0.5, '#3b2a1c'); tg.addColorStop(1, '#150f0a');
+                        g.fillStyle = tg;
+                        g.beginPath(); g.moveTo(x - ww * 0.7, 0); g.lineTo(x + ww * 0.7, 0); g.lineTo(x + ww, base); g.quadraticCurveTo(x + ww * 1.8, base + 6, x + ww * 2, base + 8);
+                        g.lineTo(x - ww * 2, base + 8); g.quadraticCurveTo(x - ww * 1.8, base + 6, x - ww, base); g.closePath(); g.fill();
+                    });
+                    // burrows
+                    burrows = [[0.14, 0.66], [0.33, 0.8], [0.5, 0.63], [0.66, 0.84], [0.85, 0.68], [0.24, 0.9], [0.78, 0.92]]
+                        .map(([fx, fy]) => ({ x: W * fx, y: H * fy }));
+                    burrows.forEach((b) => {
+                        const s = lerp(0.7, 1.25, (b.y - yMin()) / (yMax() - yMin())) * Math.max(0.6, W / 900);
+                        g.fillStyle = '#2f5a36';
+                        g.beginPath(); g.ellipse(b.x, b.y + 2, 30 * s, 11 * s, 0, 0, Math.PI * 2); g.fill();
+                        g.fillStyle = '#050a07';
+                        g.beginPath(); g.ellipse(b.x, b.y, 19 * s, 7 * s, 0, 0, Math.PI * 2); g.fill();
+                        b.s = s;
+                    });
+                    // grass tufts
+                    g.strokeStyle = 'rgba(120,190,120,0.35)'; g.lineWidth = 1.2;
+                    for (let i = 0; i < 260; i++) {
+                        const x = rng() * W, y = gTop() + 6 + rng() * (H - gTop());
+                        const h = lerp(3, 10, (y - gTop()) / (H - gTop()));
+                        g.beginPath(); g.moveTo(x, y); g.lineTo(x - 2, y - h); g.moveTo(x, y); g.lineTo(x + 2, y - h * 0.8); g.stroke();
+                    }
+                    bg = c;
+                }
+
+                function fern(g, x, y, h, lean, col) {
+                    for (let f = 0; f < 5; f++) {
+                        const ang = -Math.PI / 2 + (f - 2) * 0.42 + lean;
+                        const len = h * (0.75 + 0.3 * Math.cos(f));
+                        const ex = x + Math.cos(ang) * len, ey = y + Math.sin(ang) * len;
+                        const cx = x + Math.cos(ang + 0.3) * len * 0.5, cy = y + Math.sin(ang + 0.3) * len * 0.5;
+                        g.strokeStyle = col; g.lineWidth = 2;
+                        g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(cx, cy, ex, ey); g.stroke();
+                        for (let t = 0.15; t < 1; t += 0.09) {
+                            const px = (1 - t) * (1 - t) * x + 2 * (1 - t) * t * cx + t * t * ex;
+                            const py = (1 - t) * (1 - t) * y + 2 * (1 - t) * t * cy + t * t * ey;
+                            const l = (1 - t) * h * 0.22 + 2;
+                            g.fillStyle = col;
+                            [-1, 1].forEach((sd) => {
+                                g.beginPath(); g.ellipse(px + Math.cos(ang + sd * 1.2) * l * 0.5, py + Math.sin(ang + sd * 1.2) * l * 0.5, l * 0.55, l * 0.2, ang + sd * 1.2, 0, Math.PI * 2); g.fill();
+                            });
+                        }
+                    }
+                }
+
+                function paintForeground() {
+                    const [c, g] = layer();
+                    const rng = mulberry32(7);
+                    const n = Math.max(5, Math.round(W / 110));
+                    for (let i = 0; i < n; i++) {
+                        const x = (i + 0.2 + rng() * 0.6) * (W / n);
+                        fern(g, x, H + 6, H * (0.12 + rng() * 0.1), (rng() - 0.5) * 0.5, i % 2 ? '#24542f' : '#2e6a3a');
+                    }
+                    // framing trunks
+                    [[0, 1], [W, -1]].forEach(([x, d]) => {
+                        const w = Math.max(26, W * 0.045);
+                        const tg = g.createLinearGradient(x, 0, x + d * w, 0);
+                        tg.addColorStop(0, '#0e0a07'); tg.addColorStop(1, '#3a2819');
+                        g.fillStyle = tg;
+                        g.beginPath(); g.moveTo(x, 0); g.lineTo(x + d * w * 0.8, 0); g.quadraticCurveTo(x + d * w * 1.1, H * 0.7, x + d * w * 2.2, H); g.lineTo(x, H); g.fill();
+                    });
+                    fg = c;
+                }
+
+                function pickMember() {
+                    if (!S.N) return -1;
+                    for (let tries = 0; tries < 40; tries++) {
+                        const id = Math.floor(Math.random() * S.N);
+                        if (!visibleSet.has(id)) return id;
+                    }
+                    return Math.floor(Math.random() * S.N);
+                }
+
+                function spawn(a, delay) {
+                    if (a.id >= 0) visibleSet.delete(a.id);
+                    a.id = pickMember();
+                    if (a.id >= 0) visibleSet.add(a.id);
+                    const b = burrows[Math.floor(Math.random() * burrows.length)];
+                    a.x = b.x; a.y = b.y; a.b = b;
+                    a.state = 'wait'; a.t = -(delay || 0); a.scale = 0;
+                    a.life = 3 + Math.random() * 7;
+                    a.speed = 35 + Math.random() * 40;
+                    a.blinkAt = Math.random() * 4; a.blinking = 0;
+                    a.phase = Math.random() * 6; a.dir = Math.random() < 0.5 ? -1 : 1;
+                    a.tx = a.x; a.ty = a.y; a.pause = 0;
+                }
+
+                function newTarget(a) {
+                    a.tx = clamp(a.x + (Math.random() - 0.5) * W * 0.5, W * 0.06, W * 0.94);
+                    a.ty = lerp(yMin(), yMax(), Math.random());
+                }
+
+                function respawnAll() {
+                    visibleSet.clear();
+                    const count = Math.min(24, S.N || 0);
+                    agents = [];
+                    for (let i = 0; i < count; i++) {
+                        const a = { id: -1 };
+                        spawn(a, Math.random() * 2.5);
+                        // start some already out wandering
+                        if (Math.random() < 0.6) {
+                            a.state = 'wander'; a.t = 0; a.scale = 1;
+                            a.x = lerp(W * 0.08, W * 0.92, Math.random()); a.y = lerp(yMin(), yMax(), Math.random());
+                            newTarget(a);
+                        }
+                        agents.push(a);
+                    }
+                }
+
+                function markTagged() {
+                    agents.forEach((a) => {
+                        if (a.id >= 0 && S.tagged[a.id] && a.scale > 0.5) burst(a.x, a.y - sizeAt(a.y) * 0.5, S.color);
+                    });
+                }
+
+                function burst(x, y, col) {
+                    if (reduceMotion) return;
+                    for (let i = 0; i < 14; i++) {
+                        const ang = Math.random() * Math.PI * 2, sp = 30 + Math.random() * 70;
+                        sparks.push({ x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 30, life: 0.8 + Math.random() * 0.4, t: 0, col });
+                    }
+                }
+
+                function sizeAt(y) {
+                    return lerp(46, 88, (y - yMin()) / (yMax() - yMin())) * clamp(W / 900, 0.7, 1.2);
+                }
+
+                function step(dt) {
+                    const vis = [];
+                    agents.forEach((a) => {
+                        a.t += dt;
+                        a.phase += dt * 9;
+                        a.blinkAt -= dt;
+                        if (a.blinkAt < 0) { a.blinking = 0.14; a.blinkAt = 2 + Math.random() * 4; }
+                        if (a.blinking > 0) a.blinking -= dt;
+                        switch (a.state) {
+                            case 'wait':
+                                if (a.t >= 0) { a.state = 'emerge'; a.t = 0; }
+                                break;
+                            case 'emerge':
+                                a.scale = Math.min(1, a.t / 0.45);
+                                if (a.scale >= 1) { a.state = 'wander'; a.t = 0; newTarget(a); }
+                                break;
+                            case 'wander':
+                            case 'return': {
+                                if (a.pause > 0) { a.pause -= dt; break; }
+                                const dx = a.tx - a.x, dy = a.ty - a.y, d = Math.hypot(dx, dy);
+                                const sp = a.speed * speedBoost * clamp(W / 900, 0.6, 1.3);
+                                if (d < 3) {
+                                    if (a.state === 'return') { a.state = 'sink'; a.t = 0; }
+                                    else if (a.t > a.life) {
+                                        a.state = 'return';
+                                        const b = burrows.reduce((best, bb) => (Math.hypot(bb.x - a.x, bb.y - a.y) < Math.hypot(best.x - a.x, best.y - a.y) ? bb : best), burrows[0]);
+                                        a.tx = b.x; a.ty = b.y;
+                                    } else {
+                                        if (Math.random() < 0.4) a.pause = 0.4 + Math.random() * 1.2;
+                                        newTarget(a);
+                                    }
+                                } else {
+                                    const mv = Math.min(d, sp * dt);
+                                    a.x += (dx / d) * mv; a.y += (dy / d) * mv;
+                                    if (Math.abs(dx) > 1) a.dir = dx < 0 ? -1 : 1;
+                                }
+                                break;
+                            }
+                            case 'sink':
+                                a.scale = Math.max(0, 1 - a.t / 0.4);
+                                if (a.scale <= 0) spawn(a, 0.3 + Math.random() * 2);
+                                break;
+                        }
+                        if (a.state !== 'wait' && a.id >= 0) vis.push(a);
+                    });
+                    $('hud-vis').textContent = vis.length;
+                    sparks = sparks.filter((s) => (s.t += dt) < s.life);
+                    sparks.forEach((s) => { s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 90 * dt; });
+                    flies.forEach((f) => {
+                        f.p += dt; f.x += f.vx * dt; f.y += f.vy * dt;
+                        if (f.x < 0 || f.x > W) f.vx *= -1;
+                        if (f.y < 0 || f.y > H * 0.7) f.vy *= -1;
+                    });
+                    return vis;
+                }
+
+                function draw(vis) {
+                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                    ctx.clearRect(0, 0, W, H);
+                    if (bg) ctx.drawImage(bg, 0, 0, W, H);
+                    vis.sort((p, q) => p.y - q.y);
+                    vis.forEach((a) => {
+                        const s = sizeAt(a.y) * (0.35 + 0.65 * a.scale);
+                        const moving = (a.state === 'wander' || a.state === 'return') && a.pause <= 0;
+                        const hop = moving ? Math.abs(Math.sin(a.phase)) * s * 0.12 : 0;
+                        // shadow
+                        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                        ctx.beginPath(); ctx.ellipse(a.x, a.y, s * 0.32, s * 0.08, 0, 0, Math.PI * 2); ctx.fill();
+                        const spr = sprites[spriteKey(a.id, a.blinking > 0)];
+                        if (!spr) return;
+                        ctx.save();
+                        ctx.globalAlpha = Math.min(1, a.scale * 1.5);
+                        ctx.translate(a.x, a.y - hop);
+                        ctx.scale(a.dir, 1);
+                        ctx.drawImage(spr, -s / 2, -s * 0.93, s, s);
+                        ctx.restore();
+                    });
+                    sparks.forEach((sp) => {
+                        const k = 1 - sp.t / sp.life;
+                        ctx.fillStyle = sp.col; ctx.globalAlpha = k;
+                        ctx.beginPath(); ctx.arc(sp.x, sp.y, 2.5 * k + 1, 0, Math.PI * 2); ctx.fill();
+                    });
+                    ctx.globalAlpha = 1;
+                    if (fg) ctx.drawImage(fg, 0, 0, W, H);
+                    flies.forEach((f) => {
+                        const a = 0.35 + 0.65 * Math.abs(Math.sin(f.p * 1.3));
+                        const gr = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, 7);
+                        gr.addColorStop(0, 'rgba(255,236,150,' + a + ')'); gr.addColorStop(1, 'rgba(255,236,150,0)');
+                        ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(f.x, f.y, 7, 0, Math.PI * 2); ctx.fill();
+                    });
+                }
+
+                function frame(ts) {
+                    if (!running) return;
+                    const dt = Math.min(0.05, (ts - last) / 1000 || 0);
+                    last = ts;
+                    draw(step(dt));
+                    requestAnimationFrame(frame);
+                }
+
+                function setRunning(on) {
+                    if (on === running) return;
+                    running = on;
+                    if (on) { last = performance.now(); requestAnimationFrame(frame); }
+                }
+
+                new IntersectionObserver((ents) => {
+                    visible = ents[0].isIntersecting;
+                    setRunning(visible && !document.hidden);
+                }, { threshold: 0.02 }).observe(cv);
+                document.addEventListener('visibilitychange', () => setRunning(visible && !document.hidden));
+
+                let rT;
+                window.addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(resize, 150); });
+
+                // poke a floof
+                cv.addEventListener('click', (e) => {
+                    const r = cv.getBoundingClientRect();
+                    const x = e.clientX - r.left, y = e.clientY - r.top;
+                    agents.forEach((a) => {
+                        if (a.state === 'wait') return;
+                        const s = sizeAt(a.y);
+                        if (Math.abs(a.x - x) < s * 0.4 && y < a.y && y > a.y - s * 0.9) {
+                            burst(a.x, a.y - s * 0.5, S.tagged[a.id] ? S.color : '#ffe9a3');
+                            a.state = 'return'; a.pause = 0; a.speed = 140;
+                            const b = burrows[Math.floor(Math.random() * burrows.length)]; a.tx = b.x; a.ty = b.y;
+                        }
+                    });
+                });
+
+                return {
+                    resize, respawnAll, markTagged,
+                    scatter() { speedBoost = 3; respawnAll(); setTimeout(() => { speedBoost = 1; }, 2500); },
+                    get agents() { return agents; }
+                };
+            })();
+
+            // ============================================================
+            //  Station 3: capture & tag
+            // ============================================================
+            function updateMTotal() {
+                const r = +$('res').value, p = +$('per').value;
+                $('res-out').textContent = r; $('per-out').textContent = p;
+                $('m-total').textContent = r * p;
+            }
+            $('res').addEventListener('input', updateMTotal);
+            $('per').addEventListener('input', updateMTotal);
+
+            let busy = false;
+            function capture() {
+                if (busy) return;
+                if (S.M && S.log.length && !confirm('Re-tagging starts a new expedition and clears your field log. Go?')) return;
+                busy = true;
+                const M = +$('res').value * +$('per').value;
+                S.tagged.fill(0);
+                S.log = []; S.pending = null; S.firstLogged = false; S.mixed = false;
+                resetRecapUI();
+                // pick M random floofs
+                const pool = Array.from({ length: S.N }, (_, i) => i);
+                const caught = [];
+                for (let i = 0; i < M; i++) {
+                    const j = i + Math.floor(Math.random() * (S.N - i));
+                    [pool[i], pool[j]] = [pool[j], pool[i]];
+                    caught.push(pool[i]);
+                }
+                S.M = M;
+                const tray = $('tag-tray');
+                tray.innerHTML = '';
+                const cells = caught.map((id, k) => {
+                    const d = document.createElement('div');
+                    d.className = 'fcell';
+                    d.style.animationDelay = reduceMotion ? '0s' : (k * Math.min(40, 900 / M)) + 'ms';
+                    const img = document.createElement('img');
+                    img.alt = (S.white[id] ? 'white' : 'black') + ' Statfloof';
+                    img.src = spriteURL[S.white[id] ? 'white' : 'black'];
+                    d.appendChild(img);
+                    d.dataset.id = id;
+                    tray.appendChild(d);
+                    return d;
+                });
+                $('cap-note').textContent = 'Caught ' + M + '! Tagging them now…';
+                $('btn-capture').disabled = true;
+                const per = reduceMotion ? 0 : Math.min(140, 2200 / M);
+                cells.forEach((d, k) => {
+                    setTimeout(() => {
+                        const id = +d.dataset.id;
+                        S.tagged[id] = 1;
+                        d.classList.add('tagged', 'zap');
+                        d.querySelector('img').src = spriteURL[(S.white[id] ? 'white' : 'black') + 'T'];
+                        d.querySelector('img').alt += ', tagged';
+                        if (k === cells.length - 1) {
+                            $('cap-note').textContent = 'All ' + M + ' tagged and released. Can you spot them in the forest?';
+                            $('hud-tag').textContent = M;
+                            $('hud-tag-wrap').classList.remove('hidden');
+                            forest.markTagged();
+                            $('btn-capture').disabled = false;
+                            $('btn-capture').textContent = 'Re-tag (new expedition)';
+                            $('btn-night').disabled = false;
+                            busy = false;
+                            updateLocks();
+                        }
+                    }, 500 + k * per);
+                });
+            }
+            $('btn-capture').addEventListener('click', capture);
+
+            $('btn-night').addEventListener('click', () => {
+                const night = $('night');
+                night.classList.add('show');
+                $('btn-night').disabled = true;
+                setTimeout(() => {
+                    forest.scatter();
+                    S.mixed = true;
+                    setTimeout(() => {
+                        night.classList.remove('show');
+                        $('cap-note').textContent = 'Morning. Your tagged floofs are mixed in with everyone else. On to Station 4!';
+                        updateLocks();
+                    }, reduceMotion ? 200 : 1200);
+                }, reduceMotion ? 100 : 900);
+            });
+
+            // ============================================================
+            //  Station 4: recapture & estimate
+            // ============================================================
+            function syncN(v) {
+                v = clamp(+v, 5, 100);
+                $('n-size').value = v; $('n-size2').value = v;
+                $('n-out').textContent = v; $('n-out2').textContent = v;
+                $('btn-recap').textContent = 'Recapture ' + v + ' floofs';
+            }
+            $('n-size').addEventListener('input', (e) => syncN(e.target.value));
+            $('n-size2').addEventListener('input', (e) => syncN(e.target.value));
+
+            function showTray(trayEl, sample) {
+                trayEl.innerHTML = '';
+                const stagger = reduceMotion ? 0 : Math.min(30, 900 / sample.n);
+                sample.ids.forEach((id, k) => {
+                    const d = document.createElement('div');
+                    d.className = 'fcell' + (S.tagged[id] ? ' tagged' : '');
+                    d.style.animationDelay = (k * stagger) + 'ms';
+                    const img = document.createElement('img');
+                    const key = (S.white[id] ? 'white' : 'black') + (S.tagged[id] ? 'T' : '');
+                    img.src = spriteURL[key];
+                    img.alt = (S.white[id] ? 'white' : 'black') + ' Statfloof' + (S.tagged[id] ? ', tagged' : '');
+                    img.dataset.key = key;
+                    d.appendChild(img);
+                    trayEl.appendChild(d);
+                });
+            }
+
+            function refreshTrays() {
+                document.querySelectorAll('.fcell img').forEach((img) => {
+                    const k = img.dataset.key;
+                    if (k) img.src = spriteURL[k];
+                });
+                // tag tray images carry no key; rebuild from their ids
+                document.querySelectorAll('#tag-tray .fcell').forEach((d) => {
+                    const id = +d.dataset.id;
+                    d.querySelector('img').src = spriteURL[(S.white[id] ? 'white' : 'black') + (S.tagged[id] ? 'T' : '')];
+                });
+                if (S.log.length) renderLog();
+            }
+
+            function recapture() {
+                if (!S.mixed) return;
+                const n = +$('n-size').value;
+                const s = drawSample(n);
+                S.pending = s;
+                showTray($('recap-tray'), s);
+                $('recap-chips').classList.remove('hidden');
+                $('c-n').textContent = s.n; $('c-m').textContent = s.m; $('c-u').textContent = s.n - s.m; $('c-w').textContent = s.whites;
+                $('reason').classList.remove('hidden');
+                $('r-frac').textContent = s.m + '/' + s.n;
+                $('r-frac2').textContent = s.m + '/' + s.n;
+                $('r-M').textContent = s.M + ' tagged floofs';
+                $('r-M2').textContent = s.M;
+                $('check').classList.add('hidden');
+                $('est').value = '';
+                const zero = s.m === 0;
+                $('zero-box').classList.toggle('hidden', !zero);
+                $('est-inputs').classList.toggle('hidden', zero);
+                $('btn-recap').textContent = 'Grab a different handful';
+            }
+            $('btn-recap').addEventListener('click', recapture);
+
+            function logEstimate() {
+                const s = S.pending;
+                if (!s || s.m === 0) return;
+                const guess = +$('est').value;
+                if (!guess || guess < 1) { toast('Enter your estimate first'); $('est').focus(); return; }
+                const est = Math.round(s.est);
+                S.log.push({ M: s.M, n: s.n, m: s.m, est: s.est, whites: s.whites });
+                if (!S.firstLogged) S.firstGuess = guess;
+                S.firstLogged = true;
+                S.pending = null;
+                // proportion visual
+                $('p-m').textContent = s.m; $('p-n').textContent = s.n; $('p-M').textContent = s.M;
+                const sb = $('pbar-sample'), fb = $('pbar-forest');
+                sb.style.setProperty('--cell', (100 / s.n) + '%');
+                sb.querySelector('.fill').style.width = '0%';
+                fb.querySelector('.fill').style.width = '0%';
+                $('check').classList.remove('hidden');
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    sb.querySelector('.fill').style.width = (100 * s.m / s.n) + '%';
+                    // forest bar: show the same tagged fraction of a bar that ends in "?"
+                    fb.querySelector('.fill').style.width = (70 * s.m / s.n) + '%';
+                }));
+                $('equation').innerHTML =
+                    '<span class="frac"><span class="t">' + s.m + '</span><span>' + s.n + '</span></span>' +
+                    '<span>=</span>' +
+                    '<span class="frac"><span class="t">' + s.M + '</span><span>N</span></span>' +
+                    '<span>&rarr;</span>' +
+                    '<span>N &asymp; ' + s.M + ' &times; ' + s.n + ' &divide; ' + s.m + ' &asymp; <b>' + est.toLocaleString() + '</b></span>';
+                const diff = Math.abs(guess - est);
+                $('verdict-line').textContent = diff <= Math.max(2, est * 0.03)
+                    ? 'Your estimate of ' + guess.toLocaleString() + ' matches the proportion. Nice reasoning.'
+                    : 'You said ' + guess.toLocaleString() + '; the proportion gives about ' + est.toLocaleString() + '. Where does your reasoning differ?';
+                $('est-inputs').classList.add('hidden');
+                $('btn-recap').textContent = 'Recapture again';
+                updateLocks();
+                renderLog();
+                saveStore();
+            }
+            $('btn-log').addEventListener('click', logEstimate);
+            $('est').addEventListener('keydown', (e) => { if (e.key === 'Enter') logEstimate(); });
+
+            function resetRecapUI() {
+                $('recap-tray').innerHTML = '';
+                $('recap-chips').classList.add('hidden');
+                $('reason').classList.add('hidden');
+                $('check').classList.add('hidden');
+                $('latest').textContent = '';
+                $('reveal-pre').classList.remove('hidden');
+                $('reveal-post').classList.add('hidden');
+                $('reveal-post').innerHTML = '';
+                $('hero-count').textContent = '???';
+                syncN($('n-size').value);
+                renderLog();
+                updateLocks();
+            }
+
+            function resetExpeditionUI() {
+                $('tag-tray').innerHTML = '';
+                $('cap-note').textContent = '';
+                $('hud-tag-wrap').classList.add('hidden');
+                $('btn-capture').textContent = 'Capture & tag';
+                $('btn-capture').disabled = false;
+                $('btn-night').disabled = true;
+                busy = false;
+                resetRecapUI();
+            }
+
+            function updateLocks() {
+                const recapOpen = S.M > 0 && S.mixed;
+                $('recap-panel').classList.toggle('locked', !recapOpen);
+                $('recap-veil').textContent = S.M === 0
+                    ? 'Tag some Statfloofs at Station 3 first.'
+                    : 'Let a night pass at Station 3 so your tagged floofs can mix back in.';
+                $('log-panel').classList.toggle('locked', !S.firstLogged);
+                document.querySelectorAll('#trail a').forEach((a) => {
+                    const h = a.getAttribute('href');
+                    const done = (h === '#capture' && S.M > 0 && S.mixed) || (h === '#recapture' && S.firstLogged) || (h === '#questions' && Object.keys(qAnswers).length === QUESTIONS.length);
+                    a.classList.toggle('done', !!done);
+                });
+            }
+
+            // ============================================================
+            //  Dot plots (SVG)
+            // ============================================================
+            function niceStep(span, target) {
+                const raw = Math.max(span, 1e-9) / target;
+                const p = Math.pow(10, Math.floor(Math.log10(raw)));
+                const f = raw / p;
+                return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * p;
+            }
+
+            function median(sorted) {
+                const k = sorted.length;
+                if (!k) return NaN;
+                return k % 2 ? sorted[(k - 1) / 2] : (sorted[k / 2 - 1] + sorted[k / 2]) / 2;
+            }
+
+            function fiveNum(values) {
+                const s = values.slice().sort((a, b) => a - b);
+                const n = s.length;
+                if (!n) return null;
+                const h = Math.floor(n / 2);
+                return {
+                    min: s[0], max: s[n - 1], med: median(s),
+                    q1: n > 1 ? median(s.slice(0, h)) : s[0],
+                    q3: n > 1 ? median(s.slice(n - h)) : s[0]
+                };
+            }
+
+            function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+            function renderDotPlot(svg, rows, opts) {
+                const Wd = 800, rowH = opts.rowH || 170;
+                const top = opts.truth != null ? 30 : 12;
+                const axisH = 44;
+                const H = top + rows.length * rowH + axisH;
+                let a, b;
+                if (opts.domain) { [a, b] = opts.domain; }
+                else {
+                    const fin = [];
+                    rows.forEach((r) => r.values.forEach((v) => { if (isFinite(v)) fin.push(v); }));
+                    if (opts.truth != null) fin.push(opts.truth);
+                    let lo = fin.length ? Math.min(...fin) : 0, hi = fin.length ? Math.max(...fin) : 100;
+                    if (hi - lo < 20) { lo -= 20; hi += 20; }
+                    const st = niceStep(hi - lo, 6);
+                    a = Math.max(0, Math.floor(lo / st) * st);
+                    b = Math.ceil(hi / st) * st;
+                    if (b <= a) b = a + st;
+                }
+                const L = 28, R = 28;
+                const x = (v) => L + ((v - a) / (b - a)) * (Wd - L - R);
+                const bw = opts.binWidth || niceStep(b - a, 50);
+                const nb = Math.ceil((b - a) / bw);
+                let out = '';
+
+                rows.forEach((row, ri) => {
+                    const y0 = top + ri * rowH;
+                    const boxSpace = opts.box ? 30 : 0;
+                    const markSpace = opts.markers ? 18 : 0;
+                    const base = y0 + rowH - 8 - boxSpace - markSpace;
+                    const counts = new Array(nb).fill(0);
+                    let inf = 0, beyond = 0;
+                    row.values.forEach((v) => {
+                        if (!isFinite(v)) { inf++; return; }
+                        if (v < a || v > b) { beyond++; return; }
+                        counts[Math.min(nb - 1, Math.floor((v - a) / bw))]++;
+                    });
+                    const maxC = Math.max(1, ...counts);
+                    const avail = base - (y0 + (row.label ? 30 : 8));
+                    const binPx = x(a + bw) - x(a);
+                    const r = Math.min(binPx * 0.46, avail / (2 * maxC), 10);
+                    if (row.label) out += '<text x="' + L + '" y="' + (y0 + 20) + '" fill="' + row.color + '" font-size="17" font-weight="800">' + esc(row.label) + '</text>';
+                    let notes = [];
+                    if (beyond) notes.push(beyond + ' beyond ' + fmt(b) + ' →');
+                    if (inf) notes.push(inf + ' found no tags (∞)');
+                    if (notes.length) out += '<text x="' + (Wd - R) + '" y="' + (y0 + 20) + '" text-anchor="end" fill="#ff9f8f" font-size="15" font-weight="700">' + notes.join(' · ') + '</text>';
+                    counts.forEach((c, k) => {
+                        if (!c) return;
+                        const cx = x(a + (k + 0.5) * bw);
+                        if (r >= 1.8) {
+                            for (let j = 0; j < c; j++) {
+                                out += '<circle cx="' + cx.toFixed(1) + '" cy="' + (base - r - j * 2 * r).toFixed(1) + '" r="' + (r * 0.92).toFixed(2) + '" fill="' + row.color + '"/>';
+                            }
+                        } else {
+                            const h = (c / maxC) * avail;
+                            out += '<rect x="' + (cx - binPx * 0.45).toFixed(1) + '" y="' + (base - h).toFixed(1) + '" width="' + (binPx * 0.9).toFixed(1) + '" height="' + h.toFixed(1) + '" fill="' + row.color + '" rx="1"/>';
+                        }
+                    });
+                    out += '<line x1="' + L + '" x2="' + (Wd - R) + '" y1="' + base + '" y2="' + base + '" stroke="rgba(233,241,230,0.35)" stroke-width="1.5"/>';
+
+                    const fin = row.values.filter(isFinite);
+                    if (opts.markers && fin.length) {
+                        const mean = fin.reduce((s, v) => s + v, 0) / fin.length;
+                        const md = median(row.values.slice().sort((p, q) => p - q));
+                        if (isFinite(md) && md >= a && md <= b) {
+                            out += '<rect x="' + (x(md) - 1.5) + '" y="' + (base + 2) + '" width="3" height="14" fill="#9fe0a0"/>';
+                        }
+                        if (mean >= a && mean <= b) {
+                            const mx = x(mean);
+                            out += '<path d="M' + mx + ' ' + (base + 3) + ' L' + (mx + 8) + ' ' + (base + 16) + ' L' + (mx - 8) + ' ' + (base + 16) + ' Z" fill="#ffd35c" stroke="#07130e" stroke-width="1"/>';
+                        }
+                    }
+                    if (opts.box && row.values.length) {
+                        const f = fiveNum(row.values);
+                        const by = base + markSpace + 8, bh = 16;
+                        const cx = (v) => x(clamp(isFinite(v) ? v : b, a, b));
+                        out += '<line x1="' + cx(f.min) + '" x2="' + cx(f.q1) + '" y1="' + (by + bh / 2) + '" y2="' + (by + bh / 2) + '" stroke="' + row.color + '" stroke-width="2"/>';
+                        out += '<line x1="' + cx(f.q3) + '" x2="' + cx(f.max) + '" y1="' + (by + bh / 2) + '" y2="' + (by + bh / 2) + '" stroke="' + row.color + '" stroke-width="2"/>';
+                        [f.min, f.max].forEach((v) => { out += '<line x1="' + cx(v) + '" x2="' + cx(v) + '" y1="' + (by + 3) + '" y2="' + (by + bh - 3) + '" stroke="' + row.color + '" stroke-width="2"/>'; });
+                        out += '<rect x="' + cx(f.q1) + '" y="' + by + '" width="' + Math.max(1, cx(f.q3) - cx(f.q1)) + '" height="' + bh + '" fill="' + row.color + '" fill-opacity="0.25" stroke="' + row.color + '" stroke-width="2" rx="3"/>';
+                        out += '<line x1="' + cx(f.med) + '" x2="' + cx(f.med) + '" y1="' + by + '" y2="' + (by + bh) + '" stroke="#fff" stroke-width="3"/>';
+                    }
+                });
+
+                if (opts.truth != null && opts.truth >= a && opts.truth <= b) {
+                    const tx = x(opts.truth);
+                    out += '<line x1="' + tx + '" x2="' + tx + '" y1="' + (top - 4) + '" y2="' + (top + rows.length * rowH) + '" stroke="#ffd35c" stroke-width="2.5" stroke-dasharray="6 5"/>';
+                    out += '<text x="' + tx + '" y="' + (top - 10) + '" text-anchor="middle" fill="#ffd35c" font-size="16" font-weight="800">true population: ' + fmt(opts.truth) + '</text>';
+                }
+
+                const ay = top + rows.length * rowH + 4;
+                const ts = niceStep(b - a, Wd < 500 ? 5 : 8);
+                out += '<line x1="' + L + '" x2="' + (Wd - R) + '" y1="' + ay + '" y2="' + ay + '" stroke="rgba(233,241,230,0.6)" stroke-width="1.5"/>';
+                for (let v = Math.ceil(a / ts) * ts; v <= b + 1e-9; v += ts) {
+                    out += '<line x1="' + x(v) + '" x2="' + x(v) + '" y1="' + ay + '" y2="' + (ay + 6) + '" stroke="rgba(233,241,230,0.6)"/>';
+                    out += '<text x="' + x(v) + '" y="' + (ay + 23) + '" text-anchor="middle" fill="#c9d8c6" font-size="15">' + fmt(v) + '</text>';
+                }
+                out += '<text x="' + (Wd / 2) + '" y="' + (ay + 40) + '" text-anchor="middle" fill="#a9bcaa" font-size="14">' + esc(opts.axisLabel || 'estimated number of Statfloofs') + '</text>';
+                svg.setAttribute('viewBox', '0 0 ' + Wd + ' ' + (H + 4));
+                svg.innerHTML = out;
+            }
+
+            // ============================================================
+            //  Station 5: field log
+            // ============================================================
+            function renderLog() {
+                const vals = S.log.map((e) => e.est);
+                renderDotPlot($('log-plot'), [{ values: vals, color: S.color }], {
+                    rowH: 210, markers: true, truth: S.revealed ? S.N : null
+                });
+                const fin = vals.filter(isFinite);
+                const sorted = vals.slice().sort((p, q) => p - q);
+                const mean = fin.length ? fin.reduce((s, v) => s + v, 0) / fin.length : NaN;
+                const md = median(sorted);
+                const stat = (k, v) => '<div class="stat"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>';
+                $('log-stats').innerHTML =
+                    stat('Recaptures', S.log.length) +
+                    stat('Median', vals.length ? fmt(md) : '—') +
+                    stat(fin.length < vals.length ? 'Mean*' : 'Mean', fin.length ? fmt(mean) : '—') +
+                    stat('Smallest', fin.length ? fmt(Math.min(...fin)) : '—') +
+                    stat('Largest', fin.length ? fmt(Math.max(...fin)) : '—') +
+                    stat('No tags found', vals.length - fin.length);
+                $('mean-note').classList.toggle('hidden', fin.length === vals.length);
+                // pooled white fraction
+                const caught = S.log.reduce((s, e) => s + e.n, 0);
+                const whites = S.log.reduce((s, e) => s + e.whites, 0);
+                if (caught) {
+                    const pct = Math.round(100 * whites / caught);
+                    let txt = 'Across all ' + S.log.length + ' of your handfuls you\'ve looked at ' + caught.toLocaleString() + ' floofs, and ' + whites.toLocaleString() + ' were white (' + pct + '%). ';
+                    txt += isFinite(md) ? 'If the forest really has about ' + fmt(md) + ' floofs, roughly how many are white?' : 'Once you have a population estimate, use it to estimate the number of white floofs.';
+                    if (S.revealed) txt += ' Actually: ' + S.W + ' of ' + S.N + ' (' + Math.round(100 * S.W / S.N) + '%).';
+                    $('white-note').textContent = txt;
+                } else {
+                    $('white-note').textContent = 'Recapture a few times to find out.';
+                }
+                if (S.revealed) renderReveal();
+            }
+
+            function quickRuns(k) {
+                if (!S.firstLogged) return;
+                const n = +$('n-size2').value;
+                let lastS = null;
+                for (let i = 0; i < k; i++) {
+                    lastS = drawSample(n);
+                    S.log.push({ M: lastS.M, n: lastS.n, m: lastS.m, est: lastS.est, whites: lastS.whites });
+                }
+                $('latest').innerHTML = k === 1
+                    ? 'Latest handful: <b>' + lastS.m + '</b> of <b>' + lastS.n + '</b> tagged &rarr; estimate <b>' + fmt(lastS.est) + '</b>'
+                    : 'Added <b>' + k + '</b> more recaptures of <b>' + n + '</b> floofs each.';
+                renderLog();
+            }
+            $('btn-again').addEventListener('click', () => quickRuns(1));
+            $('btn-10').addEventListener('click', () => quickRuns(10));
+            $('btn-100').addEventListener('click', () => quickRuns(100));
+            $('btn-clear').addEventListener('click', () => {
+                if (!S.log.length || !confirm('Clear every estimate in your field log?')) return;
+                S.log = [];
+                $('latest').textContent = 'Log cleared. Your tags are still out there, so recapture again.';
+                renderLog();
+            });
+
+            $('btn-reveal').addEventListener('click', () => {
+                if (!confirm('Has every team reported its estimate, and has your instructor said to reveal?')) return;
+                S.revealed = true;
+                $('reveal-pre').classList.add('hidden');
+                $('reveal-post').classList.remove('hidden');
+                $('hero-count').textContent = S.N;
+                renderLog();
+                toast('Forest ' + S.code + ': ' + S.N + ' Statfloofs');
+            });
+
+            function renderReveal() {
+                const vals = S.log.map((e) => e.est).sort((p, q) => p - q);
+                const md = median(vals);
+                let html = '<div class="truth">Forest ' + esc(S.code) + ' is home to <b>' + S.N + '</b> Statfloofs: ' + S.W + ' white and ' + (S.N - S.W) + ' black.</div>';
+                if (isFinite(md)) {
+                    const miss = md - S.N;
+                    html += '<p style="margin:8px 0 0">Your field-log median, ' + fmt(md) + ', was ' + (Math.abs(miss) < 0.5 ? 'right on the money' : fmt(Math.abs(miss)) + ' too ' + (miss > 0 ? 'high' : 'low')) + ' (' + Math.round(100 * Math.abs(miss) / S.N) + '% off).';
+                    if (S.firstGuess) html += ' Your very first estimate was ' + S.firstGuess.toLocaleString() + '.';
+                    html += '</p>';
+                }
+                html += '<p style="margin:8px 0 0;color:var(--muted);font-size:0.95rem">Look at the dashed line on your dot plot. How much of your pile lands near it? Was your team lucky, or was the method doing the work?</p>';
+                $('reveal-post').innerHTML = html;
+            }
+
+            // ============================================================
+            //  Simulation engine for labs
+            // ============================================================
+            // One expedition: M tagged in a forest of Npop; draw n (weighted, without replacement).
+            // weight > 1 means tagged floofs are easier to recapture; lost = chance each tag falls off.
+            function simEstimate(Npop, M, n, weight, lost) {
+                let T = M;
+                if (lost) { T = 0; for (let i = 0; i < M; i++) if (Math.random() >= lost) T++; }
+                let U = Npop - T, m = 0;
+                for (let k = 0; k < n && (T + U) > 0; k++) {
+                    const p = (weight * T) / (weight * T + U);
+                    if (Math.random() < p) { m++; T--; } else { U--; }
+                }
+                return m ? (M * n) / m : Infinity;
+            }
+
+            function statsLine(values, truth) {
+                const f = fiveNum(values);
+                const within = values.filter((v) => Math.abs(v - truth) <= truth * 0.1).length;
+                const inf = values.filter((v) => !isFinite(v)).length;
+                return 'Median <b>' + fmt(f.med) + '</b> · middle half <b>' + fmt(f.q1) + '&ndash;' + fmt(f.q3) + '</b><br>Within 10% of ' + truth + ': <b>' + Math.round(100 * within / values.length) + '%</b>' + (inf ? ' · no tags found: <b>' + inf + '</b>' : '');
+            }
+
+            // animate accumulating runs
+            function runAnimated(total, stepFn, renderFn, done) {
+                let k = 0;
+                const chunk = reduceMotion ? total : Math.max(6, Math.round(total / 30));
+                function tick() {
+                    const end = Math.min(total, k + chunk);
+                    for (; k < end; k++) stepFn(k);
+                    renderFn();
+                    if (k < total) requestAnimationFrame(tick); else if (done) done();
+                }
+                tick();
+            }
+
+            // ============================================================
+            //  Station 6: tinker lab
+            // ============================================================
+            const LAB_N = 300, RUNS = 300;
+            const PRESETS = [
+                { label: '3 tags each vs. 6 tags each', a: [15, 40], b: [30, 40] },
+                { label: 'Tiny vs. big handful', a: [30, 10], b: [30, 100] },
+                { label: 'Blocks version vs. research grade', a: [12, 20], b: [60, 100] },
+                { label: 'Same effort, spent differently', a: [20, 100], b: [100, 20] }
+            ];
+            PRESETS.forEach((p) => {
+                const b = document.createElement('button');
+                b.className = 'preset'; b.type = 'button'; b.textContent = p.label;
+                b.addEventListener('click', () => {
+                    $('aM').value = p.a[0]; $('an').value = p.a[1]; $('bM').value = p.b[0]; $('bn').value = p.b[1];
+                    labOutputs(); runLab();
+                });
+                $('presets').appendChild(b);
+            });
+            function labOutputs() {
+                ['aM', 'an', 'bM', 'bn'].forEach((id) => { $(id + '-out').textContent = $(id).value; });
+            }
+            ['aM', 'an', 'bM', 'bn'].forEach((id) => $(id).addEventListener('input', labOutputs));
+
+            let labBusy = false;
+            function runLab() {
+                if (labBusy) return;
+                labBusy = true;
+                const A = { M: +$('aM').value, n: +$('an').value, v: [] };
+                const B = { M: +$('bM').value, n: +$('bn').value, v: [] };
+                const rowsFn = () => [
+                    { label: 'Plan A · tag ' + A.M + ', handful of ' + A.n, values: A.v, color: '#6fd3ff' },
+                    { label: 'Plan B · tag ' + B.M + ', handful of ' + B.n, values: B.v, color: '#ffa24d' }
+                ];
+                runAnimated(RUNS, () => {
+                    A.v.push(simEstimate(LAB_N, A.M, A.n, 1, 0));
+                    B.v.push(simEstimate(LAB_N, B.M, B.n, 1, 0));
+                }, () => {
+                    renderDotPlot($('lab-plot'), rowsFn(), { domain: [0, 1200], binWidth: 20, truth: LAB_N, box: true, rowH: 190 });
+                }, () => {
+                    $('lab-stats').innerHTML =
+                        '<div style="--c:#6fd3ff">' + statsLine(A.v, LAB_N) + '</div>' +
+                        '<div style="--c:#ffa24d">' + statsLine(B.v, LAB_N) + '</div>';
+                    labBusy = false;
+                });
+            }
+            $('btn-lab').addEventListener('click', runLab);
+
+            // ============================================================
+            //  Station 7: when the method breaks
+            // ============================================================
+            const SCEN_M = 40, SCEN_n = 75;
+            const SCENARIOS = [
+                {
+                    id: 'happy', ico: '🍓', name: 'Trap-happy floofs', st: 'They liked the snack.',
+                    story: 'The traps were baited with wild strawberries. Floofs that were caught once remember the treat and come back for more, so tagged floofs are <b>twice as likely</b> to end up in your recapture handful.',
+                    npop: 300, weight: 2, lost: 0, answer: 'low',
+                    why: 'Tagged floofs are over-represented in the handful, so the tagged fraction <i>m/n</i> comes out too big. Dividing by a fraction that\'s too big makes <i>N</i> too small, so the estimates are <b>too low</b>. The method assumes every floof, tagged or not, is equally likely to be caught.'
+                },
+                {
+                    id: 'shy', ico: '🙈', name: 'Trap-shy floofs', st: 'Once bitten, twice shy.',
+                    story: 'Getting caught and tagged was scary. Tagged floofs now avoid anything that looks like a trap, so they are only <b>40% as likely</b> as an untagged floof to be recaptured.',
+                    npop: 300, weight: 0.4, lost: 0, answer: 'high',
+                    why: 'Too few tagged floofs show up in the handful, so <i>m/n</i> is too small and the estimate is <b>too high</b>. Handfuls with zero tags happen a lot too. Same broken assumption as trap-happy floofs, pushing the other way.'
+                },
+                {
+                    id: 'lost', ico: '🏷️', name: 'Tags fall off', st: 'Cheap glue.',
+                    story: 'Your team bought the discount tags. By morning, about <b>40% of the tags</b> have fallen off in the underbrush, but your calculation still assumes all 40 are out there.',
+                    npop: 300, weight: 1, lost: 0.4, answer: 'high',
+                    why: 'Some tagged floofs no longer look tagged, so you count too few in the handful. A fraction that\'s too small makes the estimate <b>too high</b>. The method assumes marks stay on and are always noticed.'
+                },
+                {
+                    id: 'lazy', ico: '🏡', name: 'No real shuffle', st: 'Floofs are homebodies.',
+                    story: 'You tagged floofs near Burrow Hill and went back to Burrow Hill the next morning. Floofs don\'t wander far overnight, so the neighborhood you sample holds <b>2.5 times</b> its fair share of tagged floofs.',
+                    npop: 300, weight: 2.5, lost: 0, answer: 'low',
+                    why: 'The handful isn\'t a random sample of the whole forest. It over-represents the neighborhood you tagged, so the estimates come out <b>too low</b>. The method assumes the tagged floofs have fully mixed back in. That\'s why Station 3 made you wait a night.'
+                },
+                {
+                    id: 'new', ico: '🧳', name: 'Newcomers arrive', st: 'The valley next door moves in.',
+                    story: 'Overnight, <b>150 untagged floofs</b> wander in from the next valley and mix in evenly. The forest had 300 floofs when you tagged. It has 450 when you recapture.',
+                    npop: 450, weight: 1, lost: 0, answer: 'high',
+                    why: 'The estimates cluster around <b>450, too high</b> for the 300 floofs that were there when you tagged. But they\'re right about the forest as it is <i>now</i>. The method assumes a <b>closed population</b>, with no births, deaths, or migration between capture and recapture. When that fails, it\'s no longer clear which population you\'re estimating.'
+                }
+            ];
+            const scenState = {};
+            let curScen = null;
+            SCENARIOS.forEach((sc) => {
+                const b = document.createElement('button');
+                b.type = 'button'; b.className = 'scen'; b.setAttribute('aria-pressed', 'false');
+                b.innerHTML = '<span class="ico" aria-hidden="true">' + sc.ico + '</span><span class="nm">' + sc.name + '</span><span class="st">' + sc.st + '</span>';
+                b.addEventListener('click', () => openScenario(sc, b));
+                sc.btn = b;
+                $('scenarios').appendChild(b);
+            });
+
+            function openScenario(sc, btn) {
+                curScen = sc;
+                document.querySelectorAll('.scen').forEach((x) => x.setAttribute('aria-pressed', x === btn ? 'true' : 'false'));
+                const st = scenState[sc.id] || {};
+                const d = $('scen-detail');
+                d.innerHTML =
+                    '<h3>' + sc.ico + ' ' + sc.name + '</h3>' +
+                    '<p>' + sc.story + '</p>' +
+                    '<p style="font-weight:700;margin-bottom:4px">Prediction: compared with a fair forest, the estimates will be&hellip;</p>' +
+                    '<div class="predict">' +
+                    ['high', 'fine', 'low'].map((v) => '<button type="button" data-v="' + v + '" aria-pressed="' + (st.pred === v ? 'true' : 'false') + '">' + ({ high: 'Too high', fine: 'About right', low: 'Too low' }[v]) + '</button>').join('') +
+                    '</div>' +
+                    '<button class="btn" id="btn-scen"' + (st.pred ? '' : ' disabled') + '>Run 300 expeditions</button>' +
+                    '<div id="scen-explain"></div>';
+                d.querySelectorAll('.predict button').forEach((pb) => pb.addEventListener('click', () => {
+                    scenState[sc.id] = Object.assign(scenState[sc.id] || {}, { pred: pb.dataset.v });
+                    d.querySelectorAll('.predict button').forEach((x) => x.setAttribute('aria-pressed', x === pb ? 'true' : 'false'));
+                    $('btn-scen').disabled = false;
+                }));
+                $('btn-scen').addEventListener('click', () => runScenario(sc));
+                if (st.ran) runScenario(sc, true);
+                else $('scen-plot-wrap').classList.add('hidden');
+            }
+
+            let scenBusy = false;
+            function runScenario(sc, instant) {
+                if (scenBusy) return;
+                scenBusy = true;
+                $('scen-plot-wrap').classList.remove('hidden');
+                const fair = [], broken = [];
+                const rows = () => [
+                    { label: 'Fair forest', values: fair, color: '#9fe0a0' },
+                    { label: sc.ico + ' ' + sc.name, values: broken, color: '#ff8f7a' }
+                ];
+                const render = () => renderDotPlot($('scen-plot'), rows(), { domain: [0, 1200], binWidth: 20, truth: 300, box: true, rowH: 180 });
+                const finish = () => {
+                    const st = scenState[sc.id];
+                    st.ran = true;
+                    sc.btn.classList.add('solved');
+                    const guess = st.pred;
+                    const right = guess === sc.answer;
+                    const fb = fiveNum(broken), ff = fiveNum(fair);
+                    $('scen-explain').innerHTML =
+                        '<div class="explain"><div class="hit">' + (right ? 'Your prediction was right.' : 'Not what you predicted. Look at where the red pile sits.') + '</div>' +
+                        '<p style="margin:6px 0">Fair-forest median: <b>' + fmt(ff.med) + '</b>. With this problem: <b>' + fmt(fb.med) + '</b>.</p>' +
+                        '<p style="margin:0">' + sc.why + '</p></div>';
+                    scenBusy = false;
+                };
+                if (instant) {
+                    for (let i = 0; i < RUNS; i++) { fair.push(simEstimate(300, SCEN_M, SCEN_n, 1, 0)); broken.push(simEstimate(sc.npop, SCEN_M, SCEN_n, sc.weight, sc.lost)); }
+                    render(); finish();
+                } else {
+                    runAnimated(RUNS, () => {
+                        fair.push(simEstimate(300, SCEN_M, SCEN_n, 1, 0));
+                        broken.push(simEstimate(sc.npop, SCEN_M, SCEN_n, sc.weight, sc.lost));
+                    }, render, finish);
+                }
+            }
+
+            // ============================================================
+            //  Journal & field report
+            // ============================================================
+            document.querySelectorAll('[data-journal]').forEach((ta) => {
+                const k = ta.dataset.journal;
+                if (S.journal[k]) ta.value = S.journal[k];
+                ta.addEventListener('input', () => { S.journal[k] = ta.value; saveStore(); });
+            });
+
+            const JOURNAL_LABELS = {
+                pair: 'Our statistical / non-statistical pair',
+                q1: 'Why capture-recapture instead of counting every one?',
+                q1b: 'Why wait a night before recapturing?',
+                q2why: 'How we got our first estimate',
+                q2: 'How did the tagged count help? Larger or smaller handfuls?',
+                q3: 'How do randomness and chance affect sampling?',
+                q4: 'Were class estimates close to the truth? Why were some closer?',
+                q5: 'Tagging 6 each instead of 3',
+                q6: 'Very small recapture handfuls',
+                q7: 'Same effort, spent differently / how to improve',
+                q8: 'What could make an estimate inaccurate?',
+                q9: 'Assumptions the method makes',
+                q10: 'Real-life applications',
+                q11: 'Teacher\'s lens: adapting for grades 6-7'
+            };
+
+            $('btn-report').addEventListener('click', () => {
+                const vals = S.log.map((e) => e.est).sort((p, q) => p - q);
+                const lines = [];
+                lines.push('STATFLOOF FOREST FIELD REPORT');
+                lines.push('Team: ' + (S.team || '(unnamed)') + '   Forest code: ' + S.code);
+                if (S.M) lines.push('Floofs tagged: ' + S.M);
+                if (S.firstGuess) lines.push('First estimate: ' + S.firstGuess);
+                if (vals.length) lines.push('Field log: ' + vals.length + ' recaptures, median estimate ' + fmt(median(vals)));
+                if (S.revealed) lines.push('True population: ' + S.N);
+                lines.push('');
+                Object.keys(JOURNAL_LABELS).forEach((k) => {
+                    const v = (S.journal[k] || '').trim();
+                    if (v) { lines.push('## ' + JOURNAL_LABELS[k]); lines.push(v); lines.push(''); }
+                });
+                const text = lines.join('\n');
+                const fallback = () => {
+                    const ta = document.createElement('textarea');
+                    ta.value = text; document.body.appendChild(ta); ta.select();
+                    try { document.execCommand('copy'); toast('Field report copied'); } catch (e) { toast('Copy failed. Select and copy by hand.'); }
+                    ta.remove();
+                };
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(text).then(() => toast('Field report copied'), fallback);
+                } else fallback();
+            });
+
+            // ============================================================
+            //  Trail highlighting
+            // ============================================================
+            const trailLinks = Array.from(document.querySelectorAll('#trail a'));
+            const secObs = new IntersectionObserver((ents) => {
+                ents.forEach((en) => {
+                    if (!en.isIntersecting) return;
+                    trailLinks.forEach((a) => {
+                        const on = a.getAttribute('href') === '#' + en.target.id;
+                        a.classList.toggle('active', on);
+                        if (on) a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
+                    });
+                });
+            }, { rootMargin: '-40% 0px -55% 0px' });
+            document.querySelectorAll('section.station').forEach((s) => secObs.observe(s));
+
+            // ============================================================
+            //  Go
+            // ============================================================
+            setupForest(S.code);
+            applyTeam();
+            renderQuestions();
+            scoreQuestions();
+            updateMTotal();
+            syncN(50);
+            labOutputs();
+            forest.resize();
+            resetRecapUI();
+            renderDotPlot($('lab-plot'), [
+                { label: 'Plan A', values: [], color: '#6fd3ff' },
+                { label: 'Plan B', values: [], color: '#ffa24d' }
+            ], { domain: [0, 1200], binWidth: 20, truth: LAB_N, box: false, rowH: 120 });
+        })();
+    </script>
+</body>
+
+</html>
