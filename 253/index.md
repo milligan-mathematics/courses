@@ -23,7 +23,7 @@ activities:
   - title: "Purr-fectly Average"
     url: "about-average.html"
     type: "Ch. 15 U-Teach"
-    description: "Mean, median, mode and range, with cats. Given a few clues, find the mouse counts; then decide which cases are possible, which are impossible, and why. Test any case, see a map of every case, and design an impossible one that looks possible. Printable handout and teacher key included."
+    description: "Mean, median, mode and range, with cats. Given a few clues, find the mouse counts; then decide which cases are possible, which are impossible, and why. Test any case, see a map of every case, and design an impossible one that looks possible. Printable handout included."
   - title: "Wheel-Of-Names"
     url: "wheel-of-names.html"
     type: "Interactive Demo"
