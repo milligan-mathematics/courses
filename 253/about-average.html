@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purr-fectly Average - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/about-average.css">
+</head>
+
+<body class="aa">
+
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 253</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="aa-hero">
+        <div class="container">
+            <div class="aa-parade" id="aa-parade" aria-hidden="true"></div>
+            <h1>Purr-fectly Average</h1>
+            <p>Mean, median, mode and range, with cats. Three cats, a few clues, and one question: is there any set of
+                mouse counts that fits, or is this case <em>impossible</em>?</p>
+            <p class="aa-credit">Built on the NRICH problem
+                <a href="https://nrich.maths.org/problems/about-average">About Average</a> and its teachers'
+                extension: explore which sets of conditions make puzzles possible and impossible.</p>
+        </div>
+    </header>
+
+    <main class="aa-wrap">
+
+        <section class="aa-intro" aria-labelledby="intro-h">
+            <h2 id="intro-h">The Cat Caf&eacute; Census</h2>
+            <p>At the caf&eacute;, every cat keeps count of the mice it has caught. The numbers are whole numbers: 1, 2,
+                3, &hellip; (Want a cat that caught nothing? Tick the box to allow 0.) You get clues about the whole
+                group and have to work out what the cats could have caught.</p>
+            <div class="aa-legend">
+                <div><b>Mean: the fair share</b>Pool all the mice and deal them out evenly. Mean &times; number of cats =
+                    total mice.</div>
+                <div><b>Median: the middle cat</b>Line the cats up from fewest mice to most. The median is the one in the
+                    middle (or halfway between the two in the middle).</div>
+                <div><b>Mode: the popular haul</b>The number of mice that shows up most often. Here it must be the
+                    <em>only</em> most-common number, and at least two cats must share it.</div>
+                <div><b>Range: best minus worst</b>The top hunter's count minus the lowest hunter's count.</div>
+            </div>
+        </section>
+
+        <div class="aa-tabs" role="tablist" aria-label="Sections" id="aa-tabs">
+            <button class="aa-tab" role="tab" id="tab-solve" aria-controls="panel-solve" aria-selected="true" data-tab="solve">Solve the cases</button>
+            <button class="aa-tab" role="tab" id="tab-lab" aria-controls="panel-lab" aria-selected="false" data-tab="lab" tabindex="-1">Possible or impossible?</button>
+            <button class="aa-tab" role="tab" id="tab-map" aria-controls="panel-map" aria-selected="false" data-tab="map" tabindex="-1">Possibility map</button>
+            <button class="aa-tab" role="tab" id="tab-design" aria-controls="panel-design" aria-selected="false" data-tab="design" tabindex="-1">Design a case</button>
+            <button class="aa-tab" role="tab" id="tab-teach" aria-controls="panel-teach" aria-selected="false" data-tab="teach" tabindex="-1">For teachers</button>
+        </div>
+
+        <!-- ================= SOLVE ================= -->
+        <section class="aa-panel" role="tabpanel" id="panel-solve" aria-labelledby="tab-solve">
+            <div class="aa-cases" id="case-picker" role="group" aria-label="Choose a case"></div>
+
+            <div class="aa-card">
+                <h2 id="case-title"></h2>
+                <p class="aa-story" id="case-story"></p>
+                <ul class="aa-clues" id="case-clues" aria-label="The clues"></ul>
+
+                <div class="aa-row">
+                    <label class="aa-check"><input type="checkbox" id="opt-zero"> A cat may catch 0 mice</label>
+                    <label class="aa-check"><input type="checkbox" id="opt-ties"> Allow tied modes</label>
+                </div>
+
+                <div id="ext-controls" hidden>
+                    <div class="aa-row">
+                        <label for="ext-n">Number of cats</label>
+                        <input type="number" id="ext-n" min="3" max="12" value="4">
+                        <span class="aa-muted">or</span>
+                        <button class="aa-btn ghost small" id="ext-mode" type="button" aria-pressed="false">Switch to stacking cats (big litters)</button>
+                    </div>
+                </div>
+
+                <div id="cat-row" class="aa-cats"></div>
+                <div id="stack-area" hidden>
+                    <p class="aa-muted">Stack cats on each number: press + for every cat that caught that many mice.
+                        This works for any size litter, even 100.</p>
+                    <div class="aa-stacks" id="stacks"></div>
+                    <p><strong id="stack-total"></strong></p>
+                </div>
+
+                <table class="aa-read" id="readout">
+                    <caption class="aa-muted" style="text-align:left;caption-side:top;padding-bottom:.2rem">Your cats so far</caption>
+                    <thead><tr><th scope="col">Measure</th><th scope="col">Clue</th><th scope="col">Yours</th><th scope="col"><span class="sr-only" style="position:absolute;left:-9999px">Match?</span></th></tr></thead>
+                    <tbody id="read-body"></tbody>
+                </table>
+
+                <div class="aa-row">
+                    <button class="aa-btn" id="btn-hint" type="button">Hint</button>
+                    <button class="aa-btn ghost" id="btn-poss" type="button">Is it even possible?</button>
+                    <button class="aa-btn ghost" id="btn-count" type="button">How many answers?</button>
+                    <button class="aa-btn ghost" id="btn-show" type="button">Show me one</button>
+                    <button class="aa-btn ghost" id="btn-clear" type="button">Clear</button>
+                </div>
+                <div class="aa-msg" id="solve-msg" role="status" aria-live="polite"></div>
+                <div id="found-area" hidden>
+                    <h3>Answers you've found</h3>
+                    <ul class="aa-sets" id="found-list"></ul>
+                </div>
+                <div id="ext-sizes-area" hidden>
+                    <h3>Which litter sizes work?</h3>
+                    <p class="aa-muted">Some numbers of cats make this case impossible. Try to predict which, then look.</p>
+                    <button class="aa-btn ghost small" id="btn-sizes" type="button">Reveal for 3 to 12 cats</button>
+                    <div id="sizes-out"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= LAB ================= -->
+        <section class="aa-panel" role="tabpanel" id="panel-lab" aria-labelledby="tab-lab" hidden>
+            <div class="aa-card">
+                <h2>Possible or impossible?</h2>
+                <p class="aa-muted">Set up any case you like. The lab checks <em>every</em> possible set of mouse counts,
+                    so "impossible" means impossible, not just "I couldn't find one." If the clues clash, it tells you
+                    which ones.</p>
+
+                <div class="aa-row">
+                    <label for="lab-n">Number of cats</label>
+                    <input type="number" id="lab-n" min="2" max="12" value="4">
+                    <label class="aa-check"><input type="checkbox" id="lab-zero"> allow 0 mice</label>
+                    <label class="aa-check"><input type="checkbox" id="lab-ties"> allow tied modes</label>
+                </div>
+                <div id="lab-clues"></div>
+
+                <div class="aa-row">
+                    <button class="aa-btn" id="lab-go" type="button">Is it possible?</button>
+                    <button class="aa-btn ghost" id="lab-surprise" type="button">Surprise me (guess first)</button>
+                    <button class="aa-btn ghost" id="lab-reset" type="button">Clear clues</button>
+                </div>
+                <div class="aa-msg info" id="lab-guess" hidden role="status">
+                    <p><strong>A mystery case is set up above.</strong> Do you think it's possible or impossible?</p>
+                    <div class="aa-row"><button class="aa-btn small" id="guess-yes" type="button">Possible</button>
+                        <button class="aa-btn small ghost" id="guess-no" type="button">Impossible</button>
+                        <span class="aa-muted" id="guess-score"></span></div>
+                </div>
+                <div id="lab-out" aria-live="polite"></div>
+            </div>
+        </section>
+
+        <!-- ================= MAP ================= -->
+        <section class="aa-panel" role="tabpanel" id="panel-map" aria-labelledby="tab-map" hidden>
+            <div class="aa-card">
+                <h2>Possibility map</h2>
+                <p class="aa-muted">For a fixed number of cats, every square is a case. The number inside is how many
+                    different sets of mouse counts solve it. Gray stripes mean impossible. Blue means exactly one answer
+                    (the best kind of puzzle). Click any square to open it in the lab. Look for patterns: where do the
+                    impossible squares live, and why?</p>
+                <div class="aa-row">
+                    <label for="map-n">Cats</label>
+                    <select id="map-n"></select>
+                    <label for="map-pair">Compare</label>
+                    <select id="map-pair"></select>
+                    <label for="map-filter">and also require</label>
+                    <select id="map-filter"></select>
+                    <input type="number" id="map-fval" step="0.5" value="4" style="display:none" aria-label="Value for the extra clue">
+                </div>
+                <div class="aa-row">
+                    <label class="aa-check"><input type="checkbox" id="map-zero"> allow 0 mice</label>
+                    <label class="aa-check"><input type="checkbox" id="map-ties"> allow tied modes</label>
+                    <button class="aa-btn" id="map-go" type="button">Draw the map</button>
+                </div>
+                <p class="aa-muted" id="map-note"></p>
+                <div id="map-out" aria-live="polite"></div>
+            </div>
+        </section>
+
+        <!-- ================= DESIGN ================= -->
+        <section class="aa-panel" role="tabpanel" id="panel-design" aria-labelledby="tab-design" hidden>
+            <div class="aa-card">
+                <h2>Design a case</h2>
+                <p class="aa-muted">Start from a secret set of mouse counts (so your case is guaranteed possible), choose which
+                    clues to reveal, and see how good a puzzle you've made. Does it have one answer? Is any clue
+                    unnecessary?</p>
+                <h3>Your secret cats</h3>
+                <div class="aa-designcats" id="design-cats"></div>
+                <div class="aa-row">
+                    <button class="aa-btn ghost small" id="design-add" type="button">+ Add a cat</button>
+                    <button class="aa-btn ghost small" id="design-remove" type="button">&minus; Remove a cat</button>
+                    <label class="aa-check"><input type="checkbox" id="design-zero"> allow 0 mice</label>
+                    <label class="aa-check"><input type="checkbox" id="design-ties"> allow tied modes</label>
+                </div>
+                <h3>Clues to reveal</h3>
+                <div class="aa-row" id="design-reveal"></div>
+                <div id="design-out" aria-live="polite"></div>
+            </div>
+        </section>
+
+        <!-- ================= TEACHERS ================= -->
+        <section class="aa-panel aa-teach" role="tabpanel" id="panel-teach" aria-labelledby="tab-teach" hidden>
+            <div class="aa-card">
+                <h2>For teachers</h2>
+                <p>This page and the handout turn the extension from the NRICH teachers' resources for
+                    <a href="https://nrich.maths.org/problems/about-average?tab=teacher-resources">About Average</a> into
+                    a lesson: students first solve the original puzzles, then investigate <em>when</em> a set of conditions
+                    can be met and when it can't, and finally write impossible conditions that look possible.</p>
+
+                <div class="aa-dl">
+                    <a class="aa-btn" href="about-average-worksheet.pdf">Student handout (PDF)</a>
+                    <a class="aa-btn ghost" href="about-average-worksheet.docx">Student handout (Word, editable)</a>
+                    <a class="aa-btn ghost" href="about-average-teacher-key.pdf">Teacher key (PDF)</a>
+                    <a class="aa-btn ghost" href="about-average-teacher-key.docx">Teacher key (Word)</a>
+                </div>
+
+                <h3>A possible flow</h3>
+                <ol>
+                    <li><strong>Warm up (10 min).</strong> Pairs work the three warm-up cases on the handout
+                        (they are Cases 1, 4 and 8 on the <em>Solve the cases</em> tab). Share strategies. Nearly everyone finds that "mean &times; number = total"
+                        unlocks the first step.</li>
+                    <li><strong>Predict, then test (15 min).</strong> Handout Part 2 gives eight cases. Students mark each
+                        possible or impossible <em>before</em> testing, then find a set or say why none exists.</li>
+                    <li><strong>Investigate (15 min).</strong> Handout Part 3 changes one clue at a time. The
+                        <em>Possibility map</em> lets students see the pattern they found by hand, all at once.</li>
+                    <li><strong>Create (15 min).</strong> Students design one possible case and one
+                        impossible-but-tempting case, swap with a partner, and justify the verdict. The
+                        <em>Design a case</em> tab checks their work.</li>
+                </ol>
+
+                <h3>Things worth saying out loud</h3>
+                <ul>
+                    <li><strong>The mode rule matters.</strong> Here the mode must be a single most-common value appearing at
+                        least twice. That is the rule the NRICH solution counts follow (two answers to Case 7, three to
+                        Case 8). With <em>Allow tied modes</em> ticked, "4 cats, mean 5, mode 9" flips from impossible to
+                        possible (1, 1, 9, 9). A good moment to ask why definitions matter.</li>
+                    <li><strong>Case 5 needs a 0.</strong> With positive whole numbers there is no answer. Allowing 0 gives five.
+                        Students often try for a long time before asking whether it can be done at all.</li>
+                    <li><strong>"I couldn't find one" is not a proof.</strong> Push students to explain <em>why</em> no set can
+                        work: a total that isn't whole, a range bigger than the total allows, a mode that needs two copies
+                        of a number too big to fit.</li>
+                    <li><strong>Impossible because of the <em>combination</em>.</strong> The lab names the smallest group of clues
+                        that clash. The "Surprise me" button builds cases where every clue is fine alone and every
+                        smaller group is fine too, but all of them together are impossible.</li>
+                    <li><strong>Unique answers are precious.</strong> Blue squares on the map have exactly one answer.
+                        What do they have in common?</li>
+                </ul>
+
+                <details>
+                    <summary>Key questions (from NRICH)</summary>
+                    <ul>
+                        <li>What distinguishes each average from the others?</li>
+                        <li>Are multiple solutions possible?</li>
+                        <li>Does a consistent approach work across all the puzzles?</li>
+                        <li>Which measure should you prioritise first, and why?</li>
+                    </ul>
+                </details>
+
+                <details>
+                    <summary>How the lab decides "impossible"</summary>
+                    <p class="aa-muted">Every set of whole numbers that could possibly work is checked, inside a limit
+                        that is proven large enough: with a mean, no number can exceed the total minus the smallest
+                        possible amounts for the others; with a range, nothing is more than the range above the lowest
+                        number. Without a mean or range a puzzle can have endlessly many answers, so the lab lists some
+                        and says so. Everything runs in your browser and nothing is stored or sent anywhere.</p>
+                </details>
+
+                <p class="aa-muted">Puzzle conditions and the extension idea are from NRICH (University of Cambridge),
+                    <a href="https://nrich.maths.org/problems/about-average">nrich.maths.org/problems/about-average</a>.
+                    The cat costumes are ours.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; Milligan Mathematics. MIT License.</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/about-average/core.js"></script>
+    <script src="../assets/js/about-average/ui.js"></script>
+</body>
+
+</html>
