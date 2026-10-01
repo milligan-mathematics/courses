@@ -202,8 +202,9 @@ reading: "Section 4.2, Series Anomalies, through Theorem 4.2.2 (Riemann's Rearra
         <div class="sstep-body">
           <p>The series is bounded below by \(\tfrac12 + \tfrac12 + \tfrac12 + \cdots\), which has no finite total. So
             the harmonic series diverges to \(\infty\). \(\blacksquare\)</p>
-          <p>Quantitatively: to guarantee a total past \(N\) you need about \(2^{2N}\) terms. To pass \(10\), roughly a
-            billion terms won't do it. This series diverges, and it diverges <em>excruciatingly slowly</em> &mdash;
+          <p>Quantitatively: to guarantee a total past \(N\) you need about \(2^{2N}\) terms. To pass \(10\), the block
+            argument guarantees it by about a million (\(2^{20}\)) terms, and the true crossover is \(n = 12{,}367\).
+            This series diverges, and it diverges <em>excruciatingly slowly</em> &mdash;
             which is precisely why no amount of computing partial sums could ever have settled the question. It had to
             be proved.</p>
         </div>
