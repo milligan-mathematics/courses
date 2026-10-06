@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goal Rush - Milligan Mathematics</title>
+    <meta name="description"
+        content="Extra time for the Buff Buffaloes vs. Wimpy Wildebeest activity: what happens to a soccer score when more goals are scored? Match stories, Pascal's triangle, combinations, and a goal-rush lab.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --navy: #1b2a4a;
+            --navy2: #2f4a7a;
+            --orange: #F36E24;
+            --orange-dk: #CD5920;
+            --orange-ink: #a8430d;
+            --black: #141414;
+            --gold: #F7D94C;
+            --gold-dk: #c9a400;
+            --gold-ink: #7a6206;
+            --draw: #5d6b85;
+            --pitch: #2f8f46;
+            --pitch2: #38a352;
+            --paper: #fffaf2;
+            --bg: #f3f0e8;
+            --card: #ffffff;
+            --ink: #1d1d1f;
+            --muted: #5b6270;
+            --line: #d9dde6;
+            --ok: #1d7f45;
+            --ok-bg: #e6f5ec;
+            --bad: #b3261e;
+            --bad-bg: #fdecea;
+            --radius: 16px;
+            --f-head: 'Bungee', Impact, 'Arial Black', sans-serif;
+            --f-body: 'Nunito', 'Segoe UI', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+
+        body {
+            margin: 0;
+            font-family: var(--f-body);
+            font-size: 17px;
+            line-height: 1.6;
+            color: var(--ink);
+            background: var(--bg);
+        }
+
+        .wrap { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+
+        a { color: var(--orange-dk); }
+
+        h1, h2, h3 { font-family: var(--f-head); font-weight: 400; letter-spacing: .3px; line-height: 1.15; }
+
+        /* ---------- top bar ---------- */
+        .topbar { position: sticky; top: 0; z-index: 50; background: var(--navy); color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.25); }
+        .topbar-inner { display: flex; align-items: center; gap: 16px; height: 56px; }
+        .topbar .home { color: #fff; text-decoration: none; font-weight: 800; white-space: nowrap; }
+        .trail { display: flex; align-items: center; overflow-x: auto; scrollbar-width: none; flex: 1; }
+        .trail::-webkit-scrollbar { display: none; }
+        .trail a { display: flex; align-items: center; gap: 6px; color: #cfd8ea; text-decoration: none; font-size: .82rem; font-weight: 700; white-space: nowrap; padding: 4px 2px; }
+        .trail .stone { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: #fff; color: var(--black); font-family: var(--f-head); font-size: .75rem; border: 2px solid var(--black); flex: none; }
+        .trail a.on .stone { background: var(--orange); }
+        .trail a.on { color: #fff; }
+        .trail .dash { flex: 0 0 14px; height: 2px; background: #4b5f86; margin: 0 4px; }
+        @media (max-width: 860px) { .trail .lbl { display: none; } .trail .dash { flex-basis: 10px; } }
+
+        /* ---------- hero ---------- */
+        .hero { background: linear-gradient(#14213d, #2f4a7a 78%, var(--pitch) 78%, var(--pitch) 100%); color: #fff; position: relative; overflow: hidden; }
+        .hero::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 22%;
+            background: repeating-linear-gradient(90deg, var(--pitch) 0 90px, var(--pitch2) 90px 180px); }
+        .lights { position: absolute; top: 18px; display: flex; gap: 10px; }
+        .lights i { width: 10px; height: 10px; border-radius: 50%; background: #fff6c8; box-shadow: 0 0 18px 6px rgba(255,246,200,.35); }
+        .hero-inner { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 18px; padding: 54px 20px 70px; }
+        .hero-mascot { display: flex; justify-content: center; }
+        .hero-mascot svg { width: 100%; max-width: 210px; height: auto; filter: drop-shadow(0 8px 16px rgba(0,0,0,.35)); }
+        .hero-mid { text-align: center; max-width: 470px; }
+        .kicker { font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; font-size: .78rem; color: #ffd9c2; }
+        .hero h1 { font-size: clamp(2.6rem, 7vw, 4.4rem); margin: 6px 0 4px; text-shadow: 0 4px 0 var(--black); }
+        .hero h1 span { color: var(--orange); }
+        .vs { font-family: var(--f-head); font-size: 1rem; margin-bottom: 10px; }
+        .vs .b { color: var(--orange); } .vs .w { color: var(--gold); }
+        .lede { font-size: 1.04rem; color: #e8edf7; margin: 0 0 16px; }
+        .scoreboard { display: inline-flex; align-items: center; gap: 10px; background: var(--black); border: 3px solid #333; border-radius: 10px; padding: 6px 14px; font-family: var(--f-head); font-size: 1.15rem; }
+        .scoreboard .team { font-size: .8rem; }
+        .scoreboard .num { background: #222; color: #ffcf5a; border-radius: 6px; padding: 0 9px; min-width: 2.2ch; text-align: center; }
+        .scoreboard .tb { color: var(--orange); } .scoreboard .tw { color: var(--gold); }
+        .hero-actions { margin-top: 16px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        @media (max-width: 760px) {
+            .hero-inner { grid-template-columns: 1fr 1fr; padding-top: 40px; }
+            .hero-mid { grid-column: 1 / -1; grid-row: 1; margin: 0 auto; }
+            .hero-mascot svg { max-width: 140px; }
+        }
+
+        /* ---------- buttons & inputs ---------- */
+        .btn { display: inline-flex; align-items: center; gap: 6px; font: 800 .95rem var(--f-body); background: var(--orange); color: var(--black); border: 2px solid var(--black); border-radius: 999px; padding: 8px 18px; cursor: pointer; text-decoration: none; box-shadow: 0 3px 0 var(--black); transition: transform .08s; }
+        .btn:hover { background: #ff8a45; }
+        .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--black); }
+        .btn.ghost { background: transparent; color: #fff; border-color: #fff; box-shadow: none; }
+        .btn.ghost:hover { background: rgba(255,255,255,.12); }
+        .btn.light { background: #fff; }
+        .btn.light:hover { background: #f3f4f6; }
+        .btn.small { padding: 5px 13px; font-size: .86rem; }
+        .btn:disabled { opacity: .45; cursor: not-allowed; }
+        .btn:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--navy2); outline-offset: 2px; }
+        input[type=text], input[type=number] { font: 700 1rem var(--f-body); border: 2px solid #9aa3b5; border-radius: 8px; padding: 5px 8px; background: #fff; color: var(--ink); }
+        input.ans { width: 92px; text-align: center; }
+        input.ans.ok { border-color: var(--ok); background: var(--ok-bg); }
+        input.ans.bad { border-color: var(--bad); background: var(--bad-bg); }
+        textarea { width: 100%; min-height: 88px; font: 1rem var(--f-body); border: 2px solid #c3c9d4; border-radius: 10px; padding: 9px 11px; background: #fff; color: var(--ink); resize: vertical; }
+
+        /* ---------- stations ---------- */
+        .station { padding-top: 56px; }
+        .station-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+        .station-num { width: 54px; height: 54px; flex: none; border-radius: 50%; background: #fff; border: 3px solid var(--black); display: grid; place-items: center; font-family: var(--f-head); font-size: 1.5rem; box-shadow: 0 3px 0 var(--black); }
+        .station-head h2 { margin: 0; font-size: clamp(1.4rem, 3.4vw, 1.9rem); }
+        .station-head .sub { color: var(--muted); font-weight: 600; }
+        .panel { background: var(--card); border: 2px solid var(--black); border-radius: var(--radius); padding: 20px 22px; margin-bottom: 16px; box-shadow: 0 4px 0 rgba(20,20,20,.12); }
+        .panel > p:first-child { margin-top: 0; }
+        .panel h3 { font-size: 1.05rem; margin: 18px 0 8px; }
+        .panel h3:first-child { margin-top: 0; }
+        .keyidea { border: 2px solid var(--black); border-left: 10px solid var(--orange); background: var(--paper); border-radius: 12px; padding: 10px 14px; margin: 14px 0; }
+        .keyidea b.tag { font-family: var(--f-head); font-weight: 400; font-size: .85rem; color: var(--orange-ink); display: block; letter-spacing: .5px; }
+        .talk { background: #eef2f9; border: 2px dashed #7b8bb0; border-radius: 12px; padding: 12px 14px; margin-top: 16px; }
+        .talk h4 { margin: 0 0 4px; font-family: var(--f-head); font-weight: 400; font-size: .9rem; color: var(--navy); letter-spacing: .5px; }
+        .talk .q { font-weight: 700; margin: 8px 0 6px; }
+        .chk-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 8px 0; }
+        .fb { font-weight: 700; font-size: .93rem; }
+        .fb.ok { color: var(--ok); } .fb.bad { color: var(--bad); }
+        .mini { font-size: .9rem; color: var(--muted); }
+        .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 760px) { .two { grid-template-columns: 1fr; } }
+
+        /* team chips */
+        .chip { display: inline-grid; place-items: center; width: 24px; height: 24px; border: 2px solid var(--black); border-radius: 6px; font: 400 .8rem var(--f-head); margin: 0 1px; vertical-align: middle; }
+        .chip.B { background: var(--orange); }
+        .chip.W { background: var(--gold); }
+        .chip.Q { background: #fff; color: #9aa3b5; border-style: dashed; }
+        .story { display: inline-flex; gap: 2px; padding: 3px 5px; border-radius: 8px; background: #f6f7f9; margin: 3px; border: 1.5px solid transparent; }
+        .story.hinted { border-color: #9aa3b5; border-style: dashed; }
+        .story.fresh { animation: pop .5s ease; }
+        @keyframes pop { 0% { transform: scale(.6); background: #fff2b8; } 100% { transform: scale(1); } }
+
+        /* pundits */
+        .pun { display: flex; align-items: center; gap: 12px; margin: 10px 0 14px; }
+        .pun svg { flex: none; width: 64px; height: 64px; }
+        .bubble { position: relative; flex: 1; border: 2px solid var(--black); border-radius: 14px; padding: 8px 13px; background: #fff; }
+        .bubble::before { content: ''; position: absolute; left: -11px; top: 20px; border: 9px solid transparent; border-right-color: var(--black); border-left: 0; }
+        .bubble .who { font-weight: 800; font-size: .75rem; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); }
+
+        /* ---------- recap ---------- */
+        .recap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 12px 0; }
+        .recap > div { border: 2px solid var(--black); border-radius: 12px; padding: 10px; text-align: center; background: #fff; }
+        .recap .score { font-family: var(--f-head); font-size: 1.1rem; }
+        .recap .p { font-weight: 800; font-size: 1.05rem; margin-top: 4px; }
+        .recap .hdB { border-top: 8px solid var(--orange); } .recap .hdD { border-top: 8px solid var(--draw); } .recap .hdW { border-top: 8px solid var(--gold); }
+        @media (max-width: 560px) { .recap { grid-template-columns: 1fr; } }
+
+        /* ---------- story builder ---------- */
+        .builder .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .goals { display: flex; gap: 8px; flex-wrap: wrap; }
+        .goalbtn { width: 64px; border: 2.5px solid var(--black); border-radius: 12px; background: #fff; cursor: pointer; padding: 4px 0 6px; font: 800 .72rem var(--f-body); color: var(--muted); }
+        .goalbtn .t { display: block; font: 400 1.35rem var(--f-head); color: #b6bcc8; }
+        .goalbtn.B { background: var(--orange); color: var(--black); } .goalbtn.B .t { color: var(--black); }
+        .goalbtn.W { background: var(--gold); color: var(--black); } .goalbtn.W .t { color: var(--black); }
+        .quick { display: flex; align-items: center; gap: 6px; }
+        .quick input { width: 110px; text-transform: uppercase; letter-spacing: 2px; }
+        .board { display: grid; gap: 8px; margin-top: 12px; }
+        .col { border: 2px solid var(--black); border-radius: 12px; overflow: hidden; background: #fff; min-height: 120px; display: flex; flex-direction: column; }
+        .col .hd { font-family: var(--f-head); text-align: center; padding: 4px; font-size: 1rem; border-bottom: 2px solid var(--black); }
+        .col .hd small { display: block; font: 700 .7rem var(--f-body); }
+        .col.cB .hd { background: var(--orange); } .col.cD .hd { background: #c9d1e0; } .col.cW .hd { background: var(--gold); }
+        .col .list { padding: 4px; flex: 1; text-align: center; }
+        .col .cnt { border-top: 1.5px solid var(--line); text-align: center; font-weight: 800; font-size: .9rem; padding: 3px; background: #fafafa; }
+        .bstatus { margin-top: 8px; font-weight: 700; min-height: 1.6em; }
+        .done-box { display: none; margin-top: 12px; }
+        .done-box.show { display: block; }
+        table.res { border-collapse: collapse; width: 100%; margin-top: 6px; font-size: .95rem; }
+        table.res th, table.res td { border: 1.5px solid var(--black); padding: 5px 6px; text-align: center; }
+        table.res th { background: var(--navy); color: #fff; }
+        table.res td.l { text-align: left; font-weight: 800; background: #f4f5f8; }
+
+        /* ---------- triangle ---------- */
+        .tri { margin: 12px 0; overflow-x: auto; padding-bottom: 6px; }
+        .tri-in { display: flex; flex-direction: column; align-items: center; gap: 6px; width: max-content; margin: 0 auto; }
+        .trow[hidden] { display: none; }
+        .trow { display: flex; align-items: center; gap: 6px; }
+        .trow .rl { width: 74px; text-align: right; font-size: .78rem; font-weight: 800; color: var(--muted); margin-right: 6px; flex: none; }
+        .trow .rr { width: 80px; flex: none; }
+        .tcell { width: 52px; height: 40px; border: 2px solid var(--black); border-radius: 10px; display: grid; place-items: center; font-weight: 800; background: #fff; cursor: pointer; position: relative; font-size: 1rem; padding: 0; }
+        .tcell input { width: 100%; height: 100%; border: 0; background: transparent; text-align: center; font: 800 1rem var(--f-body); border-radius: 8px; padding: 0; }
+        .tcell.ok { background: var(--ok-bg); border-color: var(--ok); }
+        .tcell.bad { background: var(--bad-bg); border-color: var(--bad); }
+        .tcell.sel { box-shadow: 0 0 0 4px var(--orange); }
+        .tcell.par { box-shadow: 0 0 0 4px var(--navy2); background: #e3ebfb; }
+        @media (max-width: 600px) { .tri-in, .trow { gap: 4px; } .tcell { width: 34px; height: 32px; font-size: .85rem; } .trow .rl { width: 50px; font-size: .68rem; } .trow .rr { width: 0; } }
+        .explain { min-height: 70px; }
+
+        /* ---------- picker ---------- */
+        .timeline { display: flex; align-items: center; gap: 0; margin: 10px 0; flex-wrap: wrap; }
+        .timeline .seg { width: 18px; height: 4px; background: var(--black); }
+        .slot { width: 62px; height: 62px; border-radius: 50%; border: 3px solid var(--black); background: var(--gold); cursor: pointer; font: 400 1.25rem var(--f-head); display: grid; place-items: center; position: relative; }
+        .slot small { position: absolute; bottom: -20px; font: 800 .7rem var(--f-body); color: var(--muted); white-space: nowrap; }
+        .slot.B { background: var(--orange); }
+        .found { margin-top: 26px; }
+
+        /* ---------- lab ---------- */
+        .lab-controls { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; margin-bottom: 10px; }
+        .lab-controls label { font-weight: 800; }
+        .lab-controls input[type=range] { width: 220px; accent-color: var(--orange); vertical-align: middle; }
+        .lab-controls output { font: 400 1.1rem var(--f-head); min-width: 2.5ch; display: inline-block; }
+        .presets { display: flex; gap: 6px; flex-wrap: wrap; }
+        .presets .btn.on { background: var(--orange); }
+        .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; }
+        .tile { border: 2px solid var(--black); border-radius: 12px; padding: 8px 10px; background: #fff; }
+        .tile .lbl { font-size: .74rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+        .tile .val { font: 400 1.35rem var(--f-head); }
+        .tile .sm { font-size: .8rem; color: var(--muted); font-weight: 700; }
+        .sw { width: 12px; height: 12px; border-radius: 3px; border: 1.5px solid var(--black); display: inline-block; flex: none; }
+        @media (max-width: 760px) { .tiles { grid-template-columns: 1fr 1fr; } }
+        .chartbox { position: relative; border: 2px solid var(--black); border-radius: 14px; background: #fff; padding: 8px 8px 2px; }
+        .chartbox svg { width: 100%; height: auto; display: block; }
+        .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .85rem; font-weight: 700; color: var(--muted); padding: 4px 8px 8px; }
+        .legend span { display: inline-flex; align-items: center; gap: 6px; }
+        .legend .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--black); border: 2px solid #fff; box-shadow: 0 0 0 1.5px var(--black); }
+        .tip { position: absolute; pointer-events: none; background: var(--black); color: #fff; font-size: .82rem; line-height: 1.35; padding: 6px 9px; border-radius: 8px; white-space: nowrap; opacity: 0; transition: opacity .1s; z-index: 5; }
+        .tip.show { opacity: 1; }
+        details.tbl { margin-top: 8px; }
+        details.tbl summary { cursor: pointer; font-weight: 800; color: var(--navy2); }
+        details.tbl .scroll { max-height: 280px; overflow: auto; margin-top: 6px; }
+        .simline { font-weight: 700; font-size: .92rem; color: var(--muted); margin-top: 6px; min-height: 1.4em; }
+
+        /* ---------- trail map / report ---------- */
+        .map { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+        .map > div { border: 2px solid var(--black); border-radius: 12px; padding: 10px 12px; background: #fff; }
+        .map b { font-family: var(--f-head); font-weight: 400; font-size: .85rem; color: var(--orange-ink); display: block; }
+        footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 40px 20px 50px; }
+
+        @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .story.fresh { animation: none; } .btn { transition: none; } }
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <div class="wrap topbar-inner">
+            <a class="home" href="index.html">&larr; Math 253</a>
+            <nav class="trail" id="trail" aria-label="Stations">
+                <a href="#replay"><span class="stone">1</span><span class="lbl">Replay</span></a><i class="dash"></i>
+                <a href="#three"><span class="stone">2</span><span class="lbl">3 goals</span></a><i class="dash"></i>
+                <a href="#four"><span class="stone">3</span><span class="lbl">4 goals</span></a><i class="dash"></i>
+                <a href="#triangle"><span class="stone">4</span><span class="lbl">Triangle</span></a><i class="dash"></i>
+                <a href="#choose"><span class="stone">5</span><span class="lbl">Choosing</span></a><i class="dash"></i>
+                <a href="#lab"><span class="stone">6</span><span class="lbl">Goal Rush Lab</span></a><i class="dash"></i>
+                <a href="#buff"><span class="stone">7</span><span class="lbl">Really buff?</span></a><i class="dash"></i>
+                <a href="#post"><span class="stone">8</span><span class="lbl">Post-match</span></a>
+            </nav>
+        </div>
+    </div>
+
+    <header class="hero">
+        <div class="lights" style="left:28px" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="lights" style="right:28px" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="wrap hero-inner">
+            <div class="hero-mascot"><svg viewBox="0 0 220 220" width="210" height="210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Buff Buffaloes mascot">
+  <defs><clipPath id="hb"><circle cx="110" cy="110" r="94"/></clipPath></defs>
+  <circle cx="110" cy="110" r="106" fill="#1d1d1f"/>
+  <circle cx="110" cy="110" r="100" fill="#F36E24"/>
+  <circle cx="110" cy="110" r="94" fill="#fff8ec"/>
+  <g clip-path="url(#hb)">
+    <!-- speed lines -->
+    <g stroke="#F36E24" stroke-width="5" stroke-linecap="round" opacity=".35">
+      <line x1="22" y1="70" x2="48" y2="76"/><line x1="18" y1="100" x2="44" y2="100"/>
+      <line x1="198" y1="70" x2="172" y2="76"/><line x1="202" y1="100" x2="176" y2="100"/>
+    </g>
+    <!-- hump / shoulders -->
+    <path d="M14,230 Q20,150 110,150 Q200,150 206,230 Z" fill="#38231a"/>
+    <!-- jersey: big buff shoulders -->
+    <path d="M10,232 Q16,172 60,166 Q110,186 160,166 Q204,172 210,232 Z" fill="#1d1d1f"/>
+    <path d="M60,166 Q110,186 160,166 L150,172 Q110,194 70,172 Z" fill="#F36E24"/>
+    <path d="M24,206 Q30,186 46,178" stroke="#F36E24" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M196,206 Q190,186 174,178" stroke="#F36E24" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <text x="110" y="200" text-anchor="middle" font-family="Bungee, Impact, sans-serif" font-size="20" fill="#F36E24">1</text>
+  </g>
+  <!-- horns -->
+  <path d="M76,82 C52,84 34,74 30,42 C42,60 56,64 80,62 Z" fill="#f1e6cf" stroke="#38231a" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M144,82 C168,84 186,74 190,42 C178,60 164,64 140,62 Z" fill="#f1e6cf" stroke="#38231a" stroke-width="3" stroke-linejoin="round"/>
+  <!-- ears -->
+  <ellipse cx="60" cy="96" rx="15" ry="8" transform="rotate(18 60 96)" fill="#5b3a29" stroke="#38231a" stroke-width="3"/>
+  <ellipse cx="160" cy="96" rx="15" ry="8" transform="rotate(-18 160 96)" fill="#5b3a29" stroke="#38231a" stroke-width="3"/>
+  <!-- beard -->
+  <path d="M90,150 Q110,190 130,150 Z" fill="#38231a"/>
+  <!-- head -->
+  <path d="M70,62 Q110,40 150,62 Q168,96 152,130 Q140,160 110,162 Q80,160 68,130 Q52,96 70,62 Z" fill="#5b3a29" stroke="#38231a" stroke-width="3"/>
+  <!-- shaggy forelock -->
+  <path d="M64,74 Q70,46 86,60 Q94,38 106,56 Q114,36 124,56 Q136,40 142,60 Q156,50 156,76 Q110,84 64,74 Z" fill="#38231a"/>
+  <!-- sweatband -->
+  <path d="M64,76 Q110,64 156,76 L155,90 Q110,78 65,90 Z" fill="#F36E24" stroke="#1d1d1f" stroke-width="2.5"/>
+  <path d="M65,83 Q110,71 155,83" stroke="#1d1d1f" stroke-width="3" fill="none"/>
+  <!-- determined brows + eyes -->
+  <ellipse cx="91" cy="104" rx="9" ry="8" fill="#fff"/>
+  <ellipse cx="129" cy="104" rx="9" ry="8" fill="#fff"/>
+  <circle cx="94" cy="106" r="4.2" fill="#1d1d1f"/>
+  <circle cx="126" cy="106" r="4.2" fill="#1d1d1f"/>
+  <path d="M78,94 L102,101" stroke="#1d1d1f" stroke-width="6" stroke-linecap="round"/>
+  <path d="M142,94 L118,101" stroke="#1d1d1f" stroke-width="6" stroke-linecap="round"/>
+  <!-- muzzle -->
+  <ellipse cx="110" cy="138" rx="31" ry="22" fill="#8c5e45" stroke="#38231a" stroke-width="3"/>
+  <ellipse cx="99" cy="133" rx="5.5" ry="4" fill="#38231a"/>
+  <ellipse cx="121" cy="133" rx="5.5" ry="4" fill="#38231a"/>
+  <path d="M96,148 Q112,156 127,145" stroke="#38231a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+</svg></div>
+            <div class="hero-mid">
+                <div class="kicker">Math 253 &middot; Chapter 16 &middot; Extra Time</div>
+                <h1>Goal <span>Rush</span></h1>
+                <div class="vs"><span class="b">Buff Buffaloes</span> vs. <span class="w">Wimpy Wildebeest</span></div>
+                <p class="lede">In class, the two teams played two-goal matches, and a draw came up half the time.
+                    What happens when the scoreboard gets busy? Three goals, four goals, ten, sixty&hellip;</p>
+                <div class="scoreboard" aria-label="Scoreboard">
+                    <span class="team tb">BUF</span><span class="num" id="sb-b">0</span>
+                    <span>&ndash;</span>
+                    <span class="num" id="sb-w">0</span><span class="team tw">WIL</span>
+                </div>
+                <div class="hero-actions">
+                    <a class="btn" href="#replay">Kick off &rarr;</a>
+                    <a class="btn ghost" href="#lab">Jump to the lab</a>
+                </div>
+            </div>
+            <div class="hero-mascot"><svg viewBox="0 0 220 220" width="210" height="210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Wimpy Wildebeest mascot">
+  <defs><clipPath id="hw"><circle cx="110" cy="110" r="94"/></clipPath></defs>
+  <circle cx="110" cy="110" r="106" fill="#454b5a"/>
+  <circle cx="110" cy="110" r="100" fill="#F7D94C"/>
+  <circle cx="110" cy="110" r="94" fill="#fff8ec"/>
+  <g clip-path="url(#hw)">
+    <!-- scrawny neck -->
+    <rect x="99" y="148" width="22" height="30" fill="#8f97a8" stroke="#454b5a" stroke-width="2.5"/>
+    <!-- slumped narrow jersey -->
+    <path d="M46,232 Q54,172 104,166 L116,166 Q166,172 174,232 Z" fill="#F7D94C" stroke="#454b5a" stroke-width="2.5"/>
+    <path d="M100,166 L110,182 L120,166" fill="none" stroke="#454b5a" stroke-width="3"/>
+    <text x="110" y="199" text-anchor="middle" font-family="Bungee, Impact, sans-serif" font-size="16" fill="#454b5a">0</text>
+  </g>
+  <!-- thin hooked horns -->
+  <g fill="none" stroke="#454b5a" stroke-linecap="round">
+    <path d="M94,58 Q66,62 52,52 Q44,44 50,30" stroke-width="8"/>
+    <path d="M126,58 Q154,62 168,52 Q176,44 170,30" stroke-width="8"/>
+    <path d="M50,30 Q52,24 58,22" stroke-width="5"/>
+    <path d="M170,30 Q168,24 162,22" stroke-width="5"/>
+  </g>
+  <!-- droopy ears -->
+  <path d="M90,70 Q66,78 58,96 Q78,92 92,80 Z" fill="#8f97a8" stroke="#454b5a" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M130,70 Q154,78 162,96 Q142,92 128,80 Z" fill="#8f97a8" stroke="#454b5a" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- long head -->
+  <path d="M88,56 Q110,46 132,56 Q138,90 131,120 Q127,150 110,155 Q93,150 89,120 Q82,90 88,56 Z" fill="#8f97a8" stroke="#454b5a" stroke-width="3"/>
+  <!-- dark muzzle -->
+  <path d="M90,116 Q110,110 130,116 Q133,150 110,157 Q87,150 90,116 Z" fill="#454b5a"/>
+  <ellipse cx="102" cy="138" rx="3.5" ry="2.5" fill="#1d2029"/>
+  <ellipse cx="118" cy="138" rx="3.5" ry="2.5" fill="#1d2029"/>
+  <path d="M101,148 q4.5,-3.5 9,0 q4.5,3.5 9,0" stroke="#d9dde6" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <!-- wispy beard -->
+  <g stroke="#454b5a" stroke-width="2.5" stroke-linecap="round" fill="none">
+    <path d="M104,155 Q100,166 104,176"/><path d="M110,156 Q112,168 108,180"/><path d="M116,155 Q121,166 117,175"/>
+  </g>
+  <!-- mane tuft -->
+  <path d="M95,60 L99,42 L104,56 L109,36 L113,56 L119,42 L124,60 Z" fill="#2e3240"/>
+  <!-- worried eyes -->
+  <circle cx="98" cy="88" r="9.5" fill="#fff" stroke="#454b5a" stroke-width="1.5"/>
+  <circle cx="122" cy="88" r="9.5" fill="#fff" stroke="#454b5a" stroke-width="1.5"/>
+  <circle cx="96" cy="91" r="2.6" fill="#1d1d1f"/>
+  <circle cx="120" cy="91" r="2.6" fill="#1d1d1f"/>
+  <path d="M86,77 L104,72" stroke="#2e3240" stroke-width="3.5" stroke-linecap="round" transform="rotate(-14 95 75)"/>
+  <path d="M134,77 L116,72" stroke="#2e3240" stroke-width="3.5" stroke-linecap="round" transform="rotate(14 125 75)"/>
+  <!-- sweat drops -->
+  <path d="M146,66 Q153,78 146,82 Q139,78 146,66 Z" fill="#7cc4f2" stroke="#3d8fc4" stroke-width="1.5"/>
+  <path d="M154,90 Q159,99 154,102 Q149,99 154,90 Z" fill="#7cc4f2" stroke="#3d8fc4" stroke-width="1.5"/>
+</svg></div>
+        </div>
+    </header>
+
+    <main>
+        <!-- ======================= 1 REPLAY ======================= -->
+        <section class="station wrap" id="replay">
+            <div class="station-head">
+                <div class="station-num">1</div>
+                <div>
+                    <h2>Instant Replay</h2>
+                    <div class="sub">What we found with two goals, and the idea that carries forward.</div>
+                </div>
+            </div>
+            <div class="panel">
+                <p>The teams are evenly matched, so <b>every goal is 50&ndash;50</b>. With exactly two goals there are
+                    four <b>match stories</b>, the order in which the goals were scored:</p>
+                <div class="recap">
+                    <div class="hdB"><div class="score">2&ndash;0</div>
+                        <div><span class="story"><span class="chip B">B</span><span class="chip B">B</span></span></div>
+                        <div class="p">1 of 4 stories = &frac14;</div></div>
+                    <div class="hdD"><div class="score">1&ndash;1</div>
+                        <div><span class="story"><span class="chip B">B</span><span class="chip W">W</span></span><span class="story"><span class="chip W">W</span><span class="chip B">B</span></span></div>
+                        <div class="p">2 of 4 stories = &frac12;</div></div>
+                    <div class="hdW"><div class="score">0&ndash;2</div>
+                        <div><span class="story"><span class="chip W">W</span><span class="chip W">W</span></span></div>
+                        <div class="p">1 of 4 stories = &frac14;</div></div>
+                </div>
+                <div class="keyidea"><b class="tag">The big idea</b>
+                    When every goal is 50&ndash;50, <b>every match story is equally likely</b>. So the probability of a
+                    final score is
+                    <div style="text-align:center;font-weight:800;margin:6px 0">(number of stories that end with that score) &divide; (number of possible stories)</div>
+                    For the rest of today, the job is <b>counting stories</b>.</div>
+
+                <h3>How many stories?</h3>
+                <p>Each goal can be scored by either team. How many different match stories are possible with&hellip;</p>
+                <div class="chk-row"><label for="tot3">3 goals:</label><input class="ans" id="tot3" data-answer="8"
+                        data-hint="List them, or think: 2 choices for goal 1, 2 for goal 2, 2 for goal 3."><span class="fb"></span></div>
+                <div class="chk-row"><label for="tot4">4 goals:</label><input class="ans" id="tot4" data-answer="16"
+                        data-hint="Every 3-goal story can be followed by a B or a W."><span class="fb"></span></div>
+                <div class="chk-row"><label for="tot10">10 goals:</label><input class="ans" id="tot10" data-answer="1024"
+                        data-hint="Ten goals, two choices each. Multiply."><span class="fb"></span></div>
+                <div class="talk">
+                    <h4>Talk it over</h4>
+                    <div class="q">Why is the number of stories for <i>n</i> goals equal to 2 &times; 2 &times; &hellip; &times; 2
+                        (<i>n</i> times)? Where have you seen this kind of counting before?</div>
+                    <textarea data-journal="s1-why" data-label="Why 2^n stories?"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= 2 THREE GOALS ======================= -->
+        <section class="station wrap" id="three">
+            <div class="station-head">
+                <div class="station-num">2</div>
+                <div>
+                    <h2>Three Goals</h2>
+                    <div class="sub">Build every match story and drop it on the scoreboard.</div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="pun"><svg viewBox="0 0 100 100" width="64" height="64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="commentator pat">
+  <circle cx="50" cy="50" r="48" fill="#eef1f5"/>
+  <path d="M18,100 Q20,74 50,72 Q80,74 82,100 Z" fill="#33415c"/>
+  <path d="M28,80 Q50,92 72,80 L72,88 Q50,98 28,88 Z" fill="#6c7a89"/>
+  <ellipse cx="50" cy="44" rx="24" ry="26" fill="#f2c9a5"/>
+  <path d="M24,40 Q24,16 50,16 Q76,16 76,40 Q70,26 50,26 Q30,26 24,40 Z" fill="#6b4a2b"/>
+  <circle cx="41" cy="45" r="3" fill="#1d1d1f"/><circle cx="59" cy="45" r="3" fill="#1d1d1f"/>
+  <path d="M41,56 Q50,63 59,56" stroke="#1d1d1f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M24,44 Q24,14 50,14 Q76,14 76,44" stroke="#222" stroke-width="3.5" fill="none"/>
+  <rect x="19" y="38" width="9" height="14" rx="3" fill="#222"/><rect x="72" y="38" width="9" height="14" rx="3" fill="#222"/>
+  <path d="M24,52 Q26,62 38,60" stroke="#222" stroke-width="2.5" fill="none"/><circle cx="39" cy="60" r="3" fill="#222"/>
+</svg><div class="bubble"><div class="who">Pundit Pat &middot; Goal Line Live</div>
+                    &ldquo;Three goals? Four possible scores: 3&ndash;0, 2&ndash;1, 1&ndash;2, 0&ndash;3. So each one is &frac14;. I've learned nothing.&rdquo;</div></div>
+                <div class="talk" style="margin-top:0">
+                    <h4>Predict first</h4>
+                    <div class="q">Before you build anything: what's the probability of each final score with three goals?</div>
+                    <textarea data-journal="s2-predict" data-label="3-goal prediction" style="min-height:60px"></textarea>
+                </div>
+                <h3>Story builder</h3>
+                <p class="mini">Click each goal to choose who scored it, then press <b>Add story</b>. Or type a story like
+                    <b>BWB</b> in the box and press Enter.</p>
+                <div class="builder" id="builder3"></div>
+                <div class="talk">
+                    <h4>Talk it over</h4>
+                    <div class="q">Every 2&ndash;1 story has exactly one Wildebeest goal. Use that to explain why there are
+                        exactly three 2&ndash;1 stories, without listing them.</div>
+                    <textarea data-journal="s2-why3" data-label="Why three 2-1 stories?"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= 3 FOUR GOALS ======================= -->
+        <section class="station wrap" id="four">
+            <div class="station-head">
+                <div class="station-num">3</div>
+                <div>
+                    <h2>Four Goals</h2>
+                    <div class="sub">The handout's Extra Time question, answered by counting.</div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="pun"><svg viewBox="0 0 100 100" width="64" height="64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="commentator pat">
+  <circle cx="50" cy="50" r="48" fill="#eef1f5"/>
+  <path d="M18,100 Q20,74 50,72 Q80,74 82,100 Z" fill="#33415c"/>
+  <path d="M28,80 Q50,92 72,80 L72,88 Q50,98 28,88 Z" fill="#6c7a89"/>
+  <ellipse cx="50" cy="44" rx="24" ry="26" fill="#f2c9a5"/>
+  <path d="M24,40 Q24,16 50,16 Q76,16 76,40 Q70,26 50,26 Q30,26 24,40 Z" fill="#6b4a2b"/>
+  <circle cx="41" cy="45" r="3" fill="#1d1d1f"/><circle cx="59" cy="45" r="3" fill="#1d1d1f"/>
+  <path d="M41,56 Q50,63 59,56" stroke="#1d1d1f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M24,44 Q24,14 50,14 Q76,14 76,44" stroke="#222" stroke-width="3.5" fill="none"/>
+  <rect x="19" y="38" width="9" height="14" rx="3" fill="#222"/><rect x="72" y="38" width="9" height="14" rx="3" fill="#222"/>
+  <path d="M24,52 Q26,62 38,60" stroke="#222" stroke-width="2.5" fill="none"/><circle cx="39" cy="60" r="3" fill="#222"/>
+</svg><div class="bubble"><div class="who">Pundit Pat &middot; Goal Line Live</div>
+                    &ldquo;Fine, I was wrong about two goals. But with four goals, a 2&ndash;2 draw is the even split, so it's still &frac12;. Right?&rdquo;</div></div>
+                <div class="talk" style="margin-top:0">
+                    <h4>Predict first</h4>
+                    <div class="q">Is 2&ndash;2 still the most likely score? Is its probability still &frac12;, or more, or less?</div>
+                    <textarea data-journal="s3-predict" data-label="4-goal prediction" style="min-height:60px"></textarea>
+                </div>
+                <h3>Story builder</h3>
+                <p class="mini">Find all of them. Organizing as you go helps. If you're stuck, the builder can show you one you're missing.</p>
+                <div class="builder" id="builder4"></div>
+                <div class="chk-row" style="margin-top:14px"><label for="p22"><b>P(2&ndash;2 draw)</b> with four goals =</label>
+                    <input class="ans" id="p22" data-answer="6/16" data-type="prob" data-hint="How many 2–2 stories out of how many total stories?">
+                    <span class="fb"></span></div>
+                <div class="talk">
+                    <h4>Talk it over</h4>
+                    <div class="q">To describe a 2&ndash;2 story, you only need to say <i>which two goals</i> the Buffaloes scored,
+                        like &ldquo;goals 1 and 3.&rdquo; List all the pairs. Why does this give the same count as your scoreboard?</div>
+                    <textarea data-journal="s3-pairs" data-label="2-2 stories as pairs of goals"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= 4 TRIANGLE ======================= -->
+        <section class="station wrap" id="triangle">
+            <div class="station-head">
+                <div class="station-num">4</div>
+                <div>
+                    <h2>The Scoreboard Triangle</h2>
+                    <div class="sub">Stack the story counts. A pattern shows up.</div>
+                </div>
+            </div>
+            <div class="panel">
+                <p>Each row lists how many stories end with each score, from an all-Buffaloes blowout on the left to an
+                    all-Wildebeest blowout on the right. You've already found rows 2, 3, and 4. Row 0 is the match where
+                    nobody scores: one story, 0&ndash;0.</p>
+                <p><b>Fill in rows 5 and 6.</b> Hint: look at how each number in row 4 relates to the two numbers just above it.
+                    Click any finished number to see <i>why</i> it works.</p>
+                <div class="tri" id="tri" role="group" aria-label="Scoreboard triangle"></div>
+                <div class="chk-row" style="justify-content:center">
+                    <button class="btn small light" id="tri-reveal">Show rows 5&ndash;8</button>
+                    <button class="btn small light" id="tri-clear">Clear my entries</button>
+                </div>
+                <div class="keyidea explain" id="tri-explain" aria-live="polite"><b class="tag">Why does it work?</b>
+                    Click a number in the triangle (row 1 or below).</div>
+                <div class="chk-row"><label for="rowsum">Add up all the numbers in row 10 (no need to write the row out):</label>
+                    <input class="ans" id="rowsum" data-answer="1024" data-hint="What does each row's total count? Look back at Station 1.">
+                    <span class="fb"></span></div>
+                <p class="mini">Mathematicians in India, Persia, and China worked with this triangle centuries before Blaise Pascal
+                    wrote about it in 1654. Today it's usually called <b>Pascal's triangle</b>.</p>
+                <div class="talk">
+                    <h4>Talk it over</h4>
+                    <div class="q">In your own words, why does adding the two numbers above give the number below? Use
+                        &ldquo;think about who scored the <i>last</i> goal.&rdquo;</div>
+                    <textarea data-journal="s4-why" data-label="Why add the two above?"></textarea>
+                    <div class="q">Why is every row symmetric (the same forwards and backwards)?</div>
+                    <textarea data-journal="s4-sym" data-label="Why symmetric?" style="min-height:60px"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= 5 CHOOSING ======================= -->
+        <section class="station wrap" id="choose">
+            <div class="station-head">
+                <div class="station-num">5</div>
+                <div>
+                    <h2>Choosing the Goals</h2>
+                    <div class="sub">Counting stories without listing them: combinations.</div>
+                </div>
+            </div>
+            <div class="panel">
+                <p>A six-goal thriller ends <b>4&ndash;2 for the Buffaloes</b>. A story is set once you know <b>which four of
+                    the six goals</b> were Buffaloes goals. Click goals to choose four, then record the story.</p>
+                <div class="timeline" id="slots" role="group" aria-label="Six goals in order"></div>
+                <div class="chk-row found">
+                    <button class="btn small" id="pick-add">Record story</button>
+                    <button class="btn small light" id="pick-hint">Show one I'm missing</button>
+                    <button class="btn small light" id="pick-reset">Start over</button>
+                    <span class="fb" id="pick-fb" aria-live="polite"></span>
+                </div>
+                <div id="pick-list" class="mini"></div>
+
+                <h3>Counting without listing</h3>
+                <p>Pick the Buffaloes' four goals <b>one at a time</b>, as if you were filling a security code with no repeats:</p>
+                <div class="chk-row">
+                    choices for their 1st goal <input class="ans" style="width:60px" data-answer="6">
+                    &times; 2nd <input class="ans" style="width:60px" data-answer="5">
+                    &times; 3rd <input class="ans" style="width:60px" data-answer="4">
+                    &times; 4th <input class="ans" style="width:60px" data-answer="3">
+                    = <input class="ans" data-answer="360" data-hint="Multiply the four numbers."><span class="fb"></span>
+                </div>
+                <p>But that counts the same story many times. Picking goal 5, then 1, then 6, then 2 gives the same story as
+                    picking 1, 2, 5, 6. <b>In how many different orders</b> could you pick the same four goals?</p>
+                <div class="chk-row"><input class="ans" data-answer="24" data-hint="4 choices for which goal you pick first, then 3, then…"><span class="fb"></span></div>
+                <div class="chk-row">So the number of 4&ndash;2 stories is <input class="ans" data-answer="15" data-hint="Each story was counted the same number of times. Divide."><span class="fb"></span></div>
+                <div class="keyidea"><b class="tag">Combinations</b>
+                    The number of ways to choose <i>k</i> goals out of <i>n</i>, when order doesn't matter, is written
+                    <b>C(<i>n</i>, <i>k</i>)</b> or &ldquo;<i>n</i> choose <i>k</i>&rdquo;:
+                    <div style="text-align:center;font-weight:800;margin:6px 0">C(6, 4) = (6&middot;5&middot;4&middot;3) &divide; (4&middot;3&middot;2&middot;1) = 360 &divide; 24 = 15</div>
+                    Ordered picks on top, the number of orders of the same picks on the bottom. Find 15 in row 6 of your triangle.</div>
+                <h3>Your turn</h3>
+                <div class="chk-row"><label>An eight-goal match ends 4&ndash;4. Number of stories: C(8, 4) =</label>
+                    <input class="ans" data-answer="70" data-hint="(8·7·6·5) ÷ (4·3·2·1)"><span class="fb"></span></div>
+                <div class="chk-row"><label>P(4&ndash;4 draw) with eight goals =</label>
+                    <input class="ans" data-type="prob" data-answer="70/256" data-hint="How many stories are there with eight goals?"><span class="fb"></span></div>
+                <h3>Choose calculator</h3>
+                <div class="chk-row">
+                    <label for="cc-n"><i>n</i> goals</label><input type="number" id="cc-n" min="0" max="60" value="10" style="width:76px">
+                    <label for="cc-k"><i>k</i> Buffaloes goals</label><input type="number" id="cc-k" min="0" max="60" value="5" style="width:76px">
+                </div>
+                <div class="keyidea" id="cc-out" aria-live="polite" style="font-weight:700"></div>
+                <div class="talk">
+                    <h4>Talk it over</h4>
+                    <div class="q">Why is C(6, 4) the same as C(6, 2)? Answer with the soccer story, not a formula.</div>
+                    <textarea data-journal="s5-sym" data-label="Why C(6,4) = C(6,2)?"></textarea>
+                    <div class="q">How is counting 4&ndash;2 stories like, and unlike, counting security codes with no repeated letters?</div>
+                    <textarea data-journal="s5-codes" data-label="Stories vs. security codes" style="min-height:60px"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= 6 LAB ======================= -->
+        <section class="station wrap" id="lab">
+            <div class="station-head">
+                <div class="station-num">6</div>
+                <div>
+                    <h2>The Goal Rush Lab</h2>
+                    <div class="sub">Crank up the goals. Watch what happens to a draw.</div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="pun"><svg viewBox="0 0 100 100" width="64" height="64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="commentator pat">
+  <circle cx="50" cy="50" r="48" fill="#eef1f5"/>
+  <path d="M18,100 Q20,74 50,72 Q80,74 82,100 Z" fill="#33415c"/>
+  <path d="M28,80 Q50,92 72,80 L72,88 Q50,98 28,88 Z" fill="#6c7a89"/>
+  <ellipse cx="50" cy="44" rx="24" ry="26" fill="#f2c9a5"/>
+  <path d="M24,40 Q24,16 50,16 Q76,16 76,40 Q70,26 50,26 Q30,26 24,40 Z" fill="#6b4a2b"/>
+  <circle cx="41" cy="45" r="3" fill="#1d1d1f"/><circle cx="59" cy="45" r="3" fill="#1d1d1f"/>
+  <path d="M41,56 Q50,63 59,56" stroke="#1d1d1f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M24,44 Q24,14 50,14 Q76,14 76,44" stroke="#222" stroke-width="3.5" fill="none"/>
+  <rect x="19" y="38" width="9" height="14" rx="3" fill="#222"/><rect x="72" y="38" width="9" height="14" rx="3" fill="#222"/>
+  <path d="M24,52 Q26,62 38,60" stroke="#222" stroke-width="2.5" fill="none"/><circle cx="39" cy="60" r="3" fill="#222"/>
+</svg><div class="bubble"><div class="who">Pundit Pat &middot; Goal Line Live</div>
+                    &ldquo;More goals means more chances for the other team to catch up. So the more goals, the more likely a draw. Basic sports.&rdquo;</div></div>
+                <div class="lab-controls">
+                    <div><label for="lab-n">Goals in the match:</label> <input type="range" id="lab-n" min="1" max="60" value="4"> <output id="lab-n-out">4</output></div>
+                    <div class="presets">
+                        <button class="btn small light" data-sim="100">Play 100 matches</button>
+                        <button class="btn small light" data-sim="1000">Play 1,000</button>
+                        <button class="btn small light" data-sim="0">Clear</button>
+                    </div>
+                </div>
+                <div class="tiles" id="lab-tiles"></div>
+                <div class="chartbox" id="lab-chart"></div>
+                <div class="simline" id="lab-sim" aria-live="polite"></div>
+                <details class="tbl"><summary>Show the numbers as a table</summary><div class="scroll" id="lab-table"></div></details>
+
+                <h3>Lab notebook</h3>
+                <div class="talk" style="margin-top:6px">
+                    <h4>Draw watch</h4>
+                    <div class="q">Record P(draw) for 2, 4, 6, 8, 10, and 20 goals. What's happening? Was Pat right?</div>
+                    <textarea data-journal="s6-draw" data-label="Draw watch" placeholder="2 goals: &#10;4 goals: &#10;6 goals: &#10;8 goals: &#10;10 goals: &#10;20 goals: "></textarea>
+                    <div class="q">What is P(draw) when the number of goals is odd? Why?</div>
+                    <textarea data-journal="s6-odd" data-label="Odd number of goals" style="min-height:60px"></textarea>
+                    <div class="q">Now watch the <b>close match</b> tile: the chance that the Buffaloes score between 40% and 60% of the
+                        goals. Check 10, 20, 40, and 60 goals. How can an exact draw get <i>less</i> likely while a close match
+                        gets <i>more</i> likely?</div>
+                    <textarea data-journal="s6-close" data-label="Close matches"></textarea>
+                    <div class="q">Press &ldquo;Play 100 matches&rdquo; a few times, then &ldquo;Play 1,000.&rdquo; How do the
+                        black dots compare with the bars? What does that tell you about experimental and theoretical probability?</div>
+                    <textarea data-journal="s6-sim" data-label="Simulation vs. theory" style="min-height:60px"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= 7 REALLY BUFF ======================= -->
+        <section class="station wrap" id="buff">
+            <div class="station-head">
+                <div class="station-num">7</div>
+                <div>
+                    <h2>What If the Buffaloes Really Are Buff?</h2>
+                    <div class="sub">Uneven teams: the stories aren't equally likely any more.</div>
+                </div>
+            </div>
+            <div class="panel">
+                <p>Suppose each goal has a <b>&#8532; chance</b> of being a Buffaloes goal, no matter what happened before.
+                    Now a story full of B's is more likely than one full of W's. Work out a three-goal match:</p>
+                <div class="chk-row">P(<span class="story"><span class="chip B">B</span><span class="chip B">B</span><span class="chip W">W</span></span>) =
+                    &#8532; &middot; &#8532; &middot; &#8531; = <input class="ans" data-type="prob" data-answer="4/27" data-hint="Multiply the three fractions."><span class="fb"></span></div>
+                <div class="chk-row">P(<span class="story"><span class="chip B">B</span><span class="chip W">W</span><span class="chip B">B</span></span>) =
+                    <input class="ans" data-type="prob" data-answer="4/27" data-hint="Same three fractions, different order."><span class="fb"></span>
+                    &nbsp; P(<span class="story"><span class="chip W">W</span><span class="chip B">B</span><span class="chip B">B</span></span>) =
+                    <input class="ans" data-type="prob" data-answer="4/27"><span class="fb"></span></div>
+                <div class="chk-row">So P(2&ndash;1 Buffaloes) = <input class="ans" data-type="prob" data-answer="12/27" data-hint="Three stories, each with the same probability."><span class="fb"></span></div>
+                <div class="keyidea"><b class="tag">Stories &times; story probability</b>
+                    Every story with the same final score has the <i>same</i> probability, so
+                    <div style="text-align:center;font-weight:800;margin:6px 0">P(score) = (number of stories) &times; (probability of one story)</div>
+                    and the number of stories is still C(<i>n</i>, <i>k</i>) from your triangle.</div>
+
+                <div class="lab-controls" style="margin-top:16px">
+                    <div><label for="buff-n">Goals:</label> <input type="range" id="buff-n" min="1" max="60" value="2"> <output id="buff-n-out">2</output></div>
+                    <div><label for="buff-p">Chance each goal is a Buffaloes goal:</label> <input type="range" id="buff-p" min="0.5" max="0.9" step="any" value="0.6666667"> <output id="buff-p-out">2/3</output></div>
+                    <div class="presets" id="buff-presets">
+                        <button class="btn small light" data-p="0.5">1/2</button>
+                        <button class="btn small light" data-p="0.6">3/5</button>
+                        <button class="btn small light" data-p="0.6666667">2/3</button>
+                        <button class="btn small light" data-p="0.75">3/4</button>
+                    </div>
+                </div>
+                <div class="tiles" id="buff-tiles"></div>
+                <div class="chartbox" id="buff-chart"></div>
+                <details class="tbl"><summary>Show the numbers as a table</summary><div class="scroll" id="buff-table"></div></details>
+                <div class="talk">
+                    <h4>Talk it over</h4>
+                    <div class="q">Set 2 goals and &#8532;. Check the handout's Extra Time A: are a Buffaloes win and a draw really equally likely?</div>
+                    <textarea data-journal="s7-check" data-label="Extra Time A check" style="min-height:60px"></textarea>
+                    <div class="q">With &#8532;, how many goals does a match need before the Buffaloes win at least 90% of the time?
+                        What about with 3/5?</div>
+                    <textarea data-journal="s7-90" data-label="Goals for a 90% win" style="min-height:60px"></textarea>
+                    <div class="q">Upsets (the weaker team winning) happen more often in soccer than in basketball. Use this lab to explain why.</div>
+                    <textarea data-journal="s7-upset" data-label="Why upsets in soccer?"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= 8 POST-MATCH ======================= -->
+        <section class="station wrap" id="post">
+            <div class="station-head">
+                <div class="station-num">8</div>
+                <div>
+                    <h2>Post-Match</h2>
+                    <div class="sub">Teacher's lens, the Chapter 16 connections, and your match report.</div>
+                </div>
+            </div>
+            <div class="panel">
+                <h3>Teacher's lens</h3>
+                <p>Grade 7 standard 7.SP.8b asks students to represent sample spaces for compound events with organized lists,
+                    tables, and tree diagrams. Combinations and Pascal's triangle aren't part of the grade 7 standards, but the
+                    reasoning behind them is.</p>
+                <div class="talk" style="margin-top:6px">
+                    <div class="q">A 7th grader listing four-goal stories keeps finding 13 or 14 and missing the rest. What
+                        organizing strategy would you suggest, and what question would you ask instead of giving them the list?</div>
+                    <textarea data-journal="s8-list" data-label="Helping a student list systematically"></textarea>
+                    <div class="q">The handout's tree diagram has 4 leaves for two goals. How many would it have for ten goals?
+                        When should a student stop drawing and start reasoning? What should they reason with?</div>
+                    <textarea data-journal="s8-tree" data-label="When a tree gets too big" style="min-height:60px"></textarea>
+                </div>
+
+                <h3>Where today shows up in Chapter 16</h3>
+                <div class="map">
+                    <div><b>16.1 Equally likely, long run</b>Stories are equally likely; scores aren't. The lab's dots approach the bars (16-C, 16-F).</div>
+                    <div><b>16.2 Counting outcomes</b>2 &times; 2 &times; &hellip; &times; 2 stories, like the key notches (16-G). Ordered picks vs. unordered choices (16-H).</div>
+                    <div><b>16.3 Compound events</b>Listing a sample space and finding which outcomes give each total, like the two-dice array (16-I).</div>
+                    <div><b>16.4 Fraction arithmetic</b>Multiply along a story, add across stories, the same moves as the spinner-and-bag game (16-N).</div>
+                </div>
+
+                <h3>Your match report</h3>
+                <p class="mini">Your answers stay in this browser only and are never sent anywhere. Copy or download them to
+                    turn them in or keep them.</p>
+                <div class="chk-row">
+                    <label for="rep-name">Name(s):</label><input type="text" id="rep-name" style="flex:1;min-width:200px">
+                </div>
+                <div class="chk-row">
+                    <button class="btn" id="rep-copy">Copy my report</button>
+                    <button class="btn light" id="rep-dl">Download .txt</button>
+                    <button class="btn light" id="rep-clear">Erase everything on this page</button>
+                    <span class="fb" id="rep-fb" aria-live="polite"></span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        Extends the Chapter 16 class opener <i>Who&rsquo;s the Winner?</i>, adapted from the NRICH problem of the same name
+        (<a href="https://nrich.maths.org/problems/whos-winner">nrich.maths.org</a>). Milligan Mathematics &middot; MATH 253.
+    </footer>
+
+    <div class="tip" id="tip" role="tooltip"></div>
+
+    <script>
+        (function () {
+            'use strict';
+            const $ = (s, r = document) => r.querySelector(s);
+            const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+            const STORE = 'goal-rush-253-v1';
+
+            /* ---------------- storage ---------------- */
+            let state = { journal: {}, answers: {}, stories: { 3: [], 4: [] }, hinted: { 3: [], 4: [] }, picks: [], tri: {}, name: '' };
+            try {
+                const raw = JSON.parse(localStorage.getItem(STORE));
+                if (raw && typeof raw === 'object') state = Object.assign(state, raw);
+            } catch (e) { /* storage unavailable: start fresh */ }
+            let saveTimer = null, erasing = false;
+            function save() {
+                if (erasing) return;
+                clearTimeout(saveTimer);
+                saveTimer = setTimeout(() => {
+                    try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { }
+                }, 250);
+            }
+            window.addEventListener('pagehide', () => { if (erasing) return; try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { } });
+
+            /* ---------------- math helpers ---------------- */
+            function bgcd(a, b) { a = a < 0n ? -a : a; b = b < 0n ? -b : b; while (b) { [a, b] = [b, a % b]; } return a; }
+            function chooseBig(n, k) {
+                if (k < 0 || k > n) return 0n;
+                k = Math.min(k, n - k);
+                let r = 1n;
+                for (let i = 1; i <= k; i++) r = r * BigInt(n - k + i) / BigInt(i);
+                return r;
+            }
+            function fracStr(num, den) {
+                const g = bgcd(num, den) || 1n;
+                const a = num / g, b = den / g;
+                return b === 1n ? a.toString() : a + '/' + b;
+            }
+            const LOGF = [0];
+            for (let i = 1; i <= 200; i++) LOGF[i] = LOGF[i - 1] + Math.log(i);
+            function pmf(n, p) {
+                const out = [];
+                for (let k = 0; k <= n; k++) {
+                    let lp = LOGF[n] - LOGF[k] - LOGF[n - k];
+                    lp += k === 0 ? 0 : k * Math.log(p);
+                    lp += (n - k) === 0 ? 0 : (n - k) * Math.log(1 - p);
+                    out.push(Math.exp(lp));
+                }
+                return out; // index = number of Buffaloes goals
+            }
+            function pct(x) {
+                if (x === 0) return '0%';
+                if (x < 0.001) return '<0.1%';
+                if (x > 0.999 && x < 1) return '>99.9%';
+                return (x * 100).toFixed(x < 0.1 ? 2 : 1) + '%';
+            }
+            function parseNum(s) {
+                s = String(s).trim().replace(/\s+/g, '').replace(/,/g, '');
+                if (!s) return NaN;
+                let m = s.match(/^(-?\d*\.?\d+)%$/);
+                if (m) return parseFloat(m[1]) / 100;
+                m = s.match(/^(-?\d+)\/(\d+)$/);
+                if (m) return +m[2] === 0 ? NaN : parseInt(m[1], 10) / parseInt(m[2], 10);
+                if (/^-?\d*\.?\d+$/.test(s)) return parseFloat(s);
+                return NaN;
+            }
+            function parseAnswer(s) { return parseNum(s); }
+
+            /* ---------------- answer checks ---------------- */
+            function setupCheck(inp, idx) {
+                const key = inp.id || ('a' + idx);
+                const row = inp.closest('.chk-row');
+                // a row may hold several inputs; the feedback span right after this input (or the row's last) is used
+                let fb = inp.nextElementSibling && inp.nextElementSibling.classList.contains('fb') ? inp.nextElementSibling : null;
+                const target = parseAnswer(inp.dataset.answer);
+                const isProb = inp.dataset.type === 'prob';
+                function check(show) {
+                    const v = parseNum(inp.value);
+                    inp.classList.remove('ok', 'bad');
+                    if (fb) { fb.textContent = ''; fb.className = 'fb'; }
+                    if (inp.value.trim() === '') return;
+                    const good = isProb ? (Math.abs(v - target) < 0.0015) : (Math.abs(v - target) < 1e-9);
+                    inp.classList.add(good ? 'ok' : 'bad');
+                    if (fb && show !== false) {
+                        if (good) { fb.textContent = isProb && /\./.test(inp.value) && !/\//.test(inp.value) ? '✓ Yes (as a fraction, ' + fracStr(BigInt(inp.dataset.answer.split('/')[0]), BigInt(inp.dataset.answer.split('/')[1] || 1)) + ')' : '✓ Yes'; fb.className = 'fb ok'; }
+                        else if (isNaN(v)) { fb.textContent = 'Use a number, a fraction like 3/8, or a percent.'; fb.className = 'fb bad'; }
+                        else { fb.textContent = 'Not quite.' + (inp.dataset.hint ? ' ' + inp.dataset.hint : ''); fb.className = 'fb bad'; }
+                    }
+                    state.answers[key] = inp.value; save();
+                }
+                inp.setAttribute('autocomplete', 'off');
+                if (!inp.getAttribute('aria-label') && !inp.id) inp.setAttribute('aria-label', 'answer');
+                inp.addEventListener('change', () => check(true));
+                inp.addEventListener('keydown', e => { if (e.key === 'Enter') check(true); });
+                if (state.answers[key]) { inp.value = state.answers[key]; check(false); }
+            }
+            $$('input.ans').forEach(setupCheck);
+
+            /* ---------------- journal ---------------- */
+            $$('textarea[data-journal]').forEach(t => {
+                const k = t.dataset.journal;
+                if (state.journal[k]) t.value = state.journal[k];
+                t.addEventListener('input', () => { state.journal[k] = t.value; save(); });
+            });
+
+            /* ---------------- chips ---------------- */
+            function storyHTML(s, cls) {
+                return '<span class="story ' + (cls || '') + '" aria-label="' + s.split('').map(c => c === 'B' ? 'Buffaloes' : 'Wildebeest').join(' then ') + '">' +
+                    s.split('').map(c => '<span class="chip ' + c + '">' + c + '</span>').join('') + '</span>';
+            }
+            function scoreLabel(k, n) { return k + '–' + (n - k); }
+            function scoreClass(k, n) { return 2 * k > n ? 'cB' : 2 * k === n ? 'cD' : 'cW'; }
+
+            /* ---------------- story builder ---------------- */
+            function allStories(n) {
+                const out = [];
+                for (let m = 0; m < (1 << n); m++) {
+                    let s = '';
+                    for (let i = n - 1; i >= 0; i--) s += (m >> i) & 1 ? 'W' : 'B';
+                    out.push(s);
+                }
+                return out; // B-first lexicographic
+            }
+            function makeBuilder(n) {
+                const root = $('#builder' + n);
+                const total = 1 << n;
+                let cur = Array(n).fill('?');
+                let fresh = null;
+                root.innerHTML =
+                    '<div class="controls"><div class="goals" role="group" aria-label="Goals in order"></div>' +
+                    '<button class="btn small add">Add story</button>' +
+                    '<div class="quick"><label class="mini" for="q' + n + '">or type</label><input type="text" id="q' + n + '" maxlength="' + n + '" placeholder="' + 'BW'.repeat(n).slice(0, n) + '"></div></div>' +
+                    '<div class="board" style="grid-template-columns:repeat(' + (n + 1) + ',minmax(0,1fr))"></div>' +
+                    '<div class="bstatus" aria-live="polite"></div>' +
+                    '<div class="chk-row"><button class="btn small light sortb">Organize my stories</button>' +
+                    '<button class="btn small light hintb">Show one I\'m missing</button>' +
+                    '<button class="btn small light resetb">Start over</button></div>' +
+                    '<div class="done-box"></div>';
+                const goals = $('.goals', root), board = $('.board', root), status = $('.bstatus', root), done = $('.done-box', root);
+                let sorted = false;
+                for (let i = 0; i < n; i++) {
+                    const b = document.createElement('button');
+                    b.className = 'goalbtn';
+                    b.type = 'button';
+                    b.addEventListener('click', () => { cur[i] = cur[i] === 'B' ? 'W' : 'B'; drawGoals(); });
+                    goals.appendChild(b);
+                }
+                function drawGoals() {
+                    $$('.goalbtn', goals).forEach((b, i) => {
+                        b.className = 'goalbtn ' + (cur[i] === '?' ? '' : cur[i]);
+                        b.innerHTML = '<span class="t">' + cur[i] + '</span>Goal ' + (i + 1);
+                        b.setAttribute('aria-label', 'Goal ' + (i + 1) + ': ' + (cur[i] === 'B' ? 'Buffaloes' : cur[i] === 'W' ? 'Wildebeest' : 'not chosen') + '. Click to change.');
+                    });
+                }
+                function add(s, viaHint) {
+                    const list = state.stories[n];
+                    if (list.includes(s)) { status.innerHTML = storyHTML(s) + ' is already on the board.'; return; }
+                    list.push(s);
+                    if (viaHint) state.hinted[n].push(s);
+                    fresh = s; save(); draw();
+                    const k = s.split('').filter(c => c === 'B').length;
+                    status.innerHTML = 'Added ' + storyHTML(s) + ' to the ' + scoreLabel(k, n) + ' column.';
+                    const b = (s.match(/B/g) || []).length;
+                    $('#sb-b').textContent = b; $('#sb-w').textContent = n - b;
+                }
+                $('.add', root).addEventListener('click', () => {
+                    if (cur.includes('?')) { status.textContent = 'Choose a team for every goal first (click each goal).'; return; }
+                    add(cur.join(''));
+                });
+                const q = $('#q' + n);
+                q.addEventListener('keydown', e => {
+                    if (e.key !== 'Enter') return;
+                    const s = q.value.toUpperCase().replace(/[^BW]/g, '');
+                    if (s.length !== n) { status.textContent = 'Type exactly ' + n + ' letters, each B or W.'; return; }
+                    add(s); q.value = '';
+                });
+                $('.sortb', root).addEventListener('click', () => { sorted = !sorted; $('.sortb', root).textContent = sorted ? 'Show in the order I found them' : 'Organize my stories'; draw(); });
+                $('.hintb', root).addEventListener('click', () => {
+                    const miss = allStories(n).filter(s => !state.stories[n].includes(s));
+                    if (!miss.length) { status.textContent = 'You have them all!'; return; }
+                    add(miss[Math.floor(Math.random() * miss.length)], true);
+                    status.innerHTML += ' <span class="mini">(a hint, shown with a dashed border)</span>';
+                });
+                $('.resetb', root).addEventListener('click', () => {
+                    if (state.stories[n].length && !confirm('Clear all ' + n + '-goal stories?')) return;
+                    state.stories[n] = []; state.hinted[n] = []; save(); status.textContent = ''; draw();
+                });
+                function draw() {
+                    drawGoals();
+                    const list = state.stories[n];
+                    let html = '';
+                    for (let k = n; k >= 0; k--) {
+                        let items = list.filter(s => (s.match(/B/g) || []).length === k);
+                        if (sorted) items = items.slice().sort();
+                        const tag = 2 * k > n ? 'Buffaloes win' : 2 * k === n ? 'Draw' : 'Wildebeest win';
+                        html += '<div class="col ' + scoreClass(k, n) + '"><div class="hd">' + scoreLabel(k, n) + '<small>' + tag + '</small></div><div class="list">' +
+                            items.map(s => storyHTML(s, (state.hinted[n].includes(s) ? 'hinted ' : '') + (s === fresh ? 'fresh' : ''))).join('') +
+                            '</div><div class="cnt">' + items.length + '</div></div>';
+                    }
+                    board.innerHTML = html;
+                    fresh = null;
+                    const all = list.length === total;
+                    $('.hintb', root).disabled = all;
+                    if (all) {
+                        let row = '<tr><th></th>', cnt = '<tr><td class="l">Stories</td>', pr = '<tr><td class="l">Probability</td>';
+                        for (let k = n; k >= 0; k--) {
+                            const c = chooseBig(n, k);
+                            row += '<th>' + scoreLabel(k, n) + '</th>';
+                            cnt += '<td>' + c + '</td>';
+                            pr += '<td>' + c + '/' + total + '</td>';
+                        }
+                        done.innerHTML = '<div class="keyidea" style="margin-bottom:0"><b class="tag">Full time: all ' + total + ' stories found</b>' +
+                            '<table class="res">' + row + '</tr>' + cnt + '</tr>' + pr + '</tr></table>' +
+                            '<p class="mini" style="margin:6px 0 0">Every story has probability 1/' + total + ', so each score\'s probability is its number of stories out of ' + total + '.</p></div>';
+                        done.classList.add('show');
+                    } else {
+                        done.classList.remove('show');
+                        if (!status.textContent && list.length) status.textContent = list.length + ' stories on the board so far.';
+                    }
+                }
+                draw();
+            }
+            makeBuilder(3);
+            makeBuilder(4);
+
+            /* ---------------- triangle ---------------- */
+            const TRI_ROWS = 8, GIVEN = 4, ASK = [5, 6];
+            const tri = $('#tri');
+            function buildTriangle() {
+                let html = '';
+                for (let n = 0; n <= TRI_ROWS; n++) {
+                    const hidden = n > 6 && !state.tri.revealed;
+                    html += '<div class="trow" data-row="' + n + '"' + (hidden ? ' hidden' : '') + '><span class="rl">' + n + (n === 1 ? ' goal' : ' goals') + '</span>';
+                    for (let j = 0; j <= n; j++) {
+                        const k = n - j, val = chooseBig(n, k).toString();
+                        const label = 'Row ' + n + ', score ' + scoreLabel(k, n);
+                        if (n <= GIVEN || n > 6 || state.tri.revealed) {
+                            html += '<button class="tcell" data-n="' + n + '" data-j="' + j + '" aria-label="' + label + ': ' + val + ' stories">' + val + '</button>';
+                        } else {
+                            const key = n + '-' + j, v = state.tri[key] || '';
+                            const cls = v === '' ? '' : (v === val ? ' ok' : ' bad');
+                            html += '<div class="tcell' + cls + '" data-n="' + n + '" data-j="' + j + '"><input inputmode="numeric" aria-label="' + label + '" data-key="' + key + '" data-val="' + val + '" value="' + v + '"></div>';
+                        }
+                    }
+                    html += '<span class="rr"></span></div>';
+                }
+                tri.innerHTML = '<div class="tri-in">' + html + '</div>';
+                $$('input', tri).forEach(inp => {
+                    inp.addEventListener('input', () => {
+                        const cell = inp.parentElement, v = inp.value.trim();
+                        state.tri[inp.dataset.key] = v; save();
+                        cell.classList.remove('ok', 'bad');
+                        if (v !== '') cell.classList.add(v === inp.dataset.val ? 'ok' : 'bad');
+                        if (v === inp.dataset.val) explain(+cell.dataset.n, +cell.dataset.j);
+                        const rowDone = ASK.every(r => $$('.trow[data-row="' + r + '"] input', tri).every(i => i.value.trim() === i.dataset.val));
+                        if (rowDone) $('#tri-explain').innerHTML = '<b class="tag">Rows 5 and 6 complete</b>Nice. Click any number to see why the pattern works, or show rows 7 and 8.';
+                    });
+                });
+                $$('.tcell', tri).forEach(c => c.addEventListener('click', e => {
+                    const inp = $('input', c);
+                    if (inp && inp.value.trim() !== inp.dataset.val) return;
+                    explain(+c.dataset.n, +c.dataset.j);
+                }));
+            }
+            function explain(n, j) {
+                $$('.tcell', tri).forEach(c => c.classList.remove('sel', 'par'));
+                const cell = $('.tcell[data-n="' + n + '"][data-j="' + j + '"]', tri);
+                if (cell) cell.classList.add('sel');
+                const k = n - j, box = $('#tri-explain');
+                if (n === 0) { box.innerHTML = '<b class="tag">Row 0</b>A match with no goals has exactly one story: nobody scores. 0–0.'; return; }
+                const val = chooseBig(n, k);
+                if (k === n || k === 0) {
+                    const t = k === n ? 'B' : 'W';
+                    const par = $('.tcell[data-n="' + (n - 1) + '"][data-j="' + (k === n ? 0 : n - 1) + '"]', tri);
+                    if (par) par.classList.add('par');
+                    box.innerHTML = '<b class="tag">' + scoreLabel(k, n) + ' with ' + n + (n === 1 ? ' goal' : ' goals') + ': 1 story</b>' +
+                        'Only one way: ' + storyHTML(t.repeat(n)) + '. The last goal had to be ' + (t === 'B' ? 'a Buffaloes' : 'a Wildebeest') +
+                        ' goal, after the only ' + scoreLabel(k === n ? n - 1 : 0, n - 1) + ' story.';
+                    return;
+                }
+                const a = chooseBig(n - 1, k - 1), b = chooseBig(n - 1, k);
+                [[n - 1, j - 1], [n - 1, j]].forEach(([r, c]) => { const p = $('.tcell[data-n="' + r + '"][data-j="' + c + '"]', tri); if (p) p.classList.add('par'); });
+                box.innerHTML = '<b class="tag">Why ' + scoreLabel(k, n) + ' has ' + val + ' stories</b>' +
+                    'Look at who scored the <b>last</b> goal.<br>' +
+                    '&bull; Last goal <span class="chip B">B</span>: before it, the first ' + (n - 1) + ' goals ended <b>' + scoreLabel(k - 1, n - 1) + '</b>. That\'s <b>' + a + '</b> stories (up and to the right).<br>' +
+                    '&bull; Last goal <span class="chip W">W</span>: before it, the first ' + (n - 1) + ' goals ended <b>' + scoreLabel(k, n - 1) + '</b>. That\'s <b>' + b + '</b> stories (up and to the left).<br>' +
+                    'Every ' + scoreLabel(k, n) + ' story is in exactly one of those groups, so ' + a + ' + ' + b + ' = <b>' + val + '</b>.';
+            }
+            buildTriangle();
+            $('#tri-reveal').addEventListener('click', () => {
+                state.tri.revealed = true; save(); buildTriangle();
+                $('#tri-explain').innerHTML = '<b class="tag">Rows 5–8 shown</b>Click any number to see why it is the sum of the two above it.';
+            });
+            $('#tri-clear').addEventListener('click', () => { state.tri = {}; save(); buildTriangle(); $('#tri-explain').innerHTML = '<b class="tag">Why does it work?</b>Click a number in the triangle (row 1 or below).'; });
+
+            /* ---------------- goal picker (6 goals, 4 for Buffaloes) ---------------- */
+            const PN = 6, PK = 4, PTOTAL = Number(chooseBig(PN, PK));
+            let pick = Array(PN).fill('W');
+            const slots = $('#slots');
+            function drawSlots() {
+                slots.innerHTML = '';
+                pick.forEach((t, i) => {
+                    if (i) { const s = document.createElement('span'); s.className = 'seg'; slots.appendChild(s); }
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'slot ' + t;
+                    b.innerHTML = t + '<small>goal ' + (i + 1) + '</small>';
+                    b.setAttribute('aria-label', 'Goal ' + (i + 1) + ': ' + (t === 'B' ? 'Buffaloes' : 'Wildebeest') + '. Click to switch.');
+                    b.addEventListener('click', () => { pick[i] = pick[i] === 'B' ? 'W' : 'B'; drawSlots(); updPickFb(); });
+                    slots.appendChild(b);
+                });
+            }
+            function updPickFb() {
+                const nb = pick.filter(t => t === 'B').length;
+                const fb = $('#pick-fb');
+                fb.className = 'fb';
+                fb.textContent = nb === PK ? 'Buffaloes goals: ' + pick.map((t, i) => t === 'B' ? i + 1 : null).filter(Boolean).join(', ') : 'Buffaloes goals chosen: ' + nb + ' of ' + PK;
+            }
+            function drawPicks() {
+                const L = state.picks;
+                $('#pick-list').innerHTML = L.length ? '<b>' + L.length + (L.length === PTOTAL ? ' stories: that\'s every one!' : ' found') + '</b> ' +
+                    L.slice().sort().map(s => storyHTML(s)).join('') : 'No stories recorded yet.';
+                $('#pick-hint').disabled = L.length === PTOTAL;
+            }
+            $('#pick-add').addEventListener('click', () => {
+                const nb = pick.filter(t => t === 'B').length, fb = $('#pick-fb');
+                if (nb !== PK) { fb.textContent = 'A 4–2 story needs exactly four Buffaloes goals (you have ' + nb + ').'; fb.className = 'fb bad'; return; }
+                const s = pick.join('');
+                if (state.picks.includes(s)) { fb.textContent = 'Already recorded.'; fb.className = 'fb bad'; return; }
+                state.picks.push(s); save(); drawPicks();
+                fb.textContent = 'Recorded.'; fb.className = 'fb ok';
+            });
+            $('#pick-hint').addEventListener('click', () => {
+                const miss = allStories(PN).filter(s => (s.match(/B/g) || []).length === PK && !state.picks.includes(s));
+                if (!miss.length) return;
+                pick = miss[0].split(''); drawSlots(); updPickFb();
+                $('#pick-fb').textContent = 'Here\'s one you haven\'t recorded. Press Record story to keep it.';
+            });
+            $('#pick-reset').addEventListener('click', () => {
+                if (state.picks.length && !confirm('Clear your recorded 4–2 stories?')) return;
+                state.picks = []; save(); drawPicks();
+            });
+            drawSlots(); updPickFb(); drawPicks();
+
+            /* ---------------- choose calculator ---------------- */
+            function calc() {
+                let n = Math.max(0, Math.min(60, parseInt($('#cc-n').value, 10) || 0));
+                let k = Math.max(0, Math.min(n, parseInt($('#cc-k').value, 10) || 0));
+                const v = chooseBig(n, k);
+                let work;
+                if (k === 0) work = 'There is exactly one way to choose no goals.';
+                else {
+                    const top = [], bot = [];
+                    for (let i = 0; i < k; i++) { top.push(n - i); bot.push(k - i); }
+                    const show = a => a.length <= 7 ? a.join('·') : a.slice(0, 3).join('·') + '·…·' + a[a.length - 1];
+                    work = '(' + show(top) + ') ÷ (' + show(bot) + ')';
+                }
+                const tot = 1n << BigInt(n);
+                $('#cc-out').innerHTML = 'C(' + n + ', ' + k + ') = ' + work + ' = <span style="font-family:var(--f-head);font-weight:400">' + v.toLocaleString() + '</span>' +
+                    '<div class="mini" style="margin-top:4px">With ' + n + ' evenly matched goals, P(' + scoreLabel(k, n) + ') = ' + v.toLocaleString() + ' / ' + tot.toLocaleString() + ' ≈ ' + pct(Number(v) / Number(tot)) + '</div>';
+            }
+            ['#cc-n', '#cc-k'].forEach(s => $(s).addEventListener('input', calc));
+            calc();
+
+            /* ---------------- chart ---------------- */
+            const tip = $('#tip');
+            const COLORS = { B: '#F36E24', D: '#5d6b85', W: '#F7D94C' };
+            function drawChart(box, n, p, sim) {
+                const P = pmf(n, p);
+                const W = 760, H = 300, ml = 52, mr = 14, mt = 34, mb = 50;
+                const iw = W - ml - mr, ih = H - mt - mb;
+                let ymax = Math.max(...P);
+                if (sim && sim.total) ymax = Math.max(ymax, ...sim.counts.map(c => c / sim.total));
+                const step = ymax > 0.4 ? 0.1 : ymax > 0.2 ? 0.05 : ymax > 0.1 ? 0.025 : 0.01;
+                ymax = Math.ceil(ymax / step) * step;
+                const y = v => mt + ih - v / ymax * ih;
+                const bw = iw / (n + 1), gap = Math.min(2, bw * 0.15);
+                let g = '';
+                // grid
+                for (let v = 0; v <= ymax + 1e-9; v += step) {
+                    g += '<line x1="' + ml + '" x2="' + (W - mr) + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '" stroke="#e5e7eb" stroke-width="1"/>' +
+                        '<text x="' + (ml - 8) + '" y="' + (y(v) + 4).toFixed(1) + '" text-anchor="end" font-size="12" fill="#5b6270">' + Math.round(v * 1000) / 10 + '%</text>';
+                }
+                // region labels
+                const mid = ml + iw / 2;
+                g += '<text x="' + (ml + 4) + '" y="16" font-size="12.5" font-weight="800" fill="#5b6270">◀ Buffaloes win</text>' +
+                    '<text x="' + (W - mr - 4) + '" y="16" text-anchor="end" font-size="12.5" font-weight="800" fill="#5b6270">Wildebeest win ▶</text>';
+                if (n % 2 === 0) g += '<text x="' + mid + '" y="16" text-anchor="middle" font-size="12.5" font-weight="800" fill="#5b6270">Draw</text>';
+                // bars: left = all Buffaloes (k = n)
+                const lblEvery = n <= 12 ? 1 : n <= 24 ? 2 : n <= 40 ? 4 : 6;
+                for (let j = 0; j <= n; j++) {
+                    const k = n - j, v = P[k];
+                    const x0 = ml + j * bw + gap / 2, w = Math.max(1, bw - gap);
+                    const top = y(v), h = mt + ih - top;
+                    const type = 2 * k > n ? 'B' : 2 * k === n ? 'D' : 'W';
+                    const r = Math.min(4, w / 2, h);
+                    const path = h <= 0.5 ? '' : 'M' + x0.toFixed(1) + ',' + (mt + ih) + 'V' + (top + r).toFixed(1) + 'Q' + x0.toFixed(1) + ',' + top.toFixed(1) + ' ' + (x0 + r).toFixed(1) + ',' + top.toFixed(1) +
+                        'H' + (x0 + w - r).toFixed(1) + 'Q' + (x0 + w).toFixed(1) + ',' + top.toFixed(1) + ' ' + (x0 + w).toFixed(1) + ',' + (top + r).toFixed(1) + 'V' + (mt + ih) + 'Z';
+                    if (path) g += '<path d="' + path + '" fill="' + COLORS[type] + '" stroke="' + (type === 'W' ? '#c9a400' : 'none') + '" stroke-width="' + (type === 'W' ? 1 : 0) + '"/>';
+                    if (j % lblEvery === 0 || (2 * k === n)) {
+                        g += '<text x="' + (x0 + w / 2).toFixed(1) + '" y="' + (mt + ih + 16) + '" text-anchor="middle" font-size="' + (n > 30 ? 10 : 11.5) + '" fill="#1d1d1f"' + (2 * k === n ? ' font-weight="800"' : '') + '>' + scoreLabel(k, n) + '</text>';
+                    }
+                    g += '<rect class="hit" data-k="' + k + '" x="' + (ml + j * bw).toFixed(1) + '" y="' + mt + '" width="' + bw.toFixed(1) + '" height="' + ih + '" fill="transparent"/>';
+                }
+                // simulation markers
+                if (sim && sim.total) {
+                    for (let j = 0; j <= n; j++) {
+                        const k = n - j, f = sim.counts[k] / sim.total;
+                        if (!sim.counts[k]) continue;
+                        const cx = ml + j * bw + bw / 2;
+                        g += '<circle cx="' + cx.toFixed(1) + '" cy="' + y(f).toFixed(1) + '" r="' + (bw < 10 ? 3 : 4.5) + '" fill="#141414" stroke="#fff" stroke-width="2" pointer-events="none"/>';
+                    }
+                }
+                g += '<line x1="' + ml + '" x2="' + (W - mr) + '" y1="' + (mt + ih) + '" y2="' + (mt + ih) + '" stroke="#141414" stroke-width="1.5"/>';
+                g += '<text x="' + mid + '" y="' + (H - 8) + '" text-anchor="middle" font-size="12.5" font-weight="700" fill="#5b6270">Final score (Buffaloes–Wildebeest)</text>';
+                box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Probability of each final score with ' + n + ' goals" font-family="Nunito, Segoe UI, sans-serif">' + g + '</svg>' +
+                    '<div class="legend"><span><i class="sw" style="background:' + COLORS.B + '"></i>Buffaloes win</span><span><i class="sw" style="background:' + COLORS.D + '"></i>Draw</span><span><i class="sw" style="background:' + COLORS.W + '"></i>Wildebeest win</span>' +
+                    (sim && sim.total ? '<span><i class="dot"></i>Simulated (' + sim.total.toLocaleString() + ' matches)</span>' : '') + '</div>';
+                const svg = $('svg', box);
+                $$('.hit', svg).forEach(rc => {
+                    const k = +rc.dataset.k;
+                    const show = ev => {
+                        const c = chooseBig(n, k);
+                        let txt = '<b>' + scoreLabel(k, n) + '</b> &middot; ' + pct(P[k]);
+                        if (Math.abs(p - 0.5) < 1e-9) txt += '<br>' + c.toLocaleString() + ' of ' + (1n << BigInt(n)).toLocaleString() + ' stories';
+                        else txt += '<br>' + c.toLocaleString() + (c === 1n ? ' story' : ' stories') + ' &times; ' + fmtP(p) + '<sup>' + k + '</sup>&middot;' + fmtP(1 - p) + '<sup>' + (n - k) + '</sup>';
+                        if (sim && sim.total) txt += '<br>Simulated: ' + sim.counts[k] + ' of ' + sim.total.toLocaleString() + ' (' + pct(sim.counts[k] / sim.total) + ')';
+                        tip.innerHTML = txt;
+                        const r = rc.getBoundingClientRect();
+                        tip.classList.add('show');
+                        const tw = tip.offsetWidth;
+                        let left = r.left + r.width / 2 - tw / 2 + window.scrollX;
+                        left = Math.max(8 + window.scrollX, Math.min(left, window.scrollX + document.documentElement.clientWidth - tw - 8));
+                        tip.style.left = left + 'px';
+                        tip.style.top = (r.top + window.scrollY - tip.offsetHeight + 30) + 'px';
+                    };
+                    rc.addEventListener('mouseenter', show);
+                    rc.addEventListener('mousemove', show);
+                    rc.addEventListener('mouseleave', () => tip.classList.remove('show'));
+                    rc.addEventListener('touchstart', show, { passive: true });
+                });
+                return P;
+            }
+            function fmtP(p) {
+                const fr = [[1, 2], [3, 5], [2, 3], [3, 4], [2, 5], [1, 3], [1, 4]];
+                for (const [a, b] of fr) if (Math.abs(p - a / b) < 1e-4) return '(' + a + '/' + b + ')';
+                return p.toFixed(2);
+            }
+            function tableHTML(n, P, sim, evenStories) {
+                let h = '<table class="res"><tr><th>Final score</th><th>Stories</th><th>Probability</th>' + (sim && sim.total ? '<th>Simulated</th>' : '') + '</tr>';
+                for (let k = n; k >= 0; k--) {
+                    h += '<tr><td>' + scoreLabel(k, n) + '</td><td>' + chooseBig(n, k).toLocaleString() + '</td><td>' +
+                        (evenStories && n <= 30 ? chooseBig(n, k).toLocaleString() + '/' + (1n << BigInt(n)).toLocaleString() + ' ≈ ' : '') + pct(P[k]) + '</td>' +
+                        (sim && sim.total ? '<td>' + sim.counts[k] + ' (' + pct(sim.counts[k] / sim.total) + ')</td>' : '') + '</tr>';
+                }
+                return h + '</table>';
+            }
+            function tile(label, sw, val, sm) {
+                return '<div class="tile"><div class="lbl">' + (sw ? '<i class="sw" style="background:' + sw + '"></i>' : '') + label + '</div><div class="val">' + val + '</div><div class="sm">' + (sm || '&nbsp;') + '</div></div>';
+            }
+            function outcomeSums(n, P) {
+                let b = 0, d = 0, w = 0, close = 0;
+                for (let k = 0; k <= n; k++) {
+                    if (2 * k > n) b += P[k]; else if (2 * k === n) d += P[k]; else w += P[k];
+                    if (k >= 0.4 * n - 1e-9 && k <= 0.6 * n + 1e-9) close += P[k];
+                }
+                return { b, d, w, close };
+            }
+
+            /* ---------------- lab 1 (even teams) ---------------- */
+            let labSim = null;
+            function simulate(n, p, m) {
+                const counts = Array(n + 1).fill(0);
+                for (let i = 0; i < m; i++) { let k = 0; for (let g = 0; g < n; g++) if (Math.random() < p) k++; counts[k]++; }
+                return counts;
+            }
+            function drawLab() {
+                const n = +$('#lab-n').value;
+                $('#lab-n-out').textContent = n;
+                const P = drawChart($('#lab-chart'), n, 0.5, labSim);
+                const s = outcomeSums(n, P);
+                const tot = 1n << BigInt(n);
+                const drawFrac = n % 2 ? '0' : fracStr(chooseBig(n, n / 2), tot);
+                let modes = [];
+                const mx = Math.max(...P);
+                for (let k = n; k >= 0; k--) if (Math.abs(P[k] - mx) < 1e-12) modes.push(scoreLabel(k, n));
+                $('#lab-tiles').innerHTML =
+                    tile('P(draw)', COLORS.D, pct(s.d), n % 2 ? 'odd number of goals' : (n <= 30 ? drawFrac : '')) +
+                    tile('P(Buffaloes win)', COLORS.B, pct(s.b), 'same as P(Wildebeest win)') +
+                    tile('Most likely score', '', modes.join(' or '), modes.length > 1 ? 'tied' : '') +
+                    tile('Close match', '', pct(s.close), 'Buffaloes score 40–60% of goals');
+                $('#lab-table').innerHTML = tableHTML(n, P, labSim, true);
+                if (labSim && labSim.total) {
+                    const d = n % 2 ? 0 : labSim.counts[n / 2];
+                    $('#lab-sim').textContent = 'Simulated ' + labSim.total.toLocaleString() + ' matches with ' + n + ' goals: ' + d + ' draws (' + pct(d / labSim.total) + ') vs. theory ' + pct(s.d) + '.';
+                } else $('#lab-sim').textContent = 'Press "Play 100 matches" to simulate with virtual coin flips.';
+            }
+            $('#lab-n').addEventListener('input', () => { labSim = null; drawLab(); });
+            $$('[data-sim]').forEach(b => b.addEventListener('click', () => {
+                const m = +b.dataset.sim, n = +$('#lab-n').value;
+                if (!m) { labSim = null; drawLab(); return; }
+                const c = simulate(n, 0.5, m);
+                if (!labSim) labSim = { total: 0, counts: Array(n + 1).fill(0) };
+                labSim.total += m; c.forEach((v, i) => labSim.counts[i] += v);
+                drawLab();
+            }));
+            drawLab();
+
+            /* ---------------- lab 2 (buff) ---------------- */
+            function drawBuff() {
+                const n = +$('#buff-n').value, p = +$('#buff-p').value;
+                $('#buff-n-out').textContent = n;
+                $('#buff-p-out').textContent = fmtP(p).replace(/[()]/g, '');
+                const P = drawChart($('#buff-chart'), n, p, null);
+                const s = outcomeSums(n, P);
+                $('#buff-tiles').innerHTML =
+                    tile('P(Buffaloes win)', COLORS.B, pct(s.b), '') +
+                    tile('P(draw)', COLORS.D, pct(s.d), n % 2 ? 'odd number of goals' : '') +
+                    tile('P(Wildebeest upset)', COLORS.W, pct(s.w), '') +
+                    tile('Each goal', '', fmtP(p).replace(/[()]/g, ''), 'chance it\'s a Buffaloes goal');
+                $('#buff-table').innerHTML = tableHTML(n, P, null, false);
+                $$('#buff-presets button').forEach(b => b.classList.toggle('on', Math.abs(+b.dataset.p - p) < 0.003));
+            }
+            $('#buff-n').addEventListener('input', drawBuff);
+            $('#buff-p').addEventListener('input', drawBuff);
+            $$('#buff-presets button').forEach(b => b.addEventListener('click', () => { $('#buff-p').value = b.dataset.p; drawBuff(); }));
+            drawBuff();
+
+            /* ---------------- report ---------------- */
+            const nameInp = $('#rep-name');
+            nameInp.value = state.name || '';
+            nameInp.addEventListener('input', () => { state.name = nameInp.value; save(); });
+            function report() {
+                const lines = ['GOAL RUSH: match report (MATH 253, Chapter 16 Extra Time)', 'Name(s): ' + (state.name || ''), ''];
+                lines.push('Story builders: ' + state.stories[3].length + ' of 8 three-goal stories, ' + state.stories[4].length + ' of 16 four-goal stories (' + (state.hinted[3].length + state.hinted[4].length) + ' from hints).');
+                lines.push('4–2 stories recorded: ' + state.picks.length + ' of 15.');
+                const checks = $$('input.ans');
+                const right = checks.filter(i => i.classList.contains('ok')).length;
+                lines.push('Checked answers correct: ' + right + ' of ' + checks.length + '.', '');
+                $$('section.station').forEach(sec => {
+                    const ts = $$('textarea[data-journal]', sec);
+                    if (!ts.length) return;
+                    lines.push('== ' + $('h2', sec).textContent + ' ==');
+                    ts.forEach(t => { lines.push('* ' + t.dataset.label + ':', (t.value.trim() || '(blank)'), ''); });
+                });
+                return lines.join('\n');
+            }
+            $('#rep-copy').addEventListener('click', async () => {
+                const fb = $('#rep-fb'), txt = report();
+                try { await navigator.clipboard.writeText(txt); fb.textContent = '✓ Copied. Paste it wherever your instructor asks.'; fb.className = 'fb ok'; }
+                catch (e) {
+                    const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select();
+                    try { document.execCommand('copy'); fb.textContent = '✓ Copied.'; fb.className = 'fb ok'; } catch (e2) { fb.textContent = 'Copy failed. Use Download instead.'; fb.className = 'fb bad'; }
+                    ta.remove();
+                }
+            });
+            $('#rep-dl').addEventListener('click', () => {
+                const blob = new Blob([report()], { type: 'text/plain' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob); a.download = 'goal-rush-report.txt';
+                document.body.appendChild(a); a.click(); a.remove();
+                setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+            });
+            $('#rep-clear').addEventListener('click', () => {
+                if (!confirm('Erase all of your answers, stories, and notes on this page?')) return;
+                erasing = true;
+                clearTimeout(saveTimer);
+                try { localStorage.removeItem(STORE); } catch (e) { }
+                location.reload();
+            });
+
+            /* ---------------- trail highlight ---------------- */
+            const links = $$('#trail a');
+            if ('IntersectionObserver' in window) {
+                const io = new IntersectionObserver(entries => {
+                    entries.forEach(en => {
+                        if (en.isIntersecting) links.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + en.target.id));
+                    });
+                }, { rootMargin: '-40% 0px -55% 0px' });
+                $$('section.station').forEach(s => io.observe(s));
+            }
+        })();
+    </script>
+</body>
+
+</html>

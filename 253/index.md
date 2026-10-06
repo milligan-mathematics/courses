@@ -4,6 +4,10 @@ title: "MATH 253: Fundamental Concepts II"
 parent: Home
 nav_order: 253
 activities:
+  - title: "Goal Rush"
+    url: "goal-rush.html"
+    type: "Ch. 16 Extension"
+    description: "Extra time for the Buff Buffaloes vs. Wimpy Wildebeest. Build every match story for three and four goals, stack the counts into Pascal's triangle, count stories with combinations, then crank a match up to 60 goals and watch what happens to a draw."
   - title: "Statfloof Forest"
     url: "statfloof-forest.html"
     type: "Ch. 15 Launch"
