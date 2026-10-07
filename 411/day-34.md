@@ -337,19 +337,22 @@ reading: "Section 10.1, Definitions 10.1.2 and 10.1.3 and Theorem 10.1.5"
       var o = document.createElement('option'); o.value = String(i); o.textContent = f.label; sel.appendChild(o);
     });
 
-    var NMAX = 400;
+    // How far out requiredN looks. The uniform families never need more than
+    // 1/eps^2 < 1600 (sin(nx)/sqrt(n) at the smallest eps), so a cap of 400
+    // made them look non-uniform; the verdict now comes from fam.uniform.
+    var NMAX = 4000;
 
     function requiredN(fam, x, eps) {
-      // smallest n such that |f_m(x) - f(x)| < eps for all m in [n, NMAX]
-      for (var n = 1; n <= NMAX; n++) {
-        var ok = true;
-        for (var m = n; m <= Math.min(n + 60, NMAX); m++) {
-          if (Math.abs(fam.f(m, x) - fam.lim(x)) >= eps) { ok = false; break; }
-        }
-        if (ok) return n;
+      // smallest n with |f_m(x) - f(x)| < eps for every m >= n: one past the last
+      // m that fails. Failures in the back half of the scan mean it is farther out.
+      for (var m = NMAX; m >= 1; m--) {
+        if (Math.abs(fam.f(m, x) - fam.lim(x)) >= eps) return m > NMAX / 2 ? Infinity : m + 1;
       }
-      return Infinity;
+      return 1;
     }
+
+    // the required-n curve depends only on the family and eps, not the n slider
+    var reqCache = { key: '', reqs: null };
 
     function draw() {
       var fam = FAMS[+sel.value], n = +nIn.value, eps = Math.pow(10, +eIn.value);
@@ -401,18 +404,23 @@ reading: "Section 10.1, Definitions 10.1.2 and 10.1.3 and Theorem 10.1.5"
       ctx.strokeStyle = '#e4e6ea'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(padL, splitY); ctx.lineTo(W - padR, splitY); ctx.stroke();
 
-      var xs = [], reqs = [], maxReq = 1, anyInf = false;
+      var xs = [], maxReq = 1, anyInf = false, key = sel.value + ':' + eps;
+      if (reqCache.key !== key) {
+        reqCache.reqs = [];
+        for (var k0 = 1; k0 <= 200; k0++) reqCache.reqs.push(requiredN(fam, xmax * k0 / 200, eps));
+        reqCache.key = key;
+      }
+      var reqs = reqCache.reqs;
       for (var k = 1; k <= 200; k++) {
-        var xx = xmax * k / 200;
-        var r = requiredN(fam, xx, eps);
-        xs.push(xx); reqs.push(r);
+        var r = reqs[k - 1];
+        xs.push(xmax * k / 200);
         if (!isFinite(r)) anyInf = true; else maxReq = Math.max(maxReq, r);
       }
 
       var top = anyInf ? NMAX : Math.max(maxReq * 1.2, 10);
       function YR(v) { return splitY + 20 + (1 - Math.min(v, NMAX) / top) * (H - splitY - padB - 24); }
 
-      ctx.strokeStyle = anyInf || maxReq > NMAX * 0.8 ? '#d9534f' : M411.colors.explore;
+      ctx.strokeStyle = fam.uniform ? M411.colors.explore : '#d9534f';
       ctx.lineWidth = 2;
       ctx.beginPath();
       var started = false;
@@ -430,14 +438,17 @@ reading: "Section 10.1, Definitions 10.1.2 and 10.1.3 and Theorem 10.1.5"
       ctx.fillText('1', padL - 6, YR(1) + 4);
 
       var verdict;
-      if (anyInf || maxReq > NMAX * 0.8) {
+      // The verdict is the family's, not the plot's: whether the curve is bounded
+      // is a statement about every x, which no finite sample settles.
+      if (!fam.uniform) {
         verdict = '<p><strong style="color:#d9534f">Not uniform.</strong> The required \\(n\\) grows without bound ' +
-          'as \\(x\\) moves &mdash; it reaches ' + (anyInf ? 'beyond ' + NMAX : maxReq) + ' within the window. ' +
-          'No single \\(N\\) works for every \\(x\\) at once, so the convergence is pointwise only.</p>';
+          'as \\(x \\to 0\\) &mdash; ' + (anyInf ? 'near the left end it is already past ' +
+          NMAX.toLocaleString('en-US') : 'it reaches ' + maxReq + ' at the left end of the plot and keeps climbing') +
+          '. No single \\(N\\) works for every \\(x\\) at once, so the convergence is pointwise only.</p>';
       } else {
-        verdict = '<p><strong style="color:var(--a411-scaffold)">Uniform.</strong> The required \\(n\\) never exceeds ' +
-          '<strong>' + maxReq + '</strong> anywhere on the interval &mdash; so \\(N = ' + maxReq +
-          '\\) works at every \\(x\\) simultaneously.</p>';
+        verdict = '<p><strong style="color:var(--a411-scaffold)">Uniform.</strong> The required \\(n\\) stays bounded ' +
+          'across the interval &mdash; its largest value at the plotted points is <strong>' + maxReq +
+          '</strong> &mdash; so a single \\(N\\) of about that size works at every \\(x\\) simultaneously.</p>';
       }
 
       out.innerHTML =

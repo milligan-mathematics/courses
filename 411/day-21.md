@@ -361,10 +361,15 @@ reading: "Section 6.2 Example 6.2.17 through Section 6.3, the formal treatment o
     znIn.addEventListener('input', drawZoo);
 
     /* ---------------- the r-N game ---------------- */
+    // ok marks the sequences that do go to infinity; for those, last(r) is the
+    // last n with a_n <= r, i.e. the smallest N that works. The verdict comes
+    // from ok and N from last(r): judging from the terms on screen alone fails
+    // once N passes the window (log n needs N = e^r).
     var INF = [
-      { label: 'n', f: function (n) { return n; }, ok: true },
-      { label: '√n', f: function (n) { return Math.sqrt(n); }, ok: true },
-      { label: 'log(n)   (very slow, still →∞)', f: function (n) { return Math.log(n); }, ok: true },
+      { label: 'n', f: function (n) { return n; }, ok: true, last: function (r) { return Math.floor(r); } },
+      { label: '√n', f: function (n) { return Math.sqrt(n); }, ok: true, last: function (r) { return Math.floor(r * r); } },
+      { label: 'log(n)   (very slow, still →∞)', f: function (n) { return Math.log(n); }, ok: true,
+        last: function (r) { return Math.floor(Math.exp(r)); } },
       { label: '(−1)^n · n   (does NOT →∞)', f: function (n) { return Math.pow(-1, n) * n; }, ok: false },
       { label: 'n + 5·(−1)^n · n / 2   (does NOT →∞)', f: function (n) { return n + 5 * Math.pow(-1, n) * n / 2; }, ok: false }
     ];
@@ -380,22 +385,50 @@ reading: "Section 6.2 Example 6.2.17 through Section 6.3, the formal treatment o
       iSel.appendChild(o);
     });
 
+    // The view starts at MIN_NT terms and widens to show N, up to MAX_NT.
+    var MIN_NT = 600, MAX_NT = 3000000;
+
+    function fmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '{,}'); }
+
     function drawInf() {
       var s = INF[+iSel.value], r = Math.pow(10, +rIn.value);
-      var NT = 600;
 
-      // last index whose term fails to exceed r
+      var N = s.ok ? s.last(r) : 0, far = s.ok && !(N <= MAX_NT);
+      // settle floating-point ties (10^2.5 squared computes as 99999.99...)
+      if (s.ok && !far) {
+        while (s.f(N + 1) <= r) N++;
+        while (N > 0 && s.f(N) > r) N--;
+      }
+      var NT = s.ok && !far ? Math.max(MIN_NT, Math.ceil(N * 1.3)) : MIN_NT;
+
+      // for the sequences that fail: the last term in view not above r
       var lastBad = 0;
-      for (var n = 1; n <= NT; n++) if (s.f(n) <= r) lastBad = n;
-      var works = lastBad < NT * 0.8;
+      if (!s.ok) for (var n = 1; n <= NT; n++) if (s.f(n) <= r) lastBad = n;
 
       var d = M411.hidpi(iCan, 290), ctx = d.ctx, W = d.w, H = d.h;
       ctx.clearRect(0, 0, W, H);
       var padL = 60, padR = 20, padT = 20, padB = 32;
 
-      var vals = [];
-      for (var k = 1; k <= NT; k++) vals.push(s.f(k));
-      var lo = Math.min.apply(null, vals.concat([0])), hi = Math.max.apply(null, vals.concat([r * 1.3]));
+      // Every term when the view is short; otherwise each pixel column's lowest
+      // and highest term, which is enough to show every drop below r.
+      var pts = [], cols = Math.max(Math.floor(W - padL - padR), 1);
+      if (NT <= 2 * cols) {
+        for (var k = 1; k <= NT; k++) pts.push([k, s.f(k)]);
+      } else {
+        for (var c = 0; c < cols; c++) {
+          var a = Math.floor(c * NT / cols) + 1, b = Math.floor((c + 1) * NT / cols);
+          var pl = [a, s.f(a)], ph = pl;
+          for (var j = a + 1; j <= b; j++) {
+            var v = s.f(j);
+            if (v < pl[1]) pl = [j, v]; else if (v > ph[1]) ph = [j, v];
+          }
+          pts.push(pl);
+          if (ph !== pl) pts.push(ph);
+        }
+      }
+
+      var lo = 0, hi = r * 1.3;
+      pts.forEach(function (p) { lo = Math.min(lo, p[1]); hi = Math.max(hi, p[1]); });
       var span = Math.max(hi - lo, 1e-6), mid = (hi + lo) / 2;
       lo = mid - span * 0.62; hi = mid + span * 0.62;
 
@@ -411,28 +444,42 @@ reading: "Section 6.2 Example 6.2.17 through Section 6.3, the formal treatment o
       ctx.fillStyle = M411.colors.scaffold; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'left';
       ctx.fillText('r = ' + r.toFixed(1), padL + 4, Y(r) - 6);
 
-      if (works && lastBad > 0) {
+      if (s.ok && !far && N > 0) {
         ctx.strokeStyle = M411.colors.check; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(X(lastBad), padT); ctx.lineTo(X(lastBad), H - padB); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(X(N), padT); ctx.lineTo(X(N), H - padB); ctx.stroke();
         ctx.fillStyle = M411.colors.check; ctx.font = 'bold 12px sans-serif';
-        ctx.fillText('N = ' + lastBad, X(lastBad) + 5, padT + 12);
+        ctx.fillText('N = ' + N.toLocaleString('en-US'), X(N) + 5, padT + 12);
       }
 
-      vals.forEach(function (v, i) {
-        ctx.fillStyle = v > r ? 'rgba(0,133,82,0.8)' : '#d9534f';
-        ctx.beginPath(); ctx.arc(X(i + 1), Y(v), 1.8, 0, 2 * Math.PI); ctx.fill();
+      pts.forEach(function (p) {
+        ctx.fillStyle = p[1] > r ? 'rgba(0,133,82,0.8)' : '#d9534f';
+        ctx.beginPath(); ctx.arc(X(p[0]), Y(p[1]), 1.8, 0, 2 * Math.PI); ctx.fill();
       });
 
-      iOut.innerHTML =
-        '<p>Adversary names \\(r = ' + r.toFixed(2) + '\\).</p>' +
-        (works
-          ? '<p><strong style="color:var(--a411-scaffold)">Cleared.</strong> Taking \\(N = ' + lastBad +
+      ctx.fillStyle = M411.colors.muted; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('n = 1 … ' + NT.toLocaleString('en-US'), (padL + W - padR) / 2, H - 9);
+
+      var msg;
+      if (far) {
+        // only log n gets here: N = floor(e^r), written as a power of ten
+        var e10 = r / Math.LN10, ex = Math.floor(e10), man = Math.pow(10, e10 - ex);
+        msg = '<p><strong style="color:var(--a411-scaffold)">Cleared &mdash; eventually.</strong> \\(\\log n &gt; r\\) ' +
+          'exactly when \\(n &gt; e^r\\), so take \\(N = \\lfloor e^{' + r.toFixed(2) + '} \\rfloor \\approx ' +
+          man.toFixed(2) + ' \\times 10^{' + ex + '}\\). Every term past that exceeds \\(r\\). No plot will ever reach ' +
+          'that \\(N\\), but the definition only asks that it exist &mdash; and it always does, which is what ' +
+          '\\(a_n \\to \\infty\\) asserts.</p>';
+      } else if (s.ok) {
+        msg = '<p><strong style="color:var(--a411-scaffold)">Cleared.</strong> Taking \\(N = ' + fmt(N) +
           '\\), every term with \\(n &gt; N\\) exceeds \\(r\\). Raise \\(r\\) and \\(N\\) moves right &mdash; ' +
-          'but it always exists, which is what \\(a_n \\to \\infty\\) asserts.</p>'
-          : '<p><strong style="color:#d9534f">Not cleared.</strong> Terms keep dropping back below \\(r\\) no ' +
-          'matter how far out you look &mdash; the last one in view is at \\(n = ' + lastBad + '\\). ' +
+          'but it always exists, which is what \\(a_n \\to \\infty\\) asserts.</p>';
+      } else {
+        msg = '<p><strong style="color:#d9534f">Not cleared.</strong> Terms keep dropping back below \\(r\\) no ' +
+          'matter how far out you look &mdash; the last one in view is at \\(n = ' + fmt(lastBad) + '\\). ' +
           'The definition needs \\(a_n &gt; r\\) for <em>all</em> \\(n &gt; N\\), so this sequence does not ' +
-          'diverge to infinity, however large some of its terms get.</p>');
+          'diverge to infinity, however large some of its terms get.</p>';
+      }
+
+      iOut.innerHTML = '<p>Adversary names \\(r = ' + r.toFixed(2) + '\\).</p>' + msg;
       M411.typeset(iOut);
     }
     iSel.addEventListener('change', drawInf);

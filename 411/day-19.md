@@ -349,25 +349,33 @@ reading: "Section 6.2, the limit as a primary tool, through the scrapwork for th
     function bn(n) { return -1 + 2 / Math.sqrt(n); } // -> -1
     var A = 3, B = -1;
 
+    function fmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '{,}'); }
+
     function drawHalf() {
       var eps = Math.pow(10, +eIn.value);
-      var NT = 400;
-
-      // thresholds for eps/2 on each, and for eps on the sum
-      function thresh(f, L, tol) {
-        for (var n = 1; n <= 20000; n++) {
-          var ok = true;
-          for (var m = n; m <= Math.min(n + 30, 20000); m++) if (Math.abs(f(m) - L) >= tol) { ok = false; break; }
-          if (ok) return n - 1;
-        }
-        return Infinity;
+      // thresholds for eps/2 on each: 5/n < eps/2 once n > 10/eps, and
+      // 2/sqrt(n) < eps/2 once n > 16/eps^2. Exact, so no search cap: at the
+      // smallest eps, N2 is past 1,500,000.
+      // The nudge settles floating-point ties (16/0.1² computes as 1599.99...);
+      // it tests the errors 5/n and 2/√n directly, since (3 + 5/n) - 3 rounds.
+      function lastBad(err, tol, guess) {
+        var n = guess;
+        while (err(n + 1) >= tol) n++;
+        while (n > 0 && err(n) < tol) n--;
+        return n;
       }
-      var N1 = thresh(an, A, eps / 2), N2 = thresh(bn, B, eps / 2);
+      var N1 = lastBad(function (n) { return 5 / n; }, eps / 2, Math.floor(10 / eps)),
+        N2 = lastBad(function (n) { return 2 / Math.sqrt(n); }, eps / 2, Math.floor(16 / (eps * eps)));
       var N = Math.max(N1, N2);
+      var NT = Math.max(400, Math.ceil(N * 1.15));
 
       var d = M411.hidpi(hCan, 280), ctx = d.ctx, W = d.w, H = d.h;
       ctx.clearRect(0, 0, W, H);
       var padL = 54, padR = 20, padT = 20, padB = 34;
+
+      // the n to plot: all of them in a short view, else two per pixel (the errors are monotone)
+      var ns = [], S = Math.min(NT, 2 * Math.max(Math.floor(W - padL - padR), 1));
+      for (var q = 0; q < S; q++) ns.push(1 + Math.round(q * (NT - 1) / (S - 1)));
 
       function X(n) { return padL + (n - 1) / (NT - 1) * (W - padL - padR); }
       var top = eps * 1.5;
@@ -385,11 +393,11 @@ reading: "Section 6.2, the limit as a primary tool, through the scrapwork for th
       function plot(f, L, color) {
         ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath();
         var started = false;
-        for (var n = 1; n <= NT; n++) {
+        ns.forEach(function (n) {
           var v = Math.abs(f(n) - L);
-          if (v > top * 1.2) { started = false; continue; }
+          if (v > top * 1.2) { started = false; return; }
           started ? ctx.lineTo(X(n), Y(v)) : (ctx.moveTo(X(n), Y(v)), started = true);
-        }
+        });
         ctx.stroke();
       }
       plot(an, A, M411.colors.explore);
@@ -397,11 +405,11 @@ reading: "Section 6.2, the limit as a primary tool, through the scrapwork for th
       // the sum's error
       ctx.strokeStyle = M411.colors.check; ctx.lineWidth = 2.4; ctx.beginPath();
       var st = false;
-      for (var n2 = 1; n2 <= NT; n2++) {
+      ns.forEach(function (n2) {
         var v2 = Math.abs((an(n2) + bn(n2)) - (A + B));
-        if (v2 > top * 1.2) { st = false; continue; }
+        if (v2 > top * 1.2) { st = false; return; }
         st ? ctx.lineTo(X(n2), Y(v2)) : (ctx.moveTo(X(n2), Y(v2)), st = true);
-      }
+      });
       ctx.stroke();
 
       [[N1, M411.colors.explore, 'N₁'], [N2, M411.colors.flaw, 'N₂']].forEach(function (pr) {
@@ -420,8 +428,8 @@ reading: "Section 6.2, the limit as a primary tool, through the scrapwork for th
 
       hOut.innerHTML =
         '<p>With \\(\\varepsilon = ' + eps.toFixed(4) + '\\): the first sequence is within \\(\\frac{\\varepsilon}{2}\\) ' +
-        'from \\(N_1 = ' + N1 + '\\) on; the second from \\(N_2 = ' + N2 + '\\) on.</p>' +
-        '<p class="big">\\( N = \\max(' + N1 + ', ' + N2 + ') = ' + N + ' \\)</p>' +
+        'from \\(N_1 = ' + fmt(N1) + '\\) on; the second from \\(N_2 = ' + fmt(N2) + '\\) on.</p>' +
+        '<p class="big">\\( N = \\max(' + fmt(N1) + ', ' + fmt(N2) + ') = ' + fmt(N) + ' \\)</p>' +
         '<p>Past \\(N\\), both errors are under \\(\\frac{\\varepsilon}{2}\\), so their sum is under ' +
         '\\(\\varepsilon\\) &mdash; and by the triangle inequality the error in the sum is no bigger than that sum. ' +
         'Notice the two sequences converge at quite different rates, and the \\(\\max\\) is what lets you stop ' +
