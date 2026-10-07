@@ -333,13 +333,18 @@ reading: "Section 6.1, Example 6.1.8 through Definition 6.1.11 and convergence t
 
 <script>
   (function () {
+    // lims holds the smallest and largest limit points of each sequence (equal
+    // when it converges). The sequence fails to converge to L exactly when some
+    // limit point differs from L, so that decides who wins; scanning terms only
+    // finds the escapes. Judging from the terms on screen alone gets both
+    // directions wrong once the action lies past the window.
     var SEQS = [
-      { label: '1 + (−1)^n   →  2,0,2,0,…', f: function (n) { return 1 + Math.pow(-1, n); }, L: 0 },
-      { label: '5 + (−1)^n / 2', f: function (n) { return 5 + Math.pow(-1, n) / 2; }, L: 5 },
-      { label: 'sin(n)', f: function (n) { return Math.sin(n); }, L: 0 },
-      { label: '(−1)^n · n   (unbounded)', f: function (n) { return Math.pow(-1, n) * n; }, L: 0 },
-      { label: '1/n   (this one does converge)', f: function (n) { return 1 / n; }, L: 0 },
-      { label: '(2n+3)/(n+1)   (converges)', f: function (n) { return (2 * n + 3) / (n + 1); }, L: 2 }
+      { label: '1 + (−1)^n   →  2,0,2,0,…', f: function (n) { return 1 + Math.pow(-1, n); }, L: 0, lims: [0, 2] },
+      { label: '5 + (−1)^n / 2', f: function (n) { return 5 + Math.pow(-1, n) / 2; }, L: 5, lims: [4.5, 5.5] },
+      { label: 'sin(n)', f: function (n) { return Math.sin(n); }, L: 0, lims: [-1, 1] },
+      { label: '(−1)^n · n   (unbounded)', f: function (n) { return Math.pow(-1, n) * n; }, L: 0, lims: [-Infinity, Infinity] },
+      { label: '1/n   (this one does converge)', f: function (n) { return 1 / n; }, L: 0, lims: [0, 0] },
+      { label: '(2n+3)/(n+1)   (converges)', f: function (n) { return (2 * n + 3) / (n + 1); }, L: 2, lims: [2, 2] }
     ];
 
     var sel = document.getElementById('d18-seq'),
@@ -354,7 +359,16 @@ reading: "Section 6.1, Example 6.1.8 through Definition 6.1.11 and convergence t
       sel.appendChild(o);
     });
 
-    var NTERMS = 320;
+    // The view starts at MIN_VIEW terms and widens to show the escape; SCAN is
+    // how far out we look for one.
+    var MIN_VIEW = 320, SCAN = 3000000;
+
+    function fmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '{,}'); }
+    function num(v) {
+      if (v === 0 || Math.abs(v) >= 0.001) return v.toFixed(4);
+      var p = v.toExponential(2).split('e');
+      return p[0] + ' \\times 10^{' + (+p[1]) + '}';
+    }
 
     function draw() {
       var seq = SEQS[+sel.value];
@@ -362,32 +376,76 @@ reading: "Section 6.1, Example 6.1.8 through Definition 6.1.11 and convergence t
       if (!isFinite(L)) L = 0;
       var N = +NIn.value;
 
-      // Choose the epsilon an adversary would pick: half the eventual spread of
-      // the tail about L, so a genuinely divergent sequence can never satisfy it.
-      var tail = [];
-      for (var t = 40; t <= NTERMS; t++) tail.push(Math.abs(seq.f(t) - L));
-      var sup = Math.max.apply(null, tail);
-      var eps = Math.max(sup / 2, 1e-6);
+      // How far the sequence keeps returning from L: 0 exactly when it converges to L.
+      var gap = Math.max(Math.abs(seq.lims[0] - L), Math.abs(seq.lims[1] - L));
+      var converges = gap === 0;
 
-      var vals = [];
-      for (var n = 1; n <= NTERMS; n++) vals.push(seq.f(n));
+      // The adversary's epsilon. If the sequence doesn't converge to L, half the
+      // gap: terms near the farthest limit point recur forever, and each sits
+      // more than that from L. If it does converge, no epsilon can win; the
+      // adversary's best try is half the spread of the terms past n = 40.
+      var eps, why;
+      if (gap === Infinity) {
+        eps = 1;
+        why = 'the sequence is unbounded, so any \\(\\varepsilon\\) will do';
+      } else if (!converges) {
+        eps = gap / 2;
+        why = 'half the distance from \\(L = ' + L + '\\) to the farthest value the sequence keeps coming back to';
+      } else {
+        var sup = 0;
+        for (var t = 40; t <= MIN_VIEW; t++) sup = Math.max(sup, Math.abs(seq.f(t) - L));
+        eps = Math.max(sup / 2, 1e-6);
+        why = 'half the spread of the terms past \\(n = 40\\) about \\(L = ' + L + '\\)';
+      }
+
+      function bad(n) { return Math.abs(seq.f(n) - L) >= eps; }
+
+      // For a convergent sequence, where the escapes run out: the last term
+      // outside the band (doubling the search until the back half is clean).
+      var lastBad = 0;
+      if (converges) {
+        for (var M = 1024; ; M = Math.min(M * 2, SCAN)) {
+          lastBad = 0;
+          for (var m = M; m >= 1; m--) if (bad(m)) { lastBad = m; break; }
+          if (lastBad <= M / 2 || M >= SCAN) break;
+        }
+      }
 
       // the escape: first index past N breaking the band
-      var escape = -1;
-      for (var i = N; i < NTERMS; i++) {
-        if (Math.abs(vals[i] - L) >= eps) { escape = i + 1; break; }
-      }
+      var escape = -1, stop = converges ? lastBad : SCAN;
+      for (var n = N + 1; n <= stop; n++) if (bad(n)) { escape = n; break; }
+
+      var view = Math.max(MIN_VIEW, Math.ceil(1.15 * Math.max(escape, N)));
+      if (escape < 0 && !converges) view = SCAN;
 
       var d = M411.hidpi(canvas, 320), ctx = d.ctx, W = d.w, H = d.h;
       ctx.clearRect(0, 0, W, H);
       var padL = 54, padR = 20, padT = 20, padB = 34;
 
-      var vlo = Math.min.apply(null, vals.concat([L - eps * 1.5]));
-      var vhi = Math.max.apply(null, vals.concat([L + eps * 1.5]));
+      // Every term when the view is short; otherwise each pixel column's lowest
+      // and highest term, which is enough to show every escape.
+      var pts = [], cols = Math.max(Math.floor(W - padL - padR), 1);
+      if (view <= 2 * cols) {
+        for (var k = 1; k <= view; k++) pts.push([k, seq.f(k)]);
+      } else {
+        for (var c = 0; c < cols; c++) {
+          var a = Math.floor(c * view / cols) + 1, b = Math.floor((c + 1) * view / cols);
+          var lo = [a, seq.f(a)], hi = lo;
+          for (var j = a + 1; j <= b; j++) {
+            var v = seq.f(j);
+            if (v < lo[1]) lo = [j, v]; else if (v > hi[1]) hi = [j, v];
+          }
+          pts.push(lo);
+          if (hi !== lo) pts.push(hi);
+        }
+      }
+
+      var vlo = L - eps * 1.5, vhi = L + eps * 1.5;
+      pts.forEach(function (p) { vlo = Math.min(vlo, p[1]); vhi = Math.max(vhi, p[1]); });
       var span = Math.max(vhi - vlo, 1e-6), mid = (vhi + vlo) / 2;
       vlo = mid - span * 0.62; vhi = mid + span * 0.62;
 
-      function X(n) { return padL + (n - 1) / (NTERMS - 1) * (W - padL - padR); }
+      function X(n) { return padL + (n - 1) / (view - 1) * (W - padL - padR); }
       function Y(v) { return padT + (vhi - v) / (vhi - vlo) * (H - padT - padB); }
 
       ctx.fillStyle = 'rgba(0,133,82,0.13)';
@@ -406,37 +464,52 @@ reading: "Section 6.1, Example 6.1.8 through Definition 6.1.11 and convergence t
       ctx.fillStyle = M411.colors.muted; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'left';
       ctx.fillText('proposed N = ' + N, X(Math.max(N, 1)) + 5, H - padB - 8);
 
-      vals.forEach(function (v, i) {
-        var n = i + 1;
-        var past = n > N, inBand = Math.abs(v - L) < eps;
+      pts.forEach(function (p) {
+        var n = p[0];
+        var past = n > N, inBand = Math.abs(p[1] - L) < eps;
         ctx.fillStyle = !past ? '#ccd0d5' : (inBand ? 'rgba(0,133,82,0.8)' : '#d9534f');
-        ctx.beginPath(); ctx.arc(X(n), Y(v), n < 70 ? 2.6 : 1.7, 0, 2 * Math.PI); ctx.fill();
+        ctx.beginPath(); ctx.arc(X(n), Y(p[1]), view <= MIN_VIEW && n < 70 ? 2.6 : 1.7, 0, 2 * Math.PI); ctx.fill();
       });
 
       if (escape > 0) {
+        var sE = seq.f(escape);
         ctx.strokeStyle = '#d9534f'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(X(escape), Y(vals[escape - 1]), 8, 0, 2 * Math.PI); ctx.stroke();
+        ctx.beginPath(); ctx.arc(X(escape), Y(sE), 8, 0, 2 * Math.PI); ctx.stroke();
         ctx.fillStyle = '#d9534f'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText('n = ' + escape, X(escape), Y(vals[escape - 1]) - 14);
+        ctx.fillText('n = ' + escape.toLocaleString('en-US'), Math.min(X(escape), W - padR - 30), Y(sE) - 14);
       }
+
+      ctx.fillStyle = M411.colors.muted; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('n = 1 … ' + view.toLocaleString('en-US'), (padL + W - padR) / 2, H - 9);
 
       var msg;
       if (escape > 0) {
+        var sEsc = seq.f(escape);
         msg = '<p><strong style="color:#d9534f">Escaped.</strong> Past your opponent\'s \\(N = ' + N +
-          '\\), the term \\(s_{' + escape + '} = ' + vals[escape - 1].toFixed(4) + '\\) sits a distance \\(' +
-          Math.abs(vals[escape - 1] - L).toFixed(4) + '\\) from \\(L\\) &mdash; not less than \\(\\varepsilon\\).</p>' +
-          '<p>Slide \\(N\\) as far right as you like: another escape appears every time. That pattern &mdash; ' +
-          'an escape available past <em>every</em> \\(N\\) &mdash; is exactly what a divergence proof has to ' +
-          'establish, and it is why the proof gives \\(n\\) as a formula in \\(N\\) rather than a number.</p>';
-      } else {
+          '\\), the term \\(s_{' + fmt(escape) + '} = ' + num(sEsc) + '\\) sits a distance \\(' +
+          num(Math.abs(sEsc - L)) + '\\) from \\(L\\) &mdash; not less than \\(\\varepsilon\\).</p>';
+        if (converges) {
+          msg += '<p>But this sequence converges to \\(' + L + '\\), so the escapes run out: the last one is at ' +
+            '\\(n = ' + fmt(lastBad) + '\\). Slide \\(N\\) to \\(' + fmt(lastBad) + '\\) or beyond and the ' +
+            'adversary has nothing. Any other \\(\\varepsilon\\) fails the same way, only farther out &mdash; which ' +
+            'is exactly what convergence means.</p>';
+        } else {
+          msg += '<p>Slide \\(N\\) as far right as you like: another escape appears every time. That pattern &mdash; ' +
+            'an escape available past <em>every</em> \\(N\\) &mdash; is exactly what a divergence proof has to ' +
+            'establish, and it is why the proof gives \\(n\\) as a formula in \\(N\\) rather than a number.</p>';
+        }
+      } else if (converges) {
         msg = '<p><strong style="color:var(--a411-scaffold)">No escape.</strong> Every term past \\(N = ' + N +
-          '\\) lies inside the band, so this \\(N\\) survives &mdash; and it will keep surviving as you tighten ' +
-          '\\(\\varepsilon\\), because this sequence genuinely converges to \\(' + L + '\\).</p>';
+          '\\) lies inside the band, so this \\(N\\) survives. Any \\(\\varepsilon\\) the adversary tries meets the ' +
+          'same fate eventually, because this sequence genuinely converges to \\(' + L + '\\).</p>';
+      } else {
+        msg = '<p><strong style="color:#d9534f">An escape exists</strong> past \\(N = ' + N + '\\), but it lies ' +
+          'beyond \\(n = ' + fmt(SCAN) + '\\), farther out than this page searches. The sequence does not converge ' +
+          'to \\(' + L + '\\); it just takes its time showing it.</p>';
       }
 
       out.innerHTML =
-        '<p>Adversary\'s choice: \\(\\varepsilon = ' + eps.toFixed(4) + '\\) (half the eventual spread of the ' +
-        'sequence about \\(L = ' + L + '\\)).</p>' + msg;
+        '<p>Adversary\'s choice: \\(\\varepsilon = ' + num(eps) + '\\) (' + why + ').</p>' + msg;
       M411.typeset(out);
     }
 
