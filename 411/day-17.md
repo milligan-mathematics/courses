@@ -313,16 +313,21 @@ reading: "Section 6.1, from partial sums through Definition 6.1.1 and the worked
 
 <script>
   (function () {
+    // lims holds the smallest and largest limit points of each sequence (equal
+    // when it converges). An N exists for (L, eps) exactly when every limit point
+    // is within eps of L, so the verdict comes from that; scanning terms only
+    // locates N. Judging from the terms on screen alone fails whenever N lies
+    // past the window: sin(n)/n at eps = 0.001 needs N near 1000.
     var SEQS = [
-      { label: '1/n', f: function (n) { return 1 / n; }, L: 0 },
-      { label: 'sin(n)/n', f: function (n) { return Math.sin(n) / n; }, L: 0 },
-      { label: '(n+4)/(n²+1)', f: function (n) { return (n + 4) / (n * n + 1); }, L: 0 },
-      { label: '1/√n', f: function (n) { return 1 / Math.sqrt(n); }, L: 0 },
-      { label: '(0.9)^n', f: function (n) { return Math.pow(0.9, n); }, L: 0 },
-      { label: 'n/(n+100)', f: function (n) { return n / (n + 100); }, L: 1 },
-      { label: '2 + (−1)^n / n', f: function (n) { return 2 + Math.pow(-1, n) / n; }, L: 2 },
-      { label: '1 + (−1)^n   (diverges)', f: function (n) { return 1 + Math.pow(-1, n); }, L: 0 },
-      { label: 'sin(n)   (diverges)', f: function (n) { return Math.sin(n); }, L: 0 }
+      { label: '1/n', f: function (n) { return 1 / n; }, L: 0, lims: [0, 0] },
+      { label: 'sin(n)/n', f: function (n) { return Math.sin(n) / n; }, L: 0, lims: [0, 0] },
+      { label: '(n+4)/(n²+1)', f: function (n) { return (n + 4) / (n * n + 1); }, L: 0, lims: [0, 0] },
+      { label: '1/√n', f: function (n) { return 1 / Math.sqrt(n); }, L: 0, lims: [0, 0] },
+      { label: '(0.9)^n', f: function (n) { return Math.pow(0.9, n); }, L: 0, lims: [0, 0] },
+      { label: 'n/(n+100)', f: function (n) { return n / (n + 100); }, L: 1, lims: [1, 1] },
+      { label: '2 + (−1)^n / n', f: function (n) { return 2 + Math.pow(-1, n) / n; }, L: 2, lims: [2, 2] },
+      { label: '1 + (−1)^n   (diverges)', f: function (n) { return 1 + Math.pow(-1, n); }, L: 0, lims: [0, 2] },
+      { label: 'sin(n)   (diverges)', f: function (n) { return Math.sin(n); }, L: 0, lims: [-1, 1] }
     ];
 
     var sel = document.getElementById('d17-seq'),
@@ -337,7 +342,11 @@ reading: "Section 6.1, from partial sums through Definition 6.1.1 and the worked
       sel.appendChild(o);
     });
 
-    var NTERMS = 260;
+    // The view starts at MIN_VIEW terms and widens to show N; SCAN is how far
+    // out we look for N (1/√n at the smallest eps needs N = 1,000,000).
+    var MIN_VIEW = 260, SCAN = 3000000;
+
+    function fmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '{,}'); }
 
     function draw() {
       var seq = SEQS[+sel.value];
@@ -345,27 +354,62 @@ reading: "Section 6.1, from partial sums through Definition 6.1.1 and the worked
       if (!isFinite(L)) L = 0;
       var eps = Math.pow(10, +epsIn.value);
 
-      var vals = [];
-      for (var n = 1; n <= NTERMS; n++) vals.push(seq.f(n));
+      function bad(n) { return Math.abs(seq.f(n) - L) >= eps; }
+      function lastBadUpTo(m) {
+        for (var n = m; n >= 1; n--) if (bad(n)) return n;
+        return 0;
+      }
 
-      // The smallest N that works, if there is one: scan back from the end and
-      // find the last term that violates the band.
-      var lastBad = 0;
-      for (var i = 0; i < NTERMS; i++) if (Math.abs(vals[i] - L) >= eps) lastBad = i + 1;
-      // "No N within our window" if a violation occurs late in the visible range.
-      var works = lastBad < NTERMS * 0.75;
-      var N = lastBad;
+      var exists = Math.max(Math.abs(seq.lims[0] - L), Math.abs(seq.lims[1] - L)) < eps;
+      var N = 0, lastBad = 0, view = MIN_VIEW, beyond = false;
+      if (exists) {
+        // The smallest N that works is the last term outside the band. Look out
+        // to M, doubling M until the back half of 1..M is clean; if violations
+        // are still turning up at SCAN, N is farther out than we look.
+        for (var M = 1024; ; M = Math.min(M * 2, SCAN)) {
+          N = lastBadUpTo(M);
+          if (N <= M / 2 || M >= SCAN) break;
+        }
+        beyond = N > SCAN / 2;
+        view = beyond ? SCAN : Math.max(MIN_VIEW, Math.ceil(N * 1.3));
+      } else {
+        // No N exists. Widen the view until violations reach its right edge,
+        // so the plot shows them continuing rather than seeming to stop.
+        for (;;) {
+          lastBad = lastBadUpTo(view);
+          if (lastBad >= view * 0.75 || view >= SCAN) break;
+          view = Math.min(view * 2, SCAN);
+        }
+      }
 
       var d = M411.hidpi(canvas, 330), ctx = d.ctx, W = d.w, H = d.h;
       ctx.clearRect(0, 0, W, H);
       var padL = 54, padR = 20, padT = 20, padB = 34;
 
-      var vlo = Math.min.apply(null, vals.concat([L - eps * 1.6]));
-      var vhi = Math.max.apply(null, vals.concat([L + eps * 1.6]));
+      // Every term when the view is short; otherwise each pixel column's lowest
+      // and highest term, which is enough to show every violation.
+      var pts = [], cols = Math.max(Math.floor(W - padL - padR), 1);
+      if (view <= 2 * cols) {
+        for (var k = 1; k <= view; k++) pts.push([k, seq.f(k)]);
+      } else {
+        for (var c = 0; c < cols; c++) {
+          var a = Math.floor(c * view / cols) + 1, b = Math.floor((c + 1) * view / cols);
+          var lo = [a, seq.f(a)], hi = lo;
+          for (var j = a + 1; j <= b; j++) {
+            var v = seq.f(j);
+            if (v < lo[1]) lo = [j, v]; else if (v > hi[1]) hi = [j, v];
+          }
+          pts.push(lo);
+          if (hi !== lo) pts.push(hi);
+        }
+      }
+
+      var vlo = L - eps * 1.6, vhi = L + eps * 1.6;
+      pts.forEach(function (p) { vlo = Math.min(vlo, p[1]); vhi = Math.max(vhi, p[1]); });
       var span = Math.max(vhi - vlo, 1e-6), mid = (vhi + vlo) / 2;
       vlo = mid - span * 0.62; vhi = mid + span * 0.62;
 
-      function X(n) { return padL + (n - 1) / (NTERMS - 1) * (W - padL - padR); }
+      function X(n) { return padL + (n - 1) / (view - 1) * (W - padL - padR); }
       function Y(v) { return padT + (vhi - v) / (vhi - vlo) * (H - padT - padB); }
 
       // the epsilon band
@@ -386,37 +430,42 @@ reading: "Section 6.1, from partial sums through Definition 6.1.1 and the worked
       ctx.fillText('L + ε', W - padR - 40, Y(L + eps) - 5);
 
       // the N marker
-      if (works && N > 0) {
+      if (exists && !beyond && N > 0) {
         ctx.strokeStyle = M411.colors.check; ctx.lineWidth = 2;
         ctx.beginPath(); ctx.moveTo(X(N), padT); ctx.lineTo(X(N), H - padB); ctx.stroke();
         ctx.fillStyle = M411.colors.check; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'left';
-        ctx.fillText('N = ' + N, X(N) + 5, padT + 12);
+        ctx.fillText('N = ' + N.toLocaleString('en-US'), X(N) + 5, padT + 12);
       }
 
       // the terms
-      vals.forEach(function (v, i) {
-        var n = i + 1, inBand = Math.abs(v - L) < eps;
+      pts.forEach(function (p) {
+        var n = p[0], inBand = Math.abs(p[1] - L) < eps;
         ctx.fillStyle = inBand ? 'rgba(0,133,82,0.85)' : '#d9534f';
-        ctx.beginPath(); ctx.arc(X(n), Y(v), n < 60 ? 2.6 : 1.7, 0, 2 * Math.PI); ctx.fill();
+        ctx.beginPath(); ctx.arc(X(n), Y(p[1]), view <= MIN_VIEW && n < 60 ? 2.6 : 1.7, 0, 2 * Math.PI); ctx.fill();
       });
 
       ctx.fillStyle = M411.colors.muted; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
-      ctx.fillText('n = 1 … ' + NTERMS, (padL + W - padR) / 2, H - 9);
+      ctx.fillText('n = 1 … ' + view.toLocaleString('en-US'), (padL + W - padR) / 2, H - 9);
 
       var msg;
-      if (works && N === 0) {
+      if (exists && N === 0) {
         msg = '<p><strong style="color:var(--a411-scaffold)">Every term is already inside the band.</strong> ' +
           'Any \\(N\\) at all works for this \\(\\varepsilon\\) &mdash; the challenge was too easy. Tighten it.</p>';
-      } else if (works) {
-        msg = '<p><strong style="color:var(--a411-scaffold)">Challenge met.</strong> Taking \\(N = ' + N +
-          '\\), every term with \\(n &gt; ' + N + '\\) satisfies \\(|s_n - ' + L + '| &lt; \\varepsilon\\). ' +
-          'The last term to break the band was \\(n = ' + N + '\\).</p>' +
+      } else if (exists && beyond) {
+        msg = '<p><strong style="color:var(--a411-scaffold)">Challenge met &mdash; eventually.</strong> An \\(N\\) ' +
+          'exists for this \\(\\varepsilon\\), but it lies past \\(n = ' + fmt(SCAN / 2) + '\\), farther out than ' +
+          'this page can show you: terms are still breaking the band at \\(n = ' + fmt(N) + '\\).</p>' +
+          '<p>Nothing in the definition says \\(N\\) has to be small. It only has to exist.</p>';
+      } else if (exists) {
+        msg = '<p><strong style="color:var(--a411-scaffold)">Challenge met.</strong> Taking \\(N = ' + fmt(N) +
+          '\\), every term with \\(n &gt; ' + fmt(N) + '\\) satisfies \\(|s_n - ' + L + '| &lt; \\varepsilon\\). ' +
+          'The last term to break the band was \\(n = ' + fmt(N) + '\\).</p>' +
           '<p>Tighten \\(\\varepsilon\\) and watch \\(N\\) move right. The claim \\(\\lim s_n = ' + L +
           '\\) survives as long as an \\(N\\) exists for <em>every</em> challenge &mdash; however far right it has ' +
           'to go.</p>';
       } else {
         msg = '<p><strong style="color:#d9534f">Challenge not met.</strong> Terms are still escaping the band far out ' +
-          'in the sequence &mdash; the last violation in view is at \\(n = ' + lastBad + '\\), and they keep ' +
+          'in the sequence &mdash; the last violation in view is at \\(n = ' + fmt(lastBad) + '\\), and they keep ' +
           'coming. No \\(N\\) can work for this \\(\\varepsilon\\).</p>' +
           '<p>One failed \\(\\varepsilon\\) is enough to destroy the claim \\(\\lim s_n = ' + L + '\\). ' +
           'The definition demands <em>every</em> \\(\\varepsilon\\), so a single counterexample settles it.</p>';
