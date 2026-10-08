@@ -11,7 +11,8 @@
   function fmt(v, d) {
     d = d == null ? 2 : d;
     if (!isFinite(v)) return '—';
-    var s = (Math.round(v * Math.pow(10, d)) / Math.pow(10, d)).toFixed(d).replace(/\.?0+$/, '');
+    var s = (Math.round(v * Math.pow(10, d)) / Math.pow(10, d)).toFixed(d);
+    if (d > 0) s = s.replace(/\.?0+$/, '');  // 2.50 -> 2.5, 3.00 -> 3; never strip a whole number's zeros
     if (s === '-0') s = '0';
     return s.replace(/^-/, '−');
   }
@@ -184,9 +185,10 @@
       P.arrow(arrows, [0, 0], x, C.x, 3);
       h.at(x);
       var ang = angleBetween(x, y), len = norm(y);
-      out.innerHTML = spec.quiet ? 'angle between x and Ax = ' + (len > 1e-9 ? fmt(ang, 0) + '&deg;' : '—')
-        : 'x = ' + vec(x) + ' &nbsp; Ax = ' + vec(y) + '<br>length of Ax = ' + fmt(len)
-          + (len > 1e-9 ? ' &nbsp; angle between x and Ax = ' + fmt(ang, 0) + '&deg;' : '');
+      var nm = spec.name || 'A';
+      out.innerHTML = spec.quiet ? 'angle between x and ' + nm + 'x = ' + (len > 1e-9 ? fmt(ang, 0) + '&deg;' : '—')
+        : 'x = ' + vec(x) + ' &nbsp; ' + nm + 'x = ' + vec(y) + '<br>length of ' + nm + 'x = ' + fmt(len)
+          + (len > 1e-9 ? ' &nbsp; angle between x and ' + nm + 'x = ' + fmt(ang, 0) + '&deg;' : '');
       if (!snapped || done) return;
       if (spec.goal === 'max' || spec.goal === 'min') {
         done = true;
@@ -371,9 +373,14 @@
     var g = s('g', {}, P.layer), bestG = s('g', {}, P.layer), dots = s('g', {}, P.layer), out = readout(box), done = false;
     pts.forEach(function (p) { s('circle', { cx: P.X(p[0]), cy: P.Y(p[1]), r: 5, fill: C.ink }, dots); });
     var dy = (win[3] - win[2]) / 100;
-    var hL = P.handle(C.x, 'Left end of your line', function (p) { yL = clampY(p[1]); draw(); }, function (a, b, big) { yL = clampY(yL + b * dy * (big ? 5 : 1)); draw(); });
-    var hR = P.handle(C.x, 'Right end of your line', function (p) { yR = clampY(p[1]); draw(); }, function (a, b, big) { yR = clampY(yR + b * dy * (big ? 5 : 1)); draw(); });
+    var hL = P.handle(C.x, 'Left end of your line', function (p) { yL = clampY(p[1]); snapBest(); draw(); }, function (a, b, big) { yL = clampY(yL + b * dy * (big ? 5 : 1)); snapBest(); draw(); });
+    var hR = P.handle(C.x, 'Right end of your line', function (p) { yR = clampY(p[1]); snapBest(); draw(); }, function (a, b, big) { yR = clampY(yR + b * dy * (big ? 5 : 1)); snapBest(); draw(); });
+    var tol = (win[3] - win[2]) * (spec.tolerance || 0.04);
     function clampY(y) { return Math.max(win[2], Math.min(win[3], y)); }
+    function snapBest() {  // both ends close to the least-squares line: snap onto it
+      var bl = bm * xL + bb, br = bm * xR + bb;
+      if (Math.abs(yL - bl) < tol && Math.abs(yR - br) < tol) { yL = bl; yR = br; }
+    }
     function line(m, b, color, dash, gg) {
       s('line', { x1: P.X(win[0]), y1: P.Y(m * win[0] + b), x2: P.X(win[1]), y2: P.Y(m * win[1] + b), stroke: color, 'stroke-width': 3, 'stroke-dasharray': dash || null }, gg);
     }
@@ -383,9 +390,9 @@
       pts.forEach(function (p) { s('line', { x1: P.X(p[0]), y1: P.Y(p[1]), x2: P.X(p[0]), y2: P.Y(m * p[0] + b), stroke: C.ax, 'stroke-width': 2.5 }, g); });
       line(m, b, C.x, null, g);
       hL.at([xL, yL]); hR.at([xR, yR]);
-      out.innerHTML = 'Your line: y = ' + fmt(m, 3) + 'x ' + (b < 0 ? '− ' : '+ ') + fmt(Math.abs(b), 3)
-        + '<br>Sum of squared errors: ' + fmt(e, 3) + (done ? ' &nbsp; (least squares: ' + fmt(best, 3) + ')' : '');
-      if (!done && e <= best * 1.05 + 1e-9) {
+      out.innerHTML = (spec.quiet ? '' : 'Your line: y = ' + fmt(m, 3) + 'x ' + (b < 0 ? '− ' : '+ ') + fmt(Math.abs(b), 3) + '<br>')
+        + 'Sum of squared errors: ' + fmt(e, 3) + (done ? ' &nbsp; (least squares: ' + fmt(best, 3) + ')' : '');
+      if (!done && e <= best + 1e-9) {
         done = true;
         line(bm, bb, C.eig, '7 5', bestG);
         out.innerHTML += ' &nbsp; (least squares: ' + fmt(best, 3) + ')';
