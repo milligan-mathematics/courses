@@ -560,6 +560,8 @@
     card.appendChild(el('p', null, '<strong>Last step:</strong> open the Canvas check-in for this problem. It gives you '
       + 'a new problem like this one, plus your reflection, and that is what earns the credit.'));
     card.appendChild(button('pl-link', 'Work through it again', function () { S.twin = -1; go(0, 'walk'); }));
+    card.appendChild(el('p', null, '<a class="pl-link" href="../practice/map.html" target="_top">See your MATH 307 map</a> '
+      + '(what you have done, and what to try next).'));
     root.appendChild(card);
   }
 
