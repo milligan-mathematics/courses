@@ -5,16 +5,16 @@
    A problem may also offer "try it cold" (its final-answer steps first) and a "now you try" twin before the reflection. */
 (function () {
   'use strict';
-  var P = window.POLYA, PM = window.PM;
+  var P = window.POLYA || null, PM = window.PM;
   var PHASES = ['Understand', 'Plan', 'Carry out', 'Look back'];
   var root = document.getElementById('polya-app');
-  var KEY = 'polya:' + P.slug;
+  var KEY = P ? 'polya:' + P.slug : null;
 
   // The walk-through: the problem's steps, with the twin (if any) just before the closing reflection.
-  var STEPS = P.questions.slice();
-  if (P.twins && P.twins.length) STEPS.splice(STEPS.length - 1, 0, { phase: 'Look back', type: 'twin' });
+  var STEPS = P ? P.questions.slice() : [];
+  if (P && P.twins && P.twins.length) STEPS.splice(STEPS.length - 1, 0, { phase: 'Look back', type: 'twin' });
 
-  var S = load();
+  var S = P ? load() : null;
 
   function load() {
     var s = { step: 0, mode: 'walk', cold: 0, twin: -1 };
@@ -95,7 +95,7 @@
 
   // ---------- choice steps ----------
   function renderMC(q, box, opts) {
-    var list = el('div', 'pl-options');
+    var list = el('div', 'pl-options'), misses = 0;
     list.setAttribute('role', 'group');
     q.answers.forEach(function (a) {
       var wrap = el('div', 'pl-opt-wrap');
@@ -104,9 +104,10 @@
         btn.disabled = true;
         btn.classList.add(a.ok ? 'pl-opt-ok' : 'pl-opt-no');
         show(wrap, bubble(a.ok, a.comment));
+        if (!a.ok) misses += 1;
         if (a.ok || opts.cold) {
           list.querySelectorAll('.pl-opt').forEach(function (o) { o.disabled = true; });
-          opts.done(a.ok ? 'right' : 'wrong');
+          opts.done(a.ok ? 'right' : 'wrong', misses === 0);
         }
       });
       wrap.appendChild(btn);
@@ -117,7 +118,7 @@
   }
 
   function renderMulti(q, box, opts) {
-    var list = el('div', 'pl-options'), boxes = [];
+    var list = el('div', 'pl-options'), boxes = [], checks = 0;
     q.answers.forEach(function (a) {
       var wrap = el('div', 'pl-opt-wrap'), lab = el('label', 'pl-opt pl-check'), cb = document.createElement('input');
       cb.type = 'checkbox';
@@ -131,6 +132,7 @@
       msg.innerHTML = '';
       var wrongPicked = boxes.filter(function (x) { return x.cb.checked && !x.a.ok; });
       var missing = boxes.filter(function (x) { return !x.cb.checked && x.a.ok; });
+      checks += 1;
       if (!wrongPicked.length && !missing.length) {
         boxes.forEach(function (x) {
           x.cb.disabled = true;
@@ -140,7 +142,7 @@
         });
         check.remove();
         typeset(list);
-        opts.done('right');
+        opts.done('right', checks === 1);
         return;
       }
       wrongPicked.forEach(function (x) { x.wrap.appendChild(bubble(false, x.a.comment)); });
@@ -158,7 +160,7 @@
 
   /** Find the error: a worked solution whose lines are clickable; one line is the first wrong one. */
   function renderError(q, box, opts) {
-    var sol = el('ol', 'pl-solution');
+    var sol = el('ol', 'pl-solution'), misses = 0;
     q.lines.forEach(function (ln) {
       var li = el('li', 'pl-sol-wrap');
       var btn = button('pl-sol-line', ln.html, function () {
@@ -168,10 +170,11 @@
           btn.classList.add('pl-sol-bad');
           show(li, bubble(true, ln.comment));
           sol.querySelectorAll('.pl-sol-line').forEach(function (o) { o.disabled = true; });
-          opts.done('right');
+          opts.done('right', misses === 0);
         } else {
           btn.classList.add('pl-sol-fine');
           show(li, note('pl-why', 'This line is fine.', ln.comment));
+          misses += 1;
           if (opts.cold) opts.done('wrong');
         }
       });
@@ -291,7 +294,7 @@
         finish();
         inputs.forEach(function (i) { i.classList.add('pl-in-ok'); });
         show(out, bubble(true, q.comment));
-        opts.done('right');
+        opts.done('right', tries === 0);
         return;
       }
       tries += 1;
@@ -367,7 +370,7 @@
         done = true; g.inputs.forEach(function (i) { i.disabled = true; i.classList.add('pl-in-ok'); }); check.remove();
         box.querySelectorAll('.pl-reveal, .pl-hint-btn').forEach(function (n) { n.remove(); });
         show(out, bubble(true, q.comment));
-        opts.done('right');
+        opts.done('right', tries === 0);
         return;
       }
       tries += 1;
@@ -571,6 +574,11 @@
     typeset(root);
     window.scrollTo(0, 0);
   }
+
+  // Shared with practice.js: the step renderers and helpers.
+  window.PolyaKit = { RENDER: RENDER, el: el, button: button, typeset: typeset, bubble: bubble, note: note, show: show,
+                      questionHTML: function (t) { return questionHTML(t); } };
+  if (!P) return;
 
   window.PolyaPlayer = {
     state: function () { return S; }, steps: STEPS, go: go,

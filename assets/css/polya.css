@@ -29,7 +29,7 @@
 .pl-hint { color: var(--pl-muted); font-size: 15px; margin: 4px 0 8px; }
 .pl-options { display: flex; flex-direction: column; gap: 8px; }
 .pl-opt { display: block; width: 100%; text-align: left; font: inherit; color: inherit; background: #fff;
-  border: 2px solid var(--pl-line); border-radius: 8px; padding: 10px 12px; cursor: pointer; overflow-x: auto; }
+  border: 2px solid var(--pl-line); border-radius: 8px; padding: 10px 12px; cursor: pointer; overflow-x: auto; overflow-y: hidden; }
 .pl-opt:hover:not(:disabled) { border-color: #999; }
 .pl-opt:disabled { cursor: default; }
 .pl-opt-ok { border-color: var(--pl-ok); background: var(--pl-ok-bg); }
@@ -116,3 +116,15 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
 .pl-cold { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--pl-line); }
 .pl-cold-btn { margin-top: 0; background: #fff; color: #333; border: 2px solid #333; }
 .pl-statement.pl-static { border-left-color: #009CDE; }
+/* ---- practice pages ---- */
+.pr-skill { margin-top: 14px; }
+.pr-skill-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.pr-skill-top .pl-sub, .pr-skill-top .pl-phase { margin: 0; }
+.pr-status { color: var(--pl-muted); font-size: 15px; white-space: nowrap; }
+.pr-solid { color: var(--pl-ok); font-weight: bold; }
+.pr-dots { display: inline-flex; gap: 4px; vertical-align: middle; margin-left: 4px; }
+.pr-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #BBB; display: inline-block; }
+.pr-dot.pr-on { background: var(--pl-ok); border-color: var(--pl-ok); }
+.pr-mastery { font-size: 15px; color: #444; margin: 8px 0 4px; }
+.pr-go { margin-top: 8px; }
+.pr-back { display: block; margin: 0 0 8px; }
