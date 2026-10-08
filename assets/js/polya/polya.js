@@ -349,7 +349,7 @@
     var conds = q.conditions.map(function (c) { return { fn: compile(c.js), comment: c.comment }; });
     var g = cellGrid(q.shape[0], q.shape[1], q.label, q.start, 'Your example');
     box.appendChild(g.wrap);
-    box.appendChild(el('p', 'pl-hint', 'Any example that works is right. Use whole numbers or fractions like 3/2.'));
+    box.appendChild(el('p', 'pl-hint', q.syntax || 'Any example that works is right. Whole numbers or fractions are fine.'));
     var out = el('div', 'pl-msg');
     var check = button('pl-check-btn', 'Check my example', attempt);
     box.appendChild(check);

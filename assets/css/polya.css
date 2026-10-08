@@ -84,7 +84,7 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
 .pl-solution { list-style: none; counter-reset: sol; padding: 0; margin: 8px 0; display: flex; flex-direction: column; gap: 6px; }
 .pl-sol-wrap { counter-increment: sol; }
 .pl-sol-line { display: block; width: 100%; text-align: left; font: inherit; color: inherit; background: #FCFCFC;
-  border: 1.5px dashed #BBB; border-radius: 6px; padding: 8px 12px 8px 2.6em; cursor: pointer; position: relative; overflow-x: auto; }
+  border: 1.5px dashed #BBB; border-radius: 6px; padding: 8px 12px 8px 2.6em; cursor: pointer; position: relative; overflow-x: auto; overflow-y: hidden; }
 .pl-sol-line::before { content: counter(sol) "."; position: absolute; left: 10px; top: 8px; color: var(--pl-muted); font-weight: bold; }
 .pl-sol-line:hover:not(:disabled) { border-color: #777; }
 .pl-sol-line:disabled { cursor: default; }
@@ -92,7 +92,7 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
 .pl-sol-bad { border-style: solid; border-color: var(--pl-no); background: var(--pl-no-bg); }
 /* ---- compare approaches (inside question HTML) ---- */
 .pl-ways { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin: 10px 0; }
-.pl-way { border: 1.5px solid var(--pl-line); border-radius: 8px; padding: 8px 12px; background: #FAFAFA; overflow-x: auto; }
+.pl-way { border: 1.5px solid var(--pl-line); border-radius: 8px; padding: 8px 12px; background: #FAFAFA; overflow-x: auto; overflow-y: hidden; }
 .pl-who { font-weight: bold; margin: 0 0 4px; color: #7A5195; }
 /* ---- figures ---- */
 .pl-figure { margin: 10px 0; }
