@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 275" width="540" height="275" role="img" aria-label="Circuit: three vertical branches joined at junction A on top and junction B on the bottom. Left branch: 20 volt battery (positive plate up) and 2 ohm resistor, current I1 upward. Middle branch: 4 ohm resistor, current I2 downward. Right branch: 10 volt battery (positive plate up) and 2 ohm resistor, current I3 upward.">
+  <rect width="540" height="275" fill="#ffffff"/>
+  <g stroke="#222" stroke-width="2.2" fill="none" stroke-linejoin="round" stroke-linecap="round">
+    <!-- top and bottom wires -->
+    <line x1="90" y1="40" x2="450" y2="40"/>
+    <line x1="90" y1="240" x2="450" y2="240"/>
+    <!-- left branch: resistor then battery -->
+    <line x1="90" y1="40" x2="90" y2="70"/>
+    <polyline points="90,70 80,75 100,83 80,91 100,99 80,107 100,115 90,120"/>
+    <line x1="90" y1="120" x2="90" y2="155"/>
+    <line x1="90" y1="165" x2="90" y2="240"/>
+    <!-- middle branch: resistor -->
+    <line x1="270" y1="40" x2="270" y2="110"/>
+    <polyline points="270,110 260,115 280,123 260,131 280,139 260,147 280,155 270,160"/>
+    <line x1="270" y1="160" x2="270" y2="240"/>
+    <!-- right branch: resistor then battery -->
+    <line x1="450" y1="40" x2="450" y2="70"/>
+    <polyline points="450,70 440,75 460,83 440,91 460,99 440,107 460,115 450,120"/>
+    <line x1="450" y1="120" x2="450" y2="155"/>
+    <line x1="450" y1="165" x2="450" y2="240"/>
+  </g>
+  <!-- battery plates: long = positive (top), short = negative -->
+  <g stroke="#222" stroke-linecap="round">
+    <line x1="70" y1="155" x2="110" y2="155" stroke-width="2.6"/>
+    <line x1="80" y1="165" x2="100" y2="165" stroke-width="4.5"/>
+    <line x1="430" y1="155" x2="470" y2="155" stroke-width="2.6"/>
+    <line x1="440" y1="165" x2="460" y2="165" stroke-width="4.5"/>
+  </g>
+  <!-- junctions -->
+  <circle cx="270" cy="40" r="4.5" fill="#222"/>
+  <circle cx="270" cy="240" r="4.5" fill="#222"/>
+  <!-- current arrows -->
+  <polygon points="90,192 83,206 97,206" fill="#c2410c"/>
+  <polygon points="270,208 263,194 277,194" fill="#c2410c"/>
+  <polygon points="450,192 443,206 457,206" fill="#c2410c"/>
+  <g font-family="Helvetica, Arial, sans-serif" font-size="16" fill="#222">
+    <text x="270" y="27" text-anchor="middle" font-weight="bold">A</text>
+    <text x="270" y="264" text-anchor="middle" font-weight="bold">B</text>
+    <text x="72" y="100" text-anchor="end">2 Ω</text>
+    <text x="64" y="165" text-anchor="end">20 V</text>
+    <text x="116" y="152" font-size="14">+</text>
+    <text x="290" y="140">4 Ω</text>
+    <text x="468" y="100">2 Ω</text>
+    <text x="476" y="165">10 V</text>
+    <text x="412" y="152" font-size="14">+</text>
+    <g fill="#c2410c" font-style="italic">
+      <text x="104" y="206">I<tspan font-size="12" dy="4">1</tspan></text>
+      <text x="284" y="206">I<tspan font-size="12" dy="4">2</tspan></text>
+      <text x="436" y="206" text-anchor="end">I<tspan font-size="12" dy="4">3</tspan></text>
+    </g>
+  </g>
+</svg>
