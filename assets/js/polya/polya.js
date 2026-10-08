@@ -164,6 +164,30 @@
     card.appendChild(row); card.appendChild(out);
   }
 
+  function renderWrite(q, card) {
+    card.appendChild(el('p', 'pl-hint', 'Write it in your own words first, then compare. '
+      + 'Nothing here is saved or graded; it&rsquo;s for your thinking.'));
+    var ta = document.createElement('textarea');
+    ta.rows = 3; ta.setAttribute('aria-label', 'Your answer in your own words');
+    var btn = el('button', 'pl-check-btn', 'Compare with mine');
+    btn.type = 'button';
+    var out = el('div', 'pl-msg');
+    btn.onclick = function () {
+      out.innerHTML = '';
+      if (ta.value.trim().split(/\s+/).filter(Boolean).length < 3) {
+        out.appendChild(el('p', 'pl-nudge', 'Write a sentence first, even a rough one.'));
+        return;
+      }
+      btn.remove();
+      var b = el('div', 'pl-bubble pl-model', '<strong>Here&rsquo;s one way to say it:</strong> ' + q.model);
+      b.setAttribute('role', 'status');
+      out.appendChild(b);
+      typeset(out);
+      nextButton(null, card);
+    };
+    card.appendChild(ta); card.appendChild(btn); card.appendChild(out);
+  }
+
   function renderStep(q) {
     var n = PHASES.indexOf(q.phase) + 1;
     root.appendChild(progress(q.phase));
@@ -179,6 +203,7 @@
     if (q.type === 'mc') renderMC(q, card);
     else if (q.type === 'multi') renderMulti(q, card);
     else if (q.type === 'num') renderNum(q, card);
+    else if (q.type === 'write') renderWrite(q, card);
     else if (q.type === 'text') nextButton(q.cta, card);
     else if (q.type === 'essay') {
       card.appendChild(el('p', 'pl-hint', 'You&rsquo;ll write this in the Canvas check-in for this problem. '

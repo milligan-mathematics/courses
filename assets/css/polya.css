@@ -44,6 +44,7 @@
 .pl-ok { border-color: var(--pl-ok); background: var(--pl-ok-bg); }
 .pl-no { border-color: var(--pl-no); background: var(--pl-no-bg); }
 .pl-why { background: #F7F7F7; }
+.pl-model { border-color: #009CDE; background: #EAF6FC; }
 @keyframes pl-pop { from { transform: translateY(-4px); opacity: 0; } to { transform: none; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .pl-bubble { animation: none; } }
 .pl-nudge { color: var(--pl-no); font-weight: bold; margin: 8px 0 0; }
