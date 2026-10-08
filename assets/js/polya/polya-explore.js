@@ -184,8 +184,9 @@
       P.arrow(arrows, [0, 0], x, C.x, 3);
       h.at(x);
       var ang = angleBetween(x, y), len = norm(y);
-      out.innerHTML = 'x = ' + vec(x) + ' &nbsp; Ax = ' + vec(y) + '<br>length of Ax = ' + fmt(len)
-        + (len > 1e-9 ? ' &nbsp; angle between x and Ax = ' + fmt(ang, 0) + '&deg;' : '');
+      out.innerHTML = spec.quiet ? 'angle between x and Ax = ' + (len > 1e-9 ? fmt(ang, 0) + '&deg;' : '—')
+        : 'x = ' + vec(x) + ' &nbsp; Ax = ' + vec(y) + '<br>length of Ax = ' + fmt(len)
+          + (len > 1e-9 ? ' &nbsp; angle between x and Ax = ' + fmt(ang, 0) + '&deg;' : '');
       if (!snapped || done) return;
       if (spec.goal === 'max' || spec.goal === 'min') {
         done = true;
@@ -198,8 +199,10 @@
       if (found.some(function (f) { var a = angleBetween(f, x); return a < 5 || a > 175; })) return;
       found.push(x);
       P.fullLine(lines, x, C.eig, { 'stroke-dasharray': '6 4' });
-      var lab = s('text', { x: P.X(x[0] * R * 0.8) + 6, y: P.Y(x[1] * R * 0.8) - 6, fill: C.eig, 'font-size': 14, 'font-weight': 'bold' }, lines);
-      lab.textContent = 'λ = ' + fmt(lam);
+      if (!spec.quiet) {
+        var lab = s('text', { x: P.X(x[0] * R * 0.8) + 6, y: P.Y(x[1] * R * 0.8) - 6, fill: C.eig, 'font-size': 14, 'font-weight': 'bold' }, lines);
+        lab.textContent = 'λ = ' + fmt(lam);
+      }
       if (spec.goal === 'eigen' && found.length >= (spec.need || 1)) {
         done = true;
         onGoal({ lambda: fmt(lam), dir: niceDir(x), count: found.length });
@@ -515,10 +518,11 @@
       h.at(x0);
       var straight = null;
       eig.forEach(function (e) { var a = angleBetween(x0, e.dir); if (norm(x0) > 0.2 && (a < 1e-6 || a > 180 - 1e-6)) straight = e; });
-      out.innerHTML = 'start = ' + vec(x0) + (straight ? ' &nbsp; <strong>straight-line path</strong> (λ = ' + fmt(straight.lambda) + ')' : '');
+      out.innerHTML = 'start = ' + vec(x0) + (straight ? ' &nbsp; <strong>straight-line path</strong>'
+        + (spec.quiet ? '' : ' (λ = ' + fmt(straight.lambda) + ')') : '');
       if (straight && !done && spec.goal === 'straight') {
         done = true;
-        eig.forEach(function (e) { P.fullLine(lines, e.dir, C.eig, { 'stroke-dasharray': '6 4' }); });
+        (spec.quiet ? [straight] : eig).forEach(function (e) { P.fullLine(lines, e.dir, C.eig, { 'stroke-dasharray': '6 4' }); });
         onGoal({ lambda: fmt(straight.lambda), dir: niceDir(straight.dir) });
       }
     }
