@@ -28,7 +28,10 @@
   function bubble(ok, html) {
     var b = el('div', 'pl-bubble ' + (ok ? 'pl-ok' : 'pl-no'));
     b.setAttribute('role', 'status');
-    b.innerHTML = (ok ? '<strong>Yes.</strong> ' : '<strong>Not quite.</strong> ') + html;
+    // Comments often open with their own "Right." / "Not quite."; bold that instead of adding a second opener.
+    var m = html.match(ok ? /^(Right|Yes|Exactly|Correct)([.:!,])\s*/ : /^(Not quite|Not so|Careful)([.:!,])\s*/);
+    b.innerHTML = m ? '<strong>' + m[1] + m[2] + '</strong> ' + html.slice(m[0].length)
+                    : (ok ? '<strong>Yes.</strong> ' : '<strong>Not quite.</strong> ') + html;
     return b;
   }
 
@@ -151,7 +154,7 @@
         input.disabled = true; btn.remove();
         out.appendChild(bubble(true, q.comment)); typeset(out); nextButton(null, card);
       } else if (tries < 2) {
-        out.appendChild(bubble(false, 'Check your last row operation and try again.'));
+        out.appendChild(bubble(false, 'Check your work and try again. You get one more try before the answer appears.'));
       } else {
         input.disabled = true; btn.remove();
         out.appendChild(bubble(false, 'Here&rsquo;s how it goes: ' + q.comment));
