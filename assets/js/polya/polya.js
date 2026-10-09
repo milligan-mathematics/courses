@@ -457,7 +457,8 @@
     var tries = 0, done = false;
     var conds = q.conditions.map(function (c) { return { fn: compile(c.js, q), comment: c.comment }; });
     var grids = partsOf(q).map(function (p) {
-      var g = cellGrid(p.shape[0], p.shape[1], p.label || (p.name ? p.name + ' =' : null), p.start, 'Your example');
+      var name = p.name && /^[a-z]$/.test(p.name) ? '\\mathbf{' + p.name + '}' : p.name;  // vectors u, w in bold
+      var g = cellGrid(p.shape[0], p.shape[1], p.label || (name ? name + ' =' : null), p.start, 'Your example');
       box.appendChild(g.wrap);
       return g;
     });
