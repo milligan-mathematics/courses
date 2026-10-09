@@ -1,7 +1,8 @@
 /* Pólya problem player. Site palette from assets/css/style.css; light only, like the other 307 pages. */
 .pl {
-  --pl-u: #009CDE; --pl-p: #7A5195; --pl-c: #008552; --pl-l: #F36E24;
-  --pl-ok: #008552; --pl-ok-bg: #EAF6F0; --pl-no: #B86E00; --pl-no-bg: #FFF5E3;
+  /* text-safe shades (4.5:1 on white) of the Milligan blue and orange; figures keep the brighter ones for strokes */
+  --pl-u: #007CB1; --pl-p: #7A5195; --pl-c: #008552; --pl-l: #BF561C;
+  --pl-ok: #008552; --pl-ok-bg: #EAF6F0; --pl-no: #A36100; --pl-no-bg: #FFF5E3;
   --pl-text: #333; --pl-muted: #666; --pl-line: #DDD; --pl-card: #FFF; --pl-bg: #F5F5F7;
   font-family: "Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: var(--pl-text); background: var(--pl-bg);
@@ -12,11 +13,16 @@
 .pl-progress { display: flex; gap: 6px; list-style: none; padding: 0; margin: 0 0 12px; }
 .pl-seg { flex: 1; text-align: center; font-size: 13px; padding: 6px 2px; border-radius: 6px;
   background: #E6E6EA; color: var(--pl-muted); }
-.pl-seg.pl-p1.pl-now, .pl-seg.pl-p1.pl-done { background: var(--pl-u); color: #fff; }
-.pl-seg.pl-p2.pl-now, .pl-seg.pl-p2.pl-done { background: var(--pl-p); color: #fff; }
-.pl-seg.pl-p3.pl-now, .pl-seg.pl-p3.pl-done { background: var(--pl-c); color: #fff; }
-.pl-seg.pl-p4.pl-now, .pl-seg.pl-p4.pl-done { background: var(--pl-l); color: #fff; }
-.pl-seg.pl-done { opacity: .55; }
+/* now: solid phase color, white text; done: white with a phase-colored outline and text (both 4.5:1) */
+.pl-seg.pl-p1.pl-now { background: var(--pl-u); color: #fff; }
+.pl-seg.pl-p2.pl-now { background: var(--pl-p); color: #fff; }
+.pl-seg.pl-p3.pl-now { background: var(--pl-c); color: #fff; }
+.pl-seg.pl-p4.pl-now { background: var(--pl-l); color: #fff; }
+.pl-seg.pl-done { background: #fff; }
+.pl-seg.pl-p1.pl-done { color: var(--pl-u); box-shadow: inset 0 0 0 2px var(--pl-u); }
+.pl-seg.pl-p2.pl-done { color: var(--pl-p); box-shadow: inset 0 0 0 2px var(--pl-p); }
+.pl-seg.pl-p3.pl-done { color: var(--pl-c); box-shadow: inset 0 0 0 2px var(--pl-c); }
+.pl-seg.pl-p4.pl-done { color: var(--pl-l); box-shadow: inset 0 0 0 2px var(--pl-l); }
 .pl-seg.pl-now { font-weight: bold; }
 .pl-card { background: var(--pl-card); border-radius: 10px; padding: 18px 20px;
   box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06); }
@@ -51,10 +57,10 @@
 .pl-num { display: flex; gap: 8px; margin-top: 8px; }
 .pl-num input { font: inherit; padding: 8px 10px; border: 2px solid var(--pl-line); border-radius: 8px; width: 9em; }
 .pl-next, .pl-check-btn { font: inherit; font-weight: bold; border: 0; border-radius: 8px; padding: 10px 18px; cursor: pointer; }
-.pl-next { display: block; margin: 16px 0 0 auto; background: #F36E24; color: #fff; }
-.pl-next:hover { background: #CD5920; }
+.pl-next { display: block; margin: 16px 0 0 auto; background: #BF561C; color: #fff; }
+.pl-next:hover { background: #A84B18; }
 .pl-check-btn { background: #333; color: #fff; margin-top: 10px; }
-.pl-link { font: inherit; background: none; border: 0; color: #CD5920; text-decoration: underline; cursor: pointer; padding: 0; margin-top: 10px; }
+.pl-link { font: inherit; background: none; border: 0; color: #B44E1A; text-decoration: underline; cursor: pointer; padding: 0; margin-top: 10px; }
 textarea { width: 100%; font: inherit; padding: 8px; border: 2px solid var(--pl-line); border-radius: 8px; }
 button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 3px solid #009CDE; outline-offset: 2px; }
 mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
@@ -116,6 +122,17 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
 .pl-readout { font-variant-numeric: tabular-nums; text-align: center; margin: 6px 0; font-size: 16px; }
 .pl-controls { display: flex; flex-wrap: wrap; gap: 8px 14px; justify-content: center; align-items: center; margin: 6px 0; }
 .pl-controls input[type=range] { width: min(260px, 70vw); }
+.pl-space { cursor: grab; }
+.pl-space:active { cursor: grabbing; }
+.pl-space:focus-visible { outline: 2px solid #009CDE; outline-offset: 2px; }
+.pl-sliders { flex-direction: column; align-items: stretch; max-width: 440px; margin-left: auto; margin-right: auto; }
+.pl-slider { display: grid; grid-template-columns: 3.2em 1fr 2.6em; align-items: center; gap: 8px; font-variant-numeric: tabular-nums; }
+.pl-slider input[type=range] { width: 100%; }
+.pl-slider-name { text-align: right; font-style: italic; }
+.pl-slider-val { text-align: right; }
+.pl-views { margin-top: 2px; }
+.pl-op { font: inherit; font-weight: bold; background: #fff; color: #333; border: 2px solid #333; border-radius: 8px; padding: 6px 14px; cursor: pointer; }
+.pl-op:disabled { opacity: 0.4; cursor: default; }
 .pl-handle { cursor: grab; }
 .pl-handle:focus { outline: none; }
 .pl-handle:focus .pl-ring, .pl-handle:hover .pl-ring { stroke: #333; stroke-width: 2; }
@@ -154,7 +171,8 @@ a.mp-chip:hover { border-color: #777; }
 .mp-done { background: var(--pl-ok-bg); border-color: var(--pl-ok); }
 .mp-started { background: var(--pl-no-bg); border-color: var(--pl-no); }
 .mp-new { background: #fff; }
-.mp-none { color: #999; border-style: dashed; }
+.mp-none { color: #767676; border-style: dashed; }
 .mp-skill { border-radius: 6px; }
 .mp-legend .mp-chip { margin-right: 4px; }
 @media (max-width: 520px) { .mp-row { grid-template-columns: 1fr; } }
+.pl-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }

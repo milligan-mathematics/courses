@@ -58,7 +58,10 @@
   }
 
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  // Text in a figure uses a darker shade of its color, so labels meet the 4.5:1 contrast rule on white.
+  var INK = { '#009CDE': '#007CB1', '#F36E24': '#BF561C', '#9A9AA2': '#6B6B73', '#008552': '#00704A', '#888': '#6B6B73', '#AAA': '#6B6B73' };
   function s(tag, attrs, parent) {
+    if (tag === 'text' && attrs.fill && INK[attrs.fill]) attrs.fill = INK[attrs.fill];
     var e = document.createElementNS(NS, tag);
     for (var k in attrs) e.setAttribute(k, attrs[k]);
     if (parent) parent.appendChild(e);
@@ -69,7 +72,7 @@
   function Plane(container, win, opts) {
     opts = opts || {};
     var W = 400, H = Math.round(opts.aspect ? W * opts.aspect : W * (win[3] - win[2]) / (win[1] - win[0]));
-    var svg = s('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': opts.label || 'Interactive figure' });
+    var svg = s('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'group', 'aria-label': opts.label || 'Interactive figure' });
     container.appendChild(svg);
     var id = 'pl' + (++uid);
     var defs = s('defs', {}, svg);
@@ -115,7 +118,8 @@
     }
     /** A draggable handle; onMove(mathPoint) on drag, onKey(dx, dy) on arrow keys. */
     function handle(color, label, onMove, onKey) {
-      var g = s('g', { class: 'pl-handle', tabindex: 0, role: 'slider', 'aria-label': label }, top);
+      var g = s('g', { class: 'pl-handle', tabindex: 0, role: 'button', 'aria-roledescription': 'movable point',
+                       'aria-label': label + '. Drag it, or use the arrow keys.' }, top);
       s('circle', { r: 18, fill: 'transparent' }, g);
       s('circle', { class: 'pl-ring', r: 9, fill: '#fff', stroke: color, 'stroke-width': 3 }, g);
       g.addEventListener('pointerdown', function (e) {
@@ -540,11 +544,472 @@
     };
   }
 
+  // ---------- space: a figure in R^3 that turns (drag it, or focus it and use the arrow keys) ----------
+  var SUB = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉'];
+  function dot3(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+  function add3(a, b) { return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]; }
+  function sub3(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
+  function mul3(c, a) { return [c * a[0], c * a[1], c * a[2]]; }
+  function norm3(a) { return Math.sqrt(dot3(a, a)); }
+  function unit3(a) { var n = norm3(a); return n < 1e-15 ? [0, 0, 0] : mul3(1 / n, a); }
+  function cross3(a, b) { return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; }
+  function vecN(v, d) { return '(' + v.map(function (x) { return fmt(x, d); }).join(', ') + ')'; }
+  function niceDirN(v) {  // (0.41, -0.2, 0.2) -> (2, -1, 1)
+    var nz = v.filter(function (x) { return Math.abs(x) > 1e-9; }).map(Math.abs);
+    if (!nz.length) return vecN(v);
+    var base = Math.min.apply(null, nz);
+    for (var k = 1; k <= 12; k++) {
+      var w = v.map(function (x) { return x / base * k; });
+      if (w.every(function (x) { return Math.abs(x - Math.round(x)) < 1e-6; })) {
+        w = w.map(Math.round);
+        if (w.filter(function (x) { return x !== 0; })[0] < 0) w = w.map(function (x) { return -x; });
+        return vecN(w, 0);
+      }
+    }
+    return vecN(v);
+  }
+  function colorOf(c) { return C[c] || c || C.ink; }
+  /** Unit vectors e1, e2 spanning a plane given by 'span' (two vectors) or 'normal', and its unit normal n. */
+  function planeBasis(o) {
+    var n = unit3(o.normal || cross3(o.span[0], o.span[1]));
+    var e1 = o.span ? unit3(o.span[0]) : unit3(Math.abs(n[0]) < 0.9 ? cross3(n, [1, 0, 0]) : cross3(n, [0, 1, 0]));
+    return { n: n, e1: e1, e2: unit3(cross3(n, e1)) };
+  }
+
+  /** A starting view [azimuth, elevation] in degrees that shows the key vectors well: none of them points at the
+      viewer, and no two of them line up on the screen. */
+  function autoView(keys) {
+    keys = keys.filter(function (k) { return norm3(k) > 1e-9; }).map(unit3);
+    if (!keys.length) return [32, 20];
+    var best = null;
+    for (var a = 0; a < 360; a += 10) {
+      for (var e = 14; e <= 34; e += 10) {
+        var ct = Math.cos(a * Math.PI / 180), st = Math.sin(a * Math.PI / 180), cp = Math.cos(e * Math.PI / 180), sp = Math.sin(e * Math.PI / 180);
+        var r = [-st, ct, 0], u = [-sp * ct, -sp * st, cp];
+        var pr = keys.map(function (k) { return [dot3(k, r), dot3(k, u)]; });
+        var len = pr.map(function (q) { return Math.hypot(q[0], q[1]); });
+        var sep = 1;
+        for (var i = 0; i < pr.length; i++) for (var j = i + 1; j < pr.length; j++) {
+          if (len[i] > 1e-6 && len[j] > 1e-6) sep = Math.min(sep, Math.abs(pr[i][0] * pr[j][1] - pr[i][1] * pr[j][0]) / (len[i] * len[j]));
+        }
+        var axisLen = [[1, 0, 0], [0, 1, 0], [0, 0, 1]].map(function (k) { return Math.hypot(dot3(k, r), dot3(k, u)); });
+        var score = Math.min.apply(null, len) + 0.6 * sep + 0.1 * len.reduce(function (x, y) { return x + y; }, 0) / len.length
+          - (Math.min.apply(null, axisLen) < 0.68 ? 2 : 0);  // no axis may point at the viewer either
+        if (!best || score > best.score + 1e-9) best = { score: score, view: [a, e] };
+      }
+    }
+    return best.view;
+  }
+
+  /** The scene: draw(fn) calls fn(add) to collect planes, lines, arrows, points and labels, then paints them so that
+      the parts of lines behind a plane show faded and dashed. */
+  function Space(box, spec) {
+    var R = spec.window || 4, W = 400, H = 340, sc = W / (2.9 * R);
+    var view0 = spec.view || autoView(spec.keys || []), th = view0[0] * Math.PI / 180, ph = view0[1] * Math.PI / 180;
+    var svg = s('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', tabindex: 0, class: 'pl-space',
+                         'aria-label': (spec.label || 'A figure in space') + '. Drag it, or use the arrow keys, to turn it.' });
+    box.appendChild(svg);
+    var id = 'pl' + (++uid), defs = s('defs', {}, svg), markers = {}, g = s('g', {}, svg), B, fn = null, axes = spec.axes || ['x', 'y', 'z'];
+    function marker(color) {
+      if (markers[color]) return markers[color];
+      var mid = id + 'm' + Object.keys(markers).length;
+      var m = s('marker', { id: mid, viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto-start-reverse' }, defs);
+      s('path', { d: 'M0,0 L10,5 L0,10 z', fill: color }, m);
+      return (markers[color] = 'url(#' + mid + ')');
+    }
+    function basis() {
+      var ct = Math.cos(th), st = Math.sin(th), cp = Math.cos(ph), sp = Math.sin(ph);
+      B = { r: [-st, ct, 0], u: [-sp * ct, -sp * st, cp], w: [cp * ct, cp * st, sp] };
+    }
+    var mid = spec.center || [0, 0, 0];  // the point the view centers on
+    function X(p) { return W / 2 + sc * dot3(sub3(p, mid), B.r); }
+    function Y(p) { return H / 2 - sc * dot3(sub3(p, mid), B.u); }
+    function pts(list) { return list.map(function (p) { return X(p).toFixed(1) + ',' + Y(p).toFixed(1); }).join(' '); }
+
+    function paint() {
+      basis();
+      while (g.firstChild) g.removeChild(g.firstChild);
+      var planes = [], segs = [], dots = [], texts = [], rights = [];
+      var add = {
+        plane: function (o) {
+          var pb = planeBasis(o), c = o.center || o.through || [0, 0, 0], h = o.size || R * 0.8;
+          planes.push({ c: c, e1: pb.e1, e2: pb.e2, h: h, color: colorOf(o.color || 'p'), label: o.label, opacity: o.opacity });
+        },
+        line: function (o) {
+          var d = unit3(o.dir), c = o.through || [0, 0, 0], L = o.length || R * 1.25;
+          segs.push({ a: add3(c, mul3(-L, d)), b: add3(c, mul3(L, d)), color: colorOf(o.color), width: o.width || 2.5, dash: o.dash });
+          if (o.label) texts.push({ p: add3(c, mul3(L * 0.92, d)), text: o.label, color: colorOf(o.color), dy: -8 });
+        },
+        arrow: function (o) {
+          var a = o.from || [0, 0, 0], b = add3(a, o.v);
+          if (norm3(o.v) < 1e-9) { dots.push({ p: a, color: colorOf(o.color), r: 4 }); return; }
+          segs.push({ a: a, b: b, color: colorOf(o.color), width: o.width || 3, arrow: true, dash: o.dash });
+          if (o.label) texts.push({ p: b, text: o.label, color: colorOf(o.color), dx: 7, dy: -7, bold: true });
+        },
+        seg: function (o) { segs.push({ a: o.a, b: o.b, color: colorOf(o.color), width: o.width || 2, dash: o.dash || '6 4' }); },
+        point: function (o) {
+          dots.push({ p: o.p, color: colorOf(o.color), r: o.r || 5 });
+          if (o.label) texts.push({ p: o.p, text: o.label, color: colorOf(o.color), dx: 8, dy: -8, bold: true });
+        },
+        right: function (o) { rights.push(o); },  // a right-angle mark at o.at between directions o.u and o.v
+        text: function (o) { texts.push({ p: o.p, text: o.text, color: colorOf(o.color), dx: o.dx || 0, dy: o.dy || 0, bold: o.bold }); }
+      };
+      // the floor (the plane z = 0) and the axes
+      if (spec.floor !== false) {
+        var fl = s('g', { stroke: C.grid, 'stroke-width': 1 }, g), k = Math.max(1, Math.round(R / 4));
+        for (var t = -R; t <= R + 1e-9; t += k) {
+          s('line', { x1: X([t, -R, 0]), y1: Y([t, -R, 0]), x2: X([t, R, 0]), y2: Y([t, R, 0]) }, fl);
+          s('line', { x1: X([-R, t, 0]), y1: Y([-R, t, 0]), x2: X([R, t, 0]), y2: Y([R, t, 0]) }, fl);
+        }
+      }
+      [[1, 0, 0], [0, 1, 0], [0, 0, 1]].forEach(function (e, i) {
+        segs.push({ a: mul3(-R, e), b: mul3(R * 1.12, e), color: C.axis, width: 1.3, arrow: true, axis: true });
+        texts.push({ p: mul3(R * 1.2, e), text: axes[i], color: C.axis, dx: -4, dy: 5 });
+      });
+      if (fn) fn(add);
+
+      function depthAt(P, x, y) {  // where the screen point (x, y), in world units, meets plane P: [a, b, depth] or null
+        var m11 = dot3(P.e1, B.r), m12 = dot3(P.e2, B.r), m21 = dot3(P.e1, B.u), m22 = dot3(P.e2, B.u), det = m11 * m22 - m12 * m21;
+        if (Math.abs(det) < 1e-6) return null;  // seen edge-on
+        var rx = x - dot3(P.c, B.r), ry = y - dot3(P.c, B.u), a = (rx * m22 - m12 * ry) / det, b = (m11 * ry - m21 * rx) / det;
+        if (Math.abs(a) > P.h || Math.abs(b) > P.h) return null;
+        return dot3(add3(P.c, add3(mul3(a, P.e1), mul3(b, P.e2))), B.w);
+      }
+      function hidden(p) {
+        var x = dot3(p, B.r), y = dot3(p, B.u), d = dot3(p, B.w);
+        return planes.some(function (P) { var dp = depthAt(P, x, y); return dp != null && dp > d + 1e-6 * R; });
+      }
+      planes.sort(function (p, q) { return dot3(p.c, B.w) - dot3(q.c, B.w); }).forEach(function (P) {
+        var h = P.h, cs = [[-h, -h], [h, -h], [h, h], [-h, h]].map(function (ab) { return add3(P.c, add3(mul3(ab[0], P.e1), mul3(ab[1], P.e2))); });
+        s('polygon', { points: pts(cs), fill: P.color, 'fill-opacity': P.opacity || 0.16, stroke: P.color, 'stroke-opacity': 0.45, 'stroke-width': 1.2 }, g);
+        if (P.label) {  // at the corner farthest (on screen) from the other labels
+          var spots = [[1, 1], [-1, 1], [1, -1], [-1, -1]].map(function (ab) {
+            return add3(P.c, add3(mul3(0.78 * h * ab[0], P.e1), mul3(0.78 * h * ab[1], P.e2)));
+          });
+          var room = function (q) {
+            return texts.reduce(function (m, t) { return Math.min(m, Math.hypot(X(q) - X(t.p), Y(q) - Y(t.p))); }, 1e9)
+              - (X(q) < 40 || X(q) > W - 60 || Y(q) < 20 || Y(q) > H - 10 ? 500 : 0);  // and on the canvas
+          };
+          var spot = spots.reduce(function (a, b) { return room(b) > room(a) ? b : a; });
+          texts.push({ p: spot, text: P.label, color: P.color, bold: true });
+        }
+      });
+      segs.forEach(function (sg) {  // split into pieces; the pieces behind a plane are faded
+        var n = planes.length ? 30 : 1, runs = [], cur = null;
+        for (var i = 0; i < n; i++) {
+          var p0 = add3(sg.a, mul3(i / n, sub3(sg.b, sg.a))), p1 = add3(sg.a, mul3((i + 1) / n, sub3(sg.b, sg.a)));
+          var hid = n > 1 && hidden(mul3(0.5, add3(p0, p1)));
+          if (!cur || cur.hid !== hid) { cur = { hid: hid, pts: [p0] }; runs.push(cur); }
+          cur.pts.push(p1);
+        }
+        runs.forEach(function (r, i) {
+          var attrs = { points: pts(r.pts), fill: 'none', stroke: sg.color, 'stroke-width': sg.width, 'stroke-linecap': 'round',
+                        'stroke-opacity': r.hid ? 0.35 : 1 };
+          if (r.hid || sg.dash) attrs['stroke-dasharray'] = sg.dash || '4 4';
+          if (sg.arrow && i === runs.length - 1) attrs['marker-end'] = marker(sg.color);
+          s('polyline', attrs, g);
+        });
+      });
+      rights.forEach(function (o) {
+        var z = o.size || R * 0.09, u = unit3(o.u), v = unit3(o.v), at = o.at || [0, 0, 0];
+        s('polyline', { points: pts([add3(at, mul3(z, u)), add3(at, add3(mul3(z, u), mul3(z, v))), add3(at, mul3(z, v))]),
+                        fill: 'none', stroke: C.ink, 'stroke-width': 1.4 }, g);
+      });
+      dots.forEach(function (d) {
+        s('circle', { cx: X(d.p), cy: Y(d.p), r: d.r, fill: '#fff', stroke: d.color, 'stroke-width': 3, 'stroke-opacity': hidden(d.p) ? 0.4 : 1 }, g);
+      });
+      texts.forEach(function (t) {
+        var e = s('text', { x: X(t.p) + (t.dx || 0), y: Y(t.p) + (t.dy || 0), fill: t.color, 'font-size': 14,
+                            'font-weight': t.bold ? 'bold' : 'normal', 'paint-order': 'stroke', stroke: '#fff', 'stroke-width': 3 }, g);
+        e.textContent = t.text;
+      });
+    }
+    var queued = false;
+    function repaint() { if (queued) return; queued = true; requestAnimationFrame(function () { queued = false; paint(); }); }
+    function turn(dth, dph) { th += dth; ph = Math.max(-1.2, Math.min(1.5699, ph + dph)); repaint(); }
+    svg.addEventListener('pointerdown', function (e) {
+      e.preventDefault(); svg.setPointerCapture(e.pointerId); svg.focus({ preventScroll: true });
+      var x0 = e.clientX, y0 = e.clientY;
+      function move(ev) { turn(-(ev.clientX - x0) * 0.012, (ev.clientY - y0) * 0.012); x0 = ev.clientX; y0 = ev.clientY; }
+      function up() { svg.removeEventListener('pointermove', move); svg.removeEventListener('pointerup', up); svg.removeEventListener('pointercancel', up); }
+      svg.addEventListener('pointermove', move); svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
+    });
+    svg.addEventListener('keydown', function (e) {
+      var k = { ArrowLeft: [0.09, 0], ArrowRight: [-0.09, 0], ArrowUp: [0, 0.09], ArrowDown: [0, -0.09] }[e.key];
+      if (k) { e.preventDefault(); turn(k[0], k[1]); }
+    });
+    var views = el('div', 'pl-controls pl-views');
+    function viewButton(text, a, b) {
+      var bt = el('button', 'pl-link', text); bt.type = 'button';
+      bt.addEventListener('click', function () { th = a * Math.PI / 180; ph = b * Math.PI / 180; paint(); });
+      views.appendChild(bt);
+    }
+    if (spec.from_above) viewButton('Look from above', -90, 89.99);
+    viewButton('Reset the view', view0[0], view0[1]);
+    box.appendChild(views);
+    return { draw: function (f) { fn = f; paint(); }, R: R, svg: svg };
+  }
+
+  /** A row of labelled sliders: list of {name, label, min, max, step, value}; onInput() after each move. */
+  function sliders(box, list, onInput) {
+    var ctl = el('div', 'pl-controls pl-sliders'), inputs = {};
+    list.forEach(function (p) {
+      var lab = el('label', 'pl-slider'), inp = document.createElement('input'), val = el('strong', 'pl-slider-val', fmt(p.value));
+      inp.type = 'range'; inp.min = p.min; inp.max = p.max; inp.step = p.step; inp.value = p.value;
+      inp.setAttribute('aria-label', p.label);
+      inp.addEventListener('input', function () { val.textContent = fmt(+inp.value); onInput(); });
+      lab.appendChild(el('span', 'pl-slider-name', p.label + ' ='));
+      lab.appendChild(inp); lab.appendChild(val); ctl.appendChild(lab);
+      inputs[p.name] = { inp: inp, val: val };
+    });
+    box.appendChild(ctl);
+    return {
+      get: function (n) { return +inputs[n].inp.value; },
+      set: function (n, v) { inputs[n].inp.value = v; inputs[n].val.textContent = fmt(v); }
+    };
+  }
+
+  // mode 'null': choose x with three sliders and watch Ax; the goal is a nonzero x with Ax = 0
+  function spaceNull(box, spec, onGoal) {
+    var A = spec.A, rng = spec.range || 3, step = spec.step || 1, x = (spec.start || [1, 1, 1]).slice(), done = false;
+    hint(box, spec.hint || 'Move the sliders to choose x (the blue arrow). Find a nonzero x with Ax = 0. Drag the picture to turn it.');
+    var S = Space(box, Object.assign({ keys: A.concat([spec.solution]) }, spec));
+    var sl = sliders(box, [0, 1, 2].map(function (i) {
+      return { name: 'x' + i, label: 'x' + SUB[i + 1], min: -rng, max: rng, step: step, value: x[i] };
+    }), function () { x = [0, 1, 2].map(function (i) { return sl.get('x' + i); }); draw(); });
+    var out = readout(box);
+    function draw() {
+      var y = A.map(function (r) { return dot3(r, x); }), zero = y.every(function (v) { return Math.abs(v) < 1e-9; }), hit = zero && norm3(x) > 1e-9;
+      S.draw(function (add) {
+        (spec.planes || []).forEach(add.plane);
+        (spec.lines || []).forEach(add.line);
+        (spec.arrows || []).forEach(add.arrow);
+        if (hit) {
+          add.line({ dir: x, color: 'eig', label: spec.null_label || 'null A' });
+          var p0 = (spec.planes || [])[0];
+          if (p0) add.right({ u: x, v: planeBasis(p0).e1 });
+        }
+        add.arrow({ v: x, color: 'x', label: 'x', width: 3.5 });
+      });
+      out.innerHTML = 'x = ' + vecN(x) + ' &nbsp; A<b>x</b> = ' + vecN(y);
+      if (!done && hit) { done = true; onGoal({ x: vecN(x), dir: niceDirN(x) }); }
+    }
+    draw();
+    var api = {
+      set: function (o) { if (o.x) { x = o.x.slice(); x.forEach(function (v, i) { sl.set('x' + i, v); }); draw(); } },
+      solve: function () { api.set({ x: spec.solution }); }
+    };
+    return api;
+  }
+
+  // mode 'combo': weights on sliders; the weighted vectors add head to tail; the goal is to land on the target
+  function spaceCombo(box, spec, onGoal) {
+    var V = spec.vectors, names = spec.names || V.map(function (_, i) { return 'v' + SUB[i + 1]; }), k = spec.use || V.length;
+    var c = (spec.start || V.slice(0, k).map(function () { return 1; })).slice(), b = spec.target, done = false;
+    var paint = [C.x, C.ax, C.p];
+    hint(box, spec.hint || 'Move the sliders to set the weights. The weighted arrows add head to tail; land the tip on '
+      + (spec.target_label || 'b') + '. Drag the picture to turn it.');
+    var S = Space(box, Object.assign({ keys: V.concat([b]) }, spec));
+    var sl = sliders(box, c.map(function (v, i) {
+      return { name: 'c' + i, label: 'c' + SUB[i + 1], min: -(spec.range || 3), max: spec.range || 3, step: spec.step || 0.5, value: v };
+    }), function () { c = c.map(function (_, i) { return sl.get('c' + i); }); draw(); });
+    var out = readout(box);
+    function draw() {
+      var tip = [0, 0, 0];
+      S.draw(function (add) {
+        if (spec.show_span !== false) add.plane({ span: [V[0], V[1]], color: 'p', label: spec.span_label || 'span' });
+        V.forEach(function (v, i) { add.arrow({ v: v, color: '#888', width: 1.8, label: names[i] }); });
+        add.arrow({ v: b, color: 'eig', label: spec.target_label || 'b', width: 3 });
+        for (var i = 0; i < k; i++) {
+          var w = mul3(c[i], V[i]);
+          add.arrow({ from: tip, v: w, color: paint[i % 3], width: 3.5 });
+          tip = add3(tip, w);
+        }
+        add.point({ p: tip, color: C.ink, r: 4 });
+      });
+      var gap = norm3(sub3(tip, b));
+      out.innerHTML = c.map(function (v, i) { return (v === 1 ? '' : v === -1 ? '−' : fmt(v)) + names[i]; }).join(' + ')
+        .replace(/\+ −/g, '− ') + ' = ' + vecN(tip)
+        + ' &nbsp; ' + (spec.target_label || 'b') + ' = ' + vecN(b);
+      if (!done && gap < 1e-9) { done = true; onGoal({ c: vecN(c) }); }
+    }
+    draw();
+    var api = {
+      set: function (o) { if (o.c) { c = o.c.slice(); c.forEach(function (v, i) { sl.set('c' + i, v); }); draw(); } },
+      solve: function () { api.set({ c: spec.solution }); }
+    };
+    return api;
+  }
+
+  // mode 'two-lines': a point on each line (sliders t and s); goal 'above' (they line up seen from above),
+  // 'meet' (the points coincide) or 'closest' (the shortest gap, at spec.solution)
+  function spaceLines(box, spec, onGoal) {
+    var p1 = spec.p1, d1 = spec.d1, p2 = spec.p2, d2 = spec.d2, names = spec.names || ['L₁', 'L₂'], done = false;
+    var tr = spec.t || { min: -3, max: 3, step: 0.5, start: 0 }, sr = spec.s || { min: -3, max: 3, step: 0.5, start: 0 };
+    var t = tr.start, sv = sr.start;
+    hint(box, spec.hint || 'Move the sliders to slide a point along each line. Drag the picture to turn it.');
+    var S = Space(box, Object.assign({ from_above: true, keys: [d1, d2, sub3(p2, p1)] }, spec));
+    var sl = sliders(box, [{ name: 't', label: 't', min: tr.min, max: tr.max, step: tr.step, value: t },
+                           { name: 's', label: 's', min: sr.min, max: sr.max, step: sr.step, value: sv }],
+                     function () { t = sl.get('t'); sv = sl.get('s'); draw(); });
+    var out = readout(box), sol = spec.solution || {};
+    function draw() {
+      var P = add3(p1, mul3(t, d1)), Q = add3(p2, mul3(sv, d2)), gap = norm3(sub3(P, Q));
+      S.draw(function (add) {
+        add.line({ through: p1, dir: d1, color: 'x', label: names[0], length: S.R * 1.6 });
+        add.line({ through: p2, dir: d2, color: 'ax', label: names[1], length: S.R * 1.6 });
+        if (gap > 1e-9) add.seg({ a: P, b: Q, color: C.ink, width: 1.8 });
+        add.point({ p: P, color: C.x });
+        add.point({ p: Q, color: C.ax });
+      });
+      out.innerHTML = 'on ' + names[0] + ': ' + vecN(P) + ' &nbsp; on ' + names[1] + ': ' + vecN(Q) + ' &nbsp; gap = ' + fmt(gap, 3);
+      var hit = spec.goal === 'above' ? Math.abs(P[0] - Q[0]) < 1e-9 && Math.abs(P[1] - Q[1]) < 1e-9
+        : spec.goal === 'meet' ? gap < 1e-9 : Math.abs(t - sol.t) < 1e-9 && Math.abs(sv - sol.s) < 1e-9;
+      if (!done && hit) { done = true; onGoal({ t: fmt(t), s: fmt(sv), P: vecN(P), Q: vecN(Q), gap: fmt(gap, 3), dz: fmt(Math.abs(P[2] - Q[2]), 3) }); }
+    }
+    draw();
+    var api = {
+      set: function (o) { if (o.t != null) { t = o.t; sl.set('t', t); } if (o.s != null) { sv = o.s; sl.set('s', sv); } draw(); },
+      solve: function () { api.set(spec.solution); }
+    };
+    return api;
+  }
+
+  // mode 'plane-point': slide Q around a plane (sliders a, b: Q = q0 + a u + b v); the goal is the point closest to P
+  function spacePlanePoint(box, spec, onGoal) {
+    var n = spec.normal, P = spec.P, q0 = spec.q0, U = spec.dirs[0], Vd = spec.dirs[1], done = false;
+    var ar = spec.a || { min: -4, max: 4, step: 0.5, start: 1 }, br = spec.b || { min: -4, max: 4, step: 0.5, start: 1 };
+    var a = ar.start, bb = br.start, sol = spec.solution;
+    hint(box, spec.hint || 'Move the sliders to slide Q around the plane. Make the dashed segment from ' + (spec.P_label || 'P')
+      + ' to Q as short as you can. Drag the picture to turn it.');
+    var S = Space(box, Object.assign({ keys: [U, Vd, n] }, spec));
+    var sl = sliders(box, [{ name: 'a', label: 'a', min: ar.min, max: ar.max, step: ar.step, value: a },
+                           { name: 'b', label: 'b', min: br.min, max: br.max, step: br.step, value: bb }],
+                     function () { a = sl.get('a'); bb = sl.get('b'); draw(); });
+    var out = readout(box);
+    function draw() {
+      var Q = add3(q0, add3(mul3(a, U), mul3(bb, Vd))), d = norm3(sub3(P, Q)), hit = Math.abs(a - sol.a) < 1e-9 && Math.abs(bb - sol.b) < 1e-9;
+      S.draw(function (add) {
+        add.plane({ normal: n, center: spec.center || Q, color: 'p', label: spec.plane_label || '', size: spec.size });
+        add.seg({ a: P, b: Q, color: C.ax, width: 2.5, dash: hit ? 'none' : '6 4' });
+        if (hit) add.right({ at: Q, u: sub3(P, Q), v: planeBasis({ normal: n }).e1 });
+        add.point({ p: P, color: C.x, label: spec.P_label || 'P' });
+        add.point({ p: Q, color: C.p, label: 'Q' });
+      });
+      out.innerHTML = 'Q = ' + vecN(Q) + ' &nbsp; distance from ' + (spec.P_label || 'P') + ' = ' + fmt(d, 3);
+      if (!done && hit) { done = true; onGoal({ Q: vecN(Q), dist: fmt(d, 3) }); }
+    }
+    draw();
+    var api = {
+      set: function (o) { if (o.a != null) { a = o.a; sl.set('a', a); } if (o.b != null) { bb = o.b; sl.set('b', bb); } draw(); },
+      solve: function () { api.set(sol); }
+    };
+    return api;
+  }
+
+  // ---------- combine: weights on the columns of A (sliders), added head to tail, to reach b ----------
+  function combine(box, spec, onGoal) {
+    var cols = spec.columns, b = spec.target, names = spec.names || cols.map(function (_, i) { return 'a' + SUB[i + 1]; });
+    var x = (spec.start || cols.map(function () { return 1; })).slice(), ways = [], done = false, need = spec.goal === 'two-ways' ? 2 : 1;
+    var bl = spec.target_label || 'b', paint = [C.x, C.ax, C.p, C.eig];
+    hint(box, spec.hint || 'Move the sliders to set the weights. The colored arrows are the weighted columns, added head to tail. '
+      + 'Land the tip on ' + bl + (need > 1 ? ', in two different ways.' : '.'));
+    var P = Plane(box, spec.window, { step: spec.grid || 1, label: 'Weighted columns added head to tail' });
+    var g = s('g', {}, P.layer);
+    var ranges = spec.ranges || cols.map(function () { return { min: -4, max: 6, step: 1 }; });
+    var sl = sliders(box, x.map(function (v, i) {
+      return { name: 'x' + i, label: 'x' + SUB[i + 1], min: ranges[i].min, max: ranges[i].max, step: ranges[i].step, value: v };
+    }), function () { x = x.map(function (_, i) { return sl.get('x' + i); }); draw(); });
+    var out = readout(box);
+    function label(p, text, color, dx, dy) {
+      s('text', { x: P.X(p[0]) + (dx || 6), y: P.Y(p[1]) + (dy || -6), fill: color, 'font-size': 14, 'font-weight': 'bold',
+                  'paint-order': 'stroke', stroke: '#fff', 'stroke-width': 3 }, g).textContent = text;
+    }
+    function draw() {
+      P.clear(g);
+      cols.forEach(function (a, i) { P.arrow(g, [0, 0], a, '#AAA', 1.6); label(a, names[i], '#888', 4, 14); });
+      P.arrow(g, [0, 0], b, C.eig, 2.5); label(b, bl, C.eig);
+      var tip = [0, 0];
+      cols.forEach(function (a, i) {
+        var next = [tip[0] + x[i] * a[0], tip[1] + x[i] * a[1]];
+        P.arrow(g, tip, next, paint[i % 4], 3.5);
+        tip = next;
+      });
+      s('circle', { cx: P.X(tip[0]), cy: P.Y(tip[1]), r: 5, fill: '#fff', stroke: C.ink, 'stroke-width': 2.5 }, g);
+      var hit = Math.abs(tip[0] - b[0]) < 1e-9 && Math.abs(tip[1] - b[1]) < 1e-9, key = vecN(x);
+      if (hit && ways.indexOf(key) < 0) ways.push(key);
+      out.innerHTML = x.map(function (v, i) { return (v === 1 ? '' : v === -1 ? '−' : fmt(v)) + names[i]; }).join(' + ').replace(/\+ −/g, '− ') + ' = ' + vec(tip)
+        + ' &nbsp; ' + bl + ' = ' + vec(b) + (need > 1 ? ' &nbsp; ways found: ' + ways.length : '');
+      if (!done && ways.length >= need) { done = true; onGoal({ first: ways[0], second: ways[1] || '', ways: ways.join(' and ') }); }
+    }
+    draw();
+    var api = {
+      set: function (o) { if (o.x) { x = o.x.slice(); x.forEach(function (v, i) { sl.set('x' + i, v); }); draw(); } },
+      solve: function () { (spec.solutions || [spec.solution]).forEach(function (sol) { api.set({ x: sol }); }); }
+    };
+    return api;
+  }
+
+  // mode 'planes': the row picture of a 3x3 system; buttons apply row operations to the equations, and the planes move
+  // while the common point stays. rows: [[a, b, c, d], ...] for ax + by + cz = d; ops: [{label, target, add: {row: k}}]
+  function spacePlanes(box, spec, onGoal) {
+    var rows = spec.rows.map(function (r) { return r.slice(); }), ops = spec.ops, applied = 0, done = false, pt = spec.point;
+    var paint = ['x', 'ax', 'p'], names = spec.axes || ['x₁', 'x₂', 'x₃'];
+    hint(box, spec.hint || 'Each plane is one equation. Press the row operations in order and watch which plane moves. Drag the '
+      + 'picture to turn it.');
+    var S = Space(box, Object.assign({ keys: rows.map(function (r) { return r.slice(0, 3); }).concat([pt]), center: mul3(0.7, pt) }, spec));
+    var ctl = el('div', 'pl-controls'), btns = ops.map(function (op, i) {
+      var b = el('button', 'pl-op', op.label); b.type = 'button'; b.disabled = i > 0;
+      b.addEventListener('click', function () { apply(i); }); ctl.appendChild(b); return b;
+    });
+    var reset = el('button', 'pl-link', 'Start over'); reset.type = 'button';
+    reset.addEventListener('click', function () { rows = spec.rows.map(function (r) { return r.slice(); }); applied = 0; sync(); draw(); });
+    ctl.appendChild(reset); box.appendChild(ctl);
+    var out = readout(box);
+    function eqText(r) {
+      var parts = [];
+      r.slice(0, 3).forEach(function (c, j) {
+        if (Math.abs(c) < 1e-12) return;
+        var mag = Math.abs(c) === 1 ? '' : fmt(Math.abs(c));
+        parts.push((c < 0 ? (parts.length ? ' − ' : '−') : (parts.length ? ' + ' : '')) + mag + names[j]);
+      });
+      return (parts.join('') || '0') + ' = ' + fmt(r[3]);
+    }
+    function sync() { btns.forEach(function (b, i) { b.disabled = i !== applied; }); }
+    function apply(i) {
+      if (i !== applied) return;
+      var op = ops[i], t = rows[op.target].slice();
+      Object.keys(op.add).forEach(function (k) { var c = op.add[k]; t = t.map(function (x, j) { return x + c * rows[+k][j]; }); });
+      rows[op.target] = t; applied += 1; sync(); draw();
+    }
+    function draw() {
+      S.draw(function (add) {
+        rows.forEach(function (r, i) {
+          if (r.slice(0, 3).every(function (c) { return Math.abs(c) < 1e-12; })) return;
+          add.plane({ normal: r.slice(0, 3), center: pt, size: spec.size || S.R * 0.55, color: paint[i % 3], label: 'plane ' + (i + 1) });
+        });
+        add.point({ p: pt, color: C.ink, r: 5, label: spec.point_label || '' });
+      });
+      out.innerHTML = rows.map(function (r, i) { return '<span style="color:' + (INK[colorOf(paint[i % 3])] || colorOf(paint[i % 3])) + '">' + eqText(r) + '</span>'; }).join(' &nbsp; ');
+      if (!done && applied === ops.length) { done = true; onGoal({ last: eqText(rows[ops[ops.length - 1].target]) }); }
+    }
+    sync(); draw();
+    var api = { set: function (o) { if (o.applied != null) { while (applied < o.applied) apply(applied); } },
+                solve: function () { api.set({ applied: ops.length }); } };
+    return api;
+  }
+
+  function space(box, spec, onGoal) {
+    return ({ 'null': spaceNull, combo: spaceCombo, 'two-lines': spaceLines, 'plane-point': spacePlanePoint,
+              planes: spacePlanes })[spec.mode](box, spec, onGoal);
+  }
+
   var KINDS = { 'circle-map': circleMap, 'grid-map': gridMap, lines: linesWidget, 'fit-line': fitLine, project: project,
-                iterate: iterate, phase: phase };
+                iterate: iterate, phase: phase, space: space, combine: combine };
 
   window.PolyaExplore = {
     kinds: Object.keys(KINDS),
+    autoView: autoView,  // for the browser test
     mount: function (container, spec, onGoal) {
       var api = KINDS[spec.kind](container, spec, onGoal || function () {});
       container.polyaWidget = api;

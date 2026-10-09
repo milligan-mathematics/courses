@@ -37,7 +37,39 @@
     if (html != null) e.innerHTML = html;
     return e;
   }
-  function button(cls, html, onclick) { var b = el('button', cls, html); b.type = 'button'; b.onclick = onclick; return b; }
+  function button(cls, html, onclick) { var b = el('button', cls, html); b.type = 'button'; b.onclick = onclick; nameMath(b, html); return b; }
+
+  /** A choice that is all math (a matrix, a formula) has no words for a screen reader's name, so it gets a spoken-style
+      label from its LaTeX: \(\begin{bmatrix}1&2\\3&4\end{bmatrix}\) -> "the matrix with rows 1, 2; 3, 4". A choice with
+      words in it keeps its own text (MathJax adds MathML for the math). */
+  function speakTeX(html) {
+    var t = String(html).replace(/<[^>]+>/g, ' ').replace(/\\\(|\\\)|\\\[|\\\]/g, ' ');
+    t = t.replace(/\\left|\\right|\\,|\\;|\\!|\\quad/g, ' ');
+    t = t.replace(/\\begin\{[bpv]?matrix\}([\s\S]*?)\\end\{[bpv]?matrix\}/g, function (_, body) {
+      var rows = body.split('\\\\').map(function (r) { return r.split('&').map(function (x) { return x.trim(); }).join(', '); });
+      if (rows.length === 1) return ' the row ' + rows[0] + ' ';
+      if (rows.every(function (r) { return r.indexOf(',') < 0; })) return ' the column ' + rows.join(', ') + ' ';
+      return ' the matrix with rows ' + rows.join('; ') + ' ';
+    });
+    t = t.replace(/\^\{?T\}?/g, ' transpose ').replace(/\^\{-1\}/g, ' inverse ').replace(/\^\{?2\}?(?![\d])/g, ' squared ')
+      .replace(/\^\{([^{}]+)\}/g, ' to the $1 ').replace(/\^(\w)/g, ' to the $1 ')
+      .replace(/_\{?(\w+)\}?/g, ' $1 ');  // powers first: they may sit inside a fraction
+    for (var k = 0; k < 3; k++) {
+      t = t.replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, ' $1 over $2 ').replace(/\\sqrt\{([^{}]*)\}/g, ' square root of $1 ');
+    }
+    t = t.replace(/\\(mathbf|mathrm|mathit|mathbb|operatorname|text|boldsymbol)\s*/g, '')
+      .replace(/\\(lambda|mu|sigma|theta|pi|alpha|beta)/g, ' $1 ').replace(/\\cdot|\\times/g, ' times ')
+      .replace(/\\neq?|\\not=/g, ' is not ').replace(/\\le(q)?/g, ' at most ').replace(/\\ge(q)?/g, ' at least ')
+      .replace(/\\to|\\rightarrow/g, ' to ').replace(/\\ldots|\\dots/g, ' and so on ');
+    t = t.replace(/(^|[\s(,=])-(?=\s*[\w(])/g, '$1 minus ').replace(/\s-\s/g, ' minus ').replace(/=/g, ' equals ').replace(/\+/g, ' plus ')
+      .replace(/[{}\\]/g, ' ').replace(/\s+/g, ' ').trim();
+    return t;
+  }
+  function nameMath(node, html) {
+    if (!/\\\(|\\\[/.test(String(html || ''))) return;
+    var words = String(html).replace(/\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]/g, ' ').replace(/<[^>]+>|&\w+;/g, ' ');
+    if ((words.match(/[A-Za-z]{2,}/g) || []).length < 2) node.setAttribute('aria-label', speakTeX(html));
+  }
 
   function typeset(node) {
     if (window.MathJax && MathJax.typesetPromise) {
@@ -122,6 +154,7 @@
     q.answers.forEach(function (a) {
       var wrap = el('div', 'pl-opt-wrap'), lab = el('label', 'pl-opt pl-check'), cb = document.createElement('input');
       cb.type = 'checkbox';
+      nameMath(cb, a.html);
       lab.appendChild(cb); lab.appendChild(el('span', null, a.html));
       wrap.appendChild(lab); list.appendChild(wrap);
       boxes.push({ a: a, cb: cb, wrap: wrap, lab: lab });
@@ -301,14 +334,15 @@
     return { wrap: wrap, grid: grid, inputs: inputs };
   }
 
-  function sameValues(got, want, upToScale, shape) {
+  function sameValues(got, want, upToScale, shape, close) {
+    close = close || PM.close;
     if (got.length !== want.length) return false;
-    if (!upToScale) return got.every(function (g, i) { return PM.close(g, want[i]); });
+    if (!upToScale) return got.every(function (g, i) { return close(g, want[i]); });
     if (upToScale === 'columns' && shape) {  // each column a nonzero multiple of its own (eigenvectors as the columns of P)
       var rows = shape[0], cols = shape[1];
       for (var j = 0; j < cols; j++) {
         var col = function (a) { var c = []; for (var r = 0; r < rows; r++) c.push(a[r * cols + j]); return c; };
-        if (!sameValues(col(got), col(want), true)) return false;
+        if (!sameValues(col(got), col(want), true, null, close)) return false;
       }
       return true;
     }
@@ -316,7 +350,47 @@
     var k = want.findIndex(function (w) { return Math.abs(w) > 1e-12; });
     if (k < 0 || Math.abs(got[k]) < 1e-12) return false;
     var c = got[k] / want[k];
-    return got.every(function (g, i) { return PM.close(g, c * want[i]); });
+    return got.every(function (g, i) { return close(g, c * want[i]); });
+  }
+  // A rounded decimal (2.449 for sqrt(6), 0.33 for 1/3): within half a percent, or 0.005.
+  function roughly(a, b) { return isFinite(a) && isFinite(b) && Math.abs(a - b) <= 0.005 + 0.005 * Math.max(Math.abs(a), Math.abs(b)); }
+  var ROUNDED = 'That&rsquo;s close, but it looks rounded. Give the exact value instead: a fraction like 2/3, or a root like sqrt(5).';
+
+  /** The values a typed answer stands for: strs has one string per cell (one for a formula), each evaluated at q's samples. */
+  function readTyped(q, strs) {
+    strs = strs.map(function (s) { return PM.answerPart(s); });
+    if (q.type === 'expr') {
+      var t = PM.parseExpr(strs[0], q.vars);
+      return q.samples.map(function (env) { return PM.evalExpr(t, env); });
+    }
+    var envs = q.samples || [{}], vals = [];
+    strs.forEach(function (s) {
+      if (!s.trim()) throw new PM.ParseError(q.type === 'num' ? 'Type a number first.' : 'Fill in every entry first.');
+      if (strs.length > 1 && /[,;]/.test(s)) throw new PM.ParseError('Put one entry in each box.');
+      var t = PM.parseExpr(s, q.vars || []);
+      envs.forEach(function (env) {
+        var v = PM.evalExpr(t, env);
+        if (!isFinite(v)) throw new PM.ParseError('One entry doesn’t come out to a number.');
+        vals.push(v);
+      });
+    });
+    return vals;
+  }
+  /** Grade a typed answer. verdict: 'right', 'slip' (a known wrong answer: .slip has its comment), 'wrong',
+      or 'unreadable' / 'rounded' (a nudge in .message that doesn't count as a try). */
+  function judgeTyped(q, strs) {
+    var got;
+    try { got = readTyped(q, strs); } catch (e) {
+      if (!(e instanceof PM.ParseError)) throw e;
+      return { verdict: 'unreadable', message: e.message };
+    }
+    if (sameValues(got, q.values, q.up_to_scale, q.shape)) return { verdict: 'right', got: got };
+    var known = (q.wrong || []).filter(function (w) { return sameValues(got, w.values, q.up_to_scale, q.shape); })[0];
+    if (known) return { verdict: 'slip', got: got, slip: known };
+    if (strs.some(function (s) { return /\.\d\d/.test(s); }) && sameValues(got, q.values, q.up_to_scale, q.shape, roughly)) {
+      return { verdict: 'rounded', got: got, message: ROUNDED };
+    }
+    return { verdict: 'wrong', got: got };
   }
 
   function renderTyped(q, box, opts) {
@@ -340,7 +414,7 @@
         timer = setTimeout(function () {
           if (!inp.value.trim()) { preview.innerHTML = ''; return; }
           try {
-            var t = PM.parseExpr(inp.value, q.vars);
+            var t = PM.parseExpr(PM.answerPart(inp.value), q.vars);
             preview.innerHTML = 'You typed: \\(' + (q.label ? q.label + ' ' : '') + PM.texExpr(t) + '\\)';
             typeset(preview);
           } catch (e) { preview.innerHTML = '<span class="pl-muted">' + (e.message || 'Keep typing…') + '</span>'; }
@@ -362,23 +436,6 @@
     box.appendChild(out);
     inputs.forEach(function (i) { i.addEventListener('keydown', function (e) { if (e.key === 'Enter') attempt(); }); });
 
-    function read() {
-      if (kind === 'expr') {
-        var t = PM.parseExpr(inputs[0].value, q.vars);
-        return q.samples.map(function (env) { return PM.evalExpr(t, env); });
-      }
-      var envs = q.samples || [{}], vals = [];
-      inputs.forEach(function (i) {
-        if (!i.value.trim()) throw new PM.ParseError(kind === 'num' ? 'Type a number first.' : 'Fill in every entry first.');
-        var t = PM.parseExpr(i.value, q.vars || []);
-        envs.forEach(function (env) {
-          var v = PM.evalExpr(t, env);
-          if (!isFinite(v)) throw new PM.ParseError('One entry doesn’t come out to a number.');
-          vals.push(v);
-        });
-      });
-      return vals;
-    }
     function cellOK(got, k) {  // all sample values of cell k
       var n = (q.samples || [{}]).length;
       for (var s = 0; s < n; s++) if (!PM.close(got[k * n + s], q.values[k * n + s])) return false;
@@ -386,14 +443,11 @@
     }
     function attempt() {
       if (revealed) return;
-      var got;
       out.querySelectorAll('.pl-nudge').forEach(function (n) { n.remove(); });
-      try { got = read(); } catch (e) {
-        if (!(e instanceof PM.ParseError)) throw e;
-        out.appendChild(el('p', 'pl-nudge', e.message)); return;
-      }
+      var j = judgeTyped(q, inputs.map(function (i) { return i.value; })), got = j.got;
+      if (j.message) { out.appendChild(el('p', 'pl-nudge', j.message)); return; }  // unreadable or rounded: not a try
       out.querySelectorAll('.pl-bubble').forEach(function (b) { b.remove(); });
-      if (sameValues(got, q.values, q.up_to_scale, q.shape)) {
+      if (j.verdict === 'right') {
         finish();
         inputs.forEach(function (i) { i.classList.add('pl-in-ok'); });
         show(out, bubble(true, q.comment));
@@ -401,7 +455,7 @@
         return;
       }
       tries += 1;
-      var known = (q.wrong || []).filter(function (w) { return sameValues(got, w.values, q.up_to_scale, q.shape); })[0];
+      var known = j.slip;
       if (opts.cold) { finish(); show(out, bubble(false, known ? known.comment : 'Not yet.')); opts.done('wrong'); return; }
       var msg = known ? known.comment
         : tries === 1 ? 'That&rsquo;s not it yet. Check your work and try again.'
@@ -572,6 +626,7 @@
 
   function renderStep(q) {
     var n = PHASES.indexOf(q.phase) + 1;
+    root.appendChild(el('h1', 'pl-sr', P.title));  // for screen readers: every screen has a level-one heading
     root.appendChild(progress(q.phase));
     var card = el('section', 'pl-card');
     card.appendChild(el('p', 'pl-phase pl-c' + n, 'Phase ' + n + ' of 4 &middot; ' + q.phase));
@@ -621,6 +676,7 @@
   function firstLookBack() { return STEPS.findIndex(function (q) { return q.phase === 'Look back'; }) + 1; }
   function renderCold() {
     var idx = P.cold[S.cold], q = P.questions[idx];
+    root.appendChild(el('h1', 'pl-sr', P.title));
     var card = el('section', 'pl-card');
     card.appendChild(el('p', 'pl-phase', 'Trying it cold &middot; part ' + (S.cold + 1) + ' of ' + P.cold.length));
     card.appendChild(statementBox(P.statement));
@@ -703,7 +759,8 @@
     return firstFailure(conds, q, q.parts ? rows.map(toQ) : [toQ(rows)]);
   }
   window.PolyaKit = { RENDER: RENDER, el: el, button: button, typeset: typeset, bubble: bubble, note: note, show: show,
-                      questionHTML: function (t) { return questionHTML(t); }, checkExample: checkExample };
+                      questionHTML: function (t) { return questionHTML(t); }, checkExample: checkExample,
+                      judgeTyped: judgeTyped, speakTeX: speakTeX };
   if (!P) return;
 
   window.PolyaPlayer = {

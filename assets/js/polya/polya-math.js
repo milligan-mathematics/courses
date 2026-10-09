@@ -272,9 +272,21 @@
 
   function ParseError(msg) { this.message = msg; }
 
+  var SUPERSCRIPT = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁻': '-' };
+
+  /** The answer part of what a student typed: drops a leading "x =" (one name, maybe with a subscript or "(t)")
+      and a trailing degree sign, so "x = 3", "x_1 = 3", "f(t) = 2e^t" and "45°" read as the answer itself. */
+  function answerPart(src) {
+    var s = String(src).replace(/\s*(°|degrees?)\s*$/i, '');
+    var m = s.match(/^\s*[A-Za-zͰ-Ͽ][\w{}Ͱ-Ͽ']*\s*(\(\s*[A-Za-z]\s*\))?\s*=(?!=)([\s\S]*)$/);
+    return m ? m[2] : s;
+  }
+
   function tokenize(src, vars) {
     var s = String(src).replace(/[−–]/g, '-').replace(/[×·⋅]/g, '*').replace(/÷/g, '/')
-      .replace(/π/g, 'pi').replace(/√/g, 'sqrt').replace(/\*\*/g, '^');
+      .replace(/π/g, 'pi').replace(/√/g, 'sqrt').replace(/\*\*/g, '^')
+      .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, function (m) { return '^(' + m.replace(/./g, function (c) { return SUPERSCRIPT[c]; }) + ')'; })
+      .replace(/_\{(\w+)\}|_(\w+)/g, '$1$2');  // x_1, x_{12} -> x1, x12
     var names = Object.keys(FUNCS).concat(Object.keys(CONSTS), vars).sort(function (a, b) { return b.length - a.length; });
     var out = [], i = 0;
     while (i < s.length) {
@@ -300,6 +312,7 @@
       if ('+-*/^(),|'.indexOf(ch) >= 0) { out.push({ t: 'op', v: ch }); i++; continue; }
       if (ch === '[' || ch === '{') { out.push({ t: 'op', v: '(' }); i++; continue; }
       if (ch === ']' || ch === '}') { out.push({ t: 'op', v: ')' }); i++; continue; }
+      if (ch === '=') throw new ParseError('Type just the answer, without “=”.');
       throw new ParseError('I can’t read “' + ch + '” here.');
     }
     return out;
@@ -432,6 +445,6 @@
     return Math.abs(a - b) <= 1e-9 + 1e-7 * Math.max(Math.abs(a), Math.abs(b));
   }
 
-  window.PM = { Q: q, parseRational: parseRational, parseExpr: parseExpr, evalExpr: evalExpr, texExpr: texExpr,
+  window.PM = { Q: q, parseRational: parseRational, parseExpr: parseExpr, evalExpr: evalExpr, texExpr: texExpr, answerPart: answerPart,
                 LA: LA, close: close, ParseError: ParseError };
 })();
