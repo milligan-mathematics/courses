@@ -185,6 +185,101 @@
     box.appendChild(sol);
   }
 
+  // ---------- order: arrange the lines of a proof (a Parsons problem) ----------
+  // q.lines: [{html, pos, comment}] in display order; pos is the line's place in the proof, or -1 for a line that
+  // doesn't belong (its comment says why). q.groups: [[a, b], ...] runs of places whose lines may come in any order.
+  function renderOrder(q, box, opts) {
+    var tries = 0, done = false;
+    var n = q.lines.filter(function (l) { return l.pos >= 0; }).length, allowed = [];
+    for (var p = 0; p < n; p++) allowed.push([p]);
+    (q.groups || []).forEach(function (g) {
+      var run = []; for (var i = g[0]; i <= g[1]; i++) run.push(i);
+      run.forEach(function (i) { allowed[i] = run; });
+    });
+    var extra = q.lines.length > n;
+    box.appendChild(el('p', 'pl-hint', 'Tap the lines in order to build the proof. Tap a line in your proof to send it back.'
+      + (extra ? ' Not every line belongs.' : '')));
+    box.appendChild(el('p', 'pl-order-label', 'Your proof'));
+    var proof = el('ol', 'pl-solution pl-order-proof');
+    box.appendChild(proof);
+    var poolLabel = el('p', 'pl-order-label', 'Lines to use');
+    box.appendChild(poolLabel);
+    var pool = el('div', 'pl-order-pool');
+    box.appendChild(pool);
+    var chosen = [];
+    var btns = q.lines.map(function (ln, k) {
+      var b = button('pl-sol-line pl-order-line', ln.html, function () {
+        if (done) return;
+        var at = chosen.indexOf(k);
+        if (at < 0) chosen.push(k); else chosen.splice(at, 1);
+        clearMarks(); draw();
+      });
+      b.setAttribute('data-k', String(k));
+      return b;
+    });
+    var out = el('div', 'pl-msg');
+    var row = el('div', 'pl-order-btns');
+    var check = button('pl-check-btn', 'Check my proof', attempt);
+    var reset = button('pl-link pl-order-reset', 'Start over', function () { if (done) return; chosen = []; clearMarks(); draw(); });
+    row.appendChild(check); row.appendChild(reset);
+    box.appendChild(row);
+    hintLadder(q, box);
+    box.appendChild(out);
+    draw();
+    function draw() {
+      proof.innerHTML = ''; pool.innerHTML = '';  // the buttons are kept in btns and moved, so their typeset math stays
+      chosen.forEach(function (k) { var li = el('li', 'pl-sol-wrap'); li.appendChild(btns[k]); proof.appendChild(li); });
+      q.lines.forEach(function (ln, k) { if (chosen.indexOf(k) < 0) pool.appendChild(btns[k]); });
+      proof.classList.toggle('pl-order-empty', !chosen.length);
+      pool.classList.toggle('pl-order-empty', chosen.length === q.lines.length);
+    }
+    function clearMarks() {
+      btns.forEach(function (b) { b.classList.remove('pl-sol-bad'); });
+      out.innerHTML = '';
+    }
+    function attempt() {
+      if (done) return;
+      clearMarks();
+      var stray = chosen.filter(function (k) { return q.lines[k].pos < 0; });
+      if (stray.length) {
+        btns[stray[0]].classList.add('pl-sol-bad');
+        show(out, bubble(false, q.lines[stray[0]].comment)); missed(); return;
+      }
+      if (chosen.length < n) {
+        var left = n - chosen.length;
+        out.appendChild(el('p', 'pl-nudge', 'Your proof isn&rsquo;t finished: ' + left + ' more line' + (left > 1 ? 's belong' : ' belongs') + ' in it.'));
+        return;
+      }
+      for (var p = 0; p < n; p++) if (allowed[p].indexOf(q.lines[chosen[p]].pos) < 0) break;
+      if (p < n) {
+        btns[chosen[p]].classList.add('pl-sol-bad');
+        show(out, bubble(false, p === 0 ? 'Look again at how the proof starts: the first line should set up what you know or what you need to show.'
+          : (p === 1 ? 'The first line is' : 'The first ' + p + ' lines are') + ' in a good order. Line ' + (p + 1)
+            + ' doesn&rsquo;t follow yet: what does it need that hasn&rsquo;t been shown?'));
+        missed(); return;
+      }
+      done = true;
+      btns.forEach(function (b) { b.disabled = true; });
+      chosen.forEach(function (k) { btns[k].classList.add('pl-sol-fine'); });
+      row.remove(); box.querySelectorAll('.pl-reveal, .pl-hint-btn').forEach(function (x) { x.remove(); });
+      if (extra) { pool.classList.add('pl-order-done'); poolLabel.innerHTML = 'Lines that don&rsquo;t belong'; }
+      show(out, bubble(true, q.comment));
+      opts.done('right', tries === 0);
+    }
+    function missed() {
+      tries += 1;
+      if (tries >= 2 && !box.querySelector('.pl-reveal')) {
+        box.insertBefore(button('pl-link pl-reveal', 'Show me the proof', function () {
+          if (done) return;
+          done = true; btns.forEach(function (b) { b.disabled = true; }); row.remove();
+          box.querySelectorAll('.pl-reveal, .pl-hint-btn').forEach(function (x) { x.remove(); });
+          show(out, note('pl-model', 'Here&rsquo;s the proof:', q.model));
+          opts.done('revealed');
+        }), out);
+      }
+    }
+  }
+
   // ---------- typed answers: num, matrix (and vectors), expr ----------
   function cellGrid(rows, cols, label, start, aria) {
     var wrap = el('div', 'pl-mat-row');
@@ -328,15 +423,21 @@
 
   // ---------- give an example ----------
   var LA_NAMES = Object.keys(PM.LA);
-  function compile(js) {
-    // A condition is a JavaScript expression over M (the student's entries), S (the starting entries),
-    // x (M's only entry), v (M as a list) and the PM.LA helpers by name: det(M).eq(0), rank(M) === 1, ...
-    return Function.apply(null, ['M', 'S', 'x', 'v'].concat(LA_NAMES, ['"use strict"; return (' + js + ');']));
+  /** The matrices an example asks for: q.parts ([{name, shape, start?}]) for several named matrices, else one. */
+  function partsOf(q) {
+    return q.parts || [{ name: null, shape: q.shape, label: q.label, start: q.start }];
   }
-  /** Index of the first condition the example M (rows of PM.Q) fails, or -1 if it passes them all. */
-  function firstFailure(conds, q, M) {
-    var S = q.start ? PM.LA.mat(q.start) : null, x = M[0][0], v = M.map(function (row) { return row[0]; });
-    var args = [M, S, x, v].concat(LA_NAMES.map(function (n) { return PM.LA[n]; }));
+  function compile(js, q) {
+    // A condition is a JavaScript expression over M (the student's entries), S (the starting entries),
+    // x (M's only entry), v (M as a list), the named parts (A, B, ... when q.parts is given; M is the first)
+    // and the PM.LA helpers by name: det(M).eq(0), rank(M) === 1, eq(mul(A, B), ...)
+    var names = q && q.parts ? q.parts.map(function (p) { return p.name; }) : [];
+    return Function.apply(null, ['M', 'S', 'x', 'v'].concat(names, LA_NAMES, ['"use strict"; return (' + js + ');']));
+  }
+  /** Index of the first condition the example fails, or -1 if it passes them all. Ms: one matrix (rows of PM.Q) per part. */
+  function firstFailure(conds, q, Ms) {
+    var M = Ms[0], S = q.start ? PM.LA.mat(q.start) : null, x = M[0][0], v = M.map(function (row) { return row[0]; });
+    var args = [M, S, x, v].concat(q.parts ? Ms : [], LA_NAMES.map(function (n) { return PM.LA[n]; }));
     for (var k = 0; k < conds.length; k++) {
       var ok;
       try { ok = conds[k].fn.apply(null, args); } catch (e) { console.error('example condition', q.conditions[k].js, String(e)); ok = false; }
@@ -346,9 +447,13 @@
   }
   function renderExample(q, box, opts) {
     var tries = 0, done = false;
-    var conds = q.conditions.map(function (c) { return { fn: compile(c.js), comment: c.comment }; });
-    var g = cellGrid(q.shape[0], q.shape[1], q.label, q.start, 'Your example');
-    box.appendChild(g.wrap);
+    var conds = q.conditions.map(function (c) { return { fn: compile(c.js, q), comment: c.comment }; });
+    var grids = partsOf(q).map(function (p) {
+      var g = cellGrid(p.shape[0], p.shape[1], p.label || (p.name ? p.name + ' =' : null), p.start, 'Your example');
+      box.appendChild(g.wrap);
+      return g;
+    });
+    var g = { inputs: [].concat.apply([], grids.map(function (gr) { return gr.inputs; })) };
     box.appendChild(el('p', 'pl-hint', q.syntax || 'Any example that works is right. Whole numbers or fractions are fine.'));
     var out = el('div', 'pl-msg');
     var check = button('pl-check-btn', 'Check my example', attempt);
@@ -363,9 +468,13 @@
       if (vals.some(function (v) { return v === null; })) {
         out.appendChild(el('p', 'pl-nudge', 'Fill in every entry with a whole number or a fraction like 3/2.')); return;
       }
-      var M = [], c = q.shape[1];
-      for (var r = 0; r < q.shape[0]; r++) M.push(vals.slice(r * c, r * c + c));
-      var k = firstFailure(conds, q, M), failed = k < 0 ? null : conds[k];
+      var Ms = [], at = 0;
+      partsOf(q).forEach(function (p) {
+        var M = [], c = p.shape[1];
+        for (var r = 0; r < p.shape[0]; r++) { M.push(vals.slice(at, at + c)); at += c; }
+        Ms.push(M);
+      });
+      var k = firstFailure(conds, q, Ms), failed = k < 0 ? null : conds[k];
       if (!failed) {
         done = true; g.inputs.forEach(function (i) { i.disabled = true; i.classList.add('pl-in-ok'); }); check.remove();
         box.querySelectorAll('.pl-reveal, .pl-hint-btn').forEach(function (n) { n.remove(); });
@@ -440,7 +549,7 @@
     box.appendChild(ta); box.appendChild(btn); box.appendChild(out);
   }
 
-  var RENDER = { mc: renderMC, multi: renderMulti, error: renderError, num: renderTyped, matrix: renderTyped,
+  var RENDER = { mc: renderMC, multi: renderMulti, error: renderError, order: renderOrder, num: renderTyped, matrix: renderTyped,
                  expr: renderTyped, example: renderExample, explore: renderExplore, write: renderWrite };
 
   function questionHTML(text) { return el('div', 'pl-question', text.charAt(0) === '<' ? text : '<p>' + text + '</p>'); }
@@ -578,17 +687,20 @@
   }
 
   // Shared with practice.js: the step renderers and helpers.
+  /** First failing condition index (-1 if none) for an example; rows: one matrix, or (with q.parts) a list of them. */
+  function checkExample(q, rows) {
+    var conds = q.conditions.map(function (c) { return { fn: compile(c.js, q), comment: c.comment }; });
+    var toQ = function (M) { return M.map(function (r) { return r.map(function (x) { return PM.parseRational(String(x)); }); }); };
+    return firstFailure(conds, q, q.parts ? rows.map(toQ) : [toQ(rows)]);
+  }
   window.PolyaKit = { RENDER: RENDER, el: el, button: button, typeset: typeset, bubble: bubble, note: note, show: show,
-                      questionHTML: function (t) { return questionHTML(t); } };
+                      questionHTML: function (t) { return questionHTML(t); }, checkExample: checkExample };
   if (!P) return;
 
   window.PolyaPlayer = {
     state: function () { return S; }, steps: STEPS, go: go,
     // for the browser test: which condition (index) a sample example fails, or -1
-    checkExample: function (q, rows) {
-      var conds = q.conditions.map(function (c) { return { fn: compile(c.js), comment: c.comment }; });
-      return firstFailure(conds, q, rows.map(function (r) { return r.map(function (x) { return PM.parseRational(String(x)); }); }));
-    }
+    checkExample: checkExample
   };
   render();
 })();

@@ -90,6 +90,15 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
 .pl-sol-line:disabled { cursor: default; }
 .pl-sol-fine { border-style: solid; border-color: #9BC; opacity: .8; }
 .pl-sol-bad { border-style: solid; border-color: var(--pl-no); background: var(--pl-no-bg); }
+.pl-order-label { margin: 10px 0 2px; font-size: .85em; font-weight: bold; color: var(--pl-muted); text-transform: uppercase; letter-spacing: .04em; }
+.pl-order-proof { min-height: 2.6em; border-radius: 8px; }
+.pl-order-proof.pl-order-empty { border: 1.5px dashed var(--pl-line); }
+.pl-order-proof .pl-sol-line { border-style: solid; border-color: #9BC; }
+.pl-order-pool { display: flex; flex-direction: column; gap: 6px; margin: 4px 0 8px; }
+.pl-order-pool .pl-sol-line { padding-left: 12px; }
+.pl-order-pool .pl-sol-line::before { content: none; }
+.pl-order-pool.pl-order-done .pl-sol-line { opacity: .45; }
+.pl-order-btns { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
 /* ---- compare approaches (inside question HTML) ---- */
 .pl-ways { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin: 10px 0; }
 .pl-way { border: 1.5px solid var(--pl-line); border-radius: 8px; padding: 8px 12px; background: #FAFAFA; overflow-x: auto; overflow-y: hidden; }
