@@ -62,7 +62,8 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
 /* ---- typed answers ---- */
 .pl-mat-row, .pl-expr-row { display: flex; align-items: center; gap: 10px; margin: 10px 0 4px; flex-wrap: wrap; }
 .pl-mat-label { font-size: 18px; }
-.pl-mat { display: grid; gap: 6px; padding: 6px 10px; position: relative; }
+.pl-mat { display: grid; gap: 6px; padding: 6px 10px; position: relative;
+  grid-template-columns: repeat(var(--pl-cols, 1), minmax(3.4em, 5.5em)); }
 .pl-mat::before, .pl-mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 7px;
   border: 2px solid #555; }
 .pl-mat::before { left: 0; border-right: 0; }
@@ -72,6 +73,11 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
 .pl-mat input, .pl-expr { font: inherit; padding: 6px 8px; border: 2px solid var(--pl-line); border-radius: 6px;
   width: 100%; min-width: 0; text-align: center; background: #fff; }
 .pl-mat-1 input { width: 9em; text-align: left; }
+@supports (field-sizing: content) {  /* cells grow with what is typed, so sqrt(2)/2 fits */
+  .pl-mat { grid-template-columns: repeat(var(--pl-cols, 1), fit-content(12em)); }
+  .pl-mat input { field-sizing: content; min-width: 3.4em; }
+  .pl-mat-1 input { min-width: 9em; }
+}
 .pl-expr { flex: 1; min-width: 12em; text-align: left; }
 .pl-in-ok { border-color: var(--pl-ok) !important; background: var(--pl-ok-bg) !important; }
 .pl-in-no { border-color: var(--pl-no) !important; background: var(--pl-no-bg) !important; }

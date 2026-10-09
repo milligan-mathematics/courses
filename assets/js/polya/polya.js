@@ -285,7 +285,7 @@
     var wrap = el('div', 'pl-mat-row');
     if (label) wrap.appendChild(el('span', 'pl-mat-label', '\\(' + label + '\\)'));
     var grid = el('div', 'pl-mat' + (rows * cols === 1 ? ' pl-mat-1' : ''));
-    grid.style.gridTemplateColumns = 'repeat(' + cols + ', minmax(3.4em, 5.5em))';
+    grid.style.setProperty('--pl-cols', String(cols));  // polya.css sizes the columns (to the typing, where supported)
     var inputs = [];
     for (var i = 0; i < rows; i++) {
       for (var j = 0; j < cols; j++) {
@@ -301,9 +301,17 @@
     return { wrap: wrap, grid: grid, inputs: inputs };
   }
 
-  function sameValues(got, want, upToScale) {
+  function sameValues(got, want, upToScale, shape) {
     if (got.length !== want.length) return false;
     if (!upToScale) return got.every(function (g, i) { return PM.close(g, want[i]); });
+    if (upToScale === 'columns' && shape) {  // each column a nonzero multiple of its own (eigenvectors as the columns of P)
+      var rows = shape[0], cols = shape[1];
+      for (var j = 0; j < cols; j++) {
+        var col = function (a) { var c = []; for (var r = 0; r < rows; r++) c.push(a[r * cols + j]); return c; };
+        if (!sameValues(col(got), col(want), true)) return false;
+      }
+      return true;
+    }
     // nonzero multiple: find the first nonzero entry of want and scale
     var k = want.findIndex(function (w) { return Math.abs(w) > 1e-12; });
     if (k < 0 || Math.abs(got[k]) < 1e-12) return false;
@@ -385,7 +393,7 @@
         out.appendChild(el('p', 'pl-nudge', e.message)); return;
       }
       out.querySelectorAll('.pl-bubble').forEach(function (b) { b.remove(); });
-      if (sameValues(got, q.values, q.up_to_scale)) {
+      if (sameValues(got, q.values, q.up_to_scale, q.shape)) {
         finish();
         inputs.forEach(function (i) { i.classList.add('pl-in-ok'); });
         show(out, bubble(true, q.comment));
@@ -393,7 +401,7 @@
         return;
       }
       tries += 1;
-      var known = (q.wrong || []).filter(function (w) { return sameValues(got, w.values, q.up_to_scale); })[0];
+      var known = (q.wrong || []).filter(function (w) { return sameValues(got, w.values, q.up_to_scale, q.shape); })[0];
       if (opts.cold) { finish(); show(out, bubble(false, known ? known.comment : 'Not yet.')); opts.done('wrong'); return; }
       var msg = known ? known.comment
         : tries === 1 ? 'That&rsquo;s not it yet. Check your work and try again.'
@@ -603,8 +611,8 @@
       var q = t.steps[i++], part = el('div', 'pl-part');
       part.appendChild(questionHTML(q.text));
       card.appendChild(part);
-      typeset(part);
       RENDER[q.type](q, part, { done: nextPart });
+      typeset(part);  // after the renderer, so its labels and choices are typeset too
     })();
   }
 

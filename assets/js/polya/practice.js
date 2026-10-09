@@ -78,11 +78,11 @@
       var q = item.steps[i++], part = K.el('div', 'pl-part');
       if (q.text) part.appendChild(K.questionHTML(q.text));
       card.appendChild(part);
-      K.typeset(part);
       K.RENDER[q.type](q, part, { done: function (result, firstTry) {
         if (result !== 'right' || firstTry === false) clean = false;
         nextPart();
       } });
+      K.typeset(part);  // after the renderer, so its labels and choices are typeset too
     })();
     function finish(ok) {
       r.done += 1;
