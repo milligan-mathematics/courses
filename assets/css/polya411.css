@@ -1,0 +1,41 @@
+/* MATH 411 Pólya walk-throughs: the 307 player's classes (polya.css), set inside the 411 activity cards
+   (math411.css). Light only, like the other 411 pages. */
+.act.polya { border-left-color: #7A5195; }
+.act.polya .act-type { color: #7A5195; }
+.act .polya-statement { background: #F4F4F4; border-left: 4px solid #999; border-radius: 0 6px 6px 0; padding: 10px 14px; margin: 0 0 14px; }
+.act .polya-goal { color: var(--text-muted); font-size: 0.95rem; }
+
+/* polya.css styles a whole page under .pl; here it is one block inside a card */
+.pl.pl411 { background: transparent; padding: 0; margin: 0; font-size: 1rem; font-family: inherit; line-height: 1.55; }
+.pl411 .pl-start { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 6px; }
+.pl411 .pl-top { margin: 4px 0 6px; }
+.pl411 .pl-progress { margin-bottom: 4px; }
+.pl411 .pl-restart { font-size: 0.85rem; margin-top: 2px; }
+.pl411 .pl-phase-head { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700;
+  margin: 22px 0 2px; padding-top: 10px; border-top: 2px solid var(--pl-line); }
+.pl411 .pl-step { padding: 10px 0 4px; }
+.pl411 .pl-step + .pl-step { border-top: 1px dashed var(--pl-line); }
+.pl411 .pl-checkpoint { background: #F7F5FA; border-left: 4px solid #7A5195; padding: 8px 12px; border-radius: 0 6px 6px 0; }
+.pl411 .pl-next { margin: 12px 0 4px auto; }
+.pl411 .pl-earlier { margin: 10px 0 4px; }
+.pl411 .pl-earlier > summary { cursor: pointer; color: var(--pl-muted); font-size: 0.95rem; }
+.pl411 .pl-done-step { opacity: 0.9; }
+.pl411 .pl-done-step ul { margin: 6px 0 0 20px; }
+.pl411 .pl-end { border-top: 2px solid var(--pl-line); margin-top: 18px; padding-top: 14px; }
+.pl411 .pl-sub { font-size: 1.15rem; margin: 0 0 6px; }
+.pl411 code { background: #F1F1F3; border-radius: 4px; padding: 0 4px; font-size: 0.92em; }
+.pl411 .pl-muted { color: var(--pl-muted); }
+
+/* math411.css restores list margins inside .act; the proof-line lists are flex columns of buttons instead */
+.act .pl411 ol.pl-solution { margin: 8px 0; }
+.act .pl411 ol.pl-solution li { margin-bottom: 0; }
+.act .pl411 ol.pl-progress { margin: 0 0 4px; }
+.act .pl411 ol.pl-progress li { margin-bottom: 0; }
+.act .pl411 ol.pl-model-proof { margin: 6px 0 0 22px; }
+.act .pl411 p { margin-bottom: 0.6rem; }
+
+@media (max-width: 520px) {
+  .pl411 .pl-seg { font-size: 11px; padding: 5px 1px; }
+  .act .polya-statement { padding: 8px 10px; }
+}
+.readout p + p { margin-top: 0.7rem; }

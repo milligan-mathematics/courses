@@ -267,7 +267,9 @@
 
   // ---------- formulas ----------
   var FUNCS = { sqrt: Math.sqrt, exp: Math.exp, ln: Math.log, log: Math.log, sin: Math.sin, cos: Math.cos,
-                tan: Math.tan, abs: Math.abs };
+                tan: Math.tan, abs: Math.abs, ceil: Math.ceil, floor: Math.floor };
+  // Functions of several arguments, written with commas: max(4, 2/eps), as in an epsilon-N proof.
+  var MULTI = { max: Math.max, min: Math.min };
   var CONSTS = { pi: Math.PI, e: Math.E };
 
   function ParseError(msg) { this.message = msg; }
@@ -287,7 +289,7 @@
       .replace(/π/g, 'pi').replace(/√/g, 'sqrt').replace(/\*\*/g, '^')
       .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, function (m) { return '^(' + m.replace(/./g, function (c) { return SUPERSCRIPT[c]; }) + ')'; })
       .replace(/_\{(\w+)\}|_(\w+)/g, '$1$2');  // x_1, x_{12} -> x1, x12
-    var names = Object.keys(FUNCS).concat(Object.keys(CONSTS), vars).sort(function (a, b) { return b.length - a.length; });
+    var names = Object.keys(FUNCS).concat(Object.keys(MULTI), Object.keys(CONSTS), vars).sort(function (a, b) { return b.length - a.length; });
     var out = [], i = 0;
     while (i < s.length) {
       var ch = s[i];
@@ -370,6 +372,14 @@
       }
       if (t.t === 'name') {
         pos++;
+        if (MULTI[t.v]) {
+          if (!isOp(peek(), '(')) throw new ParseError('Write ' + t.v + ' with parentheses, like ' + t.v + '(4, 2/eps).');
+          pos++;
+          var args = [expr()];
+          while (isOp(peek(), ',')) { pos++; args.push(expr()); }
+          expect(')');
+          return { t: 'fnN', n: t.v, args: args };
+        }
         if (FUNCS[t.v]) {
           if (isOp(peek(), '(')) { pos++; var arg = expr(); expect(')'); return { t: 'fn', n: t.v, a: arg }; }
           return { t: 'fn', n: t.v, a: power() };  // sqrt5, sqrt 5
@@ -404,6 +414,7 @@
         return Math.pow(b, x);
       }
       case 'fn': return FUNCS[t.n](evalExpr(t.a, env));
+      case 'fnN': return MULTI[t.n].apply(null, t.args.map(function (a) { return evalExpr(a, env); }));
     }
     throw new Error('bad node ' + t.t);
   }
@@ -435,7 +446,11 @@
       case 'fn':
         if (t.n === 'sqrt') return '\\sqrt{' + texExpr(strip(t.a)) + '}';
         if (t.n === 'abs') return '\\left|' + texExpr(strip(t.a)) + '\\right|';
+        if (t.n === 'ceil') return '\\left\\lceil ' + texExpr(strip(t.a)) + '\\right\\rceil';
+        if (t.n === 'floor') return '\\left\\lfloor ' + texExpr(strip(t.a)) + '\\right\\rfloor';
         return '\\' + t.n + wrap(strip(t.a));
+      case 'fnN':
+        return '\\' + t.n + '\\left(' + t.args.map(function (a) { return texExpr(strip(a)); }).join(', ') + '\\right)';
     }
     return '?';
   }

@@ -206,7 +206,7 @@
           opts.done('right', misses === 0);
         } else {
           btn.classList.add('pl-sol-fine');
-          show(li, note('pl-why', 'This line is fine.', ln.comment));
+          show(li, note('pl-why', q.fine_label || 'This line is fine.', ln.comment));
           misses += 1;
           if (opts.cold) opts.done('wrong');
         }
@@ -214,7 +214,7 @@
       li.appendChild(btn);
       sol.appendChild(li);
     });
-    box.appendChild(el('p', 'pl-hint', 'Click the first line that is wrong.'));
+    box.appendChild(el('p', 'pl-hint', q.pick_hint || 'Click the first line that is wrong.'));
     box.appendChild(sol);
   }
 
@@ -760,7 +760,7 @@
   }
   window.PolyaKit = { RENDER: RENDER, el: el, button: button, typeset: typeset, bubble: bubble, note: note, show: show,
                       questionHTML: function (t) { return questionHTML(t); }, checkExample: checkExample,
-                      judgeTyped: judgeTyped, speakTeX: speakTeX };
+                      judgeTyped: judgeTyped, speakTeX: speakTeX, hintLadder: hintLadder, nameMath: nameMath };
   if (!P) return;
 
   window.PolyaPlayer = {
