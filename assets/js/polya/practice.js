@@ -21,7 +21,7 @@
   function dots(r) {
     var s = '';
     for (var i = 0; i < NEED; i++) s += '<span class="pr-dot' + (i < Math.min(r.streak, NEED) ? ' pr-on' : '') + '"></span>';
-    return '<span class="pr-dots" aria-label="' + Math.min(r.streak, NEED) + ' of ' + NEED + ' in a row">' + s + '</span>';
+    return '<span class="pr-dots" role="img" aria-label="' + Math.min(r.streak, NEED) + ' of ' + NEED + ' in a row">' + s + '</span>';
   }
 
   function renderHome() {
