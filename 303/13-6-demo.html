@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoom Until It's Flat - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- MathJax for rendering equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .demo-section h3 {
+            margin-top: 0;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        .dashboard > * {
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .scene-wrap {
+            position: relative;
+        }
+
+        canvas#zoom-scene {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        canvas#zoom-scene:active {
+            cursor: grabbing;
+        }
+
+        canvas#chart {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            aspect-ratio: 10 / 7;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted, #666);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 0.4rem 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin: 0.75rem 0;
+            color: var(--text-muted, #666);
+        }
+
+        .swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+
+        .control-block {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .control-block:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .control-block h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .control-block > label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted, #666);
+            margin-bottom: 0.3rem;
+        }
+
+        select#preset {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.9rem;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .slider-row output {
+            font-weight: bold;
+            min-width: 4.5rem;
+            text-align: right;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #6E6E6E;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4A4A4A;
+        }
+
+        .output-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.93rem;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .output-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 0.5rem;
+        }
+
+        .output-box li {
+            margin-bottom: 0.4rem;
+        }
+
+        .output-box p {
+            margin: 0.25rem 0 0;
+        }
+
+        .output-box .verdict {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .things li {
+            margin-bottom: 0.75rem;
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: var(--text-muted, #666);
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Zoom Until It's Flat</h1>
+            <p>&sect;13.6 &mdash; magnify a surface until it looks like its tangent plane, then see how well that plane
+                predicts the change in height.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Pick a function first. In <strong>panel 1</strong>, the gray sheet is the surface
+                <em>z</em> = <em>f</em>(<em>x</em>, <em>y</em>) and the green sheet is its tangent plane at the black
+                point (<em>a</em>, <em>b</em>). Drag the zoom slider to magnify the picture around that point, and watch
+                the surface flatten into the plane. In <strong>panel 2</strong>, move &Delta;<em>x</em> and &Delta;<em>y</em>
+                to step from (<em>a</em>, <em>b</em>) to a new point. The orange curve is the true height along
+                that step, the blue line is the plane's height, and the two dots mark both heights at the new point.
+            </p>
+        </div>
+
+        <div class="panel" style="margin-bottom: 2rem;">
+            <div class="control-block">
+                <h4>Choose a function</h4>
+                <label for="preset">Function and point</label>
+                <select id="preset">
+                    <option value="ex4" selected>Linearization example, at (2, 1)</option>
+                    <option value="exp">e^(x + y) at (0, 0)</option>
+                    <option value="cosy">cos x + y&sup2; at (1/2, 1/2)</option>
+                    <option value="dome">10 &minus; x&sup2; &minus; 2y&sup2; at (1, 1)</option>
+                </select>
+                <div class="output-box" id="formula-out"></div>
+            </div>
+        </div>
+
+        <h2>1. Zoom until it's flat</h2>
+        <div class="dashboard">
+            <div class="panel scene-wrap">
+                <canvas id="zoom-scene" role="img"
+                        aria-label="Three-dimensional view of a gray surface and its green tangent plane near a point. Use the zoom slider to magnify the view."></canvas>
+                <div class="scene-hint">Drag to rotate the view</div>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#6E6E6E;"></span>surface z = f(x, y)</div>
+                    <div><span class="swatch" style="background:#008552;"></span>tangent plane at (a, b)</div>
+                    <div><span class="swatch" style="background:#000;"></span>point (a, b)</div>
+                </div>
+                <button class="btn btn-secondary" id="zoom-reset" type="button">Reset View</button>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <h4>Zoom in on (a, b)</h4>
+                    <label for="zoom">Zoom (magnification, on a log scale)</label>
+                    <div class="slider-row">
+                        <input type="range" id="zoom" min="0" max="100" step="1" value="0">
+                        <output id="zoom-out" for="zoom">&times;1.0</output>
+                    </div>
+                    <div class="output-box" id="zoom-readout"></div>
+                </div>
+                <div class="control-block">
+                    <h4>What you are seeing</h4>
+                    <p class="hint">The picture squeezes the heights to fit the screen, so the surface looks flatter
+                        than it really is. The readouts always use the true heights. At large zoom the gray surface and the
+                        green plane become one sheet, because a smooth surface looks flat up close.</p>
+                </div>
+            </div>
+        </div>
+
+        <h2>2. Estimate the change</h2>
+        <div class="dashboard">
+            <div class="panel">
+                <canvas id="chart" role="img"
+                        aria-label="Graph of the heights along the straight path from (a, b) to the new point."></canvas>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#F36E24;"></span>true height along the path</div>
+                    <div><span class="swatch" style="background:#009CDE;"></span>plane's height (a straight line)</div>
+                </div>
+                <p class="hint">The horizontal axis runs from t = 0 at (a, b) to t = 1 at the new point. The gap between
+                    the two dots at t = 1 is the error.</p>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <h4>Step from (a, b)</h4>
+                    <label for="dx">&Delta;x (step in x)</label>
+                    <div class="slider-row">
+                        <input type="range" id="dx" min="-1" max="1" step="0.01" value="0.1">
+                        <output id="dx-out" for="dx">0.10</output>
+                    </div>
+                    <label for="dy">&Delta;y (step in y)</label>
+                    <div class="slider-row">
+                        <input type="range" id="dy" min="-1" max="1" step="0.01" value="-0.1">
+                        <output id="dy-out" for="dy">&minus;0.10</output>
+                    </div>
+                    <div class="output-box" id="diff-readout"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>Things to try</h3>
+            <ol class="things">
+                <li><strong>Predict first.</strong> Choose cos x + y&sup2;. Before you touch the sliders,
+                    predict whether the plane over- or under-estimates the height after a step of &Delta;x = 0.2 and &Delta;y = &minus;0.8. Then
+                    set those two values and check the readout.</li>
+                <li><strong>Halve the step.</strong> Predict how much the error shrinks when you halve both &Delta;x and
+                    &Delta;y: by a factor of 2, 4, or 8? Make one prediction for the error in height and another for the
+                    percent error. Then check both readouts.</li>
+                <li><strong>Bowl or dome.</strong> Choose the e<sup>x+y</sup> bowl, which curves up in every direction,
+                    and predict whether the plane over- or under-estimates a step of &Delta;x = &Delta;y = 0.5. Then
+                    choose the dome, which curves down, and predict again for the same step.</li>
+                <li><strong>Saddle-like.</strong> Choose cos x + y&sup2;. With &Delta;y = 0, predict whether the plane
+                    over- or under-estimates for &Delta;x = 0.5. Then set &Delta;x = 0 and &Delta;y = 0.5 and predict
+                    again. Why do the two answers differ?</li>
+                <li><strong>Predict the zoom.</strong> Choose the linearization example and zoom in slowly. Before you look, predict the
+                    zoom at which the surface first looks flat to you. Then zoom past &times;10 and check whether the
+                    largest-gap readout drops in proportion to the window: halving the window should halve the gap.</li>
+            </ol>
+        </div>
+    </main>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var N = 28;                                           // grid cells per side of the 3D sheet
+        var ORANGE = '#F36E24', BLUE = '#009CDE', BLACK = '#000';
+        var SURF_FILL = 'rgba(110,110,110,0.30)', SURF_LINE = 'rgba(40,40,40,0.35)';
+        var PLANE_FILL = 'rgba(0,133,82,0.30)', PLANE_LINE = 'rgba(0,110,68,0.55)';
+
+        // Four presets. Each has analytic partial derivatives, a starting point (a, b),
+        // a starting window half-width W0 for the zoom view, and a default step.
+        var PRESETS = {
+            ex4: {
+                formula: '(x − 1)² − y + (y − 1)⁴',
+                note: 'The linearization example from the section. At (2, 1), L = 2x − y − 3.',
+                a: 2, b: 1, W0: 1.0, dx: 0.1, dy: -0.1,
+                f: function (x, y) { return (x - 1) * (x - 1) - y + Math.pow(y - 1, 4); },
+                fx: function (x, y) { return 2 * (x - 1); },
+                fy: function (x, y) { return -1 + 4 * Math.pow(y - 1, 3); }
+            },
+            exp: {
+                formula: 'e^(x + y)',
+                note: 'A bowl that curves up in every direction.',
+                a: 0, b: 0, W0: 0.8, dx: 0, dy: 0,
+                f: function (x, y) { return Math.exp(x + y); },
+                fx: function (x, y) { return Math.exp(x + y); },
+                fy: function (x, y) { return Math.exp(x + y); }
+            },
+            cosy: {
+                formula: 'cos x + y²',
+                note: 'Curves down in the x direction and up in the y direction.',
+                a: 0.5, b: 0.5, W0: 1.0, dx: 0, dy: 0,
+                f: function (x, y) { return Math.cos(x) + y * y; },
+                fx: function (x, y) { return -Math.sin(x); },
+                fy: function (x, y) { return 2 * y; }
+            },
+            dome: {
+                formula: '10 − x² − 2y²',
+                note: 'A dome that falls away in every direction.',
+                a: 1, b: 1, W0: 1.5, dx: 0, dy: 0,
+                f: function (x, y) { return 10 - x * x - 2 * y * y; },
+                fx: function (x, y) { return -2 * x; },
+                fy: function (x, y) { return -4 * y; }
+            }
+        };
+
+        // ---------- number formatting (3 to 4 significant figures) ----------
+        function fmt(n) {
+            if (typeof n !== 'number' || !isFinite(n)) return '—';
+            if (Math.abs(n) < 1e-12) return '0';
+            return String(Number(n.toPrecision(4)));
+        }
+        function shown(n) { return fmt(n).replace('-', '−'); }
+        function paren(n) { return n < 0 ? '(' + shown(n) + ')' : shown(n); }
+        function pctText(p) {
+            if (typeof p !== 'number' || !isFinite(p)) return '—';
+            return p.toPrecision(3) + '%';
+        }
+        function zoomLabel(Z) { return Z < 10 ? Z.toFixed(1) : String(Math.round(Z)); }
+
+        // ---------- shared state ----------
+        var state = { key: 'ex4', zoomS: 0, dx: 0.1, dy: -0.1 };
+
+        Object.keys(PRESETS).forEach(function (k) { prepare(PRESETS[k]); });
+
+        // Normalized sample on a window of half-width W around (a, b):
+        // u = (x - a)/W, v = (y - b)/W, w = (f(x, y) - f(a, b))/W, and the plane is wp = f_x u + f_y v.
+        // Magnifying by 1/W keeps the window fixed on screen, so w tends to wp as W shrinks.
+        function sampleGrid(P, W) {
+            var rows = [];
+            for (var i = 0; i <= N; i++) {
+                var u = -1 + 2 * i / N, row = [];
+                for (var j = 0; j <= N; j++) {
+                    var v = -1 + 2 * j / N;
+                    var w = (P.f(P.a + W * u, P.b + W * v) - P.f0) / W;
+                    row.push({ u: u, v: v, w: isFinite(w) ? w : null, wp: P.fx0 * u + P.fy0 * v });
+                }
+                rows.push(row);
+            }
+            return rows;
+        }
+
+        // Fills in f(a,b), the partials there, the display compression K, and the projection radius R.
+        function prepare(P) {
+            P.f0 = P.f(P.a, P.b);
+            P.fx0 = P.fx(P.a, P.b);
+            P.fy0 = P.fy(P.a, P.b);
+            var zs = 0;
+            sampleGrid(P, P.W0).forEach(function (row) {
+                row.forEach(function (q) {
+                    zs = Math.max(zs, Math.abs(q.wp));
+                    if (q.w !== null) zs = Math.max(zs, Math.abs(q.w));
+                });
+            });
+            P.K = Math.max(1, zs / 1.25);                     // squeeze heights so the picture fits
+            P.R = Math.sqrt(2 + Math.pow(1.05 * zs / P.K, 2)); // radius that holds the whole sheet
+        }
+
+        function planeText(P) {
+            function term(c, name, val) {
+                var sign = c < 0 ? ' − ' : ' + ';
+                var inner = name + (val === 0 ? '' : (val > 0 ? ' − ' + shown(val) : ' + ' + shown(-val)));
+                var body = val === 0 ? inner : '(' + inner + ')';
+                var coef = Math.abs(Math.abs(c) - 1) < 1e-12 ? '' : shown(Math.abs(c));
+                return sign + coef + body;
+            }
+            return shown(P.f0) + term(P.fx0, 'x', P.a) + term(P.fy0, 'y', P.b);
+        }
+
+        // ---------- canvases ----------
+        function makeCanvas(id, ratio) {
+            var el = document.getElementById(id);
+            return { el: el, ctx: el.getContext('2d'), W: 320, H: 320, dpr: 1, ratio: ratio };
+        }
+        function sizeCanvas(cv) {
+            var cssW = Math.round(cv.el.getBoundingClientRect().width) || 320;
+            cssW = Math.max(240, cssW);
+            var dpr = window.devicePixelRatio || 1;
+            cv.W = cssW;
+            cv.H = Math.round(cssW * cv.ratio);
+            cv.dpr = dpr;
+            cv.el.width = Math.round(cv.W * dpr);
+            cv.el.height = Math.round(cv.H * dpr);
+        }
+
+        var zc = makeCanvas('zoom-scene', 1);
+        var cc = makeCanvas('chart', 0.7);
+        var DEFAULT_THETA = -0.6, DEFAULT_PHI = 0.9;      // from above, so the plane is not edge-on
+        var zv = { theta: DEFAULT_THETA, phi: DEFAULT_PHI, cx: 0, cy: 0, scale: 100 };   // 3D view
+
+        // ---------- 3D projection (same technique as the Chapter 11 demos) ----------
+        function project(view, p) {
+            var ct = Math.cos(view.theta), st = Math.sin(view.theta);
+            var x1 = p[0] * ct - p[1] * st;
+            var y1 = p[0] * st + p[1] * ct;
+            var cp = Math.cos(view.phi), sp = Math.sin(view.phi);
+            var y2 = y1 * cp - p[2] * sp;
+            var z2 = y1 * sp + p[2] * cp;
+            return { sx: view.cx + x1 * view.scale, sy: view.cy - z2 * view.scale, d: y2 };
+        }
+
+        function poly(pts, fill, line) {
+            var d = 0;
+            pts.forEach(function (p) { d += p.d; });
+            return { d: d / pts.length, pts: pts, fill: fill, line: line };
+        }
+
+        // ---------- panel 1: zoom ----------
+        function zoomWindow() {
+            var P = PRESETS[state.key];
+            return P.W0 / Math.pow(50, state.zoomS / 100);
+        }
+
+        function zoomStats() {
+            var P = PRESETS[state.key], W = zoomWindow();
+            var gap = 0;
+            sampleGrid(P, W).forEach(function (row) {
+                row.forEach(function (q) {
+                    if (q.w !== null) gap = Math.max(gap, Math.abs(q.w - q.wp));
+                });
+            });
+            return { Z: Math.pow(50, state.zoomS / 100), W: W, gapPct: 100 * gap };
+        }
+
+        function drawZoom() {
+            var cv = zc, ctx = cv.ctx, P = PRESETS[state.key], view = zv;
+            var W = zoomWindow();
+            var grid = sampleGrid(P, W);
+            ctx.setTransform(cv.dpr, 0, 0, cv.dpr, 0, 0);
+            ctx.clearRect(0, 0, cv.W, cv.H);
+            view.cx = cv.W / 2;
+            view.cy = cv.H / 2;
+            view.scale = 0.9 * (cv.W / 2) / P.R;
+
+            var items = [];
+            for (var i = 0; i < N; i++) {
+                for (var j = 0; j < N; j++) {
+                    var cells = [grid[i][j], grid[i + 1][j], grid[i + 1][j + 1], grid[i][j + 1]];
+                    var surfaceOK = cells.every(function (q) { return q.w !== null; });
+                    if (surfaceOK) {
+                        items.push(poly(cells.map(function (q) {
+                            return project(view, [q.u, q.v, q.w / P.K]);
+                        }), SURF_FILL, SURF_LINE));
+                    }
+                    items.push(poly(cells.map(function (q) {
+                        return project(view, [q.u, q.v, q.wp / P.K]);
+                    }), PLANE_FILL, PLANE_LINE));
+                }
+            }
+            items.sort(function (p, q) { return q.d - p.d; });   // farthest first
+            items.forEach(function (it) {
+                ctx.beginPath();
+                it.pts.forEach(function (p, k) {
+                    if (k === 0) ctx.moveTo(p.sx, p.sy); else ctx.lineTo(p.sx, p.sy);
+                });
+                ctx.closePath();
+                ctx.fillStyle = it.fill;
+                ctx.fill();
+                ctx.strokeStyle = it.line;
+                ctx.lineWidth = 0.6;
+                ctx.stroke();
+            });
+
+            function arrow(p0, p1, label) {
+                var a = project(view, p0), b = project(view, p1);
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(a.sx, a.sy);
+                ctx.lineTo(b.sx, b.sy);
+                ctx.stroke();
+                ctx.fillStyle = '#333';
+                ctx.font = '13px sans-serif';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'alphabetic';
+                ctx.fillText(label, b.sx + 4, b.sy - 4);
+            }
+            arrow([0, 0, 0], [1.2, 0, 0], 'x − a');
+            arrow([0, 0, 0], [0, 1.2, 0], 'y − b');
+            arrow([0, 0, 0], [0, 0, 1.2], 'height');
+
+            var o = project(view, [0, 0, 0]);
+            ctx.fillStyle = BLACK;
+            ctx.beginPath();
+            ctx.arc(o.sx, o.sy, 4.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function updateZoom() {
+            var P = PRESETS[state.key];
+            var st = zoomStats();
+            var verdict = st.gapPct > 25 ? 'The surface is still clearly curved here.'
+                : (st.gapPct > 5 ? 'The surface is starting to flatten.'
+                : 'At this zoom the surface and its plane look like one sheet.');
+            var a = P.a, b = P.b, W = st.W;
+            document.getElementById('zoom-out').textContent = '×' + zoomLabel(st.Z);
+            document.getElementById('zoom-readout').innerHTML =
+                '<ul>' +
+                '<li>Window: x from ' + shown(a - W) + ' to ' + shown(a + W) +
+                ', y from ' + shown(b - W) + ' to ' + shown(b + W) + '.</li>' +
+                '<li>Tangent plane at (' + shown(a) + ', ' + shown(b) + '): z = ' + planeText(P) + '.</li>' +
+                '<li>Largest gap between surface and plane inside the window: ' + pctText(st.gapPct) +
+                ' of the half-width.</li>' +
+                '</ul><p class="verdict">' + verdict + '</p>';
+            zc.el.setAttribute('aria-label',
+                '3D view of z = ' + P.formula + ' near (' + shown(a) + ', ' + shown(b) + ') at zoom ' +
+                '×' + zoomLabel(st.Z) + '. A gray surface and its green tangent plane; the largest gap ' +
+                'inside the window is ' + pctText(st.gapPct) + ' of the half-width.');
+            drawZoom();
+        }
+
+        // ---------- panel 2: differential ----------
+        function diffStats() {
+            var P = PRESETS[state.key], dx = state.dx, dy = state.dy;
+            var X = P.a + dx, Y = P.b + dy;
+            var hTrue = P.f(X, Y);
+            var dzTrue = hTrue - P.f0;
+            var dzPlane = P.fx0 * dx + P.fy0 * dy;
+            var err = dzTrue - dzPlane;
+            var pct = Math.abs(dzTrue) < 1e-12 ? NaN : 100 * Math.abs(err) / Math.abs(dzTrue);
+            return {
+                X: X, Y: Y, hTrue: hTrue, dzTrue: dzTrue, dzPlane: dzPlane,
+                hPlane: P.f0 + dzPlane, err: err, pct: pct
+            };
+        }
+
+        function diffText(P, s) {
+            if (state.dx === 0 && state.dy === 0) {
+                return '<p>No step yet. Move &Delta;x or &Delta;y to take a step from (' + shown(P.a) + ', ' + shown(P.b) + ').</p>';
+            }
+            var side = Math.abs(s.err) < 1e-12 ? 'the plane is exact at this step'
+                : (s.err > 0 ? 'the plane under-estimates (the surface is higher than the plane)'
+                : 'the plane over-estimates (the plane is higher than the surface)');
+            var dx = state.dx, dy = state.dy;
+            return '<ul>' +
+                '<li>New point: (' + shown(s.X) + ', ' + shown(s.Y) + ').</li>' +
+                '<li><span class="swatch" style="background:' + ORANGE + ';"></span>True height f(' +
+                shown(s.X) + ', ' + shown(s.Y) + ') = ' + shown(s.hTrue) + '.</li>' +
+                '<li>True change: Δz = f(' + shown(s.X) + ', ' + shown(s.Y) + ') − f(' +
+                shown(P.a) + ', ' + shown(P.b) + ') = ' + shown(s.hTrue) + ' − ' + paren(P.f0) +
+                ' = ' + shown(s.dzTrue) + '.</li>' +
+                '<li>Plane’s change: dz = f<sub>x</sub>Δx + f<sub>y</sub>Δy = ' +
+                paren(P.fx0) + ' × ' + paren(dx) + ' + ' + paren(P.fy0) + ' × ' + paren(dy) +
+                ' = ' + shown(s.dzPlane) + '.</li>' +
+                '<li><span class="swatch" style="background:' + BLUE + ';"></span>Plane’s height there: ' +
+                'f(' + shown(P.a) + ', ' + shown(P.b) + ') + dz = ' + shown(s.hPlane) + '.</li>' +
+                '<li>Error Δz − dz = ' + shown(s.err) + ', so ' + side + '.</li>' +
+                '<li>Error as a percent of the true change: ' +
+                (isFinite(s.pct) ? pctText(s.pct) : 'undefined, because the true change is 0') + '.</li>' +
+                '</ul>';
+        }
+
+        function drawChart() {
+            var cv = cc, ctx = cv.ctx, P = PRESETS[state.key];
+            var W = cv.W, H = cv.H;
+            var padL = 56, padR = 18, padT = 14, padB = 40;
+            var t0 = -0.25, t1 = 1.25, n = 150;
+            var dx = state.dx, dy = state.dy;
+            var dzPlane = P.fx0 * dx + P.fy0 * dy;
+            var lo = Infinity, hi = -Infinity, samples = [];
+            for (var i = 0; i <= n; i++) {
+                var t = t0 + (t1 - t0) * i / n;
+                var val = P.f(P.a + t * dx, P.b + t * dy);        // true height
+                var pl = P.f0 + t * dzPlane;                       // plane's height
+                if (isFinite(val)) {
+                    lo = Math.min(lo, val);
+                    hi = Math.max(hi, val);
+                    samples.push([t, val]);
+                }
+                lo = Math.min(lo, pl);
+                hi = Math.max(hi, pl);
+            }
+            if (!isFinite(lo) || !isFinite(hi)) { lo = P.f0 - 1; hi = P.f0 + 1; }
+            var span = Math.max(hi - lo, 0.05 * Math.max(1, Math.abs(P.f0)));
+            lo -= 0.08 * span;
+            hi += 0.08 * span;
+            function X(t) { return padL + (t - t0) / (t1 - t0) * (W - padL - padR); }
+            function Y(v) { return padT + (hi - v) / (hi - lo) * (H - padT - padB); }
+
+            ctx.setTransform(cv.dpr, 0, 0, cv.dpr, 0, 0);
+            ctx.clearRect(0, 0, W, H);
+
+            var step = (function (range, target) {
+                var raw = range / target;
+                var mag = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10));
+                var r = raw / mag;
+                return (r < 1.5 ? 1 : (r < 3 ? 2 : (r < 7 ? 5 : 10))) * mag;
+            })(hi - lo, 4);
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            for (var k = Math.ceil(lo / step); k * step <= hi; k++) {
+                var yy = Y(k * step);
+                ctx.strokeStyle = '#e5e5e5';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padL, yy);
+                ctx.lineTo(W - padR, yy);
+                ctx.stroke();
+                ctx.fillStyle = '#555';
+                ctx.fillText(shown(k * step), padL - 6, yy);
+            }
+
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(padL, padT);
+            ctx.lineTo(padL, H - padB);
+            ctx.stroke();
+
+            ctx.setLineDash([5, 4]);
+            ctx.strokeStyle = '#6E6E6E';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padL, Y(P.f0));
+            ctx.lineTo(W - padR, Y(P.f0));
+            ctx.stroke();
+            [0, 1].forEach(function (tt) {
+                ctx.beginPath();
+                ctx.moveTo(X(tt), padT);
+                ctx.lineTo(X(tt), H - padB);
+                ctx.stroke();
+            });
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = '#333';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText('start (a, b)', X(0), H - padB + 6);
+            ctx.fillText('new point', X(1), H - padB + 6);
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'alphabetic';
+            ctx.fillText('height z', padL + 6, padT + 12);
+
+            ctx.strokeStyle = BLUE;
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(X(t0), Y(P.f0 + t0 * dzPlane));
+            ctx.lineTo(X(t1), Y(P.f0 + t1 * dzPlane));
+            ctx.stroke();
+
+            ctx.strokeStyle = ORANGE;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            samples.forEach(function (sm, idx) {
+                if (idx === 0) ctx.moveTo(X(sm[0]), Y(sm[1])); else ctx.lineTo(X(sm[0]), Y(sm[1]));
+            });
+            ctx.stroke();
+
+            var s = diffStats();
+            if (isFinite(s.hTrue) && isFinite(s.hPlane)) {
+                ctx.strokeStyle = BLACK;
+                ctx.lineWidth = 1.2;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.moveTo(X(1) + 9, Y(s.hPlane));
+                ctx.lineTo(X(1) + 9, Y(s.hTrue));
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            ctx.fillStyle = BLACK;
+            ctx.beginPath();
+            ctx.arc(X(0), Y(P.f0), 4.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = ORANGE;
+            ctx.beginPath();
+            ctx.arc(X(1), Y(s.hTrue), 5.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = BLUE;
+            ctx.beginPath();
+            ctx.arc(X(1), Y(s.hPlane), 5.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#333';
+            var yT = Y(s.hTrue), yP = Y(s.hPlane);
+            var trueAbove = yT <= yP;                 // put the higher label above its dot
+            ctx.textBaseline = trueAbove ? 'bottom' : 'top';
+            ctx.fillText('true height', X(1) - 10, trueAbove ? yT - 3 : yT + 3);
+            ctx.textBaseline = trueAbove ? 'top' : 'bottom';
+            ctx.fillText('plane height', X(1) - 10, trueAbove ? yP + 3 : yP - 3);
+        }
+
+        function updateDiff() {
+            var P = PRESETS[state.key];
+            var s = diffStats();
+            document.getElementById('dx-out').textContent = state.dx.toFixed(2).replace('-', '−');
+            document.getElementById('dy-out').textContent = state.dy.toFixed(2).replace('-', '−');
+            document.getElementById('diff-readout').innerHTML = diffText(P, s);
+            cc.el.setAttribute('aria-label',
+                'Graph of the heights along the straight path from (' + shown(P.a) + ', ' + shown(P.b) +
+                ') to (' + shown(s.X) + ', ' + shown(s.Y) + '). Orange: true height ' + shown(s.hTrue) +
+                '. Blue: plane height ' + shown(s.hPlane) + '.');
+            drawChart();
+        }
+
+        function updateFormula() {
+            var P = PRESETS[state.key];
+            document.getElementById('formula-out').innerHTML =
+                '<p><strong>f(x, y) = ' + P.formula + '</strong>, with (a, b) = (' + shown(P.a) + ', ' +
+                shown(P.b) + '), so f(a, b) = ' + shown(P.f0) + '.</p><p>' + P.note + '</p>';
+        }
+
+        function refreshAll() {
+            updateFormula();
+            updateZoom();
+            updateDiff();
+        }
+
+        // ---------- orbit (drag to rotate) for panel 1 ----------
+        (function attachOrbit() {
+            var dragging = false, lastX = 0, lastY = 0;
+            zc.el.addEventListener('pointerdown', function (e) {
+                dragging = true;
+                lastX = e.clientX;
+                lastY = e.clientY;
+                try { zc.el.setPointerCapture(e.pointerId); } catch (err) { /* not supported: ignore */ }
+            });
+            zc.el.addEventListener('pointermove', function (e) {
+                if (!dragging) return;
+                zv.theta += (e.clientX - lastX) * 0.006;
+                zv.phi = Math.max(-1.45, Math.min(1.45, zv.phi - (e.clientY - lastY) * 0.006));
+                lastX = e.clientX;
+                lastY = e.clientY;
+                drawZoom();
+            });
+            var stop = function () { dragging = false; };
+            zc.el.addEventListener('pointerup', stop);
+            zc.el.addEventListener('pointercancel', stop);
+        })();
+
+        // ---------- controls ----------
+        document.getElementById('preset').addEventListener('change', function (e) {
+            state.key = e.target.value;
+            var P = PRESETS[state.key];
+            state.dx = P.dx;
+            state.dy = P.dy;
+            document.getElementById('dx').value = String(P.dx);
+            document.getElementById('dy').value = String(P.dy);
+            refreshAll();
+        });
+        document.getElementById('zoom').addEventListener('input', function (e) {
+            state.zoomS = Number(e.target.value);
+            updateZoom();
+        });
+        document.getElementById('dx').addEventListener('input', function (e) {
+            state.dx = parseFloat(e.target.value);
+            updateDiff();
+        });
+        document.getElementById('dy').addEventListener('input', function (e) {
+            state.dy = parseFloat(e.target.value);
+            updateDiff();
+        });
+        document.getElementById('zoom-reset').addEventListener('click', function () {
+            zv.theta = DEFAULT_THETA;
+            zv.phi = DEFAULT_PHI;
+            drawZoom();
+        });
+
+        function layout() {
+            sizeCanvas(zc);
+            sizeCanvas(cc);
+            refreshAll();
+        }
+        window.addEventListener('resize', layout);
+
+        // Start from the default preset and step.
+        var P0 = PRESETS[state.key];
+        state.dx = P0.dx;
+        state.dy = P0.dy;
+        layout();
+    })();
+    </script>
+</body>
+
+</html>

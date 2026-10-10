@@ -1,0 +1,111 @@
+/* MATH 308 - widgets for the daily companion pages (loaded by _layouts/day.html when course: 308).
+ * Builds on math411.css (.act, .ctl-row, .readout, .btn411, .mc, .proof-scaffold, .flaw-widget). */
+
+.a308-row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 10px 0; }
+.a308-inline { display: inline-flex; gap: 6px; align-items: center; font-weight: bold; font-size: 0.9rem; }
+.a308-inline select, .ctl select, .a308-text, .a308-num {
+  font: inherit; font-size: 0.95rem; padding: 5px 8px; border: 1px solid #c9ccd1; border-radius: 6px; background: #fff;
+}
+.a308-text { min-width: 11em; font-family: Consolas, "Courier New", monospace; }
+.a308-num { width: 8em; }
+.a308-note { font-size: 0.88rem; color: var(--text-muted, #666); margin: 4px 0 10px; }
+.a308-readout { min-height: 2.6em; line-height: 1.55; }
+.a308-readout .muted, .a308-note .muted, .muted { color: var(--text-muted, #666); }
+.a308-readout .mono, .mono { font-family: Consolas, "Courier New", monospace; }
+
+/* ---- Cayley tables ------------------------------------------------- */
+.a308-cayley-wrap { overflow-x: auto; margin: 10px 0; -webkit-overflow-scrolling: touch; }
+table.a308-cayley { border-collapse: collapse; margin: 0 auto; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+table.a308-cayley caption { caption-side: top; font-weight: bold; font-size: 0.88rem; padding-bottom: 6px; color: var(--text-muted, #666); }
+table.a308-cayley th, table.a308-cayley td {
+  min-width: 2.3em; height: 2.1em; padding: 2px 6px; text-align: center; border: 1px solid #e1e4e8; white-space: nowrap;
+}
+table.a308-cayley th { background: #f3f4f6; font-weight: bold; }
+table.a308-cayley th[tabindex] { cursor: pointer; }
+table.a308-cayley th[tabindex]:hover, table.a308-cayley th[tabindex]:focus { outline: 2px solid #009CDE; outline-offset: -2px; }
+table.a308-cayley th.corner { background: #e8eaed; color: #555; }
+table.a308-cayley th.hl { background: #dff2fb; }
+table.a308-cayley td.hl { box-shadow: inset 0 0 0 2px #009CDE; }
+table.a308-cayley th.picked { background: #F36E24; color: #fff; }
+table.a308-cayley td.ident { background: #fde6d8; font-weight: bold; }
+table.a308-cayley td.blank { padding: 1px; }
+table.a308-cayley td.blank select { font-size: 0.85rem; padding: 2px; border-radius: 4px; }
+table.a308-cayley td.good { background: #d9efe5; }
+table.a308-cayley td.bad { background: #fbe0e0; }
+table.a308-cayley.small { font-size: 0.8rem; }
+table.a308-cayley.small th, table.a308-cayley.small td { min-width: 1.9em; height: 1.8em; padding: 1px 3px; }
+table.a308-cayley.tiny { font-size: 0.68rem; }
+table.a308-cayley th.unit { background: #d9efe5; color: #0b5d3b; }
+table.a308-cayley th.zd { background: #fde6d8; color: #9a3d0c; }
+table.a308-cayley td.one { background: #d9efe5; font-weight: bold; }
+table.a308-cayley td.zero { background: #fde6d8; font-weight: bold; }
+
+/* ---- Polygon -------------------------------------------------------- */
+.a308-poly-wrap { display: flex; justify-content: center; }
+svg.a308-poly { width: 100%; max-width: 300px; height: auto; }
+svg.a308-poly .outline { fill: none; stroke: #d0d4da; stroke-width: 1.5; stroke-dasharray: 4 4; }
+svg.a308-poly .pos { font-size: 12px; fill: #9aa0a6; text-anchor: middle; }
+svg.a308-poly .axis { stroke: #c4c9cf; stroke-width: 1.2; stroke-dasharray: 3 5; }
+svg.a308-poly .face { fill: rgba(0, 156, 222, 0.12); stroke: #009CDE; stroke-width: 2.5; stroke-linejoin: round; }
+svg.a308-poly .mark { fill: #F36E24; }
+svg.a308-poly .mark2 { fill: #008552; }
+svg.a308-poly .vlab { font-size: 17px; font-weight: bold; fill: #1f2328; text-anchor: middle; }
+svg.a308-poly .upright { transition: opacity 0.15s; }
+
+/* ---- Permutations --------------------------------------------------- */
+.a308-perm-svg { overflow-x: auto; }
+svg.a308-perm { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+svg.a308-perm .dot { fill: #fff; stroke: #9aa0a6; stroke-width: 1.5; }
+svg.a308-perm .dot.on { fill: #F36E24; stroke: #F36E24; }
+svg.a308-perm .num { font-size: 12px; text-anchor: middle; fill: #1f2328; font-weight: bold; }
+svg.a308-perm .num.on { fill: #fff; }
+svg.a308-perm .lvl { font-size: 15px; font-style: italic; fill: #555; }
+svg.a308-perm .arr { stroke: #009CDE; stroke-width: 1.6; opacity: 0.75; }
+svg.a308-perm .arr.fixed { stroke: #b8bec5; }
+svg.a308-perm .arr.on { stroke: #F36E24; stroke-width: 3; opacity: 1; }
+svg.a308-perm .ah { fill: #009CDE; }
+svg.a308-perm .ahon { fill: #F36E24; }
+
+/* ---- Clock / roots of unity ---------------------------------------- */
+.a308-clock-wrap { display: flex; justify-content: center; }
+svg.a308-clock { width: 100%; max-width: 320px; height: auto; }
+svg.a308-clock .rim { fill: none; stroke: #d0d4da; stroke-width: 1.5; }
+svg.a308-clock .axis { stroke: #e1e4e8; stroke-width: 1; }
+svg.a308-clock .star { fill: rgba(243, 110, 36, 0.08); stroke: #F36E24; stroke-width: 2; stroke-linejoin: round; }
+svg.a308-clock .pt { fill: #fff; stroke: #9aa0a6; stroke-width: 1.5; }
+svg.a308-clock .pt.on { fill: #F36E24; stroke: #F36E24; }
+svg.a308-clock .pt.gen { stroke: #009CDE; stroke-width: 3; }
+svg.a308-clock .lab { font-size: 12px; text-anchor: middle; fill: #444; }
+
+/* ---- Lattice -------------------------------------------------------- */
+.a308-lattice-wrap { overflow-x: auto; }
+svg.a308-lattice { width: 100%; min-width: 420px; height: auto; display: block; }
+svg.a308-lattice .edge { stroke: #b8bec5; stroke-width: 1.5; }
+svg.a308-lattice .node { cursor: pointer; }
+svg.a308-lattice .node rect { fill: #fff; stroke: #009CDE; stroke-width: 1.5; }
+svg.a308-lattice .node.normal rect { stroke: #008552; stroke-width: 3; }
+svg.a308-lattice .node.on rect { fill: #009CDE; }
+svg.a308-lattice .node.on text { fill: #fff; }
+svg.a308-lattice .node:focus { outline: none; }
+svg.a308-lattice .node:focus rect { stroke: #F36E24; stroke-width: 3; }
+svg.a308-lattice .node text { font-size: 12.5px; text-anchor: middle; fill: #1f2328; font-weight: bold; }
+svg.a308-lattice .ordlab { font-size: 11px; fill: #9aa0a6; }
+
+/* ---- Cosets --------------------------------------------------------- */
+.a308-coset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0; }
+@media (max-width: 560px) { .a308-coset-grid { grid-template-columns: 1fr; } }
+.a308-coset-col h4 { margin: 0 0 6px; font-size: 0.95rem; }
+.a308-coset { border-left: 4px solid; border-radius: 6px; padding: 6px 10px; margin-bottom: 6px; font-size: 0.92rem; color: #222; }
+.a308-coset .rep { font-weight: bold; margin-right: 6px; }
+
+/* ---- Quotient, homomorphism, Euclid --------------------------------- */
+.a308-q-small { margin-top: 6px; }
+.a308-hom-wrap { overflow-x: auto; }
+svg.a308-hom { width: 100%; min-width: 380px; height: auto; display: block; }
+svg.a308-hom .map { stroke-width: 1.4; opacity: 0.55; }
+svg.a308-hom .pt { stroke-width: 2; }
+svg.a308-hom .lab { font-size: 10.5px; text-anchor: middle; fill: #fff; font-weight: bold; }
+svg.a308-hom .lab.dark { fill: #333; }
+svg.a308-hom .ttl { font-size: 16px; text-anchor: middle; font-weight: bold; fill: #333; }
+.a308-steps { font-size: 0.95rem; margin: 8px 0; padding-left: 1.6em; }
+.a308-steps li { margin-bottom: 2px; }

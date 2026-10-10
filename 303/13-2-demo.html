@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paths to the Origin - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- MathJax for rendering equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        .dashboard > * {
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .panel h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        canvas#scene {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            display: block;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        canvas#scene:active {
+            cursor: grabbing;
+        }
+
+        canvas#plane {
+            width: 100%;
+            aspect-ratio: 5 / 4;
+            display: block;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 0.4rem 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .control-block {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .control-block:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .control-block h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .control-block > label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        select#preset {
+            width: 100%;
+            padding: 8px;
+            margin-top: 0.4rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: #fff;
+            margin-bottom: 0.75rem;
+        }
+
+        .radio-row {
+            display: flex;
+            gap: 0.5rem 1rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .radio-row label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.5rem;
+        }
+
+        .slider-row label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .slider-row span {
+            font-weight: bold;
+            width: 3rem;
+            text-align: right;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #6E6E6E;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4A4A4A;
+        }
+
+        .formula-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 0.6rem 0.8rem;
+            text-align: center;
+            font-size: 1rem;
+            overflow-x: auto;
+            margin-bottom: 0.5rem;
+        }
+
+        .output-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.92rem;
+            overflow-wrap: anywhere;
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin: 0.4rem 0 0;
+        }
+
+        #tried-list {
+            margin: 0.25rem 0 0.5rem 1.25rem;
+            font-size: 0.92rem;
+        }
+
+        .verdict {
+            border-left: 4px solid var(--color-primary, #F36E24);
+            background: #fff7f1;
+            padding: 0.6rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            margin-top: 0.75rem;
+            overflow-wrap: anywhere;
+        }
+
+        .verdict.split {
+            border-left-color: var(--color-primary-dark, #CD5920);
+            font-weight: bold;
+        }
+
+        .verdict.agree {
+            border-left-color: var(--color-accent-green, #008552);
+            background: #f1faf6;
+        }
+
+        .demo-section ol {
+            margin: 0.5rem 0 0 1.25rem;
+        }
+
+        .demo-section li {
+            margin-bottom: 0.6rem;
+        }
+
+        @media (max-width: 600px) {
+            .panel,
+            .demo-section {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Paths to the Origin</h1>
+            <p>&sect;13.2 &mdash; walk a point into (0,0) along a line, a parabola, or an axis, and watch the value on
+                a surface and in a plot. Does every path agree?</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Choose a function, then a path into the origin. The moving point walks in along that path, both on the
+                <strong>surface</strong> (left) and in a <strong>plot of f along the path</strong> (right), where the
+                horizontal axis is <em>t</em> on a log scale. Here <em>t</em> is the point's <em>x</em>-coordinate (its
+                <em>y</em>-coordinate on the <em>y</em>-axis). The origin is left open because f is undefined there.
+                The readout reports the value the path approaches, computed at <em>t</em> = 0.001. Once two paths
+                approach different values, it says the limit cannot exist.
+            </p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel">
+                <h4>The surface z = f(x, y)</h4>
+                <canvas id="scene" role="img" aria-label="3D graph of a function near the origin"></canvas>
+                <div class="scene-hint">Drag to rotate &middot; scroll to zoom &middot; the open circle marks (0,0)</div>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#009CDE;"></span>Your path (input)</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>f along the path (output)</div>
+                    <div><span class="swatch" style="background:#008552;"></span>Surface mesh and axes</div>
+                </div>
+                <button class="btn btn-secondary" id="reset-view" type="button">Reset View</button>
+            </div>
+
+            <div class="panel">
+                <h4>f along the path, as the point walks in</h4>
+                <canvas id="plane" role="img" aria-label="Plot of f along the chosen path"></canvas>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#F36E24;"></span>f along the path</div>
+                    <div><span class="swatch" style="background:#008552;"></span>t = 0.001 guide</div>
+                </div>
+                <div class="output-box" id="walker-readout"></div>
+                <div class="output-box" id="value-readout"></div>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel">
+                <div class="control-block">
+                    <h4>1. Choose a function</h4>
+                    <label for="preset">Function</label>
+                    <select id="preset">
+                        <option value="exists">Limit exists</option>
+                        <option value="lines">Lines disagree</option>
+                        <option value="parabola">Every line agrees, a parabola does not</option>
+                    </select>
+                    <div class="formula-box" id="formula"></div>
+                </div>
+
+                <div class="control-block">
+                    <h4>2. Choose a path into (0,0)</h4>
+                    <div class="radio-row" role="radiogroup" aria-label="Path family">
+                        <label><input type="radio" name="family" value="line" checked> Line y = mx</label>
+                        <label><input type="radio" name="family" value="parabola"> Parabola y = kx&sup2;</label>
+                        <label><input type="radio" name="family" value="xaxis"> x-axis</label>
+                        <label><input type="radio" name="family" value="yaxis"> y-axis</label>
+                    </div>
+                    <div class="slider-row" id="param-row">
+                        <label for="param" id="param-label">Slope m</label>
+                        <input type="range" id="param" min="-3" max="3" step="0.1" value="1">
+                        <span id="param-value">1.0</span>
+                    </div>
+                    <p class="hint">Predict the value before you move the slider. Each change of path or slider
+                        restarts the walk.</p>
+                </div>
+
+                <div class="control-block">
+                    <h4>3. Walk the point in</h4>
+                    <button class="btn" id="play" type="button">Pause</button>
+                    <button class="btn btn-secondary" id="restart" type="button">Restart walk</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h4>Readout</h4>
+                <div class="formula-box" id="path-eq"></div>
+                <p class="hint">Paths tried so far, with the value each one gives at t = 0.001:</p>
+                <ol id="tried-list"></ol>
+                <button class="btn btn-secondary" id="clear-tried" type="button">Clear list</button>
+                <div class="verdict" id="verdict" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>Things to try</h3>
+            <ol>
+                <li><strong>Predict first.</strong> Choose <em>Limit exists</em>. Before you move the slider, predict the
+                    value along <em>y = 2x</em>. Then check it, and say whether the answer depends on the slope.</li>
+                <li><strong>Predict first.</strong> Choose <em>Lines disagree</em>. Predict the value along <em>y = x</em>,
+                    then slide the slope to find the largest value you can reach. Why does the readout stay put as the
+                    point walks in?</li>
+                <li><strong>Find a path that breaks it.</strong> Choose <em>Every line agrees, a parabola does not</em>.
+                    Every line through the origin gives 0. Switch to the parabola family and predict the value for
+                    <em>k</em> = 1 before you slide. Which <em>k</em> gives the largest value?</li>
+                <li><strong>Connect to the section page.</strong> A worked example there found that every line through
+                    the origin gives 0 for a different function, which suggests a limit but does not prove one. Choose
+                    <em>Every line agrees, a parabola does not</em>, predict the shape of the plot as the point walks in
+                    along <em>y = 0.5x</em>, then press Restart walk and check. Does the value settle to 0 as the point
+                    nears the origin?</li>
+            </ol>
+        </div>
+    </main>
+
+    <footer>
+        <p>Milligan Mathematics &middot; MATH 303: Multivariable Calculus &middot;
+            <a href="index.html">Back to Math 303</a></p>
+    </footer>
+
+    <script>
+    (function () {
+        'use strict';
+
+        // ---------- Functions ----------
+        // f is never evaluated at (0,0). Any non-finite result is skipped.
+        const PRESETS = {
+            exists: {
+                tex: '\\dfrac{x^3y^3}{x^4+y^4}',
+                plain: 'x^3 y^3 / (x^4 + y^4)',
+                f: (x, y) => (x ** 3 * y ** 3) / (x ** 4 + y ** 4),
+                zMax: 0.8,
+                plotMax: 0.8
+            },
+            lines: {
+                tex: '\\dfrac{4xy}{x^2+3y^2}',
+                plain: '4xy / (x^2 + 3y^2)',
+                f: (x, y) => (4 * x * y) / (x * x + 3 * y * y),
+                zMax: 1.25,
+                plotMax: 1.3
+            },
+            parabola: {
+                tex: '\\dfrac{x^6y}{x^8+y^4}',
+                plain: 'x^6 y / (x^8 + y^4)',
+                f: (x, y) => (x ** 6 * y) / (x ** 8 + y ** 4),
+                zMax: 0.8,
+                plotMax: 0.8
+            }
+        };
+
+        const GRID = 61;          // mesh nodes per side
+        const R = 1.2;            // picture window is [-R, R] x [-R, R]
+        const T_MIN = 1e-4;       // the walk ends here
+        const T_CHECK = 0.001;    // the readout value
+        const DURATION = 7;       // seconds for one full walk
+        const LOG_MIN = -4;       // plot runs over log10(t) from -4 to 0.1
+        const LOG_MAX = 0.1;
+        const PAD_L = 42, PAD_R = 12, PAD_T = 14, PAD_B = 36;
+
+        // ---------- State ----------
+        const scene = document.getElementById('scene');
+        const plane = document.getElementById('plane');
+        const sctx = scene.getContext('2d');
+        const pctx = plane.getContext('2d');
+        const buf = document.createElement('canvas');   // offscreen copy of the surface
+        const bctx = buf.getContext('2d');
+
+        let dpr = window.devicePixelRatio || 1;
+        const view = { w: 0, h: 0, theta: -0.7, phi: 0.5, zoom: 1 };
+        const pview = { w: 0, h: 0 };
+
+        let presetKey = 'exists';
+        let family = 'line';      // 'line' (y = m x), 'parabola' (y = k x^2), 'xaxis', 'yaxis'
+        let param = 1;            // slope m or coefficient k
+        let mesh = null;
+        let path = null;          // { tMax, samples: [{ t, x, y, v }] }, ascending in t
+        let progress = 0;         // 0 = start of walk (t = tMax), 1 = end (t = T_MIN)
+        let playing = true;
+        let tried = [];           // [{ label, v }]
+        let bufferDirty = true;
+        let dragging = false;
+        let lastX = 0, lastY = 0;
+        let lastTime = null;
+
+        function preset() { return PRESETS[presetKey]; }
+
+        // ---------- Small helpers ----------
+        function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+
+        function fmt(v) {
+            if (!Number.isFinite(v)) return 'undefined';
+            if (Math.abs(v) < 1e-12) return '0';
+            if (Math.abs(v) < 1e-3) return v.toExponential(2);
+            return String(parseFloat(v.toPrecision(4)));
+        }
+
+        function show(v) { return Math.abs(v) < 1e-4 ? '0' : fmt(v); }
+
+        function fmtT(t) {
+            return t < 1e-3 ? t.toExponential(1) : String(parseFloat(t.toPrecision(3)));
+        }
+
+        function coefText(c) {
+            if (c === 1) return '';
+            if (c === -1) return '-';
+            return String(Math.round(c * 10) / 10);
+        }
+
+        function typeset(el) {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise([el]).catch(() => {});
+            }
+        }
+
+        // ---------- Paths ----------
+        function pointOnPath(t) {
+            if (family === 'line') return [t, param * t];
+            if (family === 'parabola') return [t, param * t * t];
+            if (family === 'xaxis') return [t, 0];
+            return [0, t];   // y-axis
+        }
+
+        function valueAt(t) {
+            const [x, y] = pointOnPath(t);
+            return preset().f(x, y);
+        }
+
+        function walkerT() {
+            return T_MIN * Math.pow(path.tMax / T_MIN, 1 - progress);
+        }
+
+        function buildPath() {
+            // Start no farther out than t = 1, and keep the whole path inside the picture window.
+            let tMax = Math.min(1, R);
+            if (family === 'line') tMax = Math.min(tMax, R / Math.max(Math.abs(param), 1e-9));
+            if (family === 'parabola') tMax = Math.min(tMax, Math.sqrt(R / Math.max(Math.abs(param), 1e-9)));
+            const samples = [];
+            const N = 240;
+            for (let i = 0; i < N; i++) {
+                const t = T_MIN * Math.pow(tMax / T_MIN, i / (N - 1));
+                const [x, y] = pointOnPath(t);
+                samples.push({ t, x, y, v: preset().f(x, y) });
+            }
+            path = { tMax, samples };
+        }
+
+        function pathLabel() {
+            if (family === 'xaxis') return 'x-axis (y = 0)';
+            if (family === 'yaxis') return 'y-axis (x = 0)';
+            if (param === 0) return 'y = 0 (the x-axis)';
+            if (family === 'line') return 'y = ' + coefText(param) + 'x';
+            return 'y = ' + coefText(param) + 'x²';
+        }
+
+        function pathTex() {
+            if (family === 'xaxis') return 'y = 0';
+            if (family === 'yaxis') return 'x = 0';
+            if (param === 0) return 'y = 0';
+            return family === 'line' ? 'y = ' + coefText(param) + 'x' : 'y = ' + coefText(param) + 'x^2';
+        }
+
+        // ---------- Mesh of the surface (the origin is skipped) ----------
+        function buildMesh() {
+            const p = preset();
+            const xs = [];
+            for (let i = 0; i < GRID; i++) xs.push(-R + (2 * R * i) / (GRID - 1));
+            const n = GRID * GRID;
+            const Z = new Float64Array(n);
+            const good = new Uint8Array(n);
+            for (let j = 0; j < GRID; j++) {
+                for (let i = 0; i < GRID; i++) {
+                    const x = xs[i], y = xs[j], idx = j * GRID + i;
+                    if (Math.abs(x) < 1e-12 && Math.abs(y) < 1e-12) continue;   // (0,0): undefined
+                    const v = p.f(x, y);
+                    if (Number.isFinite(v)) {
+                        Z[idx] = v;
+                        good[idx] = 1;
+                    }
+                }
+            }
+            const quads = [];
+            for (let j = 0; j < GRID - 1; j++) {
+                for (let i = 0; i < GRID - 1; i++) {
+                    const a = j * GRID + i;
+                    const q = [a, a + 1, a + GRID + 1, a + GRID];
+                    if (q.every(k => good[k])) quads.push(q);
+                }
+            }
+            mesh = { xs, Z, good, quads, n };
+        }
+
+        // ---------- 3D projection (same rotation scheme as the 11.x demos) ----------
+        function project(x, y, z) {
+            const ct = Math.cos(view.theta), st = Math.sin(view.theta);
+            const x1 = x * ct - y * st;
+            const y1 = x * st + y * ct;
+            const cp = Math.cos(view.phi), sp = Math.sin(view.phi);
+            const y2 = y1 * cp - z * sp;
+            const z2 = y1 * sp + z * cp;
+            const s = view.w * 0.24 * view.zoom;
+            return { sx: view.w / 2 + x1 * s, sy: view.h * 0.52 - z2 * s, d: y2 };
+        }
+
+        function segment3(ctx, p, q) {
+            const a = project(p[0], p[1], p[2]);
+            const b = project(q[0], q[1], q[2]);
+            ctx.beginPath();
+            ctx.moveTo(a.sx, a.sy);
+            ctx.lineTo(b.sx, b.sy);
+            ctx.stroke();
+        }
+
+        function strokePts(ctx, pts) {
+            if (pts.length < 2) return;
+            ctx.beginPath();
+            ctx.moveTo(pts[0].sx, pts[0].sy);
+            for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].sx, pts[i].sy);
+            ctx.stroke();
+        }
+
+        // Surface, base grid and axes, drawn back to front into an offscreen buffer.
+        function renderSurface() {
+            const w = view.w, h = view.h;
+            if (w < 2 || h < 2 || !mesh) return;
+            buf.width = Math.round(w * dpr);
+            buf.height = Math.round(h * dpr);
+            bctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            bctx.clearRect(0, 0, w, h);
+
+            // base grid at z = 0 (behind the surface)
+            bctx.strokeStyle = 'rgba(0, 0, 0, 0.09)';
+            bctx.lineWidth = 1;
+            for (let v = -R; v <= R + 1e-9; v += 0.4) {
+                segment3(bctx, [-R, v, 0], [R, v, 0]);
+                segment3(bctx, [v, -R, 0], [v, R, 0]);
+            }
+
+            // project each node once
+            const n = mesh.n;
+            const SX = new Float64Array(n), SY = new Float64Array(n), D = new Float64Array(n);
+            for (let idx = 0; idx < n; idx++) {
+                if (!mesh.good[idx]) continue;
+                const x = mesh.xs[idx % GRID], y = mesh.xs[Math.floor(idx / GRID)];
+                const pr = project(x, y, mesh.Z[idx]);
+                SX[idx] = pr.sx;
+                SY[idx] = pr.sy;
+                D[idx] = pr.d;
+            }
+
+            // painter's order: quads farther from the viewer (larger depth) first
+            const order = mesh.quads.map(q => ({ q, d: (D[q[0]] + D[q[1]] + D[q[2]] + D[q[3]]) / 4 }));
+            order.sort((a, b) => b.d - a.d);
+            const zMax = preset().zMax;
+            bctx.lineWidth = 0.6;
+            bctx.strokeStyle = 'rgba(0, 133, 82, 0.45)';
+            for (const item of order) {
+                const q = item.q;
+                const zAvg = (mesh.Z[q[0]] + mesh.Z[q[1]] + mesh.Z[q[2]] + mesh.Z[q[3]]) / 4;
+                const u = clamp((zAvg + zMax) / (2 * zMax), 0, 1);
+                bctx.fillStyle = 'hsl(0, 0%, ' + (38 + 52 * u).toFixed(1) + '%)';
+                bctx.beginPath();
+                bctx.moveTo(SX[q[0]], SY[q[0]]);
+                bctx.lineTo(SX[q[1]], SY[q[1]]);
+                bctx.lineTo(SX[q[2]], SY[q[2]]);
+                bctx.lineTo(SX[q[3]], SY[q[3]]);
+                bctx.closePath();
+                bctx.fill();
+                bctx.stroke();
+            }
+
+            // axes last, so the z-axis shows through the open origin
+            bctx.strokeStyle = '#333';
+            bctx.lineWidth = 1.5;
+            segment3(bctx, [-R, 0, 0], [R, 0, 0]);
+            segment3(bctx, [0, -R, 0], [0, R, 0]);
+            segment3(bctx, [0, 0, -R], [0, 0, R]);
+            bctx.fillStyle = '#333';
+            bctx.font = 'bold 13px sans-serif';
+            const lx = project(R + 0.12, 0, 0), ly = project(0, R + 0.12, 0), lz = project(0, 0, R + 0.1);
+            bctx.fillText('x', lx.sx, lx.sy);
+            bctx.fillText('y', ly.sx, ly.sy);
+            bctx.fillText('z', lz.sx, lz.sy);
+        }
+
+        // Overlay: the path, the open origin, and the walking point, drawn every frame.
+        function drawScene() {
+            const w = view.w, h = view.h;
+            if (w < 2 || h < 2 || !path) return;
+            sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            sctx.clearRect(0, 0, w, h);
+            sctx.drawImage(buf, 0, 0, w, h);
+
+            const good = path.samples.filter(s => Number.isFinite(s.v));
+
+            // the path on the base (dashed) and on the surface (solid)
+            sctx.strokeStyle = '#009CDE';
+            sctx.lineWidth = 1.5;
+            sctx.setLineDash([5, 4]);
+            strokePts(sctx, good.map(s => project(s.x, s.y, 0)));
+            sctx.setLineDash([]);
+            sctx.lineWidth = 3;
+            strokePts(sctx, good.map(s => project(s.x, s.y, s.v)));
+
+            // the origin: f is undefined there, so the circle is open
+            const o = project(0, 0, 0);
+            sctx.strokeStyle = '#333';
+            sctx.lineWidth = 1.5;
+            sctx.beginPath();
+            sctx.arc(o.sx, o.sy, 5, 0, Math.PI * 2);
+            sctx.stroke();
+            sctx.fillStyle = '#333';
+            sctx.font = '12px sans-serif';
+            sctx.fillText('(0,0) undefined', o.sx + 8, o.sy + 16);
+
+            // the walking point: drop line to the base, then the point on the surface
+            const tw = walkerT();
+            const [xw, yw] = pointOnPath(tw);
+            const vw = preset().f(xw, yw);
+            if (Number.isFinite(vw)) {
+                const pz = project(xw, yw, vw), pb = project(xw, yw, 0);
+                sctx.strokeStyle = 'rgba(243, 110, 36, 0.85)';
+                sctx.lineWidth = 1;
+                sctx.setLineDash([2, 3]);
+                sctx.beginPath();
+                sctx.moveTo(pz.sx, pz.sy);
+                sctx.lineTo(pb.sx, pb.sy);
+                sctx.stroke();
+                sctx.setLineDash([]);
+                sctx.fillStyle = '#F36E24';
+                sctx.beginPath();
+                sctx.arc(pb.sx, pb.sy, 3.5, 0, Math.PI * 2);
+                sctx.fill();
+                sctx.beginPath();
+                sctx.arc(pz.sx, pz.sy, 6, 0, Math.PI * 2);
+                sctx.fill();
+            }
+        }
+
+        // ---------- 2D plot of f along the path ----------
+        function plotX(t) {
+            return PAD_L + (Math.log10(t) - LOG_MIN) / (LOG_MAX - LOG_MIN) * (pview.w - PAD_L - PAD_R);
+        }
+
+        function plotY(v) {
+            const pm = preset().plotMax;
+            return PAD_T + (pm - clamp(v, -pm, pm)) / (2 * pm) * (pview.h - PAD_T - PAD_B);
+        }
+
+        function drawPlot() {
+            const w = pview.w, h = pview.h;
+            if (w < 2 || h < 2 || !path) return;
+            pctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            pctx.clearRect(0, 0, w, h);
+            const pm = preset().plotMax;
+            const left = PAD_L, right = w - PAD_R, top = PAD_T, bottom = h - PAD_B;
+
+            // horizontal grid and value labels
+            pctx.font = '12px sans-serif';
+            pctx.textBaseline = 'middle';
+            pctx.textAlign = 'right';
+            pctx.fillStyle = '#555';
+            pctx.strokeStyle = '#e3e3e3';
+            pctx.lineWidth = 1;
+            [-pm, -pm / 2, 0, pm / 2, pm].forEach(v => {
+                const Y = plotY(v);
+                pctx.beginPath();
+                pctx.moveTo(left, Y);
+                pctx.lineTo(right, Y);
+                pctx.stroke();
+                pctx.fillText(String(parseFloat(v.toFixed(2))), left - 6, Y);
+            });
+
+            // frame, and the zero line in a darker gray
+            pctx.strokeStyle = '#999';
+            pctx.beginPath();
+            pctx.moveTo(left, top);
+            pctx.lineTo(left, bottom);
+            pctx.lineTo(right, bottom);
+            pctx.stroke();
+
+            // t ticks
+            pctx.textAlign = 'center';
+            pctx.textBaseline = 'top';
+            const tickLabels = ['0.0001', '0.001', '0.01', '0.1', '1'];
+            [-4, -3, -2, -1, 0].forEach((e, i) => {
+                const X = plotX(Math.pow(10, e));
+                pctx.beginPath();
+                pctx.moveTo(X, bottom);
+                pctx.lineTo(X, bottom + 4);
+                pctx.stroke();
+                pctx.fillText(tickLabels[i], X, bottom + 6);
+            });
+            pctx.fillStyle = '#555';
+            pctx.fillText('t (log scale)', (left + right) / 2, h - 14);
+            pctx.textAlign = 'left';
+            pctx.textBaseline = 'bottom';
+            pctx.fillText('f', left + 4, top - 1);
+
+            // the value-check guide at t = 0.001
+            const X1 = plotX(T_CHECK);
+            const v1 = valueAt(T_CHECK);
+            pctx.strokeStyle = '#008552';
+            pctx.lineWidth = 1;
+            pctx.setLineDash([4, 3]);
+            pctx.beginPath();
+            pctx.moveTo(X1, top);
+            pctx.lineTo(X1, bottom);
+            pctx.stroke();
+            if (Number.isFinite(v1)) {
+                pctx.beginPath();
+                pctx.moveTo(left, plotY(v1));
+                pctx.lineTo(right, plotY(v1));
+                pctx.stroke();
+            }
+            pctx.setLineDash([]);
+
+            // the curve f(path(t)) as t shrinks toward 0
+            pctx.strokeStyle = '#F36E24';
+            pctx.lineWidth = 2.5;
+            pctx.beginPath();
+            let pen = false;
+            path.samples.forEach(s => {
+                if (!Number.isFinite(s.v)) {
+                    pen = false;
+                    return;
+                }
+                const X = plotX(s.t), Y = plotY(s.v);
+                if (pen) pctx.lineTo(X, Y);
+                else pctx.moveTo(X, Y);
+                pen = true;
+            });
+            pctx.stroke();
+
+            // earlier paths, marked at t = 0.001
+            pctx.strokeStyle = '#CD5920';
+            pctx.lineWidth = 1.5;
+            tried.forEach(e => {
+                if (!Number.isFinite(e.v)) return;
+                pctx.beginPath();
+                pctx.arc(X1, plotY(e.v), 4, 0, Math.PI * 2);
+                pctx.stroke();
+            });
+
+            // the walking point
+            const tw = walkerT();
+            const vw = valueAt(tw);
+            if (Number.isFinite(vw)) {
+                pctx.fillStyle = '#F36E24';
+                pctx.beginPath();
+                pctx.arc(plotX(tw), plotY(vw), 5.5, 0, Math.PI * 2);
+                pctx.fill();
+            }
+        }
+
+        // ---------- Readouts ----------
+        function updateWalkerReadout() {
+            const tw = walkerT();
+            const [x, y] = pointOnPath(tw);
+            const v = preset().f(x, y);
+            let text = 'Walker: t = ' + fmtT(tw) + ', point (' + fmt(x) + ', ' + fmt(y) + '), f = ' + fmt(v);
+            if (progress >= 1) text += ' (end of walk)';
+            document.getElementById('walker-readout').textContent = text;
+        }
+
+        function updateValueReadout() {
+            const v = valueAt(T_CHECK);
+            document.getElementById('value-readout').textContent =
+                'Along ' + pathLabel() + ', at t = 0.001 the value is f = ' + fmt(v) +
+                ', so this path approaches ' + show(v) + '.';
+        }
+
+        function updateFormula() {
+            const box = document.getElementById('formula');
+            box.innerHTML = '\\(f(x,y) = ' + preset().tex + '\\)' +
+                '<p class="hint">f is undefined at (0,0), so the origin is left open.</p>';
+            typeset(box);
+        }
+
+        function updatePathTex() {
+            const box = document.getElementById('path-eq');
+            box.innerHTML = '\\(' + pathTex() + '\\)';
+            typeset(box);
+        }
+
+        function updateAria() {
+            scene.setAttribute('aria-label', '3D graph of f(x, y) = ' + preset().plain +
+                ' near the origin. The origin is left open because f is undefined there. The chosen path is drawn in blue and the moving point in orange.');
+            plane.setAttribute('aria-label', 'Plot of f along the path ' + pathLabel() +
+                ' against t on a log scale from 0.0001 to about 1. At t = 0.001 the value is ' +
+                fmt(valueAt(T_CHECK)) + '.');
+        }
+
+        function renderTried() {
+            const ol = document.getElementById('tried-list');
+            ol.textContent = '';
+            tried.forEach(e => {
+                const li = document.createElement('li');
+                li.textContent = e.label + ': ' + fmt(e.v);
+                ol.appendChild(li);
+            });
+        }
+
+        function updateVerdict() {
+            const box = document.getElementById('verdict');
+            box.classList.remove('split', 'agree');
+            const n = tried.length;
+            if (n === 0) {
+                box.textContent = 'Choose a path. Two paths that approach different values show that the limit does not exist.';
+                return;
+            }
+            if (n === 1) {
+                box.textContent = 'One path so far, approaching ' + show(tried[0].v) +
+                    '. One path can never settle the question, so try a second path.';
+                return;
+            }
+            const vals = tried.map(e => e.v);
+            const lo = Math.min(...vals), hi = Math.max(...vals);
+            if (hi - lo > 1e-3) {
+                box.classList.add('split');
+                box.textContent = 'These paths approach different values (' + show(lo) + ' and ' + show(hi) +
+                    '), so the limit cannot exist.';
+            } else {
+                box.classList.add('agree');
+                box.textContent = 'All ' + n + ' paths tried approach ' + show(vals[0]) +
+                    '. That is consistent with a limit of ' + show(vals[0]) +
+                    ', but testing paths can never prove that the limit exists.';
+            }
+        }
+
+        function recordPath() {
+            const label = pathLabel();
+            if (!tried.some(e => e.label === label)) {
+                tried.push({ label, v: valueAt(T_CHECK) });
+            }
+            renderTried();
+            updateVerdict();
+        }
+
+        function syncPlayButton() {
+            const btn = document.getElementById('play');
+            btn.textContent = playing ? 'Pause' : (progress >= 1 ? 'Replay' : 'Play');
+        }
+
+        // Path geometry or walk changed: restart the walk and refresh the text.
+        function refreshPath() {
+            buildPath();
+            progress = 0;
+            playing = true;
+            syncPlayButton();
+            updatePathTex();
+            updateValueReadout();
+            updateAria();
+        }
+
+        function updateParamRow() {
+            const row = document.getElementById('param-row');
+            const hasParam = family === 'line' || family === 'parabola';
+            row.style.display = hasParam ? 'flex' : 'none';
+            document.getElementById('param-label').textContent =
+                family === 'parabola' ? 'Coefficient k' : 'Slope m';
+            document.getElementById('param').value = String(param);
+            document.getElementById('param-value').textContent = param.toFixed(1);
+        }
+
+        function setPreset(key) {
+            presetKey = key;
+            buildMesh();
+            tried = [];
+            refreshPath();
+            recordPath();
+            updateFormula();
+            bufferDirty = true;
+        }
+
+        // ---------- Sizing ----------
+        function sizeCanvases() {
+            dpr = window.devicePixelRatio || 1;
+            const r3 = scene.getBoundingClientRect();
+            view.w = r3.width;
+            view.h = r3.height;
+            scene.width = Math.max(1, Math.round(view.w * dpr));
+            scene.height = Math.max(1, Math.round(view.h * dpr));
+            const r2 = plane.getBoundingClientRect();
+            pview.w = r2.width;
+            pview.h = r2.height;
+            plane.width = Math.max(1, Math.round(pview.w * dpr));
+            plane.height = Math.max(1, Math.round(pview.h * dpr));
+            bufferDirty = true;
+        }
+
+        // ---------- Animation loop ----------
+        function tick(now) {
+            if (lastTime === null) lastTime = now;
+            const dt = Math.min(0.1, (now - lastTime) / 1000);
+            lastTime = now;
+            if (playing) {
+                progress = Math.min(1, progress + dt / DURATION);
+                if (progress >= 1) {
+                    playing = false;
+                    syncPlayButton();
+                }
+            }
+            if (bufferDirty && view.w >= 2) {
+                renderSurface();
+                bufferDirty = false;
+            }
+            drawScene();
+            drawPlot();
+            updateWalkerReadout();
+            requestAnimationFrame(tick);
+        }
+
+        // ---------- Controls ----------
+        scene.addEventListener('pointerdown', (e) => {
+            dragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+        });
+        window.addEventListener('pointerup', () => { dragging = false; });
+        window.addEventListener('pointermove', (e) => {
+            if (!dragging) return;
+            const dx = e.clientX - lastX;
+            const dy = e.clientY - lastY;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            view.theta += dx * 0.006;
+            view.phi = Math.max(-1.45, Math.min(1.45, view.phi - dy * 0.006));
+            bufferDirty = true;
+        });
+        scene.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            view.zoom = clamp(view.zoom * Math.exp(-e.deltaY * 0.001), 0.5, 2.5);
+            bufferDirty = true;
+        }, { passive: false });
+
+        document.getElementById('reset-view').addEventListener('click', () => {
+            view.theta = -0.7;
+            view.phi = 0.5;
+            view.zoom = 1;
+            bufferDirty = true;
+        });
+
+        document.getElementById('preset').addEventListener('change', (e) => {
+            setPreset(e.target.value);
+        });
+
+        document.querySelectorAll('input[name="family"]').forEach((radio) => {
+            radio.addEventListener('change', (e) => {
+                if (!e.target.checked) return;
+                family = e.target.value;
+                updateParamRow();
+                refreshPath();
+                recordPath();
+            });
+        });
+
+        const slider = document.getElementById('param');
+        slider.addEventListener('input', () => {
+            param = parseFloat(slider.value);
+            document.getElementById('param-value').textContent = param.toFixed(1);
+            refreshPath();
+        });
+        slider.addEventListener('change', () => {
+            recordPath();
+        });
+
+        document.getElementById('play').addEventListener('click', () => {
+            if (progress >= 1) progress = 0;
+            playing = !playing;
+            syncPlayButton();
+        });
+
+        document.getElementById('restart').addEventListener('click', () => {
+            progress = 0;
+            playing = true;
+            syncPlayButton();
+        });
+
+        document.getElementById('clear-tried').addEventListener('click', () => {
+            tried = [];
+            recordPath();
+        });
+
+        window.addEventListener('resize', sizeCanvases);
+        window.addEventListener('load', sizeCanvases);
+
+        // ---------- Start ----------
+        sizeCanvases();
+        setPreset('exists');
+        updateParamRow();
+        requestAnimationFrame(tick);
+    })();
+    </script>
+</body>
+
+</html>

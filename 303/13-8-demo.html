@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>When the Gradients Line Up - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- MathJax for rendering equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            min-width: 0;
+        }
+
+        canvas#map {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            height: auto;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        canvas#map:active {
+            cursor: grabbing;
+        }
+
+        canvas#fplot {
+            display: block;
+            width: 100%;
+            height: 170px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 0.4rem 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .control-block {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .control-block:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .control-block h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .panel > h4 {
+            margin: 0 0 0.6rem 0;
+            font-size: 1rem;
+        }
+
+        fieldset.presets {
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 0.6rem 1rem 0.8rem 1rem;
+            margin: 0 0 1.25rem 0;
+        }
+
+        fieldset.presets legend {
+            font-weight: bold;
+            padding: 0 0.3rem;
+        }
+
+        .preset-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            padding: 0.3rem 0;
+        }
+
+        .preset-row input {
+            margin-top: 0.3rem;
+            flex: 0 0 auto;
+        }
+
+        .preset-row label {
+            font-size: 0.92rem;
+            cursor: pointer;
+        }
+
+        .slider-row label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 0.35rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #6E6E6E;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4A4A4A;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .output-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 0.9rem 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+            min-height: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .output-box p {
+            margin: 0.35rem 0;
+        }
+
+        .output-box .final {
+            font-weight: bold;
+            color: #000;
+        }
+
+        .output-box .note {
+            color: #5a5a5a;
+        }
+
+        .output-box ul {
+            margin: 0.25rem 0 0.5rem 1.2rem;
+            padding: 0;
+        }
+
+        .output-box ul li {
+            margin-bottom: 0.3rem;
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        ol.things li,
+        ul.things li {
+            margin-bottom: 0.6rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>When the Gradients Line Up</h1>
+            <p>&sect;13.8 &mdash; slide a point along a constraint and watch the level curve of f, the two gradients,
+                and the multiplier &lambda; meet at the extreme values.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Pick a problem, then slide the point <strong>P</strong> along the green constraint curve. The
+                <strong>orange</strong> arrow is the gradient of f and the <strong>blue</strong> arrow is the gradient
+                of g. The dashed green curve is the level curve of f through P. When the two arrows line up, that level
+                curve is tangent to the constraint, and the readout gives the multiplier &lambda;. The lower plot shows
+                f as P moves around the curve.
+            </p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel">
+                <h4>Contour map</h4>
+                <canvas id="map" role="img" tabindex="0"
+                    aria-label="Contour map of f with the constraint curve in green."></canvas>
+                <div class="scene-hint">Drag the blue point along the green curve. With the map focused, the arrow keys
+                    also move it.</div>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#008552;"></span>constraint g = c</div>
+                    <div><span class="swatch" style="background:#008552; opacity:0.4;"></span>level curves of f</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>gradient of f</div>
+                    <div><span class="swatch" style="background:#009CDE;"></span>gradient of g, and P</div>
+                </div>
+
+                <h4 style="margin-top: 1.5rem;">f along the constraint</h4>
+                <canvas id="fplot" role="img"
+                    aria-label="Graph of f along the constraint against the parameter."></canvas>
+                <div class="scene-hint">Horizontal axis: the parameter. Vertical axis: f. Highs and lows of f are where
+                    the gradients line up.</div>
+            </div>
+
+            <div class="panel">
+                <fieldset class="presets">
+                    <legend>Choose a problem</legend>
+                    <div class="preset-row">
+                        <input type="radio" name="preset" id="preset-circle" value="circle" checked>
+                        <label for="preset-circle">Circle: f = 3x &minus; 4y on x&sup2; + y&sup2; = 1</label>
+                    </div>
+                    <div class="preset-row">
+                        <input type="radio" name="preset" id="preset-ellipse" value="ellipse">
+                        <label for="preset-ellipse">Ellipse: f = x + y&sup2; on x&sup2;/4 + y&sup2;/3 = 1</label>
+                    </div>
+                    <div class="preset-row">
+                        <input type="radio" name="preset" id="preset-line" value="line">
+                        <label for="preset-line">Line: f = x&sup2; + 3y on x + y = 2</label>
+                    </div>
+                </fieldset>
+
+                <div class="control-block slider-row">
+                    <label for="t-slider" id="t-name">Angle t (radians)</label>
+                    <input type="range" id="t-slider" min="0" max="6.2832" step="0.005" value="1">
+                    <div style="margin-top: 0.6rem;">
+                        <button class="btn btn-secondary" id="reset-btn" type="button">Back to start</button>
+                    </div>
+                    <div class="checkbox-row" style="margin-top: 0.6rem;">
+                        <input type="checkbox" id="show-solutions">
+                        <label for="show-solutions">Show solutions (the points where the gradients line up)</label>
+                    </div>
+                </div>
+
+                <div class="control-block">
+                    <h4>Readout at P</h4>
+                    <div class="output-box" id="readout"></div>
+                </div>
+
+                <div class="control-block" id="solutions-block" hidden>
+                    <h4>Solutions, worked out exactly</h4>
+                    <div class="output-box" id="solutions"></div>
+                </div>
+
+                <div class="control-block">
+                    <h4>Things to try</h4>
+                    <ul class="things">
+                        <li><strong>Predict first.</strong> Before you move the point, look at the contour map of the
+                            circle problem. Where on the green circle do you expect f to be largest? Drag the point
+                            there and see whether you were right.</li>
+                        <li><strong>Check &lambda; against the algebra.</strong> Move the point to the largest value of
+                            f on the circle and read &lambda; from the readout. Then turn on Show solutions. The
+                            algebra says &lambda; = 5/2 there. Does the readout agree?</li>
+                        <li><strong>Count before you look.</strong> On the ellipse problem, predict how many places on
+                            the curve the two gradients line up. Then turn on Show solutions. Which one is the absolute
+                            minimum, and what does the plot show about the other one?</li>
+                        <li><strong>Connect to the page.</strong> The closest-point example on the page ends with
+                            &lambda; = &minus;1/2. Find a point in this demo where &lambda; is negative, and say which
+                            way &nabla;f and &nabla;g point compared with each other.</li>
+                        <li><strong>Cross, don't touch.</strong> Put the point where the dashed level curve crosses the
+                            green curve, so the angle is far from 0&deg; and 180&deg;. Explain in one sentence why you
+                            can move along the curve to increase f from there.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Exact solutions (checked symbolically before publication). x, y, f, lam are the values; t is the parameter. -->
+    <script type="application/json" id="exact-solutions">
+    {
+      "circle": {
+        "f_expr": "3x - 4y",
+        "g_expr": "x^2 + y^2 = 1",
+        "solutions": [
+          {"kind": "max", "x": 0.6, "y": -0.8, "t": 5.355890089177974, "f": 5, "lam": 2.5, "exact": "(3/5, -4/5), f = 5, &lambda; = 5/2"},
+          {"kind": "min", "x": -0.6, "y": 0.8, "t": 2.214297435588181, "f": -5, "lam": -2.5, "exact": "(-3/5, 4/5), f = -5, &lambda; = -5/2"}
+        ]
+      },
+      "ellipse": {
+        "f_expr": "x + y^2",
+        "g_expr": "x^2/4 + y^2/3 = 1",
+        "solutions": [
+          {"kind": "max", "x": 0.6666666666666666, "y": 1.6329931618554518, "t": 1.2309594173407747, "f": 3.3333333333333335, "lam": 3, "exact": "(2/3, 2&radic;6/3), f = 10/3, &lambda; = 3"},
+          {"kind": "max", "x": 0.6666666666666666, "y": -1.6329931618554518, "t": 5.0522258898388115, "f": 3.3333333333333335, "lam": 3, "exact": "(2/3, -2&radic;6/3), f = 10/3, &lambda; = 3"},
+          {"kind": "min", "x": -2, "y": 0, "t": 3.141592653589793, "f": -2, "lam": -1, "exact": "(-2, 0), f = -2, &lambda; = -1"},
+          {"kind": "local min", "x": 2, "y": 0, "t": 0, "f": 2, "lam": 1, "exact": "(2, 0), f = 2, &lambda; = 1"}
+        ],
+        "note": "The point (2, 0) is only a local minimum. Along the ellipse, f drops to -2 at (-2, 0), which is the absolute minimum."
+      },
+      "line": {
+        "f_expr": "x^2 + 3y",
+        "g_expr": "x + y = 2",
+        "solutions": [
+          {"kind": "min", "x": 1.5, "y": 0.5, "t": 1.5, "f": 3.75, "lam": 3, "exact": "(3/2, 1/2), f = 15/4, &lambda; = 3"}
+        ],
+        "note": "The line goes on forever, and f grows without bound along it, so this problem has no maximum."
+      }
+    }
+    </script>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var TWO_PI = 2 * Math.PI;
+        var N = 200;     // grid size for the contour map
+        var K = 720;     // samples along the constraint curve
+
+        var EXACT = JSON.parse(document.getElementById('exact-solutions').textContent);
+
+        // Each problem: f, its gradient, the constraint g = c (gradient of g), and the curve.
+        var PRESETS = {
+            circle: {
+                tKey: 't', tName: 'Angle t (radians)', t0: 0, t1: TWO_PI, tStep: 0.005, tStart: 1.0,
+                keyStep: 0.02, periodic: true,
+                win: [-1.6, 1.6, -1.6, 1.6],
+                levels: [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10],
+                fText: 'f(x, y) = 3x − 4y', gText: 'x² + y² = 1',
+                fn: function (x, y) { return 3 * x - 4 * y; },
+                fx: function (x, y) { return 3; },
+                fy: function (x, y) { return -4; },
+                gx: function (x, y) { return 2 * x; },
+                gy: function (x, y) { return 2 * y; },
+                curve: function (t) { return [Math.cos(t), Math.sin(t)]; },
+                arrow: 0.2
+            },
+            ellipse: {
+                tKey: 't', tName: 'Angle t (radians)', t0: 0, t1: TWO_PI, tStep: 0.005, tStart: 2.0,
+                keyStep: 0.02, periodic: true,
+                win: [-2.8, 2.8, -2.2, 2.2],
+                levels: [-2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+                fText: 'f(x, y) = x + y²', gText: 'x²/4 + y²/3 = 1',
+                fn: function (x, y) { return x + y * y; },
+                fx: function (x, y) { return 1; },
+                fy: function (x, y) { return 2 * y; },
+                gx: function (x, y) { return x / 2; },
+                gy: function (x, y) { return 2 * y / 3; },
+                curve: function (t) { return [2 * Math.cos(t), Math.sqrt(3) * Math.sin(t)]; },
+                arrow: 0.2
+            },
+            line: {
+                tKey: 's', tName: 'Parameter s (the x-coordinate)', t0: -3, t1: 5, tStep: 0.01, tStart: -1.0,
+                keyStep: 0.1, periodic: false,
+                win: [-3.5, 5.5, -3.5, 5.5],
+                levels: [-8, -4, 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+                fText: 'f(x, y) = x² + 3y', gText: 'x + y = 2',
+                fn: function (x, y) { return x * x + 3 * y; },
+                fx: function (x, y) { return 2 * x; },
+                fy: function (x, y) { return 3; },
+                gx: function (x, y) { return 1; },
+                gy: function (x, y) { return 1; },
+                curve: function (s) { return [s, 2 - s]; },
+                arrow: 0.2
+            }
+        };
+
+        var state = {
+            key: 'circle', t: 1.0, showSolutions: false, dragging: false,
+            mapW: 300, mapH: 300, plotW: 300, plotH: 170
+        };
+        var built = {};
+
+        var mapCv = document.getElementById('map');
+        var fCv = document.getElementById('fplot');
+        var mapCtx = mapCv.getContext('2d');
+        var fCtx = fCv.getContext('2d');
+        var tSlider = document.getElementById('t-slider');
+        var tName = document.getElementById('t-name');
+        var readout = document.getElementById('readout');
+        var solBox = document.getElementById('solutions');
+        var solBlock = document.getElementById('solutions-block');
+        var showSol = document.getElementById('show-solutions');
+        var resetBtn = document.getElementById('reset-btn');
+
+        // Round for display: 4 significant figures, no trailing zeros.
+        function sig(v) {
+            if (!isFinite(v)) { return '--'; }
+            if (Math.abs(v) < 1e-9) { return '0'; }
+            return String(Number(v.toPrecision(4)));
+        }
+
+        // Marching squares: appends the contour segments of F = level into out (x1,y1,x2,y2 per segment).
+        var PAIRS = {
+            1: [[0, 3]], 14: [[0, 3]],
+            2: [[0, 1]], 13: [[0, 1]],
+            4: [[1, 2]], 11: [[1, 2]],
+            8: [[2, 3]], 7: [[2, 3]],
+            3: [[1, 3]], 12: [[1, 3]],
+            6: [[0, 2]], 9: [[0, 2]]
+        };
+
+        function edgePoint(k, x0, y0, x1, y1, v0, v1, v2, v3) {
+            var xa, ya, va, xb, yb, vb;
+            if (k === 0) { xa = x0; ya = y0; va = v0; xb = x1; yb = y0; vb = v1; }
+            else if (k === 1) { xa = x1; ya = y0; va = v1; xb = x1; yb = y1; vb = v2; }
+            else if (k === 2) { xa = x1; ya = y1; va = v2; xb = x0; yb = y1; vb = v3; }
+            else { xa = x0; ya = y1; va = v3; xb = x0; yb = y0; vb = v0; }
+            var t = va / (va - vb);
+            return [xa + t * (xb - xa), ya + t * (yb - ya)];
+        }
+
+        function marchingSquares(F, n, xs, ys, level, out) {
+            for (var j = 0; j < n - 1; j++) {
+                for (var i = 0; i < n - 1; i++) {
+                    var v0 = F[i + n * j] - level;
+                    var v1 = F[i + 1 + n * j] - level;
+                    var v2 = F[i + 1 + n * (j + 1)] - level;
+                    var v3 = F[i + n * (j + 1)] - level;
+                    if (!isFinite(v0) || !isFinite(v1) || !isFinite(v2) || !isFinite(v3)) { continue; }
+                    var idx = (v0 >= 0 ? 1 : 0) | (v1 >= 0 ? 2 : 0) | (v2 >= 0 ? 4 : 0) | (v3 >= 0 ? 8 : 0);
+                    if (idx === 0 || idx === 15) { continue; }
+                    var x0 = xs[i], x1 = xs[i + 1], y0 = ys[j], y1 = ys[j + 1];
+                    var pairs;
+                    if (idx === 5 || idx === 10) {
+                        // saddle: resolve with the average of the corners (the centre value)
+                        var centreInside = (v0 + v1 + v2 + v3) / 4 >= 0;
+                        var useA = (idx === 5) ? centreInside : !centreInside;
+                        pairs = useA ? [[0, 1], [2, 3]] : [[0, 3], [1, 2]];
+                    } else {
+                        pairs = PAIRS[idx];
+                    }
+                    for (var p = 0; p < pairs.length; p++) {
+                        var A = edgePoint(pairs[p][0], x0, y0, x1, y1, v0, v1, v2, v3);
+                        var B = edgePoint(pairs[p][1], x0, y0, x1, y1, v0, v1, v2, v3);
+                        out.push(A[0], A[1], B[0], B[1]);
+                    }
+                }
+            }
+            return out;
+        }
+
+        function buildPreset(key) {
+            var P = PRESETS[key];
+            var x0 = P.win[0], x1 = P.win[1], y0 = P.win[2], y1 = P.win[3];
+            var xs = new Array(N), ys = new Array(N), F = new Array(N * N);
+            var i, j;
+            for (i = 0; i < N; i++) {
+                xs[i] = x0 + (x1 - x0) * i / (N - 1);
+                ys[i] = y0 + (y1 - y0) * i / (N - 1);
+            }
+            for (j = 0; j < N; j++) {
+                for (i = 0; i < N; i++) {
+                    F[i + N * j] = P.fn(xs[i], ys[j]);
+                }
+            }
+            var levelSegs = P.levels.map(function (lev) {
+                return marchingSquares(F, N, xs, ys, lev, []);
+            });
+            var samples = [];
+            for (var k = 0; k <= K; k++) {
+                var t = P.t0 + (P.t1 - P.t0) * k / K;
+                var c = P.curve(t);
+                samples.push({ t: t, X: c[0], Y: c[1], f: P.fn(c[0], c[1]) });
+            }
+            return { P: P, xs: xs, ys: ys, F: F, levelSegs: levelSegs, samples: samples };
+        }
+
+        // World -> screen mapping for the square map (equal scale on both axes).
+        function makeView(W, H, win) {
+            var sc = Math.min(W / (win[1] - win[0]), H / (win[3] - win[2]));
+            var ox = (W - sc * (win[1] - win[0])) / 2;
+            var oy = (H - sc * (win[3] - win[2])) / 2;
+            return {
+                W: W, H: H,
+                X: function (x) { return ox + (x - win[0]) * sc; },
+                Y: function (y) { return H - oy - (y - win[2]) * sc; },
+                wx: function (px) { return win[0] + (px - ox) / sc; },
+                wy: function (py) { return win[2] + (H - oy - py) / sc; }
+            };
+        }
+
+        // Gradients and the angle between them at parameter t. All guards for zero gradients are here.
+        function evalAt(t) {
+            var P = built[state.key].P;
+            var c = P.curve(t);
+            var X = c[0], Y = c[1];
+            var a = [P.fx(X, Y), P.fy(X, Y)];
+            var b = [P.gx(X, Y), P.gy(X, Y)];
+            var na = Math.hypot(a[0], a[1]), nb = Math.hypot(b[0], b[1]);
+            var out = { X: X, Y: Y, fv: P.fn(X, Y), a: a, b: b, angle: null, parallel: false, lam: null, sameDir: null };
+            if (na > 1e-12 && nb > 1e-12) {
+                var dot = a[0] * b[0] + a[1] * b[1];
+                var cross = a[0] * b[1] - a[1] * b[0];
+                out.angle = Math.atan2(Math.abs(cross), dot) * 180 / Math.PI;
+                out.parallel = out.angle < 1.5 || out.angle > 178.5;
+                if (out.parallel) {
+                    out.lam = dot / (nb * nb);      // grad f = lam * grad g
+                    out.sameDir = dot > 0;
+                }
+            }
+            return out;
+        }
+
+        function strokeSegs(c, V, segs) {
+            c.beginPath();
+            for (var k = 0; k < segs.length; k += 4) {
+                c.moveTo(V.X(segs[k]), V.Y(segs[k + 1]));
+                c.lineTo(V.X(segs[k + 2]), V.Y(segs[k + 3]));
+            }
+            c.stroke();
+        }
+
+        function drawArrow(c, V, X0, Y0, vec, scale, color, label) {
+            var px0 = V.X(X0), py0 = V.Y(Y0);
+            var px1 = V.X(X0 + vec[0] * scale), py1 = V.Y(Y0 + vec[1] * scale);
+            var dx = px1 - px0, dy = py1 - py0, len = Math.hypot(dx, dy);
+            if (len < 1) { return; }
+            var ux = dx / len, uy = dy / len;
+            var ca = Math.cos(0.45), sa = Math.sin(0.45), hl = 11;
+            c.strokeStyle = color; c.fillStyle = color; c.lineWidth = 3;
+            c.beginPath(); c.moveTo(px0, py0); c.lineTo(px1, py1); c.stroke();
+            c.beginPath();
+            c.moveTo(px1, py1);
+            c.lineTo(px1 + hl * (-ux * ca + uy * sa), py1 + hl * (-uy * ca - ux * sa));
+            c.lineTo(px1 + hl * (-ux * ca - uy * sa), py1 + hl * (-uy * ca + ux * sa));
+            c.closePath(); c.fill();
+            c.fillStyle = '#000'; c.font = 'bold 13px sans-serif';
+            c.fillText(label, px1 + 8, py1 - 6);
+        }
+
+        function drawMap(B, at) {
+            var P = B.P, c = mapCtx, W = state.mapW, H = state.mapH;
+            var V = makeView(W, H, P.win);
+            c.clearRect(0, 0, W, H);
+            c.fillStyle = '#fff'; c.fillRect(0, 0, W, H);
+
+            // light grid at whole numbers, and the axes
+            c.strokeStyle = '#eee'; c.lineWidth = 1; c.beginPath();
+            var gx, gy;
+            for (gx = Math.ceil(P.win[0]); gx <= P.win[1]; gx++) { c.moveTo(V.X(gx), 0); c.lineTo(V.X(gx), H); }
+            for (gy = Math.ceil(P.win[2]); gy <= P.win[3]; gy++) { c.moveTo(0, V.Y(gy)); c.lineTo(W, V.Y(gy)); }
+            c.stroke();
+            c.strokeStyle = '#999'; c.lineWidth = 1.2; c.beginPath();
+            if (P.win[0] < 0 && P.win[1] > 0) { c.moveTo(V.X(0), 0); c.lineTo(V.X(0), H); }
+            if (P.win[2] < 0 && P.win[3] > 0) { c.moveTo(0, V.Y(0)); c.lineTo(W, V.Y(0)); }
+            c.stroke();
+
+            // level curves of f, each labelled once
+            c.strokeStyle = 'rgba(0, 133, 82, 0.4)'; c.lineWidth = 1;
+            var i;
+            for (i = 0; i < B.levelSegs.length; i++) {
+                strokeSegs(c, V, B.levelSegs[i]);
+            }
+            c.font = '11px sans-serif'; c.lineWidth = 3; c.strokeStyle = '#fff'; c.fillStyle = '#006b42';
+            for (i = 0; i < B.levelSegs.length; i++) {
+                var segs = B.levelSegs[i];
+                if (segs.length < 4) { continue; }
+                var k = 4 * Math.floor((segs.length / 4) * 0.37);
+                var mx = V.X((segs[k] + segs[k + 2]) / 2), my = V.Y((segs[k + 1] + segs[k + 3]) / 2);
+                var txt = sig(P.levels[i]);
+                c.strokeText(txt, mx + 3, my - 3);
+                c.fillText(txt, mx + 3, my - 3);
+            }
+
+            // the constraint curve g = c, in green
+            c.strokeStyle = '#008552'; c.lineWidth = 3; c.beginPath();
+            for (i = 0; i < B.samples.length; i++) {
+                var s = B.samples[i];
+                if (i === 0) { c.moveTo(V.X(s.X), V.Y(s.Y)); } else { c.lineTo(V.X(s.X), V.Y(s.Y)); }
+            }
+            c.stroke();
+
+            // extreme values, when asked for
+            if (state.showSolutions) {
+                EXACT[state.key].solutions.forEach(function (sol) {
+                    var px = V.X(sol.x), py = V.Y(sol.y);
+                    c.beginPath(); c.arc(px, py, 7, 0, TWO_PI);
+                    if (sol.kind === 'max') {
+                        c.fillStyle = '#F36E24'; c.fill(); c.strokeStyle = '#000'; c.lineWidth = 1.5; c.stroke();
+                    } else if (sol.kind === 'min') {
+                        c.fillStyle = '#fff'; c.fill(); c.strokeStyle = '#F36E24'; c.lineWidth = 2.5; c.stroke();
+                    } else {
+                        c.fillStyle = '#A2A2A2'; c.fill(); c.strokeStyle = '#6E6E6E'; c.lineWidth = 1.5; c.stroke();
+                    }
+                    c.fillStyle = '#000'; c.font = 'bold 12px sans-serif';
+                    c.fillText(sol.kind, px + 9, py - 8);
+                });
+            }
+
+            // the level curve of f through P, dashed
+            var through = marchingSquares(B.F, N, B.xs, B.ys, at.fv, []);
+            c.strokeStyle = '#008552'; c.lineWidth = 2.5; c.setLineDash([3, 5]);   // short dash: marching-squares pieces restart the pattern each segment
+            strokeSegs(c, V, through);
+            c.setLineDash([]);
+
+            // gradients at P: orange = grad f, blue = grad g
+            drawArrow(c, V, at.X, at.Y, at.a, P.arrow, '#F36E24', '∇f');
+            drawArrow(c, V, at.X, at.Y, at.b, P.arrow, '#009CDE', '∇g');
+
+            // the point P
+            var PX = V.X(at.X), PY = V.Y(at.Y);
+            if (at.parallel) {
+                c.beginPath(); c.arc(PX, PY, 12, 0, TWO_PI);
+                c.strokeStyle = '#F36E24'; c.lineWidth = 2.5; c.stroke();
+            }
+            c.beginPath(); c.arc(PX, PY, 6.5, 0, TWO_PI);
+            c.fillStyle = '#009CDE'; c.fill(); c.strokeStyle = '#000'; c.lineWidth = 1.5; c.stroke();
+            mapCv.setAttribute('aria-label',
+                'Contour map of ' + P.fText + ' with the constraint ' + P.gText + ' drawn in green. ' +
+                'P is at (' + sig(at.X) + ', ' + sig(at.Y) + ') where f = ' + sig(at.fv) + '. ' +
+                (at.parallel ? 'The gradients are parallel here.' : 'The gradients are not parallel here.'));
+        }
+
+        function drawPlot(B, at) {
+            var P = B.P, c = fCtx, W = state.plotW, H = state.plotH;
+            var padL = 44, padR = 12, padT = 12, padB = 30;
+            var fmin = Infinity, fmax = -Infinity, i;
+            for (i = 0; i < B.samples.length; i++) {
+                if (B.samples[i].f < fmin) { fmin = B.samples[i].f; }
+                if (B.samples[i].f > fmax) { fmax = B.samples[i].f; }
+            }
+            var lo = fmin, hi = fmax;
+            var span = (hi - lo) || 1;
+            var ylo = lo - 0.08 * span, yhi = hi + 0.08 * span;
+            function tX(t) { return padL + (t - P.t0) / (P.t1 - P.t0) * (W - padL - padR); }
+            function fY(f) { return H - padB - (f - ylo) / (yhi - ylo) * (H - padT - padB); }
+
+            c.clearRect(0, 0, W, H);
+            c.fillStyle = '#fff'; c.fillRect(0, 0, W, H);
+
+            // f = 0 reference line, when f changes sign
+            if (ylo < 0 && yhi > 0) {
+                c.strokeStyle = '#e5e5e5'; c.lineWidth = 1; c.beginPath();
+                c.moveTo(padL, fY(0)); c.lineTo(W - padR, fY(0)); c.stroke();
+            }
+            // axes
+            c.strokeStyle = '#333'; c.lineWidth = 1; c.beginPath();
+            c.moveTo(padL, padT); c.lineTo(padL, H - padB); c.lineTo(W - padR, H - padB); c.stroke();
+
+            // f along the constraint
+            c.strokeStyle = '#333'; c.lineWidth = 2; c.beginPath();
+            for (i = 0; i < B.samples.length; i++) {
+                var s = B.samples[i];
+                if (i === 0) { c.moveTo(tX(s.t), fY(s.f)); } else { c.lineTo(tX(s.t), fY(s.f)); }
+            }
+            c.stroke();
+
+            // labels: axis names and end values
+            c.fillStyle = '#000'; c.font = '12px sans-serif';
+            c.fillText('f', 6, padT + 10);
+            c.fillText(sig(hi), 4, padT + 24);
+            c.fillText(sig(lo), 4, H - padB - 4);
+            c.fillText(sig(P.t0), padL - 4, H - padB + 14);
+            c.textAlign = 'right';
+            c.fillText(sig(P.t1) + ' (' + P.tKey + ')', W - padR, H - padB + 14);
+            c.textAlign = 'left';
+
+            // solutions, when asked for: a dotted drop line and a marker at each one
+            if (state.showSolutions) {
+                EXACT[state.key].solutions.forEach(function (sol) {
+                    var px = tX(sol.t), py = fY(sol.f);
+                    c.strokeStyle = '#A2A2A2'; c.lineWidth = 1; c.setLineDash([2, 3]);
+                    c.beginPath(); c.moveTo(px, py); c.lineTo(px, H - padB); c.stroke();
+                    c.setLineDash([]);
+                    c.beginPath(); c.arc(px, py, 5, 0, TWO_PI);
+                    if (sol.kind === 'max') { c.fillStyle = '#F36E24'; c.fill(); c.strokeStyle = '#000'; c.lineWidth = 1.2; c.stroke(); }
+                    else if (sol.kind === 'min') { c.fillStyle = '#fff'; c.fill(); c.strokeStyle = '#F36E24'; c.lineWidth = 2.2; c.stroke(); }
+                    else { c.fillStyle = '#A2A2A2'; c.fill(); c.strokeStyle = '#6E6E6E'; c.lineWidth = 1.2; c.stroke(); }
+                    c.fillStyle = '#000'; c.font = 'bold 11px sans-serif';
+                    c.fillText(sol.kind, px + 7, py - 7);
+                });
+            }
+
+            // the current point: dashed guide, blue dot, orange ring when the gradients line up
+            var cx = tX(state.t), cy = fY(at.fv);
+            c.strokeStyle = '#009CDE'; c.lineWidth = 1.2; c.setLineDash([4, 4]);
+            c.beginPath(); c.moveTo(cx, padT); c.lineTo(cx, H - padB); c.stroke();
+            c.setLineDash([]);
+            c.beginPath(); c.arc(cx, cy, 5.5, 0, TWO_PI);
+            c.fillStyle = '#009CDE'; c.fill(); c.strokeStyle = '#000'; c.lineWidth = 1.2; c.stroke();
+            if (at.parallel) {
+                c.beginPath(); c.arc(cx, cy, 10, 0, TWO_PI);
+                c.strokeStyle = '#F36E24'; c.lineWidth = 2.5; c.stroke();
+            }
+            fCv.setAttribute('aria-label',
+                'Graph of f along the constraint against the parameter ' + P.tKey + ', from ' + sig(P.t0) +
+                ' to ' + sig(P.t1) + '. The current point has f = ' + sig(at.fv) + ' at ' + P.tKey + ' = ' +
+                sig(state.t) + '.');
+        }
+
+        function writeReadout(B, at) {
+            var P = B.P;
+            var html = '';
+            html += '<p><strong>P</strong> = (' + sig(at.X) + ', ' + sig(at.Y) + ') at ' + P.tKey + ' = ' + sig(state.t) + '</p>';
+            html += '<p><strong>f(P)</strong> = ' + sig(at.fv) + '</p>';
+            html += '<p><strong>&nabla;f</strong> = &lang;' + sig(at.a[0]) + ', ' + sig(at.a[1]) +
+                '&rang; (orange) &nbsp; <strong>&nabla;g</strong> = &lang;' + sig(at.b[0]) + ', ' + sig(at.b[1]) +
+                '&rang; (blue)</p>';
+            if (at.angle === null) {
+                html += '<p class="note">One of the gradients is zero here, so the angle is not defined.</p>';
+            } else {
+                var status = at.parallel ? (at.sameDir ? 'parallel, same direction' : 'parallel, opposite directions') : 'not parallel';
+                html += '<p><strong>Angle between &nabla;f and &nabla;g</strong> = ' + at.angle.toFixed(1) + '&deg; (' + status + ')</p>';
+                if (at.parallel) {
+                    html += '<p class="final">&lambda; = ' + sig(at.lam) + ', so &nabla;f = ' + sig(at.lam) +
+                        ' &nabla;g here.</p>';
+                } else {
+                    html += '<p class="note">The gradients do not line up here, so there is no &lambda; yet.</p>';
+                }
+            }
+            readout.innerHTML = html;
+        }
+
+        function writeSolutions() {
+            var E = EXACT[state.key];
+            var html = '<ul>';
+            E.solutions.forEach(function (sol) {
+                var label = sol.kind === 'max' ? 'Maximum' : (sol.kind === 'min' ? 'Minimum' : 'Local minimum');
+                html += '<li><strong>' + label + ':</strong> ' + sol.exact + '</li>';
+            });
+            html += '</ul>';
+            if (E.note) { html += '<p class="note">' + E.note + '</p>'; }
+            solBox.innerHTML = html;
+        }
+
+        function update() {
+            var B = built[state.key];
+            if (!B) { return; }
+            var at = evalAt(state.t);
+            drawMap(B, at);
+            drawPlot(B, at);
+            writeReadout(B, at);
+            tSlider.value = String(state.t);
+        }
+
+        function sizeCanvases() {
+            var dpr = window.devicePixelRatio || 1;
+            var rm = mapCv.getBoundingClientRect();
+            var rf = fCv.getBoundingClientRect();
+            state.mapW = Math.max(200, rm.width);
+            state.mapH = Math.max(200, rm.height);
+            state.plotW = Math.max(200, rf.width);
+            state.plotH = Math.max(140, rf.height);
+            mapCv.width = Math.round(state.mapW * dpr);
+            mapCv.height = Math.round(state.mapH * dpr);
+            fCv.width = Math.round(state.plotW * dpr);
+            fCv.height = Math.round(state.plotH * dpr);
+            mapCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            fCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            update();
+        }
+
+        function setPreset(key) {
+            state.key = key;
+            if (!built[key]) { built[key] = buildPreset(key); }
+            var P = PRESETS[key];
+            state.t = P.tStart;
+            tSlider.min = String(P.t0);
+            tSlider.max = String(P.t1);
+            tSlider.step = String(P.tStep);
+            tName.textContent = P.tName;
+            writeSolutions();
+            solBlock.hidden = !state.showSolutions;
+            update();
+        }
+
+        // Pointer: snap P to the nearest point of the constraint curve.
+        function nearestSampleT(wx, wy) {
+            var best = built[state.key].samples[0], bestD = Infinity;
+            built[state.key].samples.forEach(function (s) {
+                var d = (s.X - wx) * (s.X - wx) + (s.Y - wy) * (s.Y - wy);
+                if (d < bestD) { bestD = d; best = s; }
+            });
+            return best.t;
+        }
+
+        function pointerToCurve(e) {
+            var r = mapCv.getBoundingClientRect();
+            var V = makeView(state.mapW, state.mapH, PRESETS[state.key].win);
+            state.t = nearestSampleT(V.wx(e.clientX - r.left), V.wy(e.clientY - r.top));
+            update();
+        }
+
+        mapCv.addEventListener('pointerdown', function (e) {
+            state.dragging = true;
+            try { mapCv.setPointerCapture(e.pointerId); } catch (err) { /* not supported: ignore */ }
+            pointerToCurve(e);
+        });
+        mapCv.addEventListener('pointermove', function (e) {
+            if (state.dragging) { pointerToCurve(e); }
+        });
+        function endDrag(e) {
+            state.dragging = false;
+            try { mapCv.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+        }
+        mapCv.addEventListener('pointerup', endDrag);
+        mapCv.addEventListener('pointercancel', endDrag);
+
+        mapCv.addEventListener('keydown', function (e) {
+            var P = PRESETS[state.key];
+            var dir = 0;
+            if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { dir = 1; }
+            else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { dir = -1; }
+            else { return; }
+            e.preventDefault();
+            var t = state.t + dir * P.keyStep;
+            if (P.periodic) { t = ((t % TWO_PI) + TWO_PI) % TWO_PI; }
+            else { t = Math.min(P.t1, Math.max(P.t0, t)); }
+            state.t = t;
+            update();
+        });
+
+        tSlider.addEventListener('input', function () {
+            state.t = parseFloat(tSlider.value);
+            update();
+        });
+
+        resetBtn.addEventListener('click', function () {
+            state.t = PRESETS[state.key].tStart;
+            update();
+        });
+
+        showSol.addEventListener('change', function () {
+            state.showSolutions = showSol.checked;
+            solBlock.hidden = !state.showSolutions;
+            update();
+        });
+
+        Object.keys(PRESETS).forEach(function (k) {
+            document.getElementById('preset-' + k).addEventListener('change', function (e) {
+                if (e.target.checked) { setPreset(k); }
+            });
+        });
+
+        window.addEventListener('resize', sizeCanvases);
+
+        sizeCanvases();
+        setPreset('circle');
+    })();
+    </script>
+</body>
+
+</html>

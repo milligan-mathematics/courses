@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Which Way Is Uphill? - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- MathJax for rendering equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            min-width: 0;
+        }
+
+        .scene-wrap {
+            position: relative;
+        }
+
+        canvas#map,
+        canvas#plot {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            touch-action: none;
+        }
+
+        canvas#map {
+            aspect-ratio: 1 / 1;
+            cursor: grab;
+        }
+
+        canvas#map:active {
+            cursor: grabbing;
+        }
+
+        canvas#plot {
+            aspect-ratio: 16 / 10;
+            background: #fff;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        canvas:focus-visible {
+            outline: 3px solid var(--color-accent-blue, #009CDE);
+            outline-offset: 2px;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted, #6E6E6E);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 0.4rem 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted, #6E6E6E);
+        }
+
+        .legend span.swatch,
+        .readouts span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+
+        .control-block {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .control-block:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .control-block h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        select#preset {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            background: #fff;
+        }
+
+        .formula {
+            font-size: 0.95rem;
+            margin: 0.25rem 0 0 0;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-row label {
+            font-size: 0.9rem;
+            min-width: 7.5rem;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .slider-row output {
+            font-weight: bold;
+            min-width: 3.5rem;
+            text-align: right;
+            color: #000;
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #6E6E6E;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4A4A4A;
+        }
+
+        .checkbox-row,
+        .radio-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .radio-row {
+            gap: 16px;
+            margin-bottom: 0.75rem;
+        }
+
+        .radio-row label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .readouts {
+            display: grid;
+            grid-template-columns: minmax(8rem, auto) minmax(0, 1fr);
+            gap: 0.4rem 0.75rem;
+            margin: 0;
+            font-size: 0.92rem;
+        }
+
+        .readouts dt {
+            color: var(--text-muted, #6E6E6E);
+        }
+
+        .readouts dd {
+            margin: 0;
+            font-weight: 600;
+            color: #000;
+            overflow-wrap: anywhere;
+        }
+
+        table.values {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        table.values th,
+        table.values td {
+            border-bottom: 1px solid #eee;
+            padding: 4px 6px;
+            text-align: left;
+        }
+
+        details summary {
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted, #6E6E6E);
+        }
+
+        .things li {
+            margin-bottom: 0.9rem;
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted, #6E6E6E);
+            margin-bottom: 0.75rem;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Which Way Is Uphill?</h1>
+            <p>&sect;13.5 &mdash; drag a point on a contour map, aim a direction arrow, and watch the gradient,
+                the level curve, and the directional derivative respond together.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Drag the blue point <strong>P</strong> anywhere on the contour map, and drag the tip of the blue arrow
+                <strong>u</strong> to turn the direction around <strong>P</strong>. The orange arrow is the gradient
+                &nabla;f(P), and the green curve is the level curve through <strong>P</strong>. The graph beside the map
+                shows the directional derivative D<sub>u</sub>f(P) as <strong>u</strong> turns through a full circle.
+                Predict first, then check.
+            </p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel scene-wrap">
+                <div class="radio-row" role="radiogroup" aria-label="View">
+                    <label><input type="radio" name="view" value="map" checked> Contour map</label>
+                    <label><input type="radio" name="view" value="surface"> 3D surface</label>
+                </div>
+                <canvas id="map" width="600" height="600" role="img" tabindex="0"
+                        aria-label="Contour map of the chosen function, with point P and direction arrow u."></canvas>
+                <div class="scene-hint" id="map-hint">Drag P (the blue dot) or the tip of u (the blue arrow). Click
+                    anywhere to move P. With the map focused, arrow keys move P and [ and ] turn u.</div>
+                <p class="scene-hint" id="surface-caption" hidden></p>
+                <div class="legend" aria-label="Legend">
+                    <div><span class="swatch" style="background:#9FCDB8;"></span>contours of f</div>
+                    <div><span class="swatch" style="background:#008552;"></span>level curve through P</div>
+                    <div><span class="swatch" style="background:#009CDE;"></span>P and u (draggable)</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>&nabla;f(P)</div>
+                </div>
+                <p class="scene-hint" id="arrow-note" style="text-align:left;"></p>
+                <div style="margin-top: 1rem;">
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="reveal" checked>
+                        <label for="reveal">Show &nabla;f(P) and D<sub>u</sub>f(P)</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="show-level" checked>
+                        <label for="show-level">Show the level curve through P</label>
+                    </div>
+                    <button class="btn btn-secondary" id="reset-view" type="button">Reset View</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <h4><label for="preset">Choose a function</label></h4>
+                    <select id="preset">
+                        <option value="0">Hill and dip</option>
+                        <option value="1">Monkey saddle</option>
+                        <option value="2">Ripples</option>
+                        <option value="3">Tilted ridge</option>
+                    </select>
+                    <p class="formula" id="formula"></p>
+                </div>
+
+                <div class="control-block">
+                    <h4>Move the point P</h4>
+                    <div class="slider-row">
+                        <label for="px">x-coordinate</label>
+                        <input type="range" id="px" min="-2.4" max="2.4" step="0.01" value="0.9">
+                        <output id="px-out" for="px">0.90</output>
+                    </div>
+                    <div class="slider-row">
+                        <label for="py">y-coordinate</label>
+                        <input type="range" id="py" min="-2.4" max="2.4" step="0.01" value="0.3">
+                        <output id="py-out" for="py">0.30</output>
+                    </div>
+                </div>
+
+                <div class="control-block">
+                    <h4>Aim the arrow u</h4>
+                    <div class="slider-row">
+                        <label for="deg">Direction &theta; (degrees)</label>
+                        <input type="range" id="deg" min="0" max="359" step="1" value="60">
+                        <output id="deg-out" for="deg">60&deg;</output>
+                    </div>
+                </div>
+
+                <div class="control-block">
+                    <h4>Readouts</h4>
+                    <dl class="readouts">
+                        <dt><span class="swatch" style="background:#009CDE;"></span>Point P</dt>
+                        <dd id="r-P"></dd>
+                        <dt>Level value f(P)</dt>
+                        <dd id="r-fP"></dd>
+                        <dt><span class="swatch" style="background:#F36E24;"></span>Gradient &nabla;f(P)</dt>
+                        <dd id="r-grad"></dd>
+                        <dt>Size |&nabla;f(P)|</dt>
+                        <dd id="r-gmag"></dd>
+                        <dt><span class="swatch" style="background:#009CDE;"></span>Direction u</dt>
+                        <dd id="r-u"></dd>
+                        <dt>Angle between u and &nabla;f</dt>
+                        <dd id="r-angle"></dd>
+                        <dt><span class="swatch" style="background:#F36E24;"></span>D<sub>u</sub>f(P) = &nabla;f &middot; u</dt>
+                        <dd id="r-D"></dd>
+                        <dt>Limit check, h = 0.000001</dt>
+                        <dd id="r-limit"></dd>
+                    </dl>
+                </div>
+
+                <div class="control-block">
+                    <h4>Rate of change as u turns</h4>
+                    <canvas id="plot" width="480" height="300" role="img"
+                            aria-label="Graph of the directional derivative against the direction angle."></canvas>
+                    <p class="scene-hint">Orange curve: D<sub>u</sub>f(P) at each angle. Orange dots mark the largest
+                        value |&nabla;f(P)| (u along &nabla;f) and the smallest value &minus;|&nabla;f(P)| (u opposite
+                        &nabla;f). Green squares mark the directions along the level curve, where D<sub>u</sub>f(P) = 0.
+                        Click or drag on the graph to set &theta;.</p>
+                    <details>
+                        <summary>Table of values</summary>
+                        <table class="values">
+                            <caption class="hint">D<sub>u</sub>f(P) every 30 degrees</caption>
+                            <thead>
+                                <tr><th scope="col">&theta;</th><th scope="col">D<sub>u</sub>f(P)</th></tr>
+                            </thead>
+                            <tbody id="table-body"></tbody>
+                        </table>
+                    </details>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h4>Things to try</h4>
+            <p class="hint">Predict first, then check with the demo.</p>
+            <ol class="things">
+                <li><strong>Find uphill by eye.</strong> Untick &ldquo;Show &nabla;f(P) and D<sub>u</sub>f(P)&rdquo;.
+                    Look only at the contour map, and predict which way is steepest uphill at P. Then tick the box and
+                    compare. (Hint: the steepest direction crosses the contour lines at right angles.)</li>
+                <li><strong>Walk along the contour.</strong> Turn u until it lies along the green level curve through
+                    P. Predict D<sub>u</sub>f(P) before you read it, then check the readout and the graph. This is the
+                    &ldquo;no change&rdquo; case from the sin(x + y&sup2;) worked example on the &sect;13.5 page.</li>
+                <li><strong>Predict the biggest rate.</strong> Read the size |&nabla;f(P)|. Before you turn u, predict
+                    the largest value D<sub>u</sub>f(P) can take at this point, and the angle where it happens. Then
+                    turn u to test your prediction.</li>
+                <li><strong>Predict the steepest drop.</strong> Point u straight downhill, opposite the orange arrow.
+                    Predict the sign and the size of D<sub>u</sub>f(P) first. Then find the lowest point on the graph
+                    and compare.</li>
+            </ol>
+        </div>
+    </main>
+
+    <script>
+    (function () {
+        'use strict';
+
+        const TAU = 2 * Math.PI;
+        const GRID_N = 120;      // grid cells per side for the contour lines
+        const MESH_N = 24;       // grid cells per side for the 3D surface
+        const NLEVELS = 12;      // contour levels drawn in the background
+        const H_STEP = 1e-6;     // step for the limit check
+        const CAM_DEFAULT = { theta: -0.7, phi: 0.7, zoom: 1 };
+
+        // Each function comes with its exact partial derivatives, written out by hand.
+        const PRESETS = [
+            {
+                name: 'Hill and dip',
+                formula: 'f(x, y) = x·e^(−(x² + y²))',
+                f: (x, y) => x * Math.exp(-(x * x + y * y)),
+                fx: (x, y) => Math.exp(-(x * x + y * y)) * (1 - 2 * x * x),
+                fy: (x, y) => -2 * x * y * Math.exp(-(x * x + y * y)),
+                D: 2.4, arrowScale: 0.5, start: [0.9, 0.3], deg: 60
+            },
+            {
+                name: 'Monkey saddle',
+                formula: 'f(x, y) = x³ − 3xy²',
+                f: (x, y) => x * x * x - 3 * x * y * y,
+                fx: (x, y) => 3 * x * x - 3 * y * y,
+                fy: (x, y) => -6 * x * y,
+                D: 2, arrowScale: 0.05, start: [0.8, 0.9], deg: 60
+            },
+            {
+                name: 'Ripples',
+                formula: 'f(x, y) = sin x + cos y',
+                f: (x, y) => Math.sin(x) + Math.cos(y),
+                fx: (x, y) => Math.cos(x),
+                fy: (x, y) => -Math.sin(y),
+                D: Math.PI, arrowScale: 0.5, start: [-1.0, 0.6], deg: 120
+            },
+            {
+                name: 'Tilted ridge',
+                formula: 'f(x, y) = y − x²',
+                f: (x, y) => y - x * x,
+                fx: (x, y) => -2 * x,
+                fy: (x, y) => 1,
+                D: 2.4, arrowScale: 0.2, start: [-1.2, -0.4], deg: 30
+            }
+        ];
+
+        const $ = (id) => document.getElementById(id);
+        const mapCanvas = $('map');
+        const mapCtx = mapCanvas.getContext('2d');
+        const plotCanvas = $('plot');
+        const plotCtx = plotCanvas.getContext('2d');
+
+        const state = {
+            k: 0,
+            px: 0.9,
+            py: 0.3,
+            deg: 60,
+            reveal: true,
+            showLevel: true,
+            view: 'map',
+            hover: null,       // world point under the pointer (map view)
+            plotHover: null,   // angle under the pointer on the graph, in radians
+            drag: null,        // 'point' | 'angle' | 'orbit' | 'plot' | null
+            grab: { dx: 0, dy: 0 },
+            last: null,
+            cam: { theta: CAM_DEFAULT.theta, phi: CAM_DEFAULT.phi, zoom: 1 }
+        };
+        let B = null;          // data built for the current function
+
+        // ---------- small helpers ----------
+        function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+        function normDeg(d) { return ((Math.round(d) % 360) + 360) % 360; }
+        function minus(s) { return s.replace('-', '−'); }
+        function fmt(v) {
+            if (!Number.isFinite(v)) return 'undefined';
+            if (Math.abs(v) < 5e-10) return '0';
+            return minus(v.toPrecision(3));
+        }
+        function fmt2(v) { return minus(v.toFixed(2)); }
+        function dist(ax, ay, bx, by) { return Math.hypot(ax - bx, ay - by); }
+        function clampPoint(x, y) { return { x: clamp(x, -B.D, B.D), y: clamp(y, -B.D, B.D) }; }
+        function worldFromScreen(sx, sy) {
+            const W = mapCanvas.clientWidth, H = mapCanvas.clientHeight, D = B.D;
+            return { x: -D + sx / W * 2 * D, y: D - sy / H * 2 * D };
+        }
+
+        // ---------- contour lines by marching squares ----------
+        // Returns a flat list [x1, y1, x2, y2, ...] of line segments where F = L.
+        function marchSegments(F, N, D, L) {
+            const out = [];
+            const h = 2 * D / N, W1 = N + 1;
+            const seg = (p, q) => { out.push(p[0], p[1], q[0], q[1]); };
+            for (let j = 0; j < N; j++) {
+                const y0 = -D + j * h, y1 = y0 + h;
+                for (let i = 0; i < N; i++) {
+                    const x0 = -D + i * h, x1 = x0 + h;
+                    const ia = j * W1 + i, ib = ia + 1, id = ia + W1, ic = id + 1;
+                    const va = F[ia], vb = F[ib], vc = F[ic], vd = F[id];
+                    if (!(Number.isFinite(va) && Number.isFinite(vb) && Number.isFinite(vc) && Number.isFinite(vd))) continue;
+                    const ab = (va > L) !== (vb > L), bc = (vb > L) !== (vc > L);
+                    const cd = (vc > L) !== (vd > L), da = (vd > L) !== (va > L);
+                    const n = (ab ? 1 : 0) + (bc ? 1 : 0) + (cd ? 1 : 0) + (da ? 1 : 0);
+                    if (n === 0) continue;
+                    // crossing points, one per edge the level passes through
+                    const pB = ab ? [x0 + (L - va) / (vb - va) * h, y0] : null;   // bottom edge a-b
+                    const pR = bc ? [x1, y0 + (L - vb) / (vc - vb) * h] : null;   // right edge b-c
+                    const pT = cd ? [x1 - (L - vc) / (vd - vc) * h, y1] : null;   // top edge c-d
+                    const pL = da ? [x0, y1 - (L - vd) / (va - vd) * h] : null;   // left edge d-a
+                    if (n === 2) {
+                        const pts = [pB, pR, pT, pL].filter((p) => p !== null);
+                        seg(pts[0], pts[1]);
+                    } else if (n === 4) {
+                        // saddle cell: the centre value decides how the four crossings pair up
+                        const centreAbove = (va + vb + vc + vd) / 4 > L;
+                        if (centreAbove === (va > L)) {
+                            seg(pB, pR); seg(pT, pL);
+                        } else {
+                            seg(pL, pB); seg(pR, pT);
+                        }
+                    }
+                }
+            }
+            return out;
+        }
+
+        // ---------- build the data for one function ----------
+        function buildPreset(index) {
+            const pr = PRESETS[index];
+            const N = GRID_N, D = pr.D, W1 = N + 1;
+            const F = new Float64Array(W1 * W1);
+            let fmin = Infinity, fmax = -Infinity;
+            for (let j = 0; j <= N; j++) {
+                for (let i = 0; i <= N; i++) {
+                    const v = pr.f(-D + 2 * D * i / N, -D + 2 * D * j / N);
+                    F[j * W1 + i] = Number.isFinite(v) ? v : NaN;
+                    if (Number.isFinite(v)) { fmin = Math.min(fmin, v); fmax = Math.max(fmax, v); }
+                }
+            }
+            const absMax = Math.max(Math.abs(fmin), Math.abs(fmax), 1e-9);
+            const zs = Math.min(1.5, 0.9 * D / absMax);     // height scale for the 3D view
+            const contours = [];
+            for (let m = 1; m < NLEVELS; m++) {
+                contours.push(marchSegments(F, N, D, fmin + (fmax - fmin) * m / NLEVELS));
+            }
+            const M = MESH_N, V1 = M + 1, verts = new Array(V1 * V1);
+            for (let j = 0; j <= M; j++) {
+                for (let i = 0; i <= M; i++) {
+                    const x = -D + 2 * D * i / M, y = -D + 2 * D * j / M;
+                    const v = pr.f(x, y);
+                    verts[j * V1 + i] = { x: x, y: y, z: Number.isFinite(v) ? zs * v : NaN };
+                }
+            }
+            return { pr: pr, D: D, N: N, F: F, fmin: fmin, fmax: fmax, zs: zs, contours: contours, verts: verts, M: M };
+        }
+
+        // Everything about P and u at the current settings.
+        function current() {
+            const pr = B.pr, px = state.px, py = state.py;
+            const th = state.deg * Math.PI / 180;
+            const gx = pr.fx(px, py), gy = pr.fy(px, py);
+            const ux = Math.cos(th), uy = Math.sin(th);
+            return {
+                fP: pr.f(px, py), gx: gx, gy: gy, g: Math.hypot(gx, gy),
+                th: th, ux: ux, uy: uy, D: gx * ux + gy * uy
+            };
+        }
+
+        // ---------- drawing helpers ----------
+        function sizeCanvases() {
+            const dpr = window.devicePixelRatio || 1;
+            [mapCanvas, plotCanvas].forEach((cv) => {
+                cv.width = Math.max(1, Math.round(cv.clientWidth * dpr));
+                cv.height = Math.max(1, Math.round(cv.clientHeight * dpr));
+            });
+        }
+
+        function strokeSegments(ctx, segs, X, Y) {
+            for (let s = 0; s < segs.length; s += 4) {
+                ctx.moveTo(X(segs[s]), Y(segs[s + 1]));
+                ctx.lineTo(X(segs[s + 2]), Y(segs[s + 3]));
+            }
+        }
+
+        function drawArrow(ctx, x0, y0, x1, y1, color, width, label) {
+            const dx = x1 - x0, dy = y1 - y0, len = Math.hypot(dx, dy);
+            if (len < 2) return;
+            const ux = dx / len, uy = dy / len;
+            const head = 10, a = 0.45;
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = width;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.lineTo(x1 - ux * head * 0.5, y1 - uy * head * 0.5);
+            ctx.stroke();
+            const bx = -ux, by = -uy, ca = Math.cos(a), sa = Math.sin(a);
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x1 + head * (bx * ca - by * sa), y1 + head * (bx * sa + by * ca));
+            ctx.lineTo(x1 + head * (bx * ca + by * sa), y1 + head * (-bx * sa + by * ca));
+            ctx.closePath();
+            ctx.fill();
+            if (label && len >= 24) {
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 13px sans-serif';
+                ctx.fillText(label, x1 + 7, y1 - 6);
+            }
+        }
+
+        function drawTooltip(ctx, sx, sy, W, H, lines) {
+            ctx.font = '12px sans-serif';
+            const pad = 6, lh = 16;
+            const w = Math.max(...lines.map((t) => ctx.measureText(t).width)) + 2 * pad;
+            const h = lines.length * lh + 2 * pad;
+            let x = sx + 14, y = sy + 14;
+            if (x + w > W - 4) x = sx - 14 - w;
+            if (y + h > H - 4) y = sy - 14 - h;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+            ctx.strokeStyle = '#999';
+            ctx.lineWidth = 1;
+            ctx.fillRect(x, y, w, h);
+            ctx.strokeRect(x, y, w, h);
+            ctx.fillStyle = '#000';
+            lines.forEach((t, i) => ctx.fillText(t, x + pad, y + pad + 12 + i * lh));
+        }
+
+        // ---------- contour map (2D) ----------
+        function drawMap() {
+            const ctx = mapCtx;
+            const dpr = window.devicePixelRatio || 1;
+            const W = mapCanvas.clientWidth, H = mapCanvas.clientHeight;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, W, H);
+            ctx.fillStyle = '#fafafa';
+            ctx.fillRect(0, 0, W, H);
+            if (state.view === 'surface') { draw3D(ctx, W, H); return; }
+
+            const D = B.D;
+            const X = (x) => (x + D) / (2 * D) * W;
+            const Y = (y) => (D - y) / (2 * D) * H;
+            const c = current();
+
+            // axes with tick marks at the whole numbers
+            ctx.strokeStyle = '#bbb';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(X(-D), Y(0)); ctx.lineTo(X(D), Y(0));
+            ctx.moveTo(X(0), Y(-D)); ctx.lineTo(X(0), Y(D));
+            ctx.stroke();
+            ctx.fillStyle = '#6E6E6E';
+            ctx.font = '11px sans-serif';
+            for (let t = Math.ceil(-D); t <= Math.floor(D); t++) {
+                if (t === 0) continue;
+                ctx.fillText(String(t), X(t) - 3, Y(0) + 13);
+                ctx.fillText(String(t), X(0) + 4, Y(t) + 4);
+            }
+            ctx.fillText('x', W - 10, Y(0) - 6);
+            ctx.fillText('y', X(0) + 6, 12);
+
+            // contour lines of f, faint green in the background
+            ctx.strokeStyle = 'rgba(0, 133, 82, 0.35)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            B.contours.forEach((segs) => strokeSegments(ctx, segs, X, Y));
+            ctx.stroke();
+
+            // the level curve through P, highlighted in green
+            if (state.showLevel) {
+                ctx.strokeStyle = '#008552';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                strokeSegments(ctx, marchSegments(B.F, B.N, D, c.fP), X, Y);
+                ctx.stroke();
+            }
+
+            const Lu = 0.35 * D;                 // length of the unit vector u, drawn on the map
+            const px = X(state.px), py = Y(state.py);
+            drawArrow(ctx, px, py, X(state.px + Lu * c.ux), Y(state.py + Lu * c.uy), '#009CDE', 2.5, 'u');
+            if (state.reveal && c.g > 1e-12) {
+                const len = B.pr.arrowScale * c.g;
+                drawArrow(ctx, px, py, X(state.px + len * c.gx / c.g), Y(state.py + len * c.gy / c.g),
+                    '#F36E24', 3, '∇f');
+            }
+
+            ctx.fillStyle = '#009CDE';
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(px, py, 6.5, 0, TAU);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 13px sans-serif';
+            ctx.fillText('P', px + 9, py - 9);
+
+            if (state.hover && !state.drag) {
+                const hx = state.hover.x, hy = state.hover.y;
+                drawTooltip(ctx, X(hx), Y(hy), W, H, [
+                    'x = ' + fmt2(hx) + ', y = ' + fmt2(hy),
+                    'f = ' + fmt(B.pr.f(hx, hy))
+                ]);
+            }
+        }
+
+        // ---------- 3D surface with the directional slice ----------
+        function project(x, y, z, W, H) {
+            const cam = state.cam;
+            const ct = Math.cos(cam.theta), st = Math.sin(cam.theta);
+            const x1 = x * ct - y * st, y1 = x * st + y * ct;
+            const cp = Math.cos(cam.phi), sp = Math.sin(cam.phi);
+            const y2 = y1 * cp - z * sp, z2 = y1 * sp + z * cp;
+            const s = 0.27 * Math.min(W, H) / B.D * cam.zoom;
+            return { sx: W / 2 + x1 * s, sy: H / 2 - z2 * s, d: y2 };
+        }
+
+        function draw3D(ctx, W, H) {
+            const D = B.D, zs = B.zs;
+            const c = current();
+            const Px = state.px, Py = state.py, ux = c.ux, uy = c.uy, fP = c.fP;
+
+            // grid on the base plane z = 0
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.beginPath();
+            for (let t = -Math.floor(D); t <= Math.floor(D); t++) {
+                let a = project(-D, t, 0, W, H), b = project(D, t, 0, W, H);
+                ctx.moveTo(a.sx, a.sy); ctx.lineTo(b.sx, b.sy);
+                a = project(t, -D, 0, W, H); b = project(t, D, 0, W, H);
+                ctx.moveTo(a.sx, a.sy); ctx.lineTo(b.sx, b.sy);
+            }
+            ctx.stroke();
+
+            // the surface, drawn back to front so the near parts cover the far parts
+            const M = B.M, V1 = M + 1;
+            const pv = B.verts.map((v) => (Number.isFinite(v.z) ? project(v.x, v.y, v.z, W, H) : null));
+            const zLo = zs * B.fmin, zSpan = Math.max(zs * (B.fmax - B.fmin), 1e-9);
+            const quads = [];
+            for (let j = 0; j < M; j++) {
+                for (let i = 0; i < M; i++) {
+                    const ids = [j * V1 + i, j * V1 + i + 1, (j + 1) * V1 + i + 1, (j + 1) * V1 + i];
+                    if (ids.some((id) => pv[id] === null)) continue;
+                    const d = ids.reduce((s, id) => s + pv[id].d, 0) / 4;
+                    const z = ids.reduce((s, id) => s + B.verts[id].z, 0) / 4;
+                    quads.push({ ids: ids, d: d, t: clamp((z - zLo) / zSpan, 0, 1) });
+                }
+            }
+            quads.sort((p, q) => q.d - p.d);   // larger depth = farther away, so draw it first
+            quads.forEach((q) => {
+                const t = q.t;
+                ctx.beginPath();
+                q.ids.forEach((id, n) => {
+                    const p = pv[id];
+                    if (n === 0) ctx.moveTo(p.sx, p.sy); else ctx.lineTo(p.sx, p.sy);
+                });
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(' + Math.round(222 - 222 * t) + ', ' + Math.round(240 - 107 * t) + ', ' +
+                    Math.round(232 - 150 * t) + ', 0.93)';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(0, 60, 40, 0.25)';
+                ctx.lineWidth = 0.6;
+                ctx.stroke();
+            });
+
+            // axes
+            ctx.strokeStyle = '#777';
+            ctx.lineWidth = 1.2;
+            const zTop = zs * Math.max(B.fmax, 0);
+            const axes = [[[-D, 0, 0], [D, 0, 0], 'x'], [[0, -D, 0], [0, D, 0], 'y'], [[0, 0, 0], [0, 0, zTop], 'z']];
+            axes.forEach(([p, q, label]) => {
+                const a = project(p[0], p[1], p[2], W, H), b = project(q[0], q[1], q[2], W, H);
+                ctx.beginPath(); ctx.moveTo(a.sx, a.sy); ctx.lineTo(b.sx, b.sy); ctx.stroke();
+                ctx.fillStyle = '#000';
+                ctx.font = '12px sans-serif';
+                ctx.fillText(label, b.sx + 4, b.sy - 4);
+            });
+
+            // the directional slice: the graph of f along the line P + t u
+            ctx.strokeStyle = '#F36E24';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            let started = false;
+            for (let s = -150; s <= 150; s++) {
+                const t = s / 100;
+                const x = Px + t * ux, y = Py + t * uy;
+                if (Math.abs(x) > D || Math.abs(y) > D) { started = false; continue; }
+                const p = project(x, y, zs * B.pr.f(x, y), W, H);
+                if (!started) { ctx.moveTo(p.sx, p.sy); started = true; } else { ctx.lineTo(p.sx, p.sy); }
+            }
+            ctx.stroke();
+
+            // the level curve through P, lying flat at the height of P
+            if (state.showLevel) {
+                const zL = zs * fP;
+                const segs = marchSegments(B.F, B.N, D, fP);
+                ctx.strokeStyle = '#008552';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                for (let s = 0; s < segs.length; s += 4) {
+                    const a = project(segs[s], segs[s + 1], zL, W, H);
+                    const b = project(segs[s + 2], segs[s + 3], zL, W, H);
+                    ctx.moveTo(a.sx, a.sy); ctx.lineTo(b.sx, b.sy);
+                }
+                ctx.stroke();
+            }
+
+            // the tangent line to the slice at P: its slope is D_u f(P) (on the drawn height scale)
+            if (state.reveal) {
+                ctx.strokeStyle = '#F36E24';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([6, 4]);
+                ctx.beginPath();
+                for (let s = -100; s <= 100; s++) {
+                    const t = s / 100;
+                    const p = project(Px + t * ux, Py + t * uy, zs * (fP + t * c.D), W, H);
+                    if (s === -100) ctx.moveTo(p.sx, p.sy); else ctx.lineTo(p.sx, p.sy);
+                }
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            // point P on the surface, with a dashed drop line to the base plane
+            const pBase = project(Px, Py, 0, W, H), pTop = project(Px, Py, zs * fP, W, H);
+            ctx.strokeStyle = '#009CDE';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath(); ctx.moveTo(pBase.sx, pBase.sy); ctx.lineTo(pTop.sx, pTop.sy); ctx.stroke();
+            ctx.setLineDash([]);
+
+            // u and the gradient, drawn on the base plane from the foot of P
+            const Lu = 0.35 * D;
+            const u1 = project(Px + Lu * ux, Py + Lu * uy, 0, W, H);
+            drawArrow(ctx, pBase.sx, pBase.sy, u1.sx, u1.sy, '#009CDE', 2.5, 'u');
+            if (state.reveal && c.g > 1e-12) {
+                const len = B.pr.arrowScale * c.g;
+                const g1 = project(Px + len * c.gx / c.g, Py + len * c.gy / c.g, 0, W, H);
+                drawArrow(ctx, pBase.sx, pBase.sy, g1.sx, g1.sy, '#F36E24', 3, '∇f');
+            }
+
+            ctx.fillStyle = '#009CDE';
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(pTop.sx, pTop.sy, 6.5, 0, TAU); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 13px sans-serif';
+            ctx.fillText('P', pTop.sx + 9, pTop.sy - 9);
+        }
+
+        // ---------- derivative graph: D_u f(P) against the angle theta ----------
+        function plotMargins() { return { l: 54, r: 14, t: 16, b: 38 }; }
+
+        function thetaFromPlotX(sx) {
+            const W = plotCanvas.clientWidth, m = plotMargins();
+            const t = clamp((sx - m.l) / (W - m.l - m.r), 0, 1);
+            return Math.min(t, 0.999999) * TAU;
+        }
+
+        function drawPlot() {
+            const ctx = plotCtx;
+            const dpr = window.devicePixelRatio || 1;
+            const W = plotCanvas.clientWidth, H = plotCanvas.clientHeight;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, W, H);
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, W, H);
+            const m = plotMargins();
+            const x0 = m.l, x1 = W - m.r, y0 = m.t, y1 = H - m.b;
+            ctx.font = '11px sans-serif';
+            ctx.fillStyle = '#6E6E6E';
+            if (!state.reveal) {
+                ctx.strokeStyle = '#ccc';
+                ctx.strokeRect(x0, y0, x1 - x0, y1 - y0);
+                ctx.textAlign = 'center';
+                ctx.font = '13px sans-serif';
+                ctx.fillText('Graph hidden. Tick the box to reveal it.', (x0 + x1) / 2, (y0 + y1) / 2);
+                ctx.textAlign = 'left';
+                return;
+            }
+
+            const c = current();
+            const G = c.g;
+            const Ymax = Math.max(G, 1e-3) * 1.2;
+            const X = (th) => x0 + th / TAU * (x1 - x0);
+            const Y = (v) => y0 + (Ymax - v) / (2 * Ymax) * (y1 - y0);
+
+            // grid lines at +|grad f|, 0 and -|grad f|, and at the quarter turns
+            ctx.strokeStyle = '#e5e5e5';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            [G, 0, -G].forEach((v) => { ctx.moveTo(x0, Y(v)); ctx.lineTo(x1, Y(v)); });
+            [0, Math.PI / 2, Math.PI, 3 * Math.PI / 2, TAU].forEach((th) => {
+                ctx.moveTo(X(th), y0); ctx.lineTo(X(th), y1);
+            });
+            ctx.stroke();
+            ctx.strokeStyle = '#999';
+            ctx.beginPath();
+            ctx.moveTo(x0, y0); ctx.lineTo(x0, y1); ctx.lineTo(x1, y1);
+            ctx.stroke();
+
+            ctx.fillStyle = '#6E6E6E';
+            ctx.textAlign = 'right';
+            ctx.fillText(fmt(G), x0 - 6, Y(G) + 4);
+            ctx.fillText('0', x0 - 6, Y(0) + 4);
+            ctx.fillText('−' + fmt(G), x0 - 6, Y(-G) + 4);
+            ctx.textAlign = 'center';
+            [['0', 0], ['π/2', Math.PI / 2], ['π', Math.PI], ['3π/2', 3 * Math.PI / 2], ['2π', TAU]]
+                .forEach((pair) => ctx.fillText(pair[0], X(pair[1]), y1 + 14));
+            ctx.textAlign = 'left';
+            ctx.fillText('θ, direction of u (radians)', x0, y1 + 30);
+            ctx.fillText('D_u f(P)', x0 + 4, y0 - 4);
+
+            // the curve D_u f = gx cos θ + gy sin θ = |grad f| cos(θ - φ)
+            ctx.strokeStyle = '#F36E24';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            const SAMPLES = 240;
+            for (let s = 0; s <= SAMPLES; s++) {
+                const th = TAU * s / SAMPLES;
+                const v = c.gx * Math.cos(th) + c.gy * Math.sin(th);
+                if (s === 0) ctx.moveTo(X(th), Y(v)); else ctx.lineTo(X(th), Y(v));
+            }
+            ctx.stroke();
+
+            if (G > 1e-12) {
+                const phi = ((Math.atan2(c.gy, c.gx) % TAU) + TAU) % TAU;   // direction of grad f
+                const tMax = phi, tMin = (phi + Math.PI) % TAU;
+                const tZ1 = (phi + Math.PI / 2) % TAU, tZ2 = (phi + 3 * Math.PI / 2) % TAU;
+                ctx.fillStyle = '#008552';
+                [tZ1, tZ2].forEach((th) => ctx.fillRect(X(th) - 3.5, Y(0) - 3.5, 7, 7));
+                ctx.fillStyle = '#F36E24';
+                ctx.beginPath(); ctx.arc(X(tMax), Y(G), 4.5, 0, TAU); ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.strokeStyle = '#F36E24';
+                ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(X(tMin), Y(-G), 4.5, 0, TAU); ctx.fill(); ctx.stroke();
+            }
+
+            // the current angle
+            ctx.strokeStyle = '#009CDE';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([5, 4]);
+            ctx.beginPath(); ctx.moveTo(X(c.th), y0); ctx.lineTo(X(c.th), y1); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#009CDE';
+            ctx.strokeStyle = '#fff';
+            ctx.beginPath(); ctx.arc(X(c.th), Y(c.D), 5.5, 0, TAU); ctx.fill();
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // hover crosshair and tooltip
+            if (state.plotHover !== null && !state.drag) {
+                const th = state.plotHover;
+                const v = c.gx * Math.cos(th) + c.gy * Math.sin(th);
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([2, 3]);
+                ctx.beginPath(); ctx.moveTo(X(th), y0); ctx.lineTo(X(th), y1); ctx.stroke();
+                ctx.setLineDash([]);
+                drawTooltip(ctx, X(th), Y(v), W, H, [
+                    'θ = ' + (Math.round(th * 180 / Math.PI) % 360) + '°',
+                    'D_u f = ' + fmt(v)
+                ]);
+            }
+        }
+
+        // ---------- readouts, table, and accessible descriptions ----------
+        function updateReadouts(c) {
+            $('r-P').textContent = '(' + fmt2(state.px) + ', ' + fmt2(state.py) + ')';
+            $('r-fP').textContent = fmt(c.fP);
+            $('r-u').textContent = '⟨' + fmt(c.ux) + ', ' + fmt(c.uy) + '⟩ at θ = ' + state.deg + '° (' + fmt(c.th) + ' rad)';
+            if (!state.reveal) {
+                ['r-grad', 'r-gmag', 'r-angle', 'r-D', 'r-limit'].forEach((id) => {
+                    $(id).textContent = 'hidden (tick the box to reveal)';
+                });
+                return;
+            }
+            $('r-grad').textContent = '⟨' + fmt(c.gx) + ', ' + fmt(c.gy) + '⟩';
+            $('r-gmag').textContent = fmt(c.g);
+            if (c.g > 1e-12) {
+                const cosA = clamp((c.gx * c.ux + c.gy * c.uy) / c.g, -1, 1);
+                $('r-angle').textContent = Math.round(Math.acos(cosA) * 180 / Math.PI) + '°';
+            } else {
+                $('r-angle').textContent = 'undefined (∇f = 0 at P)';
+            }
+            $('r-D').textContent = fmt(c.D);
+            const lim = (B.pr.f(state.px + H_STEP * c.ux, state.py + H_STEP * c.uy) - c.fP) / H_STEP;
+            $('r-limit').textContent = fmt(lim);
+        }
+
+        function updateTable(c) {
+            let html = '';
+            for (let d = 0; d < 360; d += 30) {
+                const th = d * Math.PI / 180;
+                const v = c.gx * Math.cos(th) + c.gy * Math.sin(th);
+                html += '<tr><td>' + d + '°</td><td>' + (state.reveal ? fmt(v) : 'hidden') + '</td></tr>';
+            }
+            $('table-body').innerHTML = html;
+        }
+
+        function updateAria(c) {
+            const pr = B.pr;
+            const where = 'P = (' + fmt2(state.px) + ', ' + fmt2(state.py) + ') and u at ' + state.deg + ' degrees';
+            let mapText, plotText;
+            if (state.view === 'surface') {
+                mapText = '3D surface of ' + pr.formula + ', with the slice through P in the direction of u, ' + where + '.';
+            } else {
+                mapText = 'Contour map of ' + pr.formula + ', with ' + where + '.';
+            }
+            if (state.reveal) {
+                mapText += ' The gradient is (' + fmt(c.gx) + ', ' + fmt(c.gy) + ') and D_u f(P) = ' + fmt(c.D) + '.';
+                plotText = 'Graph of D_u f(P) against the direction angle. It is a cosine curve with largest value ' +
+                    fmt(c.g) + ' at the gradient direction. The current angle is ' + state.deg + ' degrees, where D_u f(P) = ' +
+                    fmt(c.D) + '.';
+            } else {
+                mapText += ' The gradient is hidden.';
+                plotText = 'Graph hidden until the gradient is revealed.';
+            }
+            mapCanvas.setAttribute('aria-label', mapText);
+            plotCanvas.setAttribute('aria-label', plotText);
+        }
+
+        function refresh() {
+            const c = current();
+            $('px').value = state.px;
+            $('py').value = state.py;
+            $('deg').value = state.deg;
+            $('px-out').textContent = fmt2(state.px);
+            $('py-out').textContent = fmt2(state.py);
+            $('deg-out').textContent = state.deg + '°';
+            updateReadouts(c);
+            updateTable(c);
+            updateAria(c);
+            drawMap();
+            drawPlot();
+        }
+
+        function setPreset(index) {
+            state.k = index;
+            B = buildPreset(index);
+            const pr = B.pr;
+            state.px = pr.start[0];
+            state.py = pr.start[1];
+            state.deg = pr.deg;
+            ['px', 'py'].forEach((id) => { $(id).min = -B.D; $(id).max = B.D; });
+            $('preset').value = String(index);
+            $('formula').textContent = pr.formula;
+            $('arrow-note').textContent = 'Orange arrow length = ' + pr.arrowScale + ' × |∇f(P)|, drawn at this scale on the map and in 3D.';
+            refresh();
+        }
+
+        function setView(view) {
+            state.view = view;
+            const is3D = view === 'surface';
+            $('map-hint').textContent = is3D
+                ? 'Drag to orbit the view, and scroll to zoom. Use the sliders to move P and aim u.'
+                : 'Drag P (the blue dot) or the tip of u (the blue arrow). Click anywhere to move P. With the map focused, arrow keys move P and [ and ] turn u.';
+            const caption = $('surface-caption');
+            caption.hidden = !is3D;
+            caption.textContent = is3D
+                ? 'Height is drawn ×' + B.zs.toPrecision(2) + ' so the surface fits. The orange curve is the slice through P in the direction of u. Its slope at P is D_u f(P), on the same height scale.'
+                : '';
+            refresh();
+        }
+
+        // ---------- pointer and keyboard on the map ----------
+        function orbit(e) {
+            const dx = e.clientX - state.last.x, dy = e.clientY - state.last.y;
+            state.last = { x: e.clientX, y: e.clientY };
+            state.cam.theta += dx * 0.006;
+            state.cam.phi = clamp(state.cam.phi - dy * 0.006, -1.45, 1.45);
+            drawMap();
+        }
+
+        mapCanvas.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            mapCanvas.focus({ preventScroll: true });
+            mapCanvas.setPointerCapture(e.pointerId);
+            const r = mapCanvas.getBoundingClientRect();
+            const sx = e.clientX - r.left, sy = e.clientY - r.top;
+            if (state.view === 'surface') {
+                state.drag = 'orbit';
+                state.last = { x: e.clientX, y: e.clientY };
+                return;
+            }
+            const D = B.D, W = mapCanvas.clientWidth, H = mapCanvas.clientHeight;
+            const c = current();
+            const Lu = 0.35 * D;
+            const tipX = (state.px + Lu * c.ux + D) / (2 * D) * W;
+            const tipY = (D - (state.py + Lu * c.uy)) / (2 * D) * H;
+            const pX = (state.px + D) / (2 * D) * W;
+            const pY = (D - state.py) / (2 * D) * H;
+            if (dist(sx, sy, tipX, tipY) < 16) {
+                state.drag = 'angle';
+            } else if (dist(sx, sy, pX, pY) < 18) {
+                const w = worldFromScreen(sx, sy);
+                state.drag = 'point';
+                state.grab = { dx: state.px - w.x, dy: state.py - w.y };
+            } else {
+                const w = worldFromScreen(sx, sy);
+                const p = clampPoint(w.x, w.y);
+                state.px = p.x;
+                state.py = p.y;
+                state.drag = 'point';
+                state.grab = { dx: 0, dy: 0 };
+            }
+            refresh();
+        });
+
+        mapCanvas.addEventListener('pointermove', (e) => {
+            if (state.drag && e.buttons === 0) { endDrag(); }   // a release we did not hear: stop dragging
+            const r = mapCanvas.getBoundingClientRect();
+            const sx = e.clientX - r.left, sy = e.clientY - r.top;
+            if (state.drag === 'orbit') { orbit(e); return; }
+            if (state.drag === 'point') {
+                const w = worldFromScreen(sx, sy);
+                const p = clampPoint(w.x + state.grab.dx, w.y + state.grab.dy);
+                state.px = p.x;
+                state.py = p.y;
+                refresh();
+                return;
+            }
+            if (state.drag === 'angle') {
+                const w = worldFromScreen(sx, sy);
+                state.deg = normDeg(Math.atan2(w.y - state.py, w.x - state.px) * 180 / Math.PI);
+                refresh();
+                return;
+            }
+            if (state.view === 'map') {
+                const w = worldFromScreen(sx, sy);
+                const inside = Math.abs(w.x) <= B.D && Math.abs(w.y) <= B.D;
+                state.hover = inside ? w : null;
+                drawMap();
+            }
+        });
+
+        function endDrag() {
+            if (state.drag) {
+                state.drag = null;
+                refresh();
+            }
+        }
+        mapCanvas.addEventListener('pointerup', endDrag);
+        mapCanvas.addEventListener('pointercancel', endDrag);
+        mapCanvas.addEventListener('pointerleave', () => {
+            state.hover = null;
+            if (!state.drag) drawMap();
+        });
+
+        mapCanvas.addEventListener('wheel', (e) => {
+            if (state.view !== 'surface') return;
+            e.preventDefault();
+            state.cam.zoom = clamp(state.cam.zoom * Math.exp(-e.deltaY * 0.001), 0.4, 3);
+            drawMap();
+        }, { passive: false });
+
+        mapCanvas.addEventListener('keydown', (e) => {
+            if (state.view !== 'map') return;
+            const step = e.shiftKey ? 0.2 : 0.05;
+            let used = true;
+            if (e.key === 'ArrowLeft') state.px -= step;
+            else if (e.key === 'ArrowRight') state.px += step;
+            else if (e.key === 'ArrowUp') state.py += step;
+            else if (e.key === 'ArrowDown') state.py -= step;
+            else if (e.key === '[') state.deg = normDeg(state.deg - 5);
+            else if (e.key === ']') state.deg = normDeg(state.deg + 5);
+            else used = false;
+            if (used) {
+                e.preventDefault();
+                const p = clampPoint(state.px, state.py);
+                state.px = p.x;
+                state.py = p.y;
+                refresh();
+            }
+        });
+
+        // ---------- pointer on the derivative graph ----------
+        plotCanvas.addEventListener('pointerdown', (e) => {
+            plotCanvas.setPointerCapture(e.pointerId);
+            const sx = e.clientX - plotCanvas.getBoundingClientRect().left;
+            state.drag = 'plot';
+            state.plotHover = thetaFromPlotX(sx);
+            state.deg = normDeg(state.plotHover * 180 / Math.PI);
+            refresh();
+        });
+
+        plotCanvas.addEventListener('pointermove', (e) => {
+            if (state.drag && e.buttons === 0) { endDrag(); }
+            const sx = e.clientX - plotCanvas.getBoundingClientRect().left;
+            const th = thetaFromPlotX(sx);
+            state.plotHover = th;
+            if (state.drag === 'plot') {
+                state.deg = normDeg(th * 180 / Math.PI);
+                refresh();
+            } else {
+                drawPlot();
+            }
+        });
+
+        plotCanvas.addEventListener('pointerup', endDrag);
+        plotCanvas.addEventListener('pointercancel', endDrag);
+        plotCanvas.addEventListener('pointerleave', () => {
+            state.plotHover = null;
+            if (!state.drag) drawPlot();
+        });
+
+        // ---------- controls ----------
+        $('preset').addEventListener('change', (e) => setPreset(parseInt(e.target.value, 10)));
+        $('px').addEventListener('input', (e) => { state.px = parseFloat(e.target.value); refresh(); });
+        $('py').addEventListener('input', (e) => { state.py = parseFloat(e.target.value); refresh(); });
+        $('deg').addEventListener('input', (e) => { state.deg = parseInt(e.target.value, 10); refresh(); });
+        $('reveal').addEventListener('change', (e) => { state.reveal = e.target.checked; refresh(); });
+        $('show-level').addEventListener('change', (e) => { state.showLevel = e.target.checked; refresh(); });
+        $('reset-view').addEventListener('click', () => {
+            state.cam = { theta: CAM_DEFAULT.theta, phi: CAM_DEFAULT.phi, zoom: 1 };
+            refresh();
+        });
+        document.querySelectorAll('input[name="view"]').forEach((radio) => {
+            radio.addEventListener('change', (e) => { if (e.target.checked) setView(e.target.value); });
+        });
+
+        window.addEventListener('resize', () => { sizeCanvases(); refresh(); });
+        window.addEventListener('load', () => { sizeCanvases(); refresh(); });
+
+        // start-up
+        sizeCanvases();
+        setPreset(0);
+        setView('map');
+    })();
+    </script>
+</body>
+
+</html>

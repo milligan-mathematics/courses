@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riding a Path Over a Surface - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- MathJax for rendering equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        .dashboard.even {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .dashboard > * {
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard,
+            .dashboard.even {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .panel h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .scene-wrap {
+            position: relative;
+        }
+
+        canvas#scene {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        canvas#scene:active {
+            cursor: grabbing;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .control-block {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #eee;
+        }
+
+        .control-block:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        select#preset {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            accent-color: var(--color-accent-blue, #009CDE);
+        }
+
+        .slider-row span {
+            font-weight: bold;
+            width: 3.5rem;
+            text-align: right;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #6E6E6E;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4A4A4A;
+        }
+
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .readouts {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.4rem 0.9rem;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .readouts dt {
+            color: var(--text-muted);
+        }
+
+        .readouts dd {
+            margin: 0;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            overflow-wrap: anywhere;
+        }
+
+        .readouts .final {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .chart {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .chart[hidden] {
+            display: none;
+        }
+
+        .gate {
+            font-size: 0.95rem;
+        }
+
+        .output-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 0.9rem 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.92rem;
+            line-height: 1.9;
+            overflow-wrap: anywhere;
+        }
+
+        .output-box strong {
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .tree-svg {
+            display: block;
+            width: 100%;
+            max-width: 420px;
+            height: auto;
+            margin: 0 auto;
+        }
+
+        .tree-svg text {
+            font-family: sans-serif;
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .things ol {
+            padding-left: 1.25rem;
+        }
+
+        .things li {
+            margin-bottom: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Riding a Path Over a Surface</h1>
+            <p>&sect;13.4 &mdash; lift a path in the plane onto a surface, ride a point along it, and watch the two
+                chain-rule terms add up to dz/dt.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Choose a path and a surface, then slide the point along the path or press <strong>Play</strong>. The
+                point's height is <em>z</em> = <em>f</em>(<em>x</em>, <em>y</em>). Each route in the tree contributes
+                one term to dz/dt: the partial derivative times the velocity along that route. The <strong>bars</strong>
+                show the two terms and their sum. Drag inside the scene to orbit it.
+            </p>
+            <p class="hint">The height is drawn to fit the view, so the picture is not to scale. The readouts, bars,
+                graph, and tree use the true values.</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel scene-wrap">
+                <canvas id="scene" width="600" height="600" role="img"
+                    aria-label="3D view of a surface with a path lifted onto it."></canvas>
+                <div class="scene-hint">Drag to rotate &middot; scroll to zoom</div>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#009CDE;"></span>point you move (t)</div>
+                    <div><span class="swatch" style="background:#008552;"></span>surface and path</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>velocity r&prime;(t)</div>
+                </div>
+
+                <div class="control-block">
+                    <label class="field-label" for="preset">Path and surface</label>
+                    <select id="preset">
+                        <option value="0">1. Downhill walk (both terms negative)</option>
+                        <option value="1">2. Ripples (one term changes sign)</option>
+                        <option value="2">3. Ridge ride (the terms cancel)</option>
+                    </select>
+                    <label class="field-label" for="t-slider">Time t</label>
+                    <div class="slider-row">
+                        <input type="range" id="t-slider" min="0" max="3" step="0.01" value="1.5">
+                        <span id="t-value">1.50</span>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn" id="play-btn" type="button" aria-pressed="false">Play</button>
+                        <button class="btn btn-secondary" id="reset-view" type="button">Reset View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <h4>At this t</h4>
+                    <dl class="readouts">
+                        <dt>Position (x, y)</dt><dd id="r-pos"></dd>
+                        <dt>Velocity (x&prime;, y&prime;)</dt><dd id="r-vel"></dd>
+                        <dt>Slopes (f<sub>x</sub>, f<sub>y</sub>)</dt><dd id="r-grad"></dd>
+                        <dt>x-term: f<sub>x</sub> &middot; x&prime;</dt><dd id="r-t1"></dd>
+                        <dt>y-term: f<sub>y</sub> &middot; y&prime;</dt><dd id="r-t2"></dd>
+                        <dt>Sum: dz/dt</dt><dd id="r-sum" class="final"></dd>
+                        <dt>Height z(t)</dt><dd id="r-z"></dd>
+                    </dl>
+                </div>
+                <div class="control-block">
+                    <h4>The two bars</h4>
+                    <canvas id="bars" class="chart" role="img" aria-label="Bar chart of the two terms and their sum."></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard even">
+            <div class="panel">
+                <h4>Height along the path, z(t)</h4>
+                <div class="gate" id="graph-gate">
+                    <p class="hint">Make your prediction from the bars first. Then reveal the graph.</p>
+                    <button class="btn btn-secondary" id="graph-btn" type="button" aria-controls="zgraph">Show the z(t) graph</button>
+                </div>
+                <canvas id="zgraph" class="chart" hidden role="img" aria-label="Graph of z(t) with the tangent line at the current t."></canvas>
+                <p class="hint" id="graph-caption" hidden></p>
+            </div>
+
+            <div class="panel">
+                <h4>Tree diagram</h4>
+                <svg class="tree-svg" viewBox="0 0 400 290" role="img"
+                    aria-label="Tree diagram: z depends on x and y, and x and y each depend on t. The branch labels show the current values of f sub x, dx/dt, f sub y, and dy/dt.">
+                    <!-- branches -->
+                    <line x1="186" y1="57" x2="124" y2="133" stroke="#009CDE" stroke-width="3"/>
+                    <line x1="102" y1="171" x2="77" y2="239" stroke="#009CDE" stroke-width="3"/>
+                    <line x1="214" y1="57" x2="276" y2="133" stroke="#6E6E6E" stroke-width="3"/>
+                    <line x1="297" y1="171" x2="323" y2="239" stroke="#6E6E6E" stroke-width="3"/>
+                    <!-- nodes -->
+                    <circle cx="200" cy="40" r="22" fill="#fff" stroke="#333" stroke-width="2"/>
+                    <circle cx="110" cy="150" r="22" fill="#fff" stroke="#333" stroke-width="2"/>
+                    <circle cx="290" cy="150" r="22" fill="#fff" stroke="#333" stroke-width="2"/>
+                    <circle cx="70" cy="258" r="20" fill="#fff" stroke="#333" stroke-width="2"/>
+                    <circle cx="330" cy="258" r="20" fill="#fff" stroke="#333" stroke-width="2"/>
+                    <text x="200" y="46" text-anchor="middle" font-size="18" font-weight="bold" fill="#222">z</text>
+                    <text x="110" y="156" text-anchor="middle" font-size="18" font-weight="bold" fill="#222">x</text>
+                    <text x="290" y="156" text-anchor="middle" font-size="18" font-weight="bold" fill="#222">y</text>
+                    <text x="70" y="264" text-anchor="middle" font-size="18" font-weight="bold" fill="#222">t</text>
+                    <text x="330" y="264" text-anchor="middle" font-size="18" font-weight="bold" fill="#222">t</text>
+                    <!-- branch labels -->
+                    <text x="140" y="84" text-anchor="end" font-size="13" fill="#222">&#8706;z/&#8706;x = f<tspan font-size="9" dy="3">x</tspan></text>
+                    <text id="tr-fx" x="140" y="102" text-anchor="end" font-size="14" font-weight="bold" fill="#009CDE">= 0</text>
+                    <text x="112" y="200" text-anchor="start" font-size="13" fill="#222">dx/dt = x&#8242;</text>
+                    <text id="tr-dx" x="112" y="218" text-anchor="start" font-size="14" font-weight="bold" fill="#009CDE">= 0</text>
+                    <text x="260" y="84" text-anchor="start" font-size="13" fill="#222">&#8706;z/&#8706;y = f<tspan font-size="9" dy="3">y</tspan></text>
+                    <text id="tr-fy" x="260" y="102" text-anchor="start" font-size="14" font-weight="bold" fill="#6E6E6E">= 0</text>
+                    <text x="288" y="200" text-anchor="end" font-size="13" fill="#222">dy/dt = y&#8242;</text>
+                    <text id="tr-dy" x="288" y="218" text-anchor="end" font-size="14" font-weight="bold" fill="#6E6E6E">= 0</text>
+                </svg>
+                <div class="output-box" id="routes">
+                    Through x: (&#8706;z/&#8706;x)(dx/dt) = <strong id="rt-x"></strong><br>
+                    Through y: (&#8706;z/&#8706;y)(dy/dt) = <strong id="rt-y"></strong><br>
+                    Add the routes: dz/dt = <strong id="rt-sum"></strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section things">
+            <h4>Things to try</h4>
+            <ol>
+                <li><strong>Predict, then check (preset 2).</strong> Set <em>t</em> = 2.5. Before you reveal the graph,
+                    use the two bars to predict whether <em>z</em> is rising or falling at that moment. Then press
+                    <em>Show the z(t) graph</em> and check the slope of the tangent line.</li>
+                <li><strong>A zero with no zero terms (preset 3).</strong> Find a <em>t</em> where dz/dt = 0 even
+                    though neither bar is zero. Predict first: where must the two bars be equal and opposite? Then check
+                    the readouts.</li>
+                <li><strong>Connect to the cylinder (preset 3).</strong> In the cylinder example on the section page, the
+                    two terms cancel at the largest volume, at <em>t</em> = 4. Predict whether <em>z</em> also peaks
+                    where the bars cancel in this preset, then reveal the graph and find out.</li>
+                <li><strong>Check the tree (any preset).</strong> Pick one route and multiply its two labels, such as
+                    the route through x. Predict that the product matches that route's bar, then check it against the
+                    bar chart. Add the two routes to confirm that the sum is dz/dt.</li>
+            </ol>
+        </div>
+
+    </main>
+
+    <script>
+        (function () {
+            'use strict';
+
+            // ---------- Presets: surface z = f(x, y), path (x(t), y(t)), exact partials ----------
+            const PRESETS = [
+                {
+                    name: 'Downhill walk',
+                    formula: 'z = e^(-x) + e^(-y)',
+                    f: (x, y) => Math.exp(-x) + Math.exp(-y),
+                    fx: (x, y) => -Math.exp(-x),
+                    fy: (x, y) => -Math.exp(-y),
+                    X: (t) => t,           dX: (t) => 1,
+                    Y: (t) => 1 + t / 2,   dY: (t) => 0.5,
+                    t0: 0, t1: 3, tDefault: 1.5,
+                    dom: [-0.5, 3.5, -0.5, 3.5],
+                    vs: 0.7
+                },
+                {
+                    name: 'Ripples',
+                    formula: 'z = sin(x) + cos(y)',
+                    f: (x, y) => Math.sin(x) + Math.cos(y),
+                    fx: (x, y) => Math.cos(x),
+                    fy: (x, y) => -Math.sin(y),
+                    X: (t) => t,           dX: (t) => 1,
+                    Y: (t) => 2.5 - t / 2, dY: (t) => -0.5,
+                    t0: 0, t1: 3, tDefault: 1,
+                    dom: [-0.5, 3.5, 0, 3],
+                    vs: 0.6
+                },
+                {
+                    name: 'Ridge ride',
+                    formula: 'z = sin(x + y)',
+                    f: (x, y) => Math.sin(x + y),
+                    fx: (x, y) => Math.cos(x + y),
+                    fy: (x, y) => Math.cos(x + y),
+                    X: (t) => t,                      dX: (t) => 1,
+                    Y: (t) => 3 - 2 * t + t * t / 4,  dY: (t) => -2 + t / 2,
+                    t0: 0, t1: 4, tDefault: 1,
+                    dom: [-0.5, 4.5, -1.5, 3.5],
+                    vs: 0.9
+                }
+            ];
+
+            const MESH_N = 28;
+
+            const sceneCanvas = document.getElementById('scene');
+            const barsCanvas = document.getElementById('bars');
+            const graphCanvas = document.getElementById('zgraph');
+            const graphCaption = document.getElementById('graph-caption');
+            const graphGate = document.getElementById('graph-gate');
+            const graphBtn = document.getElementById('graph-btn');
+            const presetSel = document.getElementById('preset');
+            const slider = document.getElementById('t-slider');
+            const tValue = document.getElementById('t-value');
+            const playBtn = document.getElementById('play-btn');
+            const resetBtn = document.getElementById('reset-view');
+
+            let presetIndex = 0;
+            let t = PRESETS[0].tDefault;
+            let playing = false;
+            let lastNow = null;
+            let graphVisible = false;
+            let vals = null;
+            let drag = null;
+            const view = { theta: -0.7, phi: 0.6, zoom: 1 };
+
+            // ---------- Helpers ----------
+            function fmt(n) {
+                if (!Number.isFinite(n)) return '-';
+                if (Math.abs(n) < 5e-10) return '0';
+                return String(Number(n.toPrecision(4)));
+            }
+
+            function setText(id, s) {
+                const el = document.getElementById(id);
+                if (el) el.textContent = s;
+            }
+
+            function niceStep(range) {
+                const raw = range / 4;
+                const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+                const r = raw / mag;
+                return (r < 1.5 ? 1 : r < 3 ? 2 : r < 7 ? 5 : 10) * mag;
+            }
+
+            // Canvas sized to its CSS box, with device-pixel scaling. Returns CSS-pixel size.
+            function setupCanvas(c) {
+                const dpr = window.devicePixelRatio || 1;
+                const w = c.clientWidth, h = c.clientHeight;
+                const bw = Math.max(1, Math.round(w * dpr)), bh = Math.max(1, Math.round(h * dpr));
+                if (c.width !== bw || c.height !== bh) { c.width = bw; c.height = bh; }
+                const g = c.getContext('2d');
+                g.setTransform(dpr, 0, 0, dpr, 0, 0);
+                return { g: g, w: w, h: h };
+            }
+
+            // Precompute the mesh and the height range for one preset.
+            function prep(P) {
+                const x0 = P.dom[0], x1 = P.dom[1], y0 = P.dom[2], y1 = P.dom[3];
+                P.cx = (x0 + x1) / 2;
+                P.cy = (y0 + y1) / 2;
+                let fmin = Infinity, fmax = -Infinity;
+                P.grid = [];
+                for (let i = 0; i <= MESH_N; i++) {
+                    P.grid[i] = [];
+                    for (let j = 0; j <= MESH_N; j++) {
+                        const x = x0 + (x1 - x0) * i / MESH_N;
+                        const y = y0 + (y1 - y0) * j / MESH_N;
+                        const fz = P.f(x, y);
+                        if (Number.isFinite(fz)) {
+                            fmin = Math.min(fmin, fz);
+                            fmax = Math.max(fmax, fz);
+                            P.grid[i][j] = { x: x, y: y, fz: fz };
+                        } else {
+                            P.grid[i][j] = null; // skip undefined points instead of drawing garbage
+                        }
+                    }
+                }
+                P.fmin = fmin;
+                P.fmax = fmax;
+                P.zc = P.vs * (fmin + fmax) / 2;
+                P.zfloor = P.vs * fmin - P.zc;
+                const hx = (x1 - x0) / 2, hy = (y1 - y0) / 2, hz = P.vs * (fmax - fmin) / 2;
+                P.R = Math.sqrt(hx * hx + hy * hy + hz * hz);
+            }
+
+            // ---------- 3D projection (same orbit technique as the Chapter 11 demos) ----------
+            function proj(X, Y, Z, k, ox, oy) {
+                const ct = Math.cos(view.theta), st = Math.sin(view.theta);
+                const cp = Math.cos(view.phi), sp = Math.sin(view.phi);
+                const x1 = X * ct - Y * st;
+                const y1 = X * st + Y * ct;
+                const y2 = y1 * cp - Z * sp;   // depth: larger means farther from the viewer
+                const z2 = y1 * sp + Z * cp;   // screen-up component
+                return { sx: ox + x1 * k, sy: oy - z2 * k, d: y2 };
+            }
+
+            function arrow(g, from, to, color) {
+                g.strokeStyle = color;
+                g.fillStyle = color;
+                g.lineWidth = 2.5;
+                g.beginPath();
+                g.moveTo(from.sx, from.sy);
+                g.lineTo(to.sx, to.sy);
+                g.stroke();
+                const dx = to.sx - from.sx, dy = to.sy - from.sy;
+                const len = Math.hypot(dx, dy);
+                if (len < 1e-6) return;
+                const ux = dx / len, uy = dy / len;
+                const hl = 10, ang = 0.45;
+                const c = Math.cos(ang), s = Math.sin(ang);
+                const w1x = -ux * c + uy * s, w1y = -ux * s - uy * c;
+                const w2x = -ux * c - uy * s, w2y = ux * s - uy * c;
+                g.beginPath();
+                g.moveTo(to.sx, to.sy);
+                g.lineTo(to.sx + hl * w1x, to.sy + hl * w1y);
+                g.lineTo(to.sx + hl * w2x, to.sy + hl * w2y);
+                g.closePath();
+                g.fill();
+            }
+
+            // ---------- Scene: surface mesh (back to front), lifted path, marker, velocity ----------
+            function drawScene(P, v) {
+                const cv = setupCanvas(sceneCanvas);
+                const g = cv.g, w = cv.w, h = cv.h;
+                g.clearRect(0, 0, w, h);
+                const k = 0.42 * Math.min(w, h) / P.R * view.zoom;
+                const ox = w / 2, oy = h / 2;
+                const wx = (x) => x - P.cx, wy = (y) => y - P.cy;
+                const zOf = (fz) => P.vs * fz - P.zc;
+                const pr = (X, Y, Z) => proj(X, Y, Z, k, ox, oy);
+                const x0 = P.dom[0], x1 = P.dom[1], y0 = P.dom[2], y1 = P.dom[3];
+
+                // floor outline and axis hints
+                const corners = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]].map((c) => pr(wx(c[0]), wy(c[1]), P.zfloor));
+                g.strokeStyle = 'rgba(51,51,51,0.35)';
+                g.lineWidth = 1;
+                g.beginPath();
+                corners.forEach((c, i) => (i ? g.lineTo(c.sx, c.sy) : g.moveTo(c.sx, c.sy)));
+                g.closePath();
+                g.stroke();
+                const cornerZ0 = pr(wx(x0), wy(y0), P.zfloor);
+                const cornerZ1 = pr(wx(x0), wy(y0), P.zfloor + P.vs * (P.fmax - P.fmin) * 1.15);
+                g.beginPath();
+                g.moveTo(cornerZ0.sx, cornerZ0.sy);
+                g.lineTo(cornerZ1.sx, cornerZ1.sy);
+                g.stroke();
+                g.fillStyle = '#333';
+                g.font = 'bold 14px sans-serif';
+                g.fillText('x', corners[1].sx + 6, corners[1].sy + 4);
+                g.fillText('y', corners[3].sx + 6, corners[3].sy + 4);
+                g.fillText('z', cornerZ1.sx + 6, cornerZ1.sy);
+
+                // surface mesh: quads sorted farthest first, so nearer quads paint over farther ones
+                const quads = [];
+                for (let i = 0; i < MESH_N; i++) {
+                    for (let j = 0; j < MESH_N; j++) {
+                        const a = P.grid[i][j], b = P.grid[i + 1][j], c = P.grid[i + 1][j + 1], d = P.grid[i][j + 1];
+                        if (!a || !b || !c || !d) continue;
+                        const pts = [a, b, c, d].map((q) => pr(wx(q.x), wy(q.y), zOf(q.fz)));
+                        if (pts.some((p) => !Number.isFinite(p.sx) || !Number.isFinite(p.sy))) continue;
+                        quads.push({ pts: pts, depth: (pts[0].d + pts[1].d + pts[2].d + pts[3].d) / 4 });
+                    }
+                }
+                quads.sort((p, q) => q.depth - p.depth);
+                g.lineWidth = 0.8;
+                quads.forEach((q) => {
+                    g.beginPath();
+                    q.pts.forEach((p, idx) => (idx ? g.lineTo(p.sx, p.sy) : g.moveTo(p.sx, p.sy)));
+                    g.closePath();
+                    g.fillStyle = 'rgba(0,133,82,0.10)';
+                    g.fill();
+                    g.strokeStyle = 'rgba(0,133,82,0.45)';
+                    g.stroke();
+                });
+
+                // path on the floor (dashed) and lifted onto the surface (solid)
+                const M = 160;
+                const trace = (zFn) => {
+                    const out = [];
+                    for (let i = 0; i <= M; i++) {
+                        const tt = P.t0 + (P.t1 - P.t0) * i / M;
+                        const X = P.X(tt), Y = P.Y(tt);
+                        out.push(pr(wx(X), wy(Y), zFn(X, Y)));
+                    }
+                    return out;
+                };
+                const polyline = (pts) => {
+                    g.beginPath();
+                    pts.forEach((p, idx) => (idx ? g.lineTo(p.sx, p.sy) : g.moveTo(p.sx, p.sy)));
+                    g.stroke();
+                };
+                g.setLineDash([5, 4]);
+                g.strokeStyle = 'rgba(110,110,110,0.8)';
+                g.lineWidth = 1.5;
+                polyline(trace(() => P.zfloor));
+                g.setLineDash([]);
+                g.strokeStyle = '#008552';
+                g.lineWidth = 3.5;
+                polyline(trace((X, Y) => zOf(P.f(X, Y))));
+
+                // marker at the current t, with a dashed drop line to the floor
+                const top = pr(wx(v.X), wy(v.Y), zOf(v.fz));
+                const foot = pr(wx(v.X), wy(v.Y), P.zfloor);
+                g.setLineDash([3, 3]);
+                g.strokeStyle = 'rgba(110,110,110,0.9)';
+                g.lineWidth = 1.2;
+                g.beginPath();
+                g.moveTo(top.sx, top.sy);
+                g.lineTo(foot.sx, foot.sy);
+                g.stroke();
+                g.setLineDash([]);
+
+                // velocity of the lifted path: (x', y', vs * dz/dt), drawn at a fixed scale
+                const L = 0.8;
+                const tip = pr(wx(v.X) + v.dX * L, wy(v.Y) + v.dY * L, zOf(v.fz) + P.vs * v.sum * L);
+                arrow(g, top, tip, '#F36E24');
+                g.fillStyle = '#CD5920';
+                g.font = 'bold 13px sans-serif';
+                g.fillText('r′(t)', tip.sx + 6, tip.sy - 6);
+
+                g.beginPath();
+                g.arc(top.sx, top.sy, 7, 0, Math.PI * 2);
+                g.fillStyle = '#009CDE';
+                g.fill();
+                g.lineWidth = 2;
+                g.strokeStyle = '#fff';
+                g.stroke();
+
+                sceneCanvas.setAttribute('aria-label',
+                    '3D view of ' + P.formula + ' with a path lifted onto it. The point is at t = ' +
+                    fmt(v.t) + ', x = ' + fmt(v.X) + ', y = ' + fmt(v.Y) + ', height z = ' + fmt(v.fz) + '.');
+            }
+
+            // ---------- Bars: the two terms and their sum ----------
+            function drawBars(v) {
+                const cv = setupCanvas(barsCanvas);
+                const g = cv.g, w = cv.w, h = cv.h;
+                g.clearRect(0, 0, w, h);
+                const items = [
+                    { label: 'x-term', val: v.t1, color: '#009CDE' },
+                    { label: 'y-term', val: v.t2, color: '#6E6E6E' },
+                    { label: 'dz/dt', val: v.sum, color: '#F36E24' }
+                ];
+                const padL = 12, padR = 12, padT = 26, padB = 34;
+                const plotH = h - padT - padB;
+                const midY = padT + plotH / 2;
+                const maxAbs = Math.max(0.2, Math.abs(v.t1), Math.abs(v.t2), Math.abs(v.sum)) * 1.25;
+                const slot = (w - padL - padR) / items.length;
+
+                g.strokeStyle = '#333';
+                g.lineWidth = 1;
+                g.beginPath();
+                g.moveTo(padL, midY);
+                g.lineTo(w - padR, midY);
+                g.stroke();
+
+                g.textAlign = 'center';
+                items.forEach((it, i) => {
+                    const cx = padL + slot * (i + 0.5);
+                    const bw = slot * 0.5;
+                    const bh = it.val / maxAbs * (plotH / 2);
+                    const top = midY - Math.max(bh, 0);
+                    const bottom = midY - Math.min(bh, 0);
+                    g.fillStyle = it.color;
+                    g.fillRect(cx - bw / 2, top, bw, Math.max(bottom - top, 1));
+                    g.fillStyle = '#222';
+                    g.font = 'bold 13px sans-serif';
+                    g.fillText(fmt(it.val), cx, bh >= 0 ? top - 6 : bottom + 15);
+                    g.font = '13px sans-serif';
+                    g.fillStyle = '#333';
+                    g.fillText(it.label, cx, h - 10);
+                });
+
+                barsCanvas.setAttribute('aria-label',
+                    'Bar chart: x-term ' + fmt(v.t1) + ', y-term ' + fmt(v.t2) + ', sum dz/dt ' + fmt(v.sum) + '.');
+            }
+
+            // ---------- z(t) graph with the tangent line whose slope is the sum ----------
+            function drawGraph(P, v) {
+                const cv = setupCanvas(graphCanvas);
+                const g = cv.g, w = cv.w, h = cv.h;
+                g.clearRect(0, 0, w, h);
+                const L = 46, R = 12, T = 12, B = 40;
+                const pw = w - L - R, ph = h - T - B;
+                const M = 240;
+                const ts = [], zs = [];
+                for (let i = 0; i <= M; i++) {
+                    const tt = P.t0 + (P.t1 - P.t0) * i / M;
+                    ts.push(tt);
+                    zs.push(P.f(P.X(tt), P.Y(tt)));
+                }
+                let zmin = Math.min.apply(null, zs), zmax = Math.max.apply(null, zs);
+                const pad = (zmax - zmin) * 0.1 || 0.2;
+                zmin -= pad;
+                zmax += pad;
+                const sx = (tt) => L + (tt - P.t0) / (P.t1 - P.t0) * pw;
+                const sy = (zz) => T + (zmax - zz) / (zmax - zmin) * ph;
+
+                g.strokeStyle = '#e3e3e3';
+                g.lineWidth = 1;
+                g.fillStyle = '#333';
+                g.font = '12px sans-serif';
+                const tStep = niceStep(P.t1 - P.t0), zStep = niceStep(zmax - zmin);
+                g.textAlign = 'center';
+                for (let tt = Math.ceil(P.t0 / tStep) * tStep; tt <= P.t1 + 1e-9; tt += tStep) {
+                    g.beginPath(); g.moveTo(sx(tt), T); g.lineTo(sx(tt), T + ph); g.stroke();
+                    g.fillText(fmt(tt), sx(tt), T + ph + 15);
+                }
+                g.textAlign = 'right';
+                for (let zz = Math.ceil(zmin / zStep) * zStep; zz <= zmax + 1e-9; zz += zStep) {
+                    g.beginPath(); g.moveTo(L, sy(zz)); g.lineTo(L + pw, sy(zz)); g.stroke();
+                    g.fillText(fmt(zz), L - 6, sy(zz) + 4);
+                }
+                if (zmin < 0 && zmax > 0) {
+                    g.setLineDash([4, 4]);
+                    g.strokeStyle = '#999';
+                    g.beginPath(); g.moveTo(L, sy(0)); g.lineTo(L + pw, sy(0)); g.stroke();
+                    g.setLineDash([]);
+                }
+                g.strokeStyle = '#333';
+                g.lineWidth = 1.2;
+                g.beginPath();
+                g.moveTo(L, T);
+                g.lineTo(L, T + ph);
+                g.lineTo(L + pw, T + ph);
+                g.stroke();
+                g.textAlign = 'left';
+                g.fillText('z', L + 4, T + 12);
+                g.textAlign = 'right';
+                g.fillText('t', L + pw, T + ph + 30);
+
+                g.save();
+                g.beginPath();
+                g.rect(L, T, pw, ph);
+                g.clip();
+                g.strokeStyle = '#008552';
+                g.lineWidth = 2.5;
+                g.beginPath();
+                ts.forEach((tt, i) => (i ? g.lineTo(sx(tt), sy(zs[i])) : g.moveTo(sx(tt), sy(zs[i]))));
+                g.stroke();
+                const hh = 0.2 * (P.t1 - P.t0);
+                g.strokeStyle = '#F36E24';
+                g.lineWidth = 2.5;
+                g.beginPath();
+                g.moveTo(sx(v.t - hh), sy(v.fz - v.sum * hh));
+                g.lineTo(sx(v.t + hh), sy(v.fz + v.sum * hh));
+                g.stroke();
+                g.restore();
+
+                g.beginPath();
+                g.arc(sx(v.t), sy(v.fz), 5.5, 0, Math.PI * 2);
+                g.fillStyle = '#009CDE';
+                g.fill();
+
+                graphCanvas.setAttribute('aria-label',
+                    'Graph of z(t) from t = ' + fmt(P.t0) + ' to ' + fmt(P.t1) + '. The orange tangent line at t = ' +
+                    fmt(v.t) + ' has slope dz/dt = ' + fmt(v.sum) + '.');
+                graphCaption.textContent = 'Tangent slope at t = ' + fmt(v.t) + ': dz/dt = ' + fmt(v.sum) +
+                    '. The tangent line is drawn with exactly this slope.';
+            }
+
+            // ---------- Readouts and tree ----------
+            function updateReadouts(v) {
+                setText('r-pos', '(' + fmt(v.X) + ', ' + fmt(v.Y) + ')');
+                setText('r-vel', '(' + fmt(v.dX) + ', ' + fmt(v.dY) + ')');
+                setText('r-grad', '(' + fmt(v.fx) + ', ' + fmt(v.fy) + ')');
+                setText('r-t1', fmt(v.t1));
+                setText('r-t2', fmt(v.t2));
+                setText('r-sum', fmt(v.sum));
+                setText('r-z', fmt(v.fz));
+                setText('tr-fx', '= ' + fmt(v.fx));
+                setText('tr-dx', '= ' + fmt(v.dX));
+                setText('tr-fy', '= ' + fmt(v.fy));
+                setText('tr-dy', '= ' + fmt(v.dY));
+                setText('rt-x', fmt(v.fx) + ' × ' + fmt(v.dX) + ' = ' + fmt(v.t1));
+                setText('rt-y', fmt(v.fy) + ' × ' + fmt(v.dY) + ' = ' + fmt(v.t2));
+                setText('rt-sum', fmt(v.t1) + ' + ' + fmt(v.t2) + ' = ' + fmt(v.sum));
+            }
+
+            // ---------- One pass: compute everything at t and redraw ----------
+            function update() {
+                const P = PRESETS[presetIndex];
+                const X = P.X(t), Y = P.Y(t), dX = P.dX(t), dY = P.dY(t);
+                const fz = P.f(X, Y), fx = P.fx(X, Y), fy = P.fy(X, Y);
+                const t1 = fx * dX, t2 = fy * dY;
+                vals = { t: t, X: X, Y: Y, dX: dX, dY: dY, fz: fz, fx: fx, fy: fy, t1: t1, t2: t2, sum: t1 + t2 };
+                tValue.textContent = t.toFixed(2);
+                updateReadouts(vals);
+                drawScene(P, vals);
+                drawBars(vals);
+                if (graphVisible) drawGraph(P, vals);
+            }
+
+            // ---------- Controls ----------
+            function setPlaying(on) {
+                playing = on;
+                playBtn.textContent = on ? 'Pause' : 'Play';
+                playBtn.setAttribute('aria-pressed', String(on));
+                lastNow = null;
+                if (on) requestAnimationFrame(step);
+            }
+
+            function step(now) {
+                if (!playing) return;
+                const P = PRESETS[presetIndex];
+                if (lastNow !== null) {
+                    t += (now - lastNow) / 1000 * (P.t1 - P.t0) / 12; // one full pass in about 12 seconds
+                    if (t > P.t1) t = P.t0;
+                }
+                lastNow = now;
+                slider.value = String(t);
+                update();
+                requestAnimationFrame(step);
+            }
+
+            playBtn.addEventListener('click', () => setPlaying(!playing));
+
+            slider.addEventListener('input', () => {
+                if (playing) setPlaying(false);
+                t = Number(slider.value);
+                update();
+            });
+
+            presetSel.addEventListener('change', () => {
+                presetIndex = Number(presetSel.value);
+                const P = PRESETS[presetIndex];
+                slider.min = String(P.t0);
+                slider.max = String(P.t1);
+                slider.step = '0.01';
+                t = P.tDefault;
+                slider.value = String(t);
+                update();
+            });
+
+            resetBtn.addEventListener('click', () => {
+                view.theta = -0.7;
+                view.phi = 0.6;
+                view.zoom = 1;
+                update();
+            });
+
+            graphBtn.addEventListener('click', () => {
+                graphVisible = true;
+                graphGate.hidden = true;
+                graphCanvas.hidden = false;
+                graphCaption.hidden = false;
+                update();
+            });
+
+            // Drag to orbit, wheel to zoom (touch-action: none keeps the page from scrolling under the scene).
+            sceneCanvas.addEventListener('pointerdown', (e) => {
+                drag = { x: e.clientX, y: e.clientY };
+                sceneCanvas.setPointerCapture(e.pointerId);
+            });
+            sceneCanvas.addEventListener('pointermove', (e) => {
+                if (!drag) return;
+                const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+                drag = { x: e.clientX, y: e.clientY };
+                view.theta += dx * 0.008;
+                view.phi = Math.max(-1.45, Math.min(1.45, view.phi - dy * 0.008));
+                update();
+            });
+            const endDrag = () => { drag = null; };
+            sceneCanvas.addEventListener('pointerup', endDrag);
+            sceneCanvas.addEventListener('pointercancel', endDrag);
+            sceneCanvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                view.zoom = Math.max(0.5, Math.min(3, view.zoom * (e.deltaY < 0 ? 1.1 : 1 / 1.1)));
+                update();
+            }, { passive: false });
+
+            window.addEventListener('resize', update);
+            window.addEventListener('load', update);
+
+            // ---------- Start ----------
+            PRESETS.forEach(prep);
+            slider.min = String(PRESETS[0].t0);
+            slider.max = String(PRESETS[0].t1);
+            slider.value = String(t);
+            update();
+        })();
+    </script>
+</body>
+
+</html>

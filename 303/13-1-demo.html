@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level Curve Explorer - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- MathJax for rendering equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .demo-section h3 {
+            margin-top: 0;
+        }
+
+        .demo-section ol {
+            margin: 0;
+            padding-left: 1.25rem;
+        }
+
+        .demo-section li {
+            margin-bottom: 0.75rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            min-width: 0;
+        }
+
+        canvas.view {
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            box-sizing: border-box;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        canvas#scene {
+            cursor: grab;
+            touch-action: none;
+        }
+
+        canvas#scene:active {
+            cursor: grabbing;
+        }
+
+        canvas#contour {
+            cursor: crosshair;
+            touch-action: pan-y;
+        }
+
+        canvas.view:focus-visible {
+            outline: 3px solid #009CDE;
+            outline-offset: 2px;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .legend {
+            list-style: none;
+            margin: 0.75rem 0 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 0.4rem 1rem;
+            font-size: 0.82rem;
+            color: #52514e;
+        }
+
+        @media (max-width: 480px) {
+            .legend {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .legend li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sw {
+            flex: none;
+            display: inline-block;
+        }
+
+        .sw-cut {
+            width: 22px;
+            height: 3px;
+            border-radius: 2px;
+            background: #F36E24;
+        }
+
+        .sw-contour {
+            width: 22px;
+            height: 1px;
+            background: #008552;
+        }
+
+        .sw-plane {
+            width: 14px;
+            height: 14px;
+            border-radius: 2px;
+            background: rgba(0, 133, 82, 0.16);
+            border: 1px solid #008552;
+            box-sizing: border-box;
+        }
+
+        .sw-surface {
+            width: 14px;
+            height: 14px;
+            border-radius: 2px;
+            background: #c8c8c8;
+        }
+
+        .sw-undef {
+            width: 14px;
+            height: 14px;
+            border-radius: 2px;
+            background: rgba(110, 110, 110, 0.30);
+        }
+
+        .sw-probe {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #0b0b0b;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 1.5rem;
+            align-items: end;
+        }
+
+        @media (max-width: 900px) {
+            .controls-grid {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 1rem;
+            }
+        }
+
+        .control label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 0.4rem;
+        }
+
+        .control select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #009CDE;
+            border-radius: 4px;
+            background: #fff;
+            font: inherit;
+        }
+
+        .control input[type="range"] {
+            width: 100%;
+            accent-color: #009CDE;
+            margin: 0.25rem 0 0;
+        }
+
+        .control output {
+            font-weight: bold;
+            color: #0b0b0b;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-top: 0.75rem;
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #6E6E6E;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4A4A4A;
+        }
+
+        .readout {
+            margin-top: 1.25rem;
+            padding: 1rem 1.25rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            min-height: 6rem;
+        }
+
+        .readout p {
+            margin: 0.4rem 0;
+        }
+
+        .readout .eq {
+            overflow-x: auto;
+            margin-top: 0.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #0b0b0b;
+            background: #F36E24;
+            margin-bottom: 0.25rem;
+        }
+
+        .badge.empty {
+            background: #A2A2A2;
+        }
+
+        .probe {
+            font-size: 0.9rem;
+            color: #52514e;
+            margin: 0.75rem 0 0;
+            min-height: 1.4em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Level Curve Explorer</h1>
+            <p>&sect;13.1 &mdash; slice a surface at height <em>c</em> and watch the cut appear on the 3D graph and as
+                a level curve on its contour map.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Pick a surface, then slide the height <strong>c</strong>. The green plane \(z = c\) slices the 3D graph,
+                and the slice is drawn in orange on the surface. That same slice is the level curve \(f(x,y) = c\),
+                drawn in orange on the contour map beside it. The green lines on the map are other level curves, at
+                evenly spaced heights. The readout names the shape of the cut.
+            </p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel">
+                <canvas id="scene" class="view" width="600" height="600" role="img"
+                    aria-label="3D graph of the chosen surface, with a green plane at height c and the cut where it meets the surface in orange."></canvas>
+                <div class="scene-hint">Drag to rotate &middot; darker patches are steeper</div>
+                <ul class="legend">
+                    <li><span class="sw sw-plane" aria-hidden="true"></span>Green plane at height z = c</li>
+                    <li><span class="sw sw-cut" aria-hidden="true"></span>Orange cut where the plane meets the surface</li>
+                    <li><span class="sw sw-surface" aria-hidden="true"></span>Gray surface</li>
+                    <li><span class="sw sw-undef" aria-hidden="true"></span>Gray floor: undefined (restricted surface only)</li>
+                </ul>
+                <div style="margin-top: 1rem;">
+                    <button class="btn btn-secondary" id="reset-view" type="button">Reset View</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <canvas id="contour" class="view" tabindex="0" width="600" height="600" role="img"
+                    aria-label="Contour map of the chosen surface. The orange curve is the level curve at height c."></canvas>
+                <div class="scene-hint">Hover over the map, or Tab to it and use the arrow keys, to read f at a point</div>
+                <p class="probe" id="probe-text">Hover over the map to read f(x, y) at a point.</p>
+                <ul class="legend">
+                    <li><span class="sw sw-contour" aria-hidden="true"></span>Green: other level curves, evenly spaced heights</li>
+                    <li><span class="sw sw-cut" aria-hidden="true"></span>Orange: the level curve at height c</li>
+                    <li><span class="sw sw-undef" aria-hidden="true"></span>Gray: undefined region (restricted surface only)</li>
+                    <li><span class="sw sw-probe" aria-hidden="true"></span>Dark dot: the point you are reading</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="controls-grid">
+                <div class="control">
+                    <label for="surface">Choose a surface</label>
+                    <select id="surface">
+                        <option value="bowl" selected>Bowl: z = 9x&sup2; + 4y&sup2;</option>
+                        <option value="saddle">Saddle: z = x&sup2; &minus; y&sup2;</option>
+                        <option value="plane">Tilted plane: z = 3x &minus; 2y</option>
+                        <option value="domain">Restricted: z = &radic;(y&sup2; &minus; x)</option>
+                    </select>
+                </div>
+                <div class="control">
+                    <label for="c-slider">Height c = <output id="c-value" for="c-slider">2</output></label>
+                    <input type="range" id="c-slider" min="-2" max="9" step="0.1" value="2">
+                </div>
+            </div>
+            <div class="checkbox-row">
+                <input type="checkbox" id="show-family" checked>
+                <label for="show-family">Show the other contours (green)</label>
+            </div>
+            <div class="checkbox-row">
+                <input type="checkbox" id="hide-answer">
+                <label for="hide-answer">Hide the answer until I predict</label>
+            </div>
+            <div class="readout" id="readout"></div>
+        </div>
+
+        <div class="demo-section" style="margin-top: 2rem;">
+            <h3>Things to try</h3>
+            <ol>
+                <li><strong>Predict the ellipse.</strong> Choose the bowl and check "Hide the answer." Before you touch
+                    the slider, predict the shape of the cut at c = 4 and which direction it is stretched. Then slide to
+                    c = 4 and uncheck the box to see if you were right. Compare the numbers with the bowl worked example
+                    on the section page.</li>
+                <li><strong>Empty on purpose.</strong> Still on the bowl, predict what the cut looks like at c = &minus;1
+                    before you slide below zero. Then slide down and watch where the plane sits compared with the bowl.
+                    Why does the readout say empty?</li>
+                <li><strong>Spacing and steepness.</strong> With the green contours showing, predict: on the bowl, are the
+                    contours packed tightly near the vertex or farther out? Rotate the 3D view and check where the gray
+                    surface is darkest. Then switch to the tilted plane. Its contours are evenly spaced. What does even
+                    spacing say about how steep the plane is?</li>
+                <li><strong>The edge of the domain.</strong> Choose the restricted surface. Predict the shape of the cut
+                    at c = 0 and where the gray undefined region sits. Then slide c from 0 up to 2 and predict whether the
+                    green contours bunch up or spread out as you move away from the gray edge. Check the contour map, and
+                    compare the domain with the first worked example on the section page.</li>
+            </ol>
+        </div>
+    </main>
+
+    <script>
+        // ---------- constants: Milligan palette (brand guide) plus neutral chart chrome ----------
+        const EPS = 1e-9;
+        const SANS = 'system-ui, -apple-system, "Segoe UI", sans-serif';
+        const INK = '#0b0b0b', INK2 = '#52514e';
+        const SURFACE = '#fafafa', GRID = '#e1e0d9', AXIS = '#898781';
+        const ORANGE = '#F36E24', GREEN = '#008552';
+        const UNDEF = 'rgba(110,110,110,0.30)';
+        const NODES = 44;
+
+        // ---------- DOM ----------
+        const canvas3 = document.getElementById('scene');
+        const canvas2 = document.getElementById('contour');
+        const ctx3 = canvas3.getContext('2d');
+        const ctx2 = canvas2.getContext('2d');
+        const selSurface = document.getElementById('surface');
+        const slider = document.getElementById('c-slider');
+        const outC = document.getElementById('c-value');
+        const chkFamily = document.getElementById('show-family');
+        const chkHide = document.getElementById('hide-answer');
+        const readout = document.getElementById('readout');
+        const probeText = document.getElementById('probe-text');
+        const btnReset = document.getElementById('reset-view');
+
+        // ---------- state ----------
+        let theta = -0.6, phi = 0.6;   // orbit angles; each preset sets its own default in setPreset
+        let dragging = false, lastX = 0, lastY = 0;
+        let dpr = window.devicePixelRatio || 1;
+        let W3 = 300, W2 = 300;
+        let preset = null, mesh = null, cValue = 2;
+        let cRuns = [], familyRuns = [];
+        let probe = null; // {x, y} in math units, or null
+
+        // ---------- surfaces ----------
+        // Each preset gives f, a square window [-L, L]^2, a display height scale zs (the 3D picture is
+        // squashed or stretched vertically so it fits; the contour map and every number are true values),
+        // the slider range, the contour family, and exact level-curve formulas for f(x, y) = c.
+        const PRESETS = {
+            bowl: {
+                f: (x, y) => 9 * x * x + 4 * y * y,
+                L: 1.5, zs: 0.15, view: [-0.6, 0.6],
+                cMin: -2, cMax: 9, cStep: 0.1, cDefault: 2,
+                family: [1, 2, 3, 4, 5, 6, 7, 8, 9], labelC: [1, 4, 9],
+                domain: false,
+                level(c) {
+                    if (c < -EPS) return [];
+                    if (Math.abs(c) < EPS) return [[[0, 0]]];
+                    const a = Math.sqrt(c) / 3, b = Math.sqrt(c) / 2, pts = [];
+                    for (let i = 0; i <= 180; i++) {
+                        const t = 2 * Math.PI * i / 180;
+                        pts.push([a * Math.cos(t), b * Math.sin(t)]);
+                    }
+                    return [pts];
+                },
+                describe(c) {
+                    if (c < -EPS) return { kind: 'empty', title: 'Empty set',
+                        text: 'Nothing at this height. The bowl never dips below z = 0, so the plane z = c misses it completely.',
+                        eq: '\\varnothing' };
+                    if (Math.abs(c) < EPS) return { kind: 'point', title: 'Single point',
+                        text: 'Only the origin. The plane z = 0 touches the bowl at its vertex and nowhere else.',
+                        eq: '(0,0)' };
+                    const a = Math.sqrt(c) / 3, b = Math.sqrt(c) / 2;
+                    return { kind: 'ellipse', title: 'Ellipse',
+                        text: `An ellipse centered at the origin, with semi-axis ${fmt(a)} along x and ${fmt(b)} along y. It is stretched in the y direction.`,
+                        eq: `\\frac{x^2}{${fmt(c / 9)}}+\\frac{y^2}{${fmt(c / 4)}}=1` };
+                }
+            },
+            saddle: {
+                f: (x, y) => x * x - y * y,
+                L: 2.5, zs: 0.45, view: [-0.6, 0.6],
+                cMin: -4, cMax: 4, cStep: 0.1, cDefault: 2,
+                family: [-4, -3, -2, -1, 0, 1, 2, 3, 4], labelC: [-2, 2],
+                domain: false,
+                level(c, L) {
+                    const N = 300, p = [], q = [];
+                    if (Math.abs(c) < EPS) {
+                        for (let i = 0; i <= N; i++) {
+                            const t = -L + 2 * L * i / N;
+                            p.push([t, t]);
+                            q.push([t, -t]);
+                        }
+                        return [p, q];
+                    }
+                    const k = Math.abs(c);
+                    for (let i = 0; i <= N; i++) {
+                        const t = -L + 2 * L * i / N, r = Math.sqrt(k + t * t);
+                        if (c > 0) { p.push([r, t]); q.push([-r, t]); }   // x^2 - y^2 = c
+                        else { p.push([t, r]); q.push([t, -r]); }         // y^2 - x^2 = |c|
+                    }
+                    return [p, q];
+                },
+                describe(c) {
+                    if (Math.abs(c) < EPS) return { kind: 'lines', title: 'Two crossing lines',
+                        text: 'The lines y = x and y = -x cross at the origin. That crossing is the saddle point.',
+                        eq: 'y=\\pm x' };
+                    if (c > 0) return { kind: 'hyperbola', title: 'Hyperbola',
+                        text: `A hyperbola that opens left and right, with vertices at x = \u00b1${fmt(Math.sqrt(c))}.`,
+                        eq: `\\frac{x^2}{${fmt(c)}}-\\frac{y^2}{${fmt(c)}}=1` };
+                    return { kind: 'hyperbola', title: 'Hyperbola',
+                        text: `A hyperbola that opens up and down, with vertices at y = \u00b1${fmt(Math.sqrt(-c))}.`,
+                        eq: `\\frac{y^2}{${fmt(-c)}}-\\frac{x^2}{${fmt(-c)}}=1` };
+                }
+            },
+            plane: {
+                f: (x, y) => 3 * x - 2 * y,
+                L: 2, zs: 0.22, view: [2.15, 0.75],
+                cMin: -6, cMax: 6, cStep: 0.1, cDefault: 2,
+                family: [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6], labelC: [-4, 0, 4],
+                domain: false,
+                level(c, L) {
+                    const N = 400, pts = [];
+                    for (let i = 0; i <= N; i++) {
+                        const x = -2 * L + 4 * L * i / N;
+                        pts.push([x, (3 * x - c) / 2]);
+                    }
+                    return [pts];
+                },
+                describe(c) {
+                    return { kind: 'line', title: 'Straight line',
+                        text: `Every contour of this plane is a straight line with slope 3/2. At height c = ${fmt(c)} the line is 3x - 2y = ${fmt(c)}.`,
+                        eq: `3x-2y=${fmt(c)}` };
+                }
+            },
+            domain: {
+                f: (x, y) => Math.sqrt(y * y - x),
+                fMesh: (x, y) => Math.sqrt(Math.max(0, y * y - x)),
+                L: 3, zs: 0.8, view: [-0.6, 0.6],
+                cMin: -1, cMax: 2, cStep: 0.05, cDefault: 1,
+                family: [0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2], labelC: [0, 1, 2], labelAt: 'left',
+                domain: true,
+                level(c, L) {
+                    if (c < -EPS) return [];
+                    const N = 300, pts = [];
+                    for (let i = 0; i <= N; i++) {
+                        const y = -L + 2 * L * i / N;
+                        pts.push([y * y - c * c, y]);
+                    }
+                    return [pts];
+                },
+                describe(c) {
+                    if (c < -EPS) return { kind: 'empty', title: 'Empty set',
+                        text: 'A square root is never negative, so no point gives a value below 0. The plane z = c lies under the whole surface.',
+                        eq: '\\varnothing' };
+                    if (Math.abs(c) < EPS) return { kind: 'parabola', title: 'Parabola (domain edge)',
+                        text: 'The parabola x = y\u00b2 is the edge of the domain. Everything to its right is undefined (gray).',
+                        eq: 'x=y^2' };
+                    return { kind: 'parabola', title: 'Parabola',
+                        text: `The parabola x = y\u00b2 - ${fmt(c * c)}: the domain edge shifted left by c\u00b2 = ${fmt(c * c)}.`,
+                        eq: `x=y^2-${fmt(c * c)}` };
+                }
+            }
+        };
+
+        // ---------- helpers ----------
+        function fmt(n) {
+            if (!Number.isFinite(n)) return '?';
+            const r = Number(n.toPrecision(3));
+            return Object.is(r, -0) ? '0' : String(r);
+        }
+
+        // Split a polyline into runs that stay inside the window [-L, L]^2.
+        function clipToBox(poly, L) {
+            const runs = [];
+            let run = [];
+            for (const p of poly) {
+                if (Math.abs(p[0]) <= L + 1e-9 && Math.abs(p[1]) <= L + 1e-9) run.push(p);
+                else if (run.length) { runs.push(run); run = []; }
+            }
+            if (run.length) runs.push(run);
+            return runs;
+        }
+
+        function cutRunsFor(c, p) {
+            return p.level(c, p.L).flatMap((poly) => clipToBox(poly, p.L));
+        }
+
+        // Boundary of the restricted domain x <= y^2 inside the window, then the window's right edge.
+        function domainRegionXY(L) {
+            const top = Math.sqrt(L), pts = [];
+            for (let i = 0; i <= 120; i++) {
+                const y = -top + 2 * top * i / 120;
+                pts.push([y * y, y]);
+            }
+            pts.push([L, top], [L, -top]);
+            return pts;
+        }
+
+        function topmost(runs) {
+            let best = null;
+            for (const run of runs) for (const p of run) if (!best || p[1] > best[1]) best = p;
+            return best;
+        }
+
+        function leftmost(runs) {
+            let best = null;
+            for (const run of runs) for (const p of run) if (!best || p[0] < best[0]) best = p;
+            return best;
+        }
+
+        // Grid node (i, j). For the restricted surface the grid bends along the domain edge x = y^2,
+        // so every node lies inside the domain and the mesh edge follows the boundary exactly.
+        function gridXY(p, i, j, n) {
+            const L = p.L;
+            const y = -L + 2 * L * j / (n - 1);
+            const xTop = p.domain ? Math.min(y * y, L) : L;
+            const x = -L + (xTop + L) * i / (n - 1);
+            return [x, y];
+        }
+
+        // Sample f on the grid, skip any node where f is undefined, and build quads for painting.
+        function buildMesh(p) {
+            const n = NODES, raw = [];
+            let zmin = Infinity, zmax = -Infinity;
+            for (let i = 0; i < n; i++) {
+                for (let j = 0; j < n; j++) {
+                    const [x, y] = gridXY(p, i, j, n);
+                    const z = (p.fMesh || p.f)(x, y);
+                    const ok = Number.isFinite(z);
+                    raw.push(ok ? { x, y, z } : null);
+                    if (ok) { if (z < zmin) zmin = z; if (z > zmax) zmax = z; }
+                }
+            }
+            const L = p.L;
+            const zc = p.zs * (zmin + zmax) / 2;
+            const half = Math.max(Math.abs(p.zs * zmin - zc), Math.abs(p.zs * zmax - zc));
+            const R = Math.sqrt(2 * L * L + half * half);
+            const nodes = raw.map((q) => (q ? { x: q.x, y: q.y, z: p.zs * q.z - zc } : null));
+            const quads = [];
+            for (let i = 0; i < n - 1; i++) {
+                for (let j = 0; j < n - 1; j++) {
+                    const a = nodes[i * n + j], b = nodes[(i + 1) * n + j];
+                    const c = nodes[(i + 1) * n + j + 1], d = nodes[i * n + j + 1];
+                    if (!a || !b || !c || !d) continue;
+                    // normal from the two diagonals; flat ground is light, steep ground is dark
+                    const ux = c.x - a.x, uy = c.y - a.y, uz = c.z - a.z;
+                    const vx = d.x - b.x, vy = d.y - b.y, vz = d.z - b.z;
+                    const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+                    const len = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+                    const flat = Math.abs(nz) / len;
+                    quads.push({ idx: [i * n + j, (i + 1) * n + j, (i + 1) * n + j + 1, i * n + j + 1],
+                        shade: Math.round(150 + 90 * flat) });
+                }
+            }
+            return { nodes, quads, zc, R, zmin, zmax,
+                zFloor: p.zs * zmin - zc, zTop: p.zs * zmax - zc };
+        }
+
+        // Orthographic projection with orbit angles. d = depth (larger = farther from the viewer).
+        function makeProjector(W, R) {
+            const ct = Math.cos(theta), st = Math.sin(theta);
+            const cp = Math.cos(phi), sp = Math.sin(phi);
+            const s = 0.94 * (W / 2) / R, cx = W / 2, cy = W / 2;
+            return (x, y, z) => {
+                const x1 = x * ct - y * st, y1 = x * st + y * ct;
+                const y2 = y1 * cp - z * sp, z2 = y1 * sp + z * cp;
+                return { sx: cx + x1 * s, sy: cy - z2 * s, d: y2 };
+            };
+        }
+
+        // Text with a surface-colored halo so it reads over lines. Keeps the label inside the canvas.
+        function labelText(g, s, x, y, W, color, bold, size, center) {
+            g.font = `${bold ? 'bold ' : ''}${size || 12}px ${SANS}`;
+            g.textBaseline = 'middle';
+            g.textAlign = 'left';
+            const w = g.measureText(s).width;
+            const xx = Math.max(4, Math.min(center ? x - w / 2 : x, W - w - 4));
+            const yy = Math.max(8, Math.min(y, W - 8));
+            g.lineJoin = 'round';
+            g.lineWidth = 3;
+            g.strokeStyle = SURFACE;
+            g.strokeText(s, xx, yy);
+            g.fillStyle = color;
+            g.fillText(s, xx, yy);
+        }
+
+        function polyScreen(g, pts, closed, color, width) {
+            g.beginPath();
+            pts.forEach((p, i) => (i ? g.lineTo(p.sx, p.sy) : g.moveTo(p.sx, p.sy)));
+            if (closed) g.closePath();
+            g.strokeStyle = color;
+            g.lineWidth = width;
+            g.stroke();
+        }
+
+        function fillScreen(g, pts, color) {
+            g.beginPath();
+            pts.forEach((p, i) => (i ? g.lineTo(p.sx, p.sy) : g.moveTo(p.sx, p.sy)));
+            g.closePath();
+            g.fillStyle = color;
+            g.fill();
+        }
+
+        function roundRect(g, x, y, w, h, r) {
+            g.beginPath();
+            g.moveTo(x + r, y);
+            g.arcTo(x + w, y, x + w, y + h, r);
+            g.arcTo(x + w, y + h, x, y + h, r);
+            g.arcTo(x, y + h, x, y, r);
+            g.arcTo(x, y, x + w, y, r);
+            g.closePath();
+        }
+
+        // The cut in 3D: orange with a surface-colored ring; far half faded so it reads as behind the surface.
+        function strokeCut3D(g, runs, zPlane, P) {
+            g.lineCap = 'round';
+            g.lineJoin = 'round';
+            for (const run of runs) {
+                if (run.length === 1) {
+                    const pr = P(run[0][0], run[0][1], zPlane);
+                    g.globalAlpha = pr.d > 0 ? 0.5 : 1;
+                    g.beginPath();
+                    g.arc(pr.sx, pr.sy, 5, 0, Math.PI * 2);
+                    g.fillStyle = ORANGE;
+                    g.fill();
+                    g.lineWidth = 2;
+                    g.strokeStyle = SURFACE;
+                    g.stroke();
+                    g.globalAlpha = 1;
+                    continue;
+                }
+                for (let k = 0; k < run.length - 1; k++) {
+                    const a = P(run[k][0], run[k][1], zPlane);
+                    const b = P(run[k + 1][0], run[k + 1][1], zPlane);
+                    g.globalAlpha = (a.d + b.d) / 2 > 0 ? 0.45 : 1;
+                    g.beginPath();
+                    g.moveTo(a.sx, a.sy);
+                    g.lineTo(b.sx, b.sy);
+                    g.strokeStyle = 'rgba(252,252,251,0.7)';
+                    g.lineWidth = 6;
+                    g.stroke();
+                    g.strokeStyle = ORANGE;
+                    g.lineWidth = 3.5;
+                    g.stroke();
+                    g.globalAlpha = 1;
+                }
+            }
+            g.lineCap = 'butt';
+        }
+
+        // The cut on the contour map: orange with a 2px surface ring so it separates from green lines beneath.
+        function strokeCut2D(g, runs, X, Y) {
+            g.lineCap = 'round';
+            g.lineJoin = 'round';
+            for (const run of runs) {
+                if (run.length === 1) {
+                    g.beginPath();
+                    g.arc(X(run[0][0]), Y(run[0][1]), 5, 0, Math.PI * 2);
+                    g.fillStyle = ORANGE;
+                    g.fill();
+                    g.lineWidth = 2;
+                    g.strokeStyle = SURFACE;
+                    g.stroke();
+                    continue;
+                }
+                const trace = () => {
+                    g.beginPath();
+                    run.forEach(([x, y], i) => (i ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y))));
+                };
+                trace();
+                g.strokeStyle = SURFACE;
+                g.lineWidth = 7;
+                g.stroke();
+                trace();
+                g.strokeStyle = ORANGE;
+                g.lineWidth = 3.5;
+                g.stroke();
+            }
+            g.lineCap = 'butt';
+        }
+
+        // ---------- 3D view ----------
+        function draw3D() {
+            if (!preset || !mesh) return;
+            const p = preset, m = mesh, L = p.L, W = W3, g = ctx3;
+            const P = makeProjector(W, m.R);
+            g.setTransform(dpr, 0, 0, dpr, 0, 0);
+            g.clearRect(0, 0, W, W);
+            g.fillStyle = SURFACE;
+            g.fillRect(0, 0, W, W);
+
+            // floor outline and, for the restricted surface, the undefined region on the floor
+            const zEdge = p.domain ? -m.zc : m.zFloor;
+            const floor = [[-L, -L], [L, -L], [L, L], [-L, L]].map(([x, y]) => P(x, y, m.zFloor));
+            polyScreen(g, floor, true, AXIS, 1);
+            if (p.domain) fillScreen(g, domainRegionXY(L).map(([x, y]) => P(x, y, zEdge)), UNDEF);
+
+            // surface quads, farthest first, so near ground covers far ground
+            const sp = m.nodes.map((nd) => (nd ? P(nd.x, nd.y, nd.z) : null));
+            const order = m.quads
+                .map((q) => ({ q, d: (sp[q.idx[0]].d + sp[q.idx[1]].d + sp[q.idx[2]].d + sp[q.idx[3]].d) / 4 }))
+                .sort((u, v) => v.d - u.d);
+            for (const { q } of order) {
+                g.beginPath();
+                q.idx.forEach((k, t) => (t ? g.lineTo(sp[k].sx, sp[k].sy) : g.moveTo(sp[k].sx, sp[k].sy)));
+                g.closePath();
+                g.fillStyle = `rgb(${q.shade},${q.shade},${q.shade})`;
+                g.fill();
+                g.lineWidth = 0.6;
+                g.strokeStyle = 'rgba(60,60,60,0.22)';
+                g.stroke();
+            }
+
+            // the domain edge lies on the surface at z = 0
+            if (p.domain) {
+                const edge = domainRegionXY(L).slice(0, 121).map(([x, y]) => P(x, y, zEdge));
+                polyScreen(g, edge, false, INK2, 1.5);
+            }
+
+            // translucent green plane z = c, then the cut on top of it
+            const zPlane = p.zs * cValue - m.zc;
+            const corners = [[-L, -L], [L, -L], [L, L], [-L, L]].map(([x, y]) => P(x, y, zPlane));
+            fillScreen(g, corners, 'rgba(0,133,82,0.16)');
+            polyScreen(g, corners, true, GREEN, 1.2);
+            strokeCut3D(g, cRuns, zPlane, P);
+
+            // axis hints: x and y along the floor, z up the back-left corner, height on the plane
+            const xEnd = P(L + 0.25, 0, m.zFloor), yEnd = P(0, L + 0.25, m.zFloor);
+            labelText(g, 'x', xEnd.sx, xEnd.sy, W, INK2, true, 13, true);
+            labelText(g, 'y', yEnd.sx, yEnd.sy, W, INK2, true, 13, true);
+            const zBot = P(-L, -L, m.zFloor), zTop = P(-L, -L, m.zTop);
+            g.beginPath();
+            g.moveTo(zBot.sx, zBot.sy);
+            g.lineTo(zTop.sx, zTop.sy);
+            g.strokeStyle = AXIS;
+            g.lineWidth = 1;
+            g.stroke();
+            labelText(g, 'z', zTop.sx, zTop.sy - 6, W, INK2, true, 13, true);
+            const pl = P(L, -L, zPlane);
+            labelText(g, `z = ${fmt(cValue)}`, pl.sx + 6, pl.sy - 6, W, INK2, false, 12, false);
+        }
+
+        // ---------- contour map ----------
+        function probeSummary() {
+            if (!probe || !preset) return null;
+            const v = preset.f(probe.x, probe.y);
+            const head = `x = ${fmt(probe.x)}, y = ${fmt(probe.y)}`;
+            if (!Number.isFinite(v)) return { head, value: 'f is undefined here', rel: 'This point is outside the domain' };
+            const rel = v - cValue;
+            return { head, value: `f(x, y) = ${fmt(v)}`,
+                rel: `f - c = ${rel >= 0 ? '+' : '-'}${fmt(Math.abs(rel))}` };
+        }
+
+        function updateProbeText() {
+            const s = probeSummary();
+            probeText.textContent = s
+                ? `${s.head}. ${s.value}. ${s.rel}.`
+                : 'Hover over the map to read f(x, y) at a point.';
+        }
+
+        function drawProbe(g, X, Y, W) {
+            const s = probeSummary();
+            if (!s) return;
+            const px = X(probe.x), py = Y(probe.y);
+            g.lineWidth = 1;
+            g.strokeStyle = 'rgba(82,81,78,0.55)';
+            g.beginPath();
+            g.moveTo(px, 0);
+            g.lineTo(px, W);
+            g.moveTo(0, py);
+            g.lineTo(W, py);
+            g.stroke();
+            g.beginPath();
+            g.arc(px, py, 4.5, 0, Math.PI * 2);
+            g.fillStyle = INK;
+            g.fill();
+            g.lineWidth = 2;
+            g.strokeStyle = SURFACE;
+            g.stroke();
+            // tooltip: the value leads, the labels follow
+            g.font = `bold 13px ${SANS}`;
+            const w1 = g.measureText(s.value).width;
+            g.font = `12px ${SANS}`;
+            const w2 = Math.max(g.measureText(s.head).width, g.measureText(s.rel).width);
+            const bw = Math.max(w1, w2) + 16, bh = 58;
+            let bx = px + 12, by = py + 12;
+            if (bx + bw > W - 4) bx = px - 12 - bw;
+            if (by + bh > W - 4) by = py - 12 - bh;
+            bx = Math.max(4, Math.min(bx, W - bw - 4));
+            by = Math.max(4, Math.min(by, W - bh - 4));
+            g.fillStyle = 'rgba(252,252,251,0.97)';
+            g.strokeStyle = 'rgba(11,11,11,0.10)';
+            g.lineWidth = 1;
+            roundRect(g, bx, by, bw, bh, 6);
+            g.fill();
+            g.stroke();
+            g.textAlign = 'left';
+            g.textBaseline = 'top';
+            g.font = `bold 13px ${SANS}`;
+            g.fillStyle = INK;
+            g.fillText(s.value, bx + 8, by + 7);
+            g.font = `12px ${SANS}`;
+            g.fillStyle = INK2;
+            g.fillText(s.head, bx + 8, by + 28);
+            g.fillText(s.rel, bx + 8, by + 43);
+        }
+
+        function draw2D() {
+            if (!preset) return;
+            const p = preset, L = p.L, W = W2, g = ctx2;
+            const hidden = chkHide.checked;
+            const k = 0.9 * (W / 2) / L;
+            const X = (x) => W / 2 + x * k;
+            const Y = (y) => W / 2 - y * k;
+            g.setTransform(dpr, 0, 0, dpr, 0, 0);
+            g.clearRect(0, 0, W, W);
+            g.fillStyle = SURFACE;
+            g.fillRect(0, 0, W, W);
+
+            // recessive grid every half unit, then the window frame and axes
+            g.lineWidth = 1;
+            g.strokeStyle = GRID;
+            for (let t = -L; t <= L + EPS; t += 0.5) {
+                if (Math.abs(t) < EPS) continue;
+                g.beginPath(); g.moveTo(X(t), Y(-L)); g.lineTo(X(t), Y(L)); g.stroke();
+                g.beginPath(); g.moveTo(X(-L), Y(t)); g.lineTo(X(L), Y(t)); g.stroke();
+            }
+            g.strokeStyle = AXIS;
+            g.strokeRect(X(-L), Y(L), X(L) - X(-L), Y(-L) - Y(L));
+            g.beginPath();
+            g.moveTo(X(-L), Y(0)); g.lineTo(X(L), Y(0));
+            g.moveTo(X(0), Y(-L)); g.lineTo(X(0), Y(L));
+            g.stroke();
+
+            // integer tick labels
+            g.font = `11px ${SANS}`;
+            g.fillStyle = INK2;
+            for (let t = -Math.floor(L); t <= Math.floor(L); t++) {
+                if (t === 0) continue;
+                g.textAlign = 'center'; g.textBaseline = 'top';
+                g.fillText(String(t), X(t), Y(0) + 4);
+                g.textAlign = 'right'; g.textBaseline = 'middle';
+                g.fillText(String(t), X(0) - 5, Y(t));
+            }
+            // axis names: x just past the right edge, y in the top-left corner (clear of the tick labels)
+            g.textAlign = 'left'; g.textBaseline = 'middle';
+            g.fillText('x', X(L) + 6, Y(0));
+            g.textAlign = 'left'; g.textBaseline = 'top';
+            g.fillText('y', X(-L) + 6, Y(L) + 6);
+
+            // undefined region (restricted surface only)
+            if (p.domain) {
+                fillScreen(g, domainRegionXY(L).map(([x, y]) => ({ sx: X(x), sy: Y(y) })), UNDEF);
+                labelText(g, 'undefined', X(L * 0.55), Y(0) - 10, W, INK2, false, 11, true);
+            }
+
+            // other contours in green, with selective labels
+            if (chkFamily.checked) {
+                g.lineWidth = 1.2;
+                g.strokeStyle = GREEN;
+                g.globalAlpha = 0.9;
+                for (const fam of familyRuns) {
+                    for (const run of fam.runs) {
+                        if (run.length === 1) {
+                            g.beginPath(); g.arc(X(run[0][0]), Y(run[0][1]), 3, 0, Math.PI * 2);
+                            g.fillStyle = GREEN; g.fill();
+                            continue;
+                        }
+                        g.beginPath();
+                        run.forEach(([x, y], i) => (i ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y))));
+                        g.stroke();
+                    }
+                }
+                g.globalAlpha = 1;
+                for (const fam of familyRuns) {
+                    if (!p.labelC.includes(fam.c) || Math.abs(fam.c - cValue) < 1e-6) continue;
+                    const at = p.labelAt === 'left' ? leftmost(fam.runs) : topmost(fam.runs);
+                    if (at) labelText(g, `c = ${fmt(fam.c)}`, X(at[0]) + 6, Y(at[1]) - 4, W, INK2, false, 11, false);
+                }
+            }
+
+            // the cut at height c, orange, on top of everything else
+            strokeCut2D(g, cRuns, X, Y);
+            const topCut = topmost(cRuns);
+            if (topCut) {
+                labelText(g, `c = ${fmt(cValue)}`, X(topCut[0]) + 8, Y(topCut[1]) - 8, W, INK, true, 13, false);
+            } else if (!hidden) {
+                labelText(g, 'no points at this height', W / 2, W * 0.8, W, INK2, false, 12, true);
+            }
+
+            drawProbe(g, X, Y, W);
+        }
+
+        function draw() {
+            draw3D();
+            draw2D();
+        }
+
+        // ---------- readout and state ----------
+        function renderReadout(info) {
+            let html = `<p>Height <strong>c = ${fmt(cValue)}</strong></p>`;
+            if (chkHide.checked) {
+                html += '<p>The shape is hidden. Predict it from the 3D picture, then uncheck "Hide the answer" to check.</p>';
+            } else {
+                html += `<span class="badge ${info.kind}">${info.title}</span>`
+                    + `<p>${info.text}</p>`
+                    + `<div class="eq">\\[ ${info.eq} \\]</div>`;
+            }
+            readout.innerHTML = html;
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise([readout]).catch(() => {});
+            }
+        }
+
+        function refresh() {
+            if (!preset) return;
+            cRuns = cutRunsFor(cValue, preset);
+            const info = preset.describe(cValue);
+            outC.textContent = fmt(cValue);
+            renderReadout(info);
+            canvas3.setAttribute('aria-label',
+                `3D graph of ${preset.name()}. A green plane sits at height z = ${fmt(cValue)}. The orange curve, if there is one, is where the plane cuts the surface.`);
+            canvas2.setAttribute('aria-label',
+                `Contour map of ${preset.name()}. The orange curve is the level curve f(x, y) = ${fmt(cValue)}${chkHide.checked ? '' : ': ' + info.title.toLowerCase()}.`);
+            draw();
+            updateProbeText();
+        }
+
+        function setPreset(key) {
+            const names = {
+                bowl: 'Bowl: z = 9x\u00b2 + 4y\u00b2',
+                saddle: 'Saddle: z = x\u00b2 - y\u00b2',
+                plane: 'Tilted plane: z = 3x - 2y',
+                domain: 'Restricted surface: z = \u221a(y\u00b2 - x)'
+            };
+            preset = PRESETS[key] || PRESETS.bowl;
+            preset.name = () => names[key] || names.bowl;
+            theta = preset.view[0];
+            phi = preset.view[1];
+            mesh = buildMesh(preset);
+            familyRuns = preset.family.map((c) => ({ c, runs: cutRunsFor(c, preset) }));
+            slider.min = String(preset.cMin);
+            slider.max = String(preset.cMax);
+            slider.step = String(preset.cStep);
+            cValue = preset.cDefault;
+            slider.value = String(preset.cDefault);
+            probe = null;
+            refresh();
+        }
+
+        // ---------- sizing (crisp on high-DPI, fits the panel width) ----------
+        function sizeCanvas(cv) {
+            const w = Math.max(160, cv.clientWidth);
+            cv.width = Math.round(w * dpr);
+            cv.height = Math.round(w * dpr);
+            return w;
+        }
+
+        function resizeAll() {
+            dpr = window.devicePixelRatio || 1;
+            W3 = sizeCanvas(canvas3);
+            W2 = sizeCanvas(canvas2);
+            draw();
+        }
+
+        // ---------- 3D orbit ----------
+        canvas3.addEventListener('pointerdown', (e) => {
+            dragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            canvas3.setPointerCapture(e.pointerId);
+        });
+        canvas3.addEventListener('pointermove', (e) => {
+            if (!dragging) return;
+            theta += (e.clientX - lastX) * 0.008;
+            phi = Math.max(-1.4, Math.min(1.4, phi - (e.clientY - lastY) * 0.008));
+            lastX = e.clientX;
+            lastY = e.clientY;
+            draw3D();
+        });
+        const endDrag = () => { dragging = false; };
+        canvas3.addEventListener('pointerup', endDrag);
+        canvas3.addEventListener('pointercancel', endDrag);
+        btnReset.addEventListener('click', () => {
+            if (!preset) return;
+            theta = preset.view[0];
+            phi = preset.view[1];
+            draw3D();
+        });
+
+        // ---------- contour probe: pointer, then keyboard (same tooltip on focus) ----------
+        function setProbe(x, y) {
+            const L = preset.L;
+            probe = {
+                x: Math.round(Math.max(-L, Math.min(L, x)) * 100) / 100,
+                y: Math.round(Math.max(-L, Math.min(L, y)) * 100) / 100
+            };
+            draw2D();
+            updateProbeText();
+        }
+
+        function clearProbe() {
+            probe = null;
+            draw2D();
+            updateProbeText();
+        }
+
+        function probeFromEvent(e) {
+            if (!preset) return;
+            const r = canvas2.getBoundingClientRect();
+            const px = (e.clientX - r.left - canvas2.clientLeft) * (W2 / canvas2.clientWidth);
+            const py = (e.clientY - r.top - canvas2.clientTop) * (W2 / canvas2.clientHeight);
+            const k = 0.9 * (W2 / 2) / preset.L;
+            const x = (px - W2 / 2) / k, y = (W2 / 2 - py) / k;
+            if (Math.abs(x) <= preset.L && Math.abs(y) <= preset.L) setProbe(x, y);
+            else clearProbe();
+        }
+
+        canvas2.addEventListener('pointermove', probeFromEvent);
+        canvas2.addEventListener('pointerdown', probeFromEvent);
+        canvas2.addEventListener('pointerleave', clearProbe);
+        canvas2.addEventListener('focus', () => { if (!probe) setProbe(0, 0); });
+        canvas2.addEventListener('blur', clearProbe);
+        canvas2.addEventListener('keydown', (e) => {
+            if (!preset) return;
+            if (e.key === 'Escape') { e.preventDefault(); clearProbe(); return; }
+            const step = e.shiftKey ? 0.5 : 0.1;
+            const base = probe || { x: 0, y: 0 };
+            let x = base.x, y = base.y;
+            if (e.key === 'ArrowLeft') x -= step;
+            else if (e.key === 'ArrowRight') x += step;
+            else if (e.key === 'ArrowUp') y += step;
+            else if (e.key === 'ArrowDown') y -= step;
+            else return;
+            e.preventDefault();
+            setProbe(x, y);
+        });
+
+        // ---------- controls ----------
+        selSurface.addEventListener('change', () => setPreset(selSurface.value));
+        slider.addEventListener('input', () => {
+            cValue = Math.round(parseFloat(slider.value) * 1e6) / 1e6;
+            refresh();
+        });
+        chkFamily.addEventListener('change', refresh);
+        chkHide.addEventListener('change', refresh);
+        window.addEventListener('resize', resizeAll);
+        window.addEventListener('load', resizeAll);
+
+        resizeAll();
+        setPreset(selSurface.value);
+    </script>
+</body>
+
+</html>

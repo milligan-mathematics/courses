@@ -370,3 +370,22 @@ footer a {
     font-size: 2.5rem;
   }
 }
+/* Phones: wide display math and plain Markdown tables scroll sideways inside the page
+   instead of widening it (seen on the MATH 303 section pages at 375 px). */
+.content-wrapper mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.content-wrapper table:not([class]) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* MathJax's hidden screen-reader copy of each formula is absolutely positioned and was
+   stretching phone pages a few pixels past the edge. Keep it inside its formula. */
+mjx-assistive-mml {
+  max-width: 100% !important;
+}

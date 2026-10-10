@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classify the Critical Points - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- MathJax for rendering equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        .dashboard > .panel {
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard .panel {
+            margin-bottom: 0;
+        }
+
+        .scene-wrap {
+            position: relative;
+        }
+
+        canvas.view {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            touch-action: none;
+        }
+
+        canvas#surface {
+            cursor: grab;
+        }
+
+        canvas#surface:active {
+            cursor: grabbing;
+        }
+
+        canvas#contour {
+            cursor: crosshair;
+        }
+
+        .scene-hint,
+        .hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 0.5rem 0;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: #A2A2A2;
+        }
+
+        .btn-secondary:hover {
+            background-color: #6E6E6E;
+        }
+
+        fieldset.presets {
+            border: none;
+            padding: 0;
+            margin: 0 0 0.75rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.1rem;
+        }
+
+        fieldset.presets legend {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        fieldset.presets label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.92rem;
+            cursor: pointer;
+        }
+
+        .inputs {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+
+        .inputs label {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        .inputs input {
+            width: 5.5rem;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .output-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .output-box p {
+            margin: 0 0 0.45rem;
+        }
+
+        .output-box .big {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        #formula-box {
+            text-align: center;
+            font-size: 1.05rem;
+            padding: 0.5rem 0;
+        }
+
+        table.cp {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            font-size: 0.85rem;
+        }
+
+        table.cp caption {
+            text-align: left;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        table.cp th,
+        table.cp td {
+            padding: 0.45rem 0.25rem;
+            border-bottom: 1px solid #e9ecef;
+            text-align: left;
+            vertical-align: middle;
+            overflow-wrap: anywhere;
+        }
+
+        table.cp th {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        table.cp tr.is-selected {
+            background: #fdf0e8;
+        }
+
+        @media (max-width: 600px) {
+            table.cp {
+                font-size: 0.78rem;
+            }
+
+            table.cp th,
+            table.cp td {
+                padding: 0.4rem 0.15rem;
+            }
+
+            table.cp button.pt {
+                padding: 2px 3px;
+                font-size: 0.74rem;
+            }
+        }
+
+        table.cp button.pt {
+            background: #fff;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            padding: 3px 6px;
+            font: inherit;
+            font-size: 0.82rem;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        table.cp button.pt:focus-visible {
+            outline: 3px solid #009CDE;
+            outline-offset: 1px;
+        }
+
+        .shape-row {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        canvas#shape {
+            width: 170px;
+            height: 150px;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            flex: 0 0 auto;
+        }
+
+        .shape-row .output-box {
+            flex: 1 1 200px;
+            margin-top: 0;
+        }
+
+        .tip {
+            position: absolute;
+            display: none;
+            pointer-events: none;
+            background: #222;
+            color: #fff;
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            transform: translate(12px, -120%);
+            z-index: 2;
+        }
+
+        ol.things li {
+            margin-bottom: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Classify the Critical Points</h1>
+            <p>&sect;13.7 &mdash; a surface and its contour map side by side. Predict each critical point from the
+                contours, then check it with the second partial derivative test.</p>
+        </div>
+    </header>
+
+    <!-- Demo data: exact critical points, computed with SymPy and checked by checks/check_13_7.py -->
+    <script type="application/json" id="demo-data">
+{
+  "presets": [
+    {
+      "id": "egg",
+      "name": "Egg carton",
+      "tex": "x^4 - 2x^2 + y^4 - 2y^2",
+      "desc": "Level curves are 0.5 apart. The plotted square runs from −1.8 to 1.8 in both x and y.",
+      "f": "x**4 - 2*x**2 + y**4 - 2*y**2",
+      "fx": "4*x**3 - 4*x",
+      "fy": "4*y**3 - 4*y",
+      "fxx": "12*x**2 - 4",
+      "fyy": "12*y**2 - 4",
+      "fxy": "0",
+      "domain": [-1.8, 1.8, -1.8, 1.8],
+      "zlim": [-2.5, 8.1],
+      "step": 0.5,
+      "probe": [0.5, 0.2],
+      "arrow": 18,
+      "points": [
+        {"x": "-1", "y": "-1", "f": "-2", "fxx": "8", "fyy": "8", "fxy": "0", "D": "64", "verdict": "min"},
+        {"x": "-1", "y": "0", "f": "-1", "fxx": "8", "fyy": "-4", "fxy": "0", "D": "-32", "verdict": "saddle"},
+        {"x": "-1", "y": "1", "f": "-2", "fxx": "8", "fyy": "8", "fxy": "0", "D": "64", "verdict": "min"},
+        {"x": "0", "y": "-1", "f": "-1", "fxx": "-4", "fyy": "8", "fxy": "0", "D": "-32", "verdict": "saddle"},
+        {"x": "0", "y": "0", "f": "0", "fxx": "-4", "fyy": "-4", "fxy": "0", "D": "16", "verdict": "max"},
+        {"x": "0", "y": "1", "f": "-1", "fxx": "-4", "fyy": "8", "fxy": "0", "D": "-32", "verdict": "saddle"},
+        {"x": "1", "y": "-1", "f": "-2", "fxx": "8", "fyy": "8", "fxy": "0", "D": "64", "verdict": "min"},
+        {"x": "1", "y": "0", "f": "-1", "fxx": "8", "fyy": "-4", "fxy": "0", "D": "-32", "verdict": "saddle"},
+        {"x": "1", "y": "1", "f": "-2", "fxx": "8", "fyy": "8", "fxy": "0", "D": "64", "verdict": "min"}
+      ]
+    },
+    {
+      "id": "hidden",
+      "name": "Quartic x⁴ − y⁴",
+      "tex": "x^4 - y^4",
+      "desc": "Level curves are 0.5 apart. The plotted square runs from −1.5 to 1.5 in both x and y.",
+      "f": "x**4 - y**4",
+      "fx": "4*x**3",
+      "fy": "-4*y**3",
+      "fxx": "12*x**2",
+      "fyy": "-12*y**2",
+      "fxy": "0",
+      "domain": [-1.5, 1.5, -1.5, 1.5],
+      "zlim": [-5.1, 5.1],
+      "step": 0.5,
+      "probe": [0.5, 0.5],
+      "arrow": 30,
+      "points": [
+        {"x": "0", "y": "0", "f": "0", "fxx": "0", "fyy": "0", "fxy": "0", "D": "0", "verdict": "inconclusive",
+         "note": "The fourth-order terms decide it, and the test ignores them. Along the x-axis f = x⁴ rises above 0; along the y-axis f = −y⁴ falls below 0. So the point is a saddle, even though the test could not show it."}
+      ]
+    },
+    {
+      "id": "twin",
+      "name": "Cross-term quartic",
+      "tex": "-x^4 + 7x^2 + 4xy - y^4 - 2y^2",
+      "desc": "Level curves are 2 apart. The plotted square runs from −2.3 to 2.3 in both x and y.",
+      "f": "-(x**4) + 7*x**2 + 4*x*y - y**4 - 2*y**2",
+      "fx": "-4*x**3 + 14*x + 4*y",
+      "fy": "4*x - 4*y**3 - 4*y",
+      "fxx": "-12*x**2 + 14",
+      "fyy": "-12*y**2 - 4",
+      "fxy": "4",
+      "domain": [-2.3, 2.3, -2.3, 2.3],
+      "zlim": [-14, 18],
+      "step": 2,
+      "probe": [0.8, -0.4],
+      "arrow": 12,
+      "points": [
+        {"x": "-2", "y": "-1", "f": "17", "fxx": "-34", "fyy": "-16", "fxy": "4", "D": "528", "verdict": "max"},
+        {"x": "0", "y": "0", "f": "0", "fxx": "14", "fyy": "-4", "fxy": "4", "D": "-72", "verdict": "saddle"},
+        {"x": "2", "y": "1", "f": "17", "fxx": "-34", "fyy": "-16", "fxy": "4", "D": "528", "verdict": "max"}
+      ]
+    },
+    {
+      "id": "five",
+      "name": "Five points (second worked example)",
+      "tex": "6y + 3xy - 3x^2y - 2y^2 - xy^2 + x^2y^2",
+      "desc": "Level curves are 2 apart. The plotted square runs from −2.2 to 3.2 in x and from −1.2 to 4.2 in y.",
+      "f": "6*y + 3*x*y - 3*x**2*y - 2*y**2 - x*y**2 + x**2*y**2",
+      "fx": "3*y - 6*x*y - y**2 + 2*x*y**2",
+      "fy": "6 + 3*x - 3*x**2 - 4*y - 2*x*y + 2*x**2*y",
+      "fxx": "-2*y*(3 - y)",
+      "fyy": "2*(x - 2)*(x + 1)",
+      "fxy": "(3 - 2*y)*(1 - 2*x)",
+      "domain": [-2.2, 3.2, -1.2, 4.2],
+      "zlim": [-12, 26],
+      "step": 2,
+      "probe": [0.2, 1.0],
+      "arrow": 10,
+      "points": [
+        {"x": "-1", "y": "0", "f": "0", "fxx": "0", "fyy": "0", "fxy": "9", "D": "-81", "verdict": "saddle"},
+        {"x": "-1", "y": "3", "f": "0", "fxx": "0", "fyy": "0", "fxy": "-9", "D": "-81", "verdict": "saddle"},
+        {"x": "1/2", "y": "3/2", "f": "81/16", "fxx": "-9/2", "fyy": "-9/2", "fxy": "0", "D": "81/4", "verdict": "max"},
+        {"x": "2", "y": "0", "f": "0", "fxx": "0", "fyy": "0", "fxy": "-9", "D": "-81", "verdict": "saddle"},
+        {"x": "2", "y": "3", "f": "0", "fxx": "0", "fyy": "0", "fxy": "9", "D": "-81", "verdict": "saddle"}
+      ]
+    }
+  ]
+}
+    </script>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Pick a function, then drag the <strong>blue probe</strong> over the contour map on the right. The
+                <strong>orange arrow</strong> is the gradient &nabla;f at the probe: it shrinks as the probe nears a
+                critical point and vanishes at one. The readout gives <strong>D</strong> at the probe. The
+                <strong>orange numbered dots</strong> are every critical point of the function, and the table lists each
+                one exactly. Click a row to zoom in and see the local shape.
+            </p>
+        </div>
+
+        <div class="panel">
+            <fieldset class="presets">
+                <legend>Choose a function</legend>
+                <label><input type="radio" name="preset" value="0" checked> Egg carton</label>
+                <label><input type="radio" name="preset" value="1"> Quartic x⁴ − y⁴</label>
+                <label><input type="radio" name="preset" value="2"> Cross-term quartic</label>
+                <label><input type="radio" name="preset" value="3"> Five points (second worked example)</label>
+            </fieldset>
+            <div id="formula-box"></div>
+            <p class="hint" id="preset-desc"></p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel scene-wrap">
+                <canvas id="surface" class="view" width="600" height="600" role="img"
+                    aria-label="3D surface of the selected function, with its critical points marked in orange."></canvas>
+                <div class="scene-hint">Drag to rotate the surface.</div>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#008552;"></span>level grid</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>critical points</div>
+                    <div><span class="swatch" style="background:#009CDE;"></span>probe</div>
+                </div>
+                <button class="btn btn-secondary" type="button" id="reset-view">Reset 3D view</button>
+            </div>
+
+            <div class="panel scene-wrap">
+                <canvas id="contour" class="view" width="600" height="600" role="img"
+                    aria-label="Contour map of the selected function with critical points marked and a blue probe that has an orange gradient arrow."></canvas>
+                <div class="tip" id="tip"></div>
+                <div class="scene-hint">Drag the blue probe, or hover a critical point for its type.</div>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#008552;"></span>level curves</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>&nabla;f arrow, critical points</div>
+                    <div><span class="swatch" style="background:#009CDE;"></span>probe</div>
+                </div>
+                <div class="inputs">
+                    <label for="probe-x">Probe x</label>
+                    <input type="number" id="probe-x" step="0.05" value="0.50">
+                    <label for="probe-y">Probe y</label>
+                    <input type="number" id="probe-y" step="0.05" value="0.20">
+                    <button class="btn btn-secondary" type="button" id="full-map">Show full map</button>
+                </div>
+                <div class="output-box" id="readout"></div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h4>Critical points</h4>
+            <table class="cp">
+                <caption>Exact values at every critical point of the selected function. Click a point to zoom in.</caption>
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 26%;">Point</th>
+                        <th scope="col" style="width: 9%;">f</th>
+                        <th scope="col" style="width: 11%;"><i>f</i><sub>xx</sub></th>
+                        <th scope="col" style="width: 11%;"><i>f</i><sub>yy</sub></th>
+                        <th scope="col" style="width: 11%;"><i>f</i><sub>xy</sub></th>
+                        <th scope="col" style="width: 11%;"><i>D</i></th>
+                        <th scope="col" style="width: 21%;">Test says</th>
+                    </tr>
+                </thead>
+                <tbody id="cp-body"></tbody>
+            </table>
+            <button class="btn" type="button" id="to-probe" disabled>Put probe on selected point</button>
+            <div class="shape-row">
+                <canvas id="shape" width="170" height="150" role="img"
+                    aria-label="Local shape at the selected critical point. Nothing selected yet."></canvas>
+                <div class="output-box" id="shape-text">Click a critical point in the table to see its local shape.</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h4>Things to try</h4>
+            <p class="hint">Predict first, then check with the demo.</p>
+            <ol class="things">
+                <li><strong>Egg carton: predict every point.</strong> Look only at the contour map. Before you read the
+                    table, predict whether each numbered point is a peak, a valley, or a saddle. Then check. Which
+                    prediction was hardest?</li>
+                <li><strong>Quartic x⁴ − y⁴: find where the test says nothing.</strong> Find the one critical point. Before
+                    you read its row, predict what the surface does along the two axes. Then read the row: what does
+                    \(D\) say, and what can the test conclude?</li>
+                <li><strong>Cross-term quartic: predict all three.</strong> Predict the type of each point from the contour
+                    map, then click each one to check. What happens to \(f\) when you replace \((x,y)\) by \((-x,-y)\)?</li>
+                <li><strong>Five points: connect to the second worked example.</strong> This is the function from the
+                    second worked example on the section page. Predict the type of \((\tfrac12, \tfrac32)\) from the contour
+                    map. Then check \(f_{xx}\) and
+                    \(D\). Did the sign of \(f_{xx}\) agree with your prediction?</li>
+                <li><strong>Away from the critical points.</strong> Drag the probe to a spot where the arrow is long, and
+                    read \(D\) there. Why can that sign not tell you whether a peak or a valley is nearby?</li>
+            </ol>
+        </div>
+
+    </main>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var PRESETS = JSON.parse(document.getElementById('demo-data').textContent).presets;
+
+        var surfaceCanvas = document.getElementById('surface');
+        var contourCanvas = document.getElementById('contour');
+        var shapeCanvas = document.getElementById('shape');
+        var sctx = surfaceCanvas.getContext('2d');
+        var cctx = contourCanvas.getContext('2d');
+        var hctx = shapeCanvas.getContext('2d');
+        var baseCanvas = document.createElement('canvas');
+        var bctx = baseCanvas.getContext('2d');
+
+        var tip = document.getElementById('tip');
+        var tbody = document.getElementById('cp-body');
+        var shapeText = document.getElementById('shape-text');
+        var toProbeBtn = document.getElementById('to-probe');
+        var probeXInput = document.getElementById('probe-x');
+        var probeYInput = document.getElementById('probe-y');
+        var readout = document.getElementById('readout');
+        var formulaBox = document.getElementById('formula-box');
+
+        var COLORS = { probe: '#009CDE', result: '#F36E24', structure: '#008552', ink: '#1d1d1b' };
+
+        var S = {
+            preset: 0,
+            theta: -0.75,
+            phi: 0.75,
+            probe: { x: 0, y: 0 },
+            selected: -1,
+            view: [0, 1, 0, 1],
+            needBase: true,
+            orbiting: false,
+            probing: false,
+            lastX: 0,
+            lastY: 0
+        };
+
+        // ---------- helpers ----------
+        function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+        function cur() { return PRESETS[S.preset]; }
+
+        // Expressions are plain strings from the JSON block (valid JavaScript for these polynomials).
+        function compile(expr) { return new Function('x', 'y', 'return (' + expr + ');'); }
+
+        function parseExact(s) {
+            var t = String(s).trim();
+            var i = t.indexOf('/');
+            if (i >= 0) { return parseFloat(t.slice(0, i)) / parseFloat(t.slice(i + 1)); }
+            return parseFloat(t);
+        }
+
+        // Exact values are shown as written in the data, with a true minus sign.
+        function showExact(s) { return String(s).replace(/-/g, '−'); }
+
+        // Numbers shown to students: three significant figures.
+        function fmt(v) {
+            if (!Number.isFinite(v)) { return '—'; }
+            if (Math.abs(v) < 1e-12) { return '0'; }
+            return String(Number(v.toPrecision(3))).replace(/-/g, '−');
+        }
+
+        function verdictWord(v) {
+            var words = { min: 'minimum', max: 'maximum', saddle: 'saddle', inconclusive: 'inconclusive (D = 0)' };
+            return words[v] || v;
+        }
+
+        PRESETS.forEach(function (p) {
+            p.F = {
+                f: compile(p.f), fx: compile(p.fx), fy: compile(p.fy),
+                fxx: compile(p.fxx), fyy: compile(p.fyy), fxy: compile(p.fxy)
+            };
+            p.points.forEach(function (q) {
+                q.xv = parseExact(q.x);
+                q.yv = parseExact(q.y);
+            });
+        });
+
+        function dot(ctx, x, y, r, fill) {
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fillStyle = fill;
+            ctx.fill();
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = COLORS.ink;
+            ctx.stroke();
+        }
+
+        function labelAt(ctx, text, x, y) {
+            ctx.font = 'bold 12px sans-serif';
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#fff';
+            ctx.strokeText(text, x, y);
+            ctx.fillStyle = COLORS.ink;
+            ctx.fillText(text, x, y);
+        }
+
+        function arrow(ctx, x0, y0, x1, y1, color) {
+            var ang = Math.atan2(y1 - y0, x1 - x0);
+            var head = 9;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.lineTo(x1, y1);
+            ctx.stroke();
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.lineTo(x1, y1);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x1 - head * Math.cos(ang - 0.45), y1 - head * Math.sin(ang - 0.45));
+            ctx.lineTo(x1 - head * Math.cos(ang + 0.45), y1 - head * Math.sin(ang + 0.45));
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        // ---------- sizing ----------
+        function sizeCanvases() {
+            var r1 = surfaceCanvas.getBoundingClientRect();
+            surfaceCanvas.width = Math.max(10, Math.round(r1.width));
+            surfaceCanvas.height = surfaceCanvas.width;
+            var r2 = contourCanvas.getBoundingClientRect();
+            contourCanvas.width = Math.max(10, Math.round(r2.width));
+            contourCanvas.height = contourCanvas.width;
+            var r3 = shapeCanvas.getBoundingClientRect();
+            shapeCanvas.width = Math.max(10, Math.round(r3.width));
+            shapeCanvas.height = Math.max(10, Math.round(r3.height));
+            S.needBase = true;
+        }
+
+        // ---------- 3D projection (same convention as the Section 11 demos) ----------
+        // Rotate about the z-axis by theta, then tilt by phi. Larger depth = farther from the viewer.
+        function project(u, v, w, W, H, theta, phi, k) {
+            var ct = Math.cos(theta), st = Math.sin(theta);
+            var x1 = u * ct - v * st;
+            var y1 = u * st + v * ct;
+            var cp = Math.cos(phi), sp = Math.sin(phi);
+            var y2 = y1 * cp - w * sp;
+            var z2 = y1 * sp + w * cp;
+            return { sx: W / 2 + x1 * k, sy: H / 2 - z2 * k, depth: y2 };
+        }
+
+        function projectMain(u, v, w, W, H) {
+            return project(u, v, w, W, H, S.theta, S.phi, 0.27 * Math.min(W, H));
+        }
+
+        function toU(p, x) { return (2 * x - (p.domain[0] + p.domain[1])) / (p.domain[1] - p.domain[0]); }
+        function toV(p, y) { return (2 * y - (p.domain[2] + p.domain[3])) / (p.domain[3] - p.domain[2]); }
+        function toW(p, z) { return clamp((2 * z - (p.zlim[0] + p.zlim[1])) / (p.zlim[1] - p.zlim[0]), -1, 1); }
+
+        function seg3(ctx, a, b, W, H) {
+            var pa = projectMain(a[0], a[1], a[2], W, H);
+            var pb = projectMain(b[0], b[1], b[2], W, H);
+            ctx.beginPath();
+            ctx.moveTo(pa.sx, pa.sy);
+            ctx.lineTo(pb.sx, pb.sy);
+            ctx.stroke();
+        }
+
+        // Shading from the surface normal (-fx, -fy, 1) and a fixed light direction.
+        function shadeAt(p, x, y) {
+            var nx = -p.F.fx(x, y), ny = -p.F.fy(x, y), nz = 1;
+            var len = Math.sqrt(nx * nx + ny * ny + nz * nz);
+            var L = [0.3, -0.5, 0.8];
+            var Ll = Math.sqrt(L[0] * L[0] + L[1] * L[1] + L[2] * L[2]);
+            var lit = (nx * L[0] + ny * L[1] + nz * L[2]) / (len * Ll);
+            return 0.45 + 0.55 * Math.max(0, lit);
+        }
+
+        function shadeColor(s) {
+            return 'rgb(' + Math.round(226 * s) + ',' + Math.round(238 * s) + ',' + Math.round(232 * s) + ')';
+        }
+
+        function drawSurface() {
+            var W = surfaceCanvas.width, H = surfaceCanvas.height;
+            if (W < 10) { return; }
+            var p = cur(), ctx = sctx, d = p.domain, N = 30;
+            ctx.clearRect(0, 0, W, H);
+
+            // Floor grid first, so the surface covers it where it should.
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.14)';
+            ctx.lineWidth = 1;
+            var t, s;
+            for (t = 0; t <= 4; t++) {
+                s = -1 + t / 2;
+                seg3(ctx, [-1, s, -1], [1, s, -1], W, H);
+                seg3(ctx, [s, -1, -1], [s, 1, -1], W, H);
+            }
+
+            // Project the grid of surface points; skip any point where f is not finite.
+            var grid = [], i, j;
+            for (i = 0; i <= N; i++) {
+                var row = [];
+                for (j = 0; j <= N; j++) {
+                    var x = d[0] + (d[1] - d[0]) * i / N;
+                    var y = d[2] + (d[3] - d[2]) * j / N;
+                    var z = p.F.f(x, y);
+                    row.push(Number.isFinite(z) ? projectMain(toU(p, x), toV(p, y), toW(p, z), W, H) : null);
+                }
+                grid.push(row);
+            }
+
+            var quads = [];
+            for (i = 0; i < N; i++) {
+                for (j = 0; j < N; j++) {
+                    var a = grid[i][j], b = grid[i + 1][j], c = grid[i + 1][j + 1], e = grid[i][j + 1];
+                    if (!a || !b || !c || !e) { continue; }
+                    var xc = d[0] + (d[1] - d[0]) * (i + 0.5) / N;
+                    var yc = d[2] + (d[3] - d[2]) * (j + 0.5) / N;
+                    quads.push({
+                        pts: [a, b, c, e],
+                        depth: (a.depth + b.depth + c.depth + e.depth) / 4,
+                        shade: shadeAt(p, xc, yc)
+                    });
+                }
+            }
+            // Painter's order: farthest first (largest depth first).
+            quads.sort(function (q1, q2) { return q2.depth - q1.depth; });
+            quads.forEach(function (q) {
+                ctx.beginPath();
+                ctx.moveTo(q.pts[0].sx, q.pts[0].sy);
+                ctx.lineTo(q.pts[1].sx, q.pts[1].sy);
+                ctx.lineTo(q.pts[2].sx, q.pts[2].sy);
+                ctx.lineTo(q.pts[3].sx, q.pts[3].sy);
+                ctx.closePath();
+                ctx.fillStyle = shadeColor(q.shade);
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(0, 133, 82, 0.30)';
+                ctx.lineWidth = 0.6;
+                ctx.stroke();
+            });
+
+            // Probe: a blue dot on the surface with a dashed drop line to the floor.
+            var pr = S.probe, pz = p.F.f(pr.x, pr.y);
+            if (Number.isFinite(pz)) {
+                var top = projectMain(toU(p, pr.x), toV(p, pr.y), toW(p, pz), W, H);
+                var floorPt = projectMain(toU(p, pr.x), toV(p, pr.y), -1, W, H);
+                ctx.setLineDash([4, 4]);
+                ctx.strokeStyle = COLORS.probe;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(top.sx, top.sy);
+                ctx.lineTo(floorPt.sx, floorPt.sy);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                dot(ctx, top.sx, top.sy, 6, COLORS.probe);
+            }
+
+            // Critical points on the surface.
+            p.points.forEach(function (q, k) {
+                var fz = p.F.f(q.xv, q.yv);
+                var pt = projectMain(toU(p, q.xv), toV(p, q.yv), toW(p, fz), W, H);
+                dot(ctx, pt.sx, pt.sy, 5.5, COLORS.result);
+                labelAt(ctx, String(k + 1), pt.sx + 7, pt.sy - 6);
+                if (k === S.selected) {
+                    ctx.beginPath();
+                    ctx.arc(pt.sx, pt.sy, 11, 0, Math.PI * 2);
+                    ctx.strokeStyle = COLORS.result;
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
+                }
+            });
+
+            // Axis labels at the box corners.
+            ctx.font = 'bold 13px sans-serif';
+            ctx.fillStyle = COLORS.ink;
+            var lx = projectMain(1.12, -1, -1, W, H), ly = projectMain(-1, 1.12, -1, W, H), lz = projectMain(-1, -1, 1.15, W, H);
+            ctx.fillText('x', lx.sx, lx.sy);
+            ctx.fillText('y', ly.sx, ly.sy);
+            ctx.fillText('f', lz.sx, lz.sy);
+        }
+
+        // ---------- contour map ----------
+        // Level curves: a pixel is inked when its level index differs from its right or lower neighbour.
+        function renderBase() {
+            var p = cur(), W = contourCanvas.width, H = contourCanvas.height;
+            if (W < 10) { return; }
+            baseCanvas.width = W;
+            baseCanvas.height = H;
+            var v = S.view;
+            var img = bctx.createImageData(W, H);
+            var data = img.data;
+            var vals = new Float64Array(W * H);
+            var lev = new Int32Array(W * H);
+            var i, j, id;
+            for (j = 0; j < H; j++) {
+                var y = v[3] - (v[3] - v[2]) * (j + 0.5) / H;
+                for (i = 0; i < W; i++) {
+                    var x = v[0] + (v[1] - v[0]) * (i + 0.5) / W;
+                    var val = p.F.f(x, y);
+                    id = j * W + i;
+                    vals[id] = val;
+                    lev[id] = Number.isFinite(val) ? Math.floor(val / p.step) : -1e9;
+                }
+            }
+            for (j = 0; j < H; j++) {
+                for (i = 0; i < W; i++) {
+                    id = j * W + i;
+                    var fv = vals[id];
+                    var r, g, b;
+                    if (Number.isFinite(fv)) {
+                        var tt = clamp((fv - p.zlim[0]) / (p.zlim[1] - p.zlim[0]), 0, 1);
+                        r = Math.round(247 - 24 * tt);
+                        g = Math.round(249 - 18 * tt);
+                        b = Math.round(248 - 20 * tt);
+                        var k = lev[id];
+                        var edge = (i + 1 < W && lev[id + 1] !== k) || (j + 1 < H && lev[id + W] !== k);
+                        if (edge) { r = 0; g = 133; b = 82; }
+                    } else {
+                        r = 235; g = 235; b = 235;
+                    }
+                    var o = id * 4;
+                    data[o] = r;
+                    data[o + 1] = g;
+                    data[o + 2] = b;
+                    data[o + 3] = 255;
+                }
+            }
+            bctx.putImageData(img, 0, 0);
+            S.needBase = false;
+        }
+
+        function drawContourOverlay() {
+            var p = cur(), W = contourCanvas.width, H = contourCanvas.height, v = S.view;
+            if (W < 10 || S.needBase) { return; }
+            var ctx = cctx;
+            ctx.clearRect(0, 0, W, H);
+            ctx.drawImage(baseCanvas, 0, 0);
+
+            function sx(x) { return (x - v[0]) / (v[1] - v[0]) * W; }
+            function sy(y) { return (v[3] - y) / (v[3] - v[2]) * H; }
+
+            p.points.forEach(function (q, k) {
+                var px = sx(q.xv), py = sy(q.yv);
+                if (px < -20 || px > W + 20 || py < -20 || py > H + 20) { return; }
+                if (k === S.selected) {
+                    ctx.beginPath();
+                    ctx.arc(px, py, 12, 0, Math.PI * 2);
+                    ctx.strokeStyle = COLORS.result;
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
+                }
+                dot(ctx, px, py, 5.5, COLORS.result);
+                labelAt(ctx, String(k + 1), px + 8, py - 7);
+            });
+
+            // Gradient arrow at the probe: direction of grad f, length proportional to |grad f| (capped).
+            var pr = S.probe;
+            var gx = p.F.fx(pr.x, pr.y), gy = p.F.fy(pr.x, pr.y);
+            var mag = Math.hypot(gx, gy);
+            var px2 = sx(pr.x), py2 = sy(pr.y);
+            if (Number.isFinite(mag) && mag > 1e-9) {
+                var len = Math.min(0.42 * Math.min(W, H), p.arrow * mag);
+                arrow(ctx, px2, py2, px2 + gx / mag * len, py2 - gy / mag * len, COLORS.result);
+            }
+            dot(ctx, px2, py2, 6.5, COLORS.probe);
+        }
+
+        // ---------- readout and table ----------
+        function nearest(p, x, y) {
+            var best = 0, bd = Infinity;
+            p.points.forEach(function (q, k) {
+                var dd = Math.hypot(q.xv - x, q.yv - y);
+                if (dd < bd) { bd = dd; best = k; }
+            });
+            return { k: best, d: bd };
+        }
+
+        function updateReadout() {
+            var p = cur(), x = S.probe.x, y = S.probe.y;
+            var f = p.F.f(x, y), fx = p.F.fx(x, y), fy = p.F.fy(x, y);
+            var A = p.F.fxx(x, y), B = p.F.fyy(x, y), C = p.F.fxy(x, y);
+            var D = A * B - C * C;
+            var g = Math.hypot(fx, fy);
+            var nr = nearest(p, x, y);
+            var dWord = D > 1e-9 ? 'D &gt; 0' : (D < -1e-9 ? 'D &lt; 0' : 'D = 0');
+            var verdict = g < 0.15
+                ? 'The gradient is nearly zero, so the probe is at or very near a critical point. Check its row in the table.'
+                : 'The gradient is not zero, so this is not a critical point. D describes how the surface curves here, but without ∇f = 0 it cannot say whether a peak or a valley is nearby.';
+            var np = p.points[nr.k];
+            readout.innerHTML =
+                '<p><strong>Probe (' + x.toFixed(2).replace(/-/g, '−') + ', ' + y.toFixed(2).replace(/-/g, '−') + ')</strong>: f = ' + fmt(f) + '.</p>' +
+                '<p>∇f = ⟨' + fmt(fx) + ', ' + fmt(fy) + '⟩, so |∇f| = ' + fmt(g) + '.</p>' +
+                '<p><i>f</i><sub>xx</sub> = ' + fmt(A) + ', <i>f</i><sub>yy</sub> = ' + fmt(B) + ', <i>f</i><sub>xy</sub> = ' + fmt(C) +
+                ', so <span class="big">D = ' + fmt(D) + '</span> (' + dWord + ').</p>' +
+                '<p>' + verdict + '</p>' +
+                '<p class="hint">Nearest critical point: #' + (nr.k + 1) + ' at (' + showExact(np.x) + ', ' + showExact(np.y) + '), ' + fmt(nr.d) + ' away.</p>';
+        }
+
+        function renderTable() {
+            var p = cur();
+            tbody.innerHTML = p.points.map(function (q, k) {
+                return '<tr data-row="' + k + '">' +
+                    '<td><button type="button" class="pt" data-idx="' + k + '" aria-pressed="false">' +
+                    (k + 1) + '. (' + showExact(q.x) + ', ' + showExact(q.y) + ')</button></td>' +
+                    '<td>' + showExact(q.f) + '</td>' +
+                    '<td>' + showExact(q.fxx) + '</td>' +
+                    '<td>' + showExact(q.fyy) + '</td>' +
+                    '<td>' + showExact(q.fxy) + '</td>' +
+                    '<td>' + showExact(q.D) + '</td>' +
+                    '<td>' + verdictWord(q.verdict) + '</td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        function highlightRows() {
+            tbody.querySelectorAll('tr').forEach(function (tr) {
+                var k = parseInt(tr.getAttribute('data-row'), 10);
+                var on = (k === S.selected);
+                tr.classList.toggle('is-selected', on);
+                tr.querySelector('button').setAttribute('aria-pressed', on ? 'true' : 'false');
+            });
+        }
+
+        function shapeMessage(q, k) {
+            var head = '<p><strong>Point ' + (k + 1) + ' = (' + showExact(q.x) + ', ' + showExact(q.y) + ')</strong></p>';
+            var nums = '<p><i>f</i><sub>xx</sub> = ' + showExact(q.fxx) + ', <i>f</i><sub>yy</sub> = ' + showExact(q.fyy) +
+                ', <i>f</i><sub>xy</sub> = ' + showExact(q.fxy) + ', <i>D</i> = ' + showExact(q.D) + '.</p>';
+            var texts = {
+                min: 'Bowl. Both curvatures are positive, so the surface rises in every direction from here: a local minimum.',
+                max: 'Cap. The surface falls in every direction from here: a local maximum.',
+                saddle: 'Saddle. The surface rises in some directions and falls in others, so the point is neither a maximum nor a minimum.',
+                inconclusive: 'The test is silent here (D = 0). ' + (q.note || '')
+            };
+            return head + nums + '<p>' + texts[q.verdict] + '</p>';
+        }
+
+        // Local shape: the quadratic part Q(u,v) = (A u^2 + 2C uv + B v^2)/2, drawn as a small wireframe.
+        function drawShape(q) {
+            var W = shapeCanvas.width, H = shapeCanvas.height, ctx = hctx;
+            ctx.clearRect(0, 0, W, H);
+            if (W < 10) { return; }
+            if (!q) {
+                shapeCanvas.setAttribute('aria-label', 'Local shape at the selected critical point. Nothing selected yet.');
+                return;
+            }
+            var A = parseExact(q.fxx), B = parseExact(q.fyy), C = parseExact(q.fxy);
+            var N = 14, maxAbs = 0, i, j, u, v, z;
+            var zs = [];
+            for (i = 0; i <= N; i++) {
+                var row = [];
+                for (j = 0; j <= N; j++) {
+                    u = -1 + 2 * i / N;
+                    v = -1 + 2 * j / N;
+                    z = 0.5 * (A * u * u + 2 * C * u * v + B * v * v);
+                    row.push(z);
+                    if (Math.abs(z) > maxAbs) { maxAbs = Math.abs(z); }
+                }
+                zs.push(row);
+            }
+            var sc = maxAbs > 1e-12 ? 0.9 / maxAbs : 0;
+            var k = 0.24 * Math.min(W, H);
+            function P(uu, vv, ww) { return project(uu, vv, ww, W, H, -0.6, 0.6, k); }
+
+            // Reference plane z = 0
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.18)';
+            ctx.lineWidth = 1;
+            var s;
+            for (var t = 0; t <= 2; t++) {
+                s = -1 + t;
+                var a1 = P(-1, s, 0), b1 = P(1, s, 0), a2 = P(s, -1, 0), b2 = P(s, 1, 0);
+                ctx.beginPath(); ctx.moveTo(a1.sx, a1.sy); ctx.lineTo(b1.sx, b1.sy); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(a2.sx, a2.sy); ctx.lineTo(b2.sx, b2.sy); ctx.stroke();
+            }
+
+            // Wireframe of the quadratic part
+            ctx.strokeStyle = COLORS.structure;
+            ctx.lineWidth = 1.2;
+            for (i = 0; i <= N; i++) {
+                ctx.beginPath();
+                for (j = 0; j <= N; j++) {
+                    var pp = P(-1 + 2 * i / N, -1 + 2 * j / N, zs[i][j] * sc);
+                    if (j === 0) { ctx.moveTo(pp.sx, pp.sy); } else { ctx.lineTo(pp.sx, pp.sy); }
+                }
+                ctx.stroke();
+            }
+            for (j = 0; j <= N; j++) {
+                ctx.beginPath();
+                for (i = 0; i <= N; i++) {
+                    var pq = P(-1 + 2 * i / N, -1 + 2 * j / N, zs[i][j] * sc);
+                    if (i === 0) { ctx.moveTo(pq.sx, pq.sy); } else { ctx.lineTo(pq.sx, pq.sy); }
+                }
+                ctx.stroke();
+            }
+
+            var centre = P(0, 0, 0);
+            dot(ctx, centre.sx, centre.sy, 5, COLORS.result);
+
+            var names = { min: 'bowl', max: 'cap', saddle: 'saddle', inconclusive: maxAbs === 0 ? 'flat' : 'trough' };
+            ctx.font = 'bold 12px sans-serif';
+            ctx.fillStyle = COLORS.ink;
+            ctx.fillText(names[q.verdict] || '', 8, H - 8);
+            shapeCanvas.setAttribute('aria-label', 'Local shape at critical point ' + (S.selected + 1) + ': ' + (names[q.verdict] || q.verdict) + '.');
+        }
+
+        function highlightSelection() { highlightRows(); }
+
+        function selectPoint(k) {
+            var p = cur(), q = p.points[k], half = 0.18 * (p.domain[1] - p.domain[0]);
+            S.selected = k;
+            S.view = [q.xv - half, q.xv + half, q.yv - half, q.yv + half];
+            S.needBase = true;
+            toProbeBtn.disabled = false;
+            highlightSelection();
+            drawShape(q);
+            shapeText.innerHTML = shapeMessage(q, k);
+            refresh();
+        }
+
+        // ---------- probe ----------
+        function setProbe(x, y) {
+            var v = S.view;
+            S.probe = { x: clamp(x, v[0], v[1]), y: clamp(y, v[2], v[3]) };
+            probeXInput.value = S.probe.x.toFixed(2);
+            probeYInput.value = S.probe.y.toFixed(2);
+            refresh();
+        }
+
+        function contourXY(e) {
+            var r = contourCanvas.getBoundingClientRect();
+            var px = e.clientX - r.left, py = e.clientY - r.top;
+            var W = contourCanvas.width, H = contourCanvas.height, v = S.view;
+            return { px: px, py: py, x: v[0] + (v[1] - v[0]) * px / W, y: v[3] - (v[3] - v[2]) * py / H };
+        }
+
+        // ---------- page state ----------
+        function updateAria() {
+            var p = cur(), pr = S.probe;
+            var where = '(' + pr.x.toFixed(2) + ', ' + pr.y.toFixed(2) + ')';
+            surfaceCanvas.setAttribute('aria-label', '3D surface of the ' + p.name.toLowerCase() +
+                ' function. Its ' + p.points.length + ' critical points are orange; the blue dot is the probe at ' + where + '.');
+            contourCanvas.setAttribute('aria-label', 'Contour map of the ' + p.name.toLowerCase() +
+                ' function with level curves ' + p.step + ' units apart. Critical points are orange; the blue probe at ' + where + ' has an orange gradient arrow.');
+        }
+
+        function showFormula() {
+            formulaBox.innerHTML = '\\[f(x,y) = ' + cur().tex + '\\]';
+            try {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise([formulaBox]).catch(function () {});
+                }
+            } catch (err) {
+                // MathJax is optional; the raw formula still reads.
+            }
+        }
+
+        function renderTableAll() {
+            renderTable();
+        }
+
+        function refresh() {
+            if (S.needBase) { renderBase(); }
+            drawContourOverlay();
+            drawSurface();
+            updateReadout();
+            updateAria();
+        }
+
+        function setPreset(i) {
+            S.preset = i;
+            var p = cur();
+            S.selected = -1;
+            S.view = p.domain.slice();
+            S.needBase = true;
+            S.probe = { x: p.probe[0], y: p.probe[1] };
+            probeXInput.value = p.probe[0].toFixed(2);
+            probeYInput.value = p.probe[1].toFixed(2);
+            document.getElementById('preset-desc').textContent = p.desc;
+            toProbeBtn.disabled = true;
+            renderTableAll();
+            drawShape(null);
+            shapeText.innerHTML = 'Click a critical point in the table to see its local shape.';
+            showFormula();
+            refresh();
+        }
+
+        // ---------- events ----------
+        document.querySelectorAll('input[name="preset"]').forEach(function (r) {
+            r.addEventListener('change', function () {
+                if (r.checked) { setPreset(parseInt(r.value, 10)); }
+            });
+        });
+
+        tbody.addEventListener('click', function (e) {
+            var b = e.target.closest('button.pt');
+            if (!b) { return; }
+            selectPoint(parseInt(b.getAttribute('data-idx'), 10));
+        });
+
+        toProbeBtn.addEventListener('click', function () {
+            if (S.selected < 0) { return; }
+            var q = cur().points[S.selected];
+            setProbe(q.xv, q.yv);
+        });
+
+        document.getElementById('reset-view').addEventListener('click', function () {
+            S.theta = -0.75;
+            S.phi = 0.75;
+            drawSurface();
+        });
+
+        document.getElementById('full-map').addEventListener('click', function () {
+            S.view = cur().domain.slice();
+            S.needBase = true;
+            refresh();
+        });
+
+        function onProbeInput() {
+            var p = cur(), x = parseFloat(probeXInput.value), y = parseFloat(probeYInput.value);
+            if (!Number.isFinite(x) || !Number.isFinite(y)) { return; }
+            S.probe = { x: clamp(x, p.domain[0], p.domain[1]), y: clamp(y, p.domain[2], p.domain[3]) };
+            refresh();
+        }
+        probeXInput.addEventListener('change', onProbeInput);
+        probeYInput.addEventListener('change', onProbeInput);
+
+        surfaceCanvas.addEventListener('pointerdown', function (e) {
+            S.orbiting = true;
+            S.lastX = e.clientX;
+            S.lastY = e.clientY;
+            surfaceCanvas.setPointerCapture(e.pointerId);
+        });
+        surfaceCanvas.addEventListener('pointermove', function (e) {
+            if (!S.orbiting) { return; }
+            var dx = e.clientX - S.lastX, dy = e.clientY - S.lastY;
+            S.lastX = e.clientX;
+            S.lastY = e.clientY;
+            S.theta += dx * 0.008;
+            S.phi = clamp(S.phi - dy * 0.008, 0.05, 1.5);
+            drawSurface();
+        });
+        function endOrbit() { S.orbiting = false; }
+        surfaceCanvas.addEventListener('pointerup', endOrbit);
+        surfaceCanvas.addEventListener('pointercancel', endOrbit);
+
+        contourCanvas.addEventListener('pointerdown', function (e) {
+            S.probing = true;
+            contourCanvas.setPointerCapture(e.pointerId);
+            var c = contourXY(e);
+            setProbe(c.x, c.y);
+        });
+        contourCanvas.addEventListener('pointermove', function (e) {
+            var c = contourXY(e);
+            if (S.probing) {
+                setProbe(c.x, c.y);
+                return;
+            }
+            var p = cur(), W = contourCanvas.width, H = contourCanvas.height, v = S.view, hit = -1;
+            p.points.forEach(function (q, k) {
+                var qx = (q.xv - v[0]) / (v[1] - v[0]) * W;
+                var qy = (v[3] - q.yv) / (v[3] - v[2]) * H;
+                if (Math.hypot(qx - c.px, qy - c.py) < 14) { hit = k; }
+            });
+            if (hit >= 0) {
+                var q2 = p.points[hit];
+                tip.textContent = '#' + (hit + 1) + ' (' + showExact(q2.x) + ', ' + showExact(q2.y) + '): ' + verdictWord(q2.verdict);
+                tip.style.left = (contourCanvas.offsetLeft + c.px) + 'px';
+                tip.style.top = (contourCanvas.offsetTop + c.py) + 'px';
+                tip.style.display = 'block';
+            } else {
+                tip.style.display = 'none';
+            }
+        });
+        function endProbe() { S.probing = false; }
+        contourCanvas.addEventListener('pointerup', endProbe);
+        contourCanvas.addEventListener('pointercancel', endProbe);
+        contourCanvas.addEventListener('pointerleave', function () { tip.style.display = 'none'; });
+
+        // Resizing a canvas clears it, so the local-shape icon is redrawn after every resize.
+        function redrawShape() {
+            drawShape(S.selected >= 0 ? cur().points[S.selected] : null);
+        }
+
+        window.addEventListener('load', function () {
+            sizeCanvases();
+            refresh();
+            redrawShape();
+            showFormula();
+        });
+        window.addEventListener('resize', function () {
+            sizeCanvases();
+            refresh();
+            redrawShape();
+        });
+
+        // First paint with the default preset (canvases are resized again on load).
+        setPreset(0);
+    })();
+    </script>
+</body>
+
+</html>

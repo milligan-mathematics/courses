@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slicing for Partials - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- MathJax for rendering equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            min-width: 0;
+        }
+
+        .scene-wrap {
+            position: relative;
+        }
+
+        canvas#scene {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        canvas#scene:active {
+            cursor: grabbing;
+        }
+
+        canvas#map {
+            display: block;
+            width: 100%;
+            max-width: 260px;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .control-block {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .control-block:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .control-block h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        select#preset {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .formula-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 0.6rem 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+            overflow-x: auto;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-row label {
+            font-size: 0.9rem;
+            min-width: 5.5rem;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+        }
+
+        .slider-row span {
+            font-weight: bold;
+            width: 3.5rem;
+            text-align: right;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-top: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #6E6E6E;
+        }
+
+        .btn-secondary:hover {
+            background-color: #444;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .output-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            overflow-x: auto;
+        }
+
+        .output-box p {
+            margin: 0.35rem 0;
+        }
+
+        .output-box .final {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .output-box .sign {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin: 0.6rem 0 0;
+        }
+
+        .try-list {
+            padding-left: 1.25rem;
+        }
+
+        .try-list li {
+            margin-bottom: 0.75rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Slicing for Partials</h1>
+            <p>&sect;13.3 &mdash; put a point on a surface, slice it with the planes <em>y = b</em> and <em>x = a</em>,
+                and watch the slopes of the two slices become the partial derivatives <em>f<sub>x</sub></em> and
+                <em>f<sub>y</sub></em>.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Each surface is <strong>z = f(x, y)</strong>. Put the point <strong>(a, b)</strong> on it with the
+                sliders, or drag on the small top-down map. The <strong>orange x-trace</strong> is the slice by the
+                plane y = b, and the <strong>orange y-trace</strong> is the slice by x = a. Each trace has a
+                <strong>blue tangent line</strong> at the point. The readout gives f(a, b), f<sub>x</sub>(a, b), and
+                f<sub>y</sub>(a, b) from exact formulas. Drag inside the 3D view to orbit it.
+            </p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel scene-wrap">
+                <canvas id="scene" width="600" height="600" role="img"
+                    aria-label="3D view of the surface z = f(x, y)."></canvas>
+                <div class="scene-hint">Drag to rotate &middot; scroll to zoom</div>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#008552;"></span>Planes y = b and x = a</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>Traces (the slices)</div>
+                    <div><span class="swatch" style="background:#009CDE;"></span>Point (a, b) and tangent lines</div>
+                </div>
+                <div class="checkbox-row" style="margin-top: 1rem;">
+                    <input type="checkbox" id="show-xtrace" checked>
+                    <label for="show-xtrace">Plane y = b: the x-trace and f<sub>x</sub></label>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="show-ytrace" checked>
+                    <label for="show-ytrace">Plane x = a: the y-trace and f<sub>y</sub></label>
+                </div>
+                <button class="btn btn-secondary" id="reset-view" type="button">Reset View</button>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <h4><label for="preset">Choose a surface</label></h4>
+                    <select id="preset">
+                        <option value="0">Ridge</option>
+                        <option value="1">Twisted saddle</option>
+                        <option value="2">Ripples</option>
+                        <option value="3">Stretched hill</option>
+                    </select>
+                    <div class="formula-box" id="formula-output"></div>
+                </div>
+
+                <div class="control-block">
+                    <h4>Move the point (a, b)</h4>
+                    <div class="slider-row">
+                        <label for="a-slider">a (x)</label>
+                        <input type="range" id="a-slider" min="-2" max="2" step="0.01" value="0.4">
+                        <span id="a-value">0.40</span>
+                    </div>
+                    <div class="slider-row">
+                        <label for="b-slider">b (y)</label>
+                        <input type="range" id="b-slider" min="-2" max="2" step="0.01" value="1">
+                        <span id="b-value">1.00</span>
+                    </div>
+                    <canvas id="map" width="260" height="260" role="img"
+                        aria-label="Top-down map of the domain. Drag to move the point (a, b)."></canvas>
+                    <p class="hint">Drag on the map to move the point. The dashed green lines are the two planes seen
+                        from above.</p>
+                </div>
+
+                <div class="control-block">
+                    <h4>Readout</h4>
+                    <div class="output-box" id="readout"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>Things to try</h3>
+            <p>Each one asks you to predict first, then check with the demo.</p>
+            <ol class="try-list">
+                <li><strong>Ridge, point at (1, 1).</strong> Before you read the readout, look at the two orange
+                    traces through the point and predict the signs of f<sub>x</sub>(1, 1) and f<sub>y</sub>(1, 1).
+                    Then check. The first worked example on the section page finds f<sub>x</sub> and f<sub>y</sub> by hand for a different
+                    function and builds the blue tangent lines from them. Here the blue lines are the same objects.</li>
+                <li><strong>Twisted saddle, point at (1, 2).</strong> The orange x-trace at b = 2 is a straight line
+                    (its height is x sin 2 there), so its blue tangent line lies exactly on top of it. Predict from that line
+                    whether f<sub>x</sub>(1, 2) is positive or negative, then predict the sign of f<sub>y</sub>(1, 2)
+                    from the y-trace. Check both. The function x sin y is the first term of the function in the mixed-partials worked example
+                    on the page.</li>
+                <li><strong>Find f<sub>x</sub> = 0 with f<sub>y</sub> &ne; 0.</strong> On the Ridge preset, first set
+                    b = 0. Then slide a until the orange x-trace looks perfectly flat at its top, near a = 0.7. Read
+                    f<sub>x</sub>: it should be very close to 0. Now move b away from 0 while a stays near 0.7. Is
+                    f<sub>x</sub> still close to 0? Is f<sub>y</sub> still 0? Explain from the picture why f<sub>y</sub> is not.</li>
+                <li><strong>Ripples: does f<sub>x</sub> depend on b?</strong> Choose Ripples and keep the x-trace on.
+                    With a fixed, predict whether f<sub>x</sub>(a, b) changes as you slide b from one end to the other.
+                    Check the readout, then explain your answer using the formula for f<sub>x</sub>.</li>
+                <li><strong>Stretched hill, point at (0.5, 0.5).</strong> Predict which of the two blue tangent lines
+                    is steeper, the x one or the y one. Check the readout. Then explain the ratio
+                    f<sub>y</sub>/f<sub>x</sub> = 4y/x using the two formulas.</li>
+            </ol>
+        </div>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('scene');
+        const ctx = canvas.getContext('2d');
+        const mapCanvas = document.getElementById('map');
+        const mctx = mapCanvas.getContext('2d');
+        const presetSelect = document.getElementById('preset');
+        const formulaBox = document.getElementById('formula-output');
+        const aSlider = document.getElementById('a-slider');
+        const bSlider = document.getElementById('b-slider');
+        const aValue = document.getElementById('a-value');
+        const bValue = document.getElementById('b-value');
+        const xOnBox = document.getElementById('show-xtrace');
+        const yOnBox = document.getElementById('show-ytrace');
+        const readout = document.getElementById('readout');
+
+        // Milligan brand colors: orange = output, blue = the point you move, green = structure.
+        const ORANGE = '#F36E24';
+        const BLUE = '#009CDE';
+        const GREEN = '#008552';
+        const SURF_N = 26;            // mesh cells per side
+        const TANGENT_HALF = 0.9;     // half-length of each blue tangent segment, in x or y units
+
+        // Each preset gives f and its exact partial derivatives as JavaScript expressions in x and y.
+        const PRESETS = [
+            {
+                name: 'Ridge', L: 2, a0: 0.4, b0: 1,
+                f: '3*x*Math.exp(-(x*x+y*y))',
+                fx: '3*(1-2*x*x)*Math.exp(-(x*x+y*y))',
+                fy: '-6*x*y*Math.exp(-(x*x+y*y))',
+                texF: '3x\\,e^{-(x^2+y^2)}',
+                texFx: '3(1-2x^2)\\,e^{-(x^2+y^2)}',
+                texFy: '-6xy\\,e^{-(x^2+y^2)}',
+                desc: 'a hump on the right and a dip on the left, both along the x-axis'
+            },
+            {
+                name: 'Twisted saddle', L: 2.5, a0: 1, b0: 2,
+                f: 'x*Math.sin(y)',
+                fx: 'Math.sin(y)',
+                fy: 'x*Math.cos(y)',
+                texF: 'x\\sin y',
+                texFx: '\\sin y',
+                texFy: 'x\\cos y',
+                desc: 'height x times sin y, so every x-trace is a straight line'
+            },
+            {
+                name: 'Ripples', L: 2.5, a0: 1, b0: 1,
+                f: 'Math.sin(x)+Math.cos(y)',
+                fx: 'Math.cos(x)',
+                fy: '-Math.sin(y)',
+                texF: '\\sin x + \\cos y',
+                texFx: '\\cos x',
+                texFy: '-\\sin y',
+                desc: 'waves running along x and along y, so the x-traces all have the same shape'
+            },
+            {
+                name: 'Stretched hill', L: 2.5, a0: 0.5, b0: 0.5,
+                f: 'Math.exp(-(x*x+4*y*y))',
+                fx: '-2*x*Math.exp(-(x*x+4*y*y))',
+                fy: '-8*y*Math.exp(-(x*x+4*y*y))',
+                texF: 'e^{-(x^2+4y^2)}',
+                texFx: '-2x\\,e^{-(x^2+4y^2)}',
+                texFy: '-8y\\,e^{-(x^2+4y^2)}',
+                desc: 'one hill at the origin that falls off faster in y than in x'
+            }
+        ];
+
+        let preset = PRESETS[0];
+        let fns = {};
+        let mesh = null;
+        let A = 0.4, B = 1;           // the point (a, b)
+        let theta = -0.7, phi = 0.35, zoom = 1;
+        let dragging = false, lastX = 0, lastY = 0;
+        let mapDragging = false;
+
+        // ---- small helpers ----
+        function compile(src) {
+            return new Function('x', 'y', 'return (' + src + ');');
+        }
+        function evalAt(g, x, y) {
+            const v = g(x, y);
+            return (typeof v === 'number' && isFinite(v)) ? v : NaN;
+        }
+        function clamp(v, lo, hi) {
+            return Math.max(lo, Math.min(hi, v));
+        }
+        function round2(v) {
+            return Math.round(v * 100) / 100;
+        }
+        function fmt(v) {                       // 4 significant figures for readouts
+            if (!isFinite(v)) return 'undefined here';
+            if (Math.abs(v) < 5e-5) return '0';
+            return String(Number(v.toPrecision(4)));
+        }
+        function fmt2(v) {                      // two decimals for the point (a, b)
+            return (Object.is(v, -0) ? 0 : v).toFixed(2);
+        }
+
+        // ---- 3D projection (drag to orbit, same technique as the Chapter 11 demos) ----
+        function project(x, y, z) {
+            const ct = Math.cos(theta), st = Math.sin(theta);
+            const x1 = x * ct - y * st;
+            const y1 = x * st + y * ct;
+            const cp = Math.cos(phi), sp = Math.sin(phi);
+            const y2 = y1 * cp - z * sp;
+            const z2 = y1 * sp + z * cp;
+            const s = (canvas.width / 7.4) * zoom;
+            return {
+                sx: canvas.width / 2 + x1 * s,
+                sy: canvas.height / 2 - z2 * s,
+                depth: y2                       // larger depth = farther from the viewer
+            };
+        }
+
+        function seg(a, b, color, width) {
+            const pa = project(a[0], a[1], a[2]);
+            const pb = project(b[0], b[1], b[2]);
+            ctx.save();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.beginPath();
+            ctx.moveTo(pa.sx, pa.sy);
+            ctx.lineTo(pb.sx, pb.sy);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Draws a polyline of [x, y, z] points, breaking it wherever z is undefined.
+        function polyline(pts, color, width) {
+            ctx.save();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            let pen = false;
+            pts.forEach((p) => {
+                if (!isFinite(p[2])) { pen = false; return; }
+                const pr = project(p[0], p[1], p[2]);
+                if (!pen) { ctx.moveTo(pr.sx, pr.sy); pen = true; } else { ctx.lineTo(pr.sx, pr.sy); }
+            });
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function quadFill(pts, fill, edge) {
+            ctx.save();
+            ctx.beginPath();
+            pts.forEach((p, i) => {
+                const pr = project(p[0], p[1], p[2]);
+                if (i === 0) ctx.moveTo(pr.sx, pr.sy); else ctx.lineTo(pr.sx, pr.sy);
+            });
+            ctx.closePath();
+            ctx.fillStyle = fill;
+            ctx.fill();
+            ctx.strokeStyle = edge;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // ---- the surface mesh ----
+        function buildMesh(p) {
+            const N = SURF_N, L = p.L;
+            const xs = [], ys = [], zs = [];
+            let zmin = Infinity, zmax = -Infinity;
+            for (let i = 0; i <= N; i++) {
+                xs.push(-L + 2 * L * i / N);
+                ys.push(-L + 2 * L * i / N);
+            }
+            for (let i = 0; i <= N; i++) {
+                const row = [];
+                for (let j = 0; j <= N; j++) {
+                    const z = evalAt(fns.f, xs[i], ys[j]);
+                    row.push(z);
+                    if (isFinite(z)) {
+                        zmin = Math.min(zmin, z);
+                        zmax = Math.max(zmax, z);
+                    }
+                }
+                zs.push(row);
+            }
+            if (!isFinite(zmin) || !isFinite(zmax)) { zmin = -1; zmax = 1; }
+            return { xs, ys, zs, zmin, zmax };
+        }
+
+        function drawMesh() {
+            const { xs, ys, zs } = mesh;
+            const N = xs.length - 1;
+            const P = [];
+            for (let i = 0; i <= N; i++) {
+                P.push([]);
+                for (let j = 0; j <= N; j++) {
+                    const z = zs[i][j];
+                    P[i].push(isFinite(z) ? project(xs[i], ys[j], z) : null);
+                }
+            }
+            // Collect the cells that have all four corners defined (skip the rest).
+            const quads = [];
+            for (let i = 0; i < N; i++) {
+                for (let j = 0; j < N; j++) {
+                    const corners = [P[i][j], P[i + 1][j], P[i + 1][j + 1], P[i][j + 1]];
+                    if (corners.some((c) => c === null)) continue;
+                    const depth = corners.reduce((s, c) => s + c.depth, 0) / 4;
+                    const zavg = (zs[i][j] + zs[i + 1][j] + zs[i + 1][j + 1] + zs[i][j + 1]) / 4;
+                    quads.push({ corners, depth, zavg });
+                }
+            }
+            // Painter's order: farthest cells first, so nearer cells cover them.
+            quads.sort((a, b) => b.depth - a.depth);
+            const span = (mesh.zmax - mesh.zmin) || 1;
+            quads.forEach(({ corners, zavg }) => {
+                const t = clamp((zavg - mesh.zmin) / span, 0, 1);
+                ctx.save();
+                ctx.beginPath();
+                corners.forEach((c, k) => {
+                    if (k === 0) ctx.moveTo(c.sx, c.sy); else ctx.lineTo(c.sx, c.sy);
+                });
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(110,110,110,' + (0.06 + 0.16 * t).toFixed(3) + ')';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(110,110,110,0.45)';
+                ctx.lineWidth = 0.8;
+                ctx.stroke();
+                ctx.restore();
+            });
+        }
+
+        function drawFloor(L) {
+            const n = Math.round(L * 2);
+            for (let k = -n; k <= n; k++) {
+                const t = k / 2;
+                seg([t, -L, 0], [t, L, 0], 'rgba(110,110,110,0.22)', 1);
+                seg([-L, t, 0], [L, t, 0], 'rgba(110,110,110,0.22)', 1);
+            }
+        }
+
+        function drawAxes(L, zlo, zhi) {
+            const e = L + 0.4;
+            seg([-e, 0, 0], [e, 0, 0], '#333', 1.5);
+            seg([0, -e, 0], [0, e, 0], '#333', 1.5);
+            seg([0, 0, zlo], [0, 0, zhi], '#333', 1.5);
+            ctx.save();
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 14px sans-serif';
+            [[[e + 0.3, 0, 0], 'x'], [[0, e + 0.3, 0], 'y'], [[0, 0, zhi + 0.2], 'z']].forEach(([p, label]) => {
+                const pr = project(p[0], p[1], p[2]);
+                ctx.fillText(label, pr.sx, pr.sy);
+            });
+            ctx.restore();
+        }
+
+        function drawPlanes(L, zlo, zhi) {
+            const fill = 'rgba(0,133,82,0.10)';
+            const edge = 'rgba(0,133,82,0.7)';
+            if (xOnBox.checked) {
+                quadFill([[-L, B, zlo], [L, B, zlo], [L, B, zhi], [-L, B, zhi]], fill, edge);
+            }
+            if (yOnBox.checked) {
+                quadFill([[A, -L, zlo], [A, L, zlo], [A, L, zhi], [A, -L, zhi]], fill, edge);
+            }
+        }
+
+        // The orange traces are the slices; the blue lines are their tangents at (a, b).
+        function drawTraces(c, L) {
+            const N = 120;
+            if (xOnBox.checked) {
+                const pts = [];
+                for (let k = 0; k <= N; k++) {
+                    const t = -L + 2 * L * k / N;
+                    pts.push([t, B, evalAt(fns.f, t, B)]);
+                }
+                polyline(pts, ORANGE, 3);
+                if (isFinite(c.fx0)) {
+                    const s = TANGENT_HALF;
+                    polyline([[A - s, B, c.f0 - s * c.fx0], [A + s, B, c.f0 + s * c.fx0]], BLUE, 3);
+                }
+            }
+            if (yOnBox.checked) {
+                const pts = [];
+                for (let k = 0; k <= N; k++) {
+                    const t = -L + 2 * L * k / N;
+                    pts.push([A, t, evalAt(fns.f, A, t)]);
+                }
+                polyline(pts, ORANGE, 3);
+                if (isFinite(c.fy0)) {
+                    const s = TANGENT_HALF;
+                    polyline([[A, B - s, c.f0 - s * c.fy0], [A, B + s, c.f0 + s * c.fy0]], BLUE, 3);
+                }
+            }
+        }
+
+        // The point (a, b, f(a, b)), with a dashed drop line to its shadow on z = 0.
+        function drawPoint(c) {
+            if (!isFinite(c.f0)) return;
+            const top = project(A, B, c.f0);
+            const foot = project(A, B, 0);
+            ctx.save();
+            ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = 'rgba(0,156,222,0.6)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(top.sx, top.sy);
+            ctx.lineTo(foot.sx, foot.sy);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = BLUE;
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(top.sx, top.sy, 7, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(foot.sx, foot.sy, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function current() {
+            return {
+                f0: evalAt(fns.f, A, B),
+                fx0: evalAt(fns.fx, A, B),
+                fy0: evalAt(fns.fy, A, B)
+            };
+        }
+
+        function draw() {
+            if (!canvas.width || !mesh) return;
+            const c = current();
+            const L = preset.L;
+            const zlo = mesh.zmin - 0.15, zhi = mesh.zmax + 0.15;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawFloor(L);
+            drawAxes(L, zlo, zhi);
+            drawMesh();
+            drawPlanes(L, zlo, zhi);
+            drawTraces(c, L);
+            drawPoint(c);
+        }
+
+        // ---- top-down inset map (drag to move the point) ----
+        function drawMap() {
+            if (!mapCanvas.width || !preset) return;
+            const S = mapCanvas.width, m = 14, L = preset.L;
+            const u = (x) => m + (x + L) / (2 * L) * (S - 2 * m);
+            const v = (y) => S - (m + (y + L) / (2 * L) * (S - 2 * m));
+            mctx.clearRect(0, 0, S, S);
+            mctx.fillStyle = '#fafafa';
+            mctx.fillRect(0, 0, S, S);
+
+            mctx.strokeStyle = 'rgba(110,110,110,0.25)';
+            mctx.lineWidth = 1;
+            const n = Math.round(L * 2);
+            for (let k = -n; k <= n; k++) {
+                const t = k / 2;
+                mctx.beginPath(); mctx.moveTo(u(t), v(-L)); mctx.lineTo(u(t), v(L)); mctx.stroke();
+                mctx.beginPath(); mctx.moveTo(u(-L), v(t)); mctx.lineTo(u(L), v(t)); mctx.stroke();
+            }
+            mctx.strokeStyle = '#333';
+            mctx.lineWidth = 1.5;
+            mctx.beginPath(); mctx.moveTo(u(-L), v(0)); mctx.lineTo(u(L), v(0)); mctx.stroke();
+            mctx.beginPath(); mctx.moveTo(u(0), v(-L)); mctx.lineTo(u(0), v(L)); mctx.stroke();
+
+            mctx.setLineDash([5, 4]);
+            mctx.strokeStyle = GREEN;
+            mctx.lineWidth = 1.5;
+            if (yOnBox.checked) {
+                mctx.beginPath(); mctx.moveTo(u(A), v(-L)); mctx.lineTo(u(A), v(L)); mctx.stroke();
+            }
+            if (xOnBox.checked) {
+                mctx.beginPath(); mctx.moveTo(u(-L), v(B)); mctx.lineTo(u(L), v(B)); mctx.stroke();
+            }
+            mctx.setLineDash([]);
+
+            mctx.fillStyle = BLUE;
+            mctx.strokeStyle = '#fff';
+            mctx.lineWidth = 2;
+            mctx.beginPath(); mctx.arc(u(A), v(B), 7, 0, Math.PI * 2); mctx.fill(); mctx.stroke();
+
+            mctx.fillStyle = '#333';
+            mctx.font = 'bold 12px sans-serif';
+            mctx.fillText('x', S - m - 8, v(0) - 5);
+            mctx.fillText('y', u(0) + 5, m + 8);
+        }
+
+        function setFromMap(e) {
+            const rect = mapCanvas.getBoundingClientRect();
+            const S = rect.width, m = 14, L = preset.L;
+            const px = e.clientX - rect.left, py = e.clientY - rect.top;
+            const x = (px - m) / (S - 2 * m) * 2 * L - L;
+            const y = (S - m - py) / (S - 2 * m) * 2 * L - L;
+            setPoint(clamp(x, -L, L), clamp(y, -L, L));
+        }
+
+        // ---- readouts and labels ----
+        function slopeWords(v, rising, falling) {
+            if (!isFinite(v)) return 'Not defined at this point.';
+            if (Math.abs(v) < 5e-4) return 'About zero: the trace is level here, so its tangent line is horizontal.';
+            return v > 0 ? rising : falling;
+        }
+
+        function updateReadout(c) {
+            const sx = slopeWords(c.fx0,
+                'Positive: the x-trace rises as x increases through a.',
+                'Negative: the x-trace falls as x increases through a.');
+            const sy = slopeWords(c.fy0,
+                'Positive: the y-trace rises as y increases through b.',
+                'Negative: the y-trace falls as y increases through b.');
+            readout.innerHTML = `
+                <p>Point on the surface: <strong>P = (${fmt2(A)}, ${fmt2(B)}, ${fmt(c.f0)})</strong></p>
+                <p class="final">f(a, b) = ${fmt(c.f0)}</p>
+                <p class="final">f<sub>x</sub>(a, b) = ${fmt(c.fx0)}</p>
+                <p class="sign">${sx}</p>
+                <p class="final">f<sub>y</sub>(a, b) = ${fmt(c.fy0)}</p>
+                <p class="sign">${sy}</p>
+            `;
+        }
+
+        function updateLabels() {
+            const shown = [];
+            if (xOnBox.checked) shown.push('an orange x-trace in the plane y = b with its blue tangent line');
+            if (yOnBox.checked) shown.push('an orange y-trace in the plane x = a with its blue tangent line');
+            const tail = shown.length ? ' Shown: ' + shown.join(', and ') + '.' : ' No traces are shown.';
+            canvas.setAttribute('aria-label',
+                '3D view of the ' + preset.name + ' surface, z = f(x, y), where ' + preset.desc +
+                '. The point is at a = ' + fmt2(A) + ', b = ' + fmt2(B) + '.' + tail);
+            mapCanvas.setAttribute('aria-label',
+                'Top-down map of the domain from -' + preset.L + ' to ' + preset.L +
+                ' in x and y, with the point at a = ' + fmt2(A) + ', b = ' + fmt2(B) +
+                '. Drag on the map to move the point.');
+        }
+
+        function renderFormulas() {
+            formulaBox.innerHTML =
+                `\\[f(x,y) = ${preset.texF}\\]` +
+                `\\[f_x(x,y) = ${preset.texFx}\\]` +
+                `\\[f_y(x,y) = ${preset.texFy}\\]`;
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise([formulaBox]);
+            }
+        }
+
+        function update() {
+            aValue.textContent = fmt2(A);
+            bValue.textContent = fmt2(B);
+            updateReadout(current());
+            updateLabels();
+            draw();
+            drawMap();
+        }
+
+        function setPoint(a, b) {
+            A = round2(a);
+            B = round2(b);
+            aSlider.value = A;
+            bSlider.value = B;
+            update();
+        }
+
+        function loadPreset(index) {
+            preset = PRESETS[index];
+            fns = {
+                f: compile(preset.f),
+                fx: compile(preset.fx),
+                fy: compile(preset.fy)
+            };
+            mesh = buildMesh(preset);
+            A = preset.a0;
+            B = preset.b0;
+            aSlider.min = -preset.L;
+            aSlider.max = preset.L;
+            bSlider.min = -preset.L;
+            bSlider.max = preset.L;
+            aSlider.value = A;
+            bSlider.value = B;
+            renderFormulas();
+            update();
+        }
+
+        // ---- events ----
+        presetSelect.addEventListener('change', () => loadPreset(presetSelect.selectedIndex));
+        aSlider.addEventListener('input', () => { A = round2(parseFloat(aSlider.value)); update(); });
+        bSlider.addEventListener('input', () => { B = round2(parseFloat(bSlider.value)); update(); });
+        xOnBox.addEventListener('change', update);
+        yOnBox.addEventListener('change', update);
+
+        document.getElementById('reset-view').addEventListener('click', () => {
+            theta = -0.7;
+            phi = 0.35;
+            zoom = 1;
+            draw();
+        });
+
+        canvas.addEventListener('pointerdown', (e) => {
+            dragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+        });
+        window.addEventListener('pointerup', () => { dragging = false; });
+        window.addEventListener('pointermove', (e) => {
+            if (!dragging) return;
+            theta += (e.clientX - lastX) * 0.006;
+            phi = clamp(phi - (e.clientY - lastY) * 0.006, -1.45, 1.45);
+            lastX = e.clientX;
+            lastY = e.clientY;
+            draw();
+        });
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            zoom = clamp(zoom - e.deltaY * 0.001, 0.5, 2.5);
+            draw();
+        }, { passive: false });
+
+        mapCanvas.addEventListener('pointerdown', (e) => {
+            mapDragging = true;
+            mapCanvas.setPointerCapture(e.pointerId);
+            setFromMap(e);
+        });
+        mapCanvas.addEventListener('pointermove', (e) => {
+            if (mapDragging) setFromMap(e);
+        });
+        mapCanvas.addEventListener('pointerup', () => { mapDragging = false; });
+        mapCanvas.addEventListener('pointercancel', () => { mapDragging = false; });
+
+        function resizeAll() {
+            const r = canvas.getBoundingClientRect();
+            canvas.width = Math.round(r.width);
+            canvas.height = Math.round(r.width);
+            const m = mapCanvas.getBoundingClientRect();
+            mapCanvas.width = Math.round(m.width);
+            mapCanvas.height = Math.round(m.width);
+            draw();
+            drawMap();
+        }
+        window.addEventListener('resize', resizeAll);
+        window.addEventListener('load', resizeAll);
+
+        loadPreset(0);
+    </script>
+</body>
+
+</html>
