@@ -42,8 +42,12 @@ reading: "Section 8.1, Examples 8.1.10 and 8.1.14, and the Halmos quotation"
     interval "in theory, we would need to use the above definition to check continuity at each individual point."</p>
 
   <p>Hold on to the question this raises. Is there ever a single \(\delta\) that works for a given \(\varepsilon\) at
-    <em>every</em> point at once? For \(\sqrt x\) on \((0,\infty)\) the widget suggests not &mdash; you can always
-    move left and break it. That question has a name, and it is what Day 34 is about.</p>
+    <em>every</em> point at once? For \(x^2\) on \((0,\infty)\), no: move right and any fixed \(\delta\) eventually
+    breaks. For \(\sqrt x\), surprisingly, yes. Its usable \(\delta\) shrinks as \(a \to 0^+\), but it never drops
+    below \(\varepsilon^2\), because \(|\sqrt x - \sqrt a| \le \sqrt{|x - a|}\). (The widget, like the reading, only
+    tests points in the domain, \(x \ge 0\).) A function with one \(\delta\) for every point is called
+    <em>uniformly</em> continuous, and Day 34 asks the same kind of &ldquo;one choice for every point&rdquo; question
+    about sequences of functions.</p>
 </div>
 
 <div class="act scaffold">
@@ -253,9 +257,8 @@ reading: "Section 8.1, Examples 8.1.10 and 8.1.14, and the Halmos quotation"
   <ol>
     <li>Run Halmos on the \(x^3\) proof. Where was \(a=1\) used? What changes at \(a = 100\)? Does the restriction
       \(\delta \le 1\) matter, or would \(\delta \le 10\) do just as well?</li>
-    <li>In the widget, \(\sqrt x\) needs an ever-smaller \(\delta\) as \(a \to 0^+\), while \(x^2\) needs an
-      ever-smaller \(\delta\) as \(a\) grows. Is there a function where one \(\delta\) works at every point for a given
-      \(\varepsilon\)?</li>
+    <li>In the widget, the usable \(\delta\) for \(\sqrt x\) shrinks as \(a \to 0^+\), and for \(x^2\) it shrinks
+      as \(a\) grows. For which of the two does it shrink all the way toward \(0\)? What about \(\frac1x\)?</li>
     <li>The proof never explains where \(7\) came from. Is that a defect in mathematical writing? What would be lost by
       including the scrapwork &mdash; and what would be gained?</li>
     <li>Both Chapter 6 and Chapter 8 definitions have the same quantifier shape. Write them side by side and identify
@@ -267,7 +270,7 @@ reading: "Section 8.1, Examples 8.1.10 and 8.1.14, and the Halmos quotation"
   (function () {
     var FNS = [
       { label: 'x²', f: function (x) { return x * x; }, lo: 0, hi: 4.2, ylo: -0.5, yhi: 18 },
-      { label: '√x', f: function (x) { return x > 0 ? Math.sqrt(x) : NaN; }, lo: 0, hi: 4.2, ylo: -0.2, yhi: 2.4 },
+      { label: '√x', f: function (x) { return x >= 0 ? Math.sqrt(x) : NaN; }, lo: 0, hi: 4.2, ylo: -0.2, yhi: 2.4 },
       { label: '1/x', f: function (x) { return x > 1e-9 ? 1 / x : NaN; }, lo: 0, hi: 4.2, ylo: -0.5, yhi: 12 },
       { label: 'x³', f: function (x) { return x * x * x; }, lo: 0, hi: 4.2, ylo: -1, yhi: 40 }
     ];
@@ -294,7 +297,8 @@ reading: "Section 8.1, Examples 8.1.10 and 8.1.14, and the Halmos quotation"
         var bad = false;
         [a + t, a - t].forEach(function (x) {
           var v = fn.f(x);
-          if (!isFinite(v) || Math.abs(v - fa) >= eps) bad = true;
+          if (!isFinite(v)) return;  // outside the domain: not tested (the reading's convention after 8.1.11)
+          if (Math.abs(v - fa) >= eps) bad = true;
         });
         if (bad) return t;
       }
