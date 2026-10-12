@@ -149,7 +149,8 @@ reading: "Section 8.4, Definition 8.4.1 through the corollaries of the Mean Valu
         <div class="sstep-prompt">Layer 4. The calculus you already know &mdash; complete, given the MVT.</div>
         <div class="sstep-body">
           <p>\(f' &gt; 0 \Rightarrow f\) increasing; \(f' &lt; 0 \Rightarrow f\) decreasing; the local versions of
-            both. Each is a three-line consequence of the MVT.</p>
+            both (Corollary 8.4.12 and Problem 8.4.14, which also need \(f'\) continuous at the point). Each is a
+            short consequence of the MVT.</p>
           <p>These are the facts you used constantly in calculus without proof. They are all downstream of the same
             one borrowed result.</p>
         </div>

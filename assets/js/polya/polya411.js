@@ -190,7 +190,7 @@
     for (var k = 1; k < 97; k++) t.push(k / 97);
     return t.filter(function (x) { if (seen[x]) return false; seen[x] = true; return true; }).sort(function (a, b) { return a - b; });
   })();
-  var EPS_CHALLENGES = [10, 5, 2, 1, 0.9, 0.5, 0.3, 0.2, 0.1, 0.05, 0.03, 0.01, 0.005, 1e-3, 1e-4, 1e-5, 1e-6];
+  var EPS_CHALLENGES = [10, 5, 2, 1, 0.9, 0.7, 0.5, 0.45, 0.3, 0.2, 0.15, 0.1, 0.05, 0.03, 0.01, 0.005, 1e-3, 1e-4, 1e-5, 1e-6];  // 0.7, 0.45, 0.15: off the exact ties
   function deltaHunt(q, D) {
     var f = fnOf(q, 'x', q.f_js), at = valFn(q, q.at_js), Lf = q.L_js ? valFn(q, q.L_js) : null;
     var lo = q.domain && q.domain[0], hi = q.domain && q.domain[1], fails = [];
@@ -200,13 +200,16 @@
         var d;
         try { d = D(Object.assign({ eps: eps }, base)); } catch (x) { d = NaN; }
         if (!(typeof d === 'number' && isFinite(d) && d > 0)) return fails.push({ kind: 'nonpos', eps: eps, env: base, d: d });
-        for (var i = 0; i < TS.length; i++) {
-          var xs = [a - TS[i] * d, a + TS[i] * d];
-          for (var j = 0; j < 2; j++) {
-            var x = xs[j];
-            if ((lo !== null && lo !== undefined && x < lo) || (hi !== null && hi !== undefined && x > hi)) continue;
-            var gap = Math.abs(f(x, base) - target);
-            if (!(gap < eps)) return fails.push({ kind: 'escape', eps: eps, env: base, d: d, x: x, a: a, gap: gap, fx: f(x, base), target: target });
+        // build.py's order: the domain's edges when strictly within delta (a grid never lands on x = 0), then the grid
+        var xs = [lo, hi].filter(function (e) { return e !== null && e !== undefined && Math.abs(e - a) < d && !(Lf && e === a); });
+        TS.forEach(function (t) { xs.push(a - t * d, a + t * d); });
+        for (var j = 0; j < xs.length; j++) {
+          var x = xs[j];
+          if ((lo !== null && lo !== undefined && x < lo) || (hi !== null && hi !== undefined && x > hi)) continue;
+          var fx = f(x, base), gap = Math.abs(fx - target);
+          // a miss by float rounding (about 1e-12 of the size of f) is a tie, as in build.py
+          if (!(gap < eps + 1e-12 * Math.max(1, Math.abs(target), isFinite(fx) ? Math.abs(fx) : 0))) {
+            return fails.push({ kind: 'escape', eps: eps, env: base, d: d, x: x, a: a, gap: gap, fx: fx, target: target });
           }
         }
       });
