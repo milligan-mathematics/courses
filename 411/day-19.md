@@ -138,7 +138,7 @@ reading: "Section 6.2, the limit as a primary tool, through the scrapwork for th
     <div class="flaw-verdict" data-key="5">
       <p><strong>The conclusion is true; this argument doesn't establish it.</strong> The product theorem holds. Fixing
         line (3) with the boundedness lemma repairs the whole proof, and the final chain in your reading is</p>
-      \[ |a_nb_n - ab| \le |a_n||b_n-b| + |b||a_n-a| &lt; B|b_n - b| + (|b|+1)|a_n - a| \]
+      \[ |a_nb_n - ab| \le |a_n||b_n-b| + |b||a_n-a| \le B|b_n - b| + (|b|+1)|a_n - a| \]
       <p>with both coefficients now constant.</p>
     </div>
   </div>

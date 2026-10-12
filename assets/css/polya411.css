@@ -39,3 +39,8 @@
   .act .polya-statement { padding: 8px 10px; }
 }
 .readout p + p { margin-top: 0.7rem; }
+
+/* wide formulas scroll inside their own box instead of widening the page on a phone (12 October 2026) */
+.act.polya mjx-container[display="true"] { display: block; max-width: 100%; overflow-x: auto; overflow-y: hidden; padding-bottom: 2px; }
+.act.polya .polya-statement { overflow-x: auto; }
+.act.polya mjx-container:not([display="true"]) { max-width: 100%; overflow-x: auto; overflow-y: hidden; vertical-align: middle; }

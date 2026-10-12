@@ -243,7 +243,7 @@ reading: "Section 4.1, Theorem 4.1.1 through Cauchy's counterexample"
 
   <div class="mc" data-answer="a">
     <p class="mc-q">Where does the notation \(f'\) come from?</p>
-    <button class="mc-opt" type="button" data-key="a">Lagrange, 1779, from his <em>fonction dérivée</em> &mdash; which
+    <button class="mc-opt" type="button" data-key="a">Lagrange, 1797, from his <em>fonction dérivée</em> &mdash; which
       also gives us the word "derivative."</button>
     <button class="mc-opt" type="button" data-key="b">Newton, in the <em>Principia</em>.</button>
     <button class="mc-opt" type="button" data-key="c">Taylor, in the <em>Methodus Incrementorum</em>.</button>
@@ -434,9 +434,10 @@ reading: "Section 4.1, Theorem 4.1.1 through Cauchy's counterexample"
         'of the window. Even \\(x^{50}\\) sits <em>above</em> \\(f\\) near the origin. Whatever power you pick, ' +
         'Cauchy\'s function eventually gets underneath it &mdash; which is exactly the statement that all its ' +
         'derivatives at \\(0\\) vanish.</p>' +
-        '<p>By \\(x = 0.05\\) the value is \\(e^{-400}\\), below what double precision can even hold, so your ' +
-        'browser reports a flat \\(0\\). The function is not zero there. It is just closer to zero than arithmetic ' +
-        'can see &mdash; which is a fair summary of the whole problem.</p>';
+        '<p>By \\(x = 0.05\\) the value is \\(e^{-400} \\approx 2 \\times 10^{-174}\\), and a little closer in, below ' +
+        'about \\(x = 0.037\\), it drops below what double precision can even hold, so your browser reports a flat ' +
+        '\\(0\\). The function is not zero there. It is just closer to zero than arithmetic can see &mdash; which is a ' +
+        'fair summary of the whole problem.</p>';
       M411.typeset(cOut);
     }
     zIn.addEventListener('input', drawCauchy);
