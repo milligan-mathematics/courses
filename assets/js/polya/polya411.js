@@ -264,7 +264,7 @@
       syntax: 'Type ε as <code>eps</code>. Formulas look like <code>eps^3/7</code>, <code>2*eps^2</code> or <code>min(9, eps^4)</code>. '
         + 'Any \\(\\delta\\) that works is right: the page tests yours against the definition.' },
   };
-  function matchWrong(q, tree) {  // a known slip, recognized by its values (NaN matches NaN)
+  function matchWrong(q, tree) {  // a known slip, recognized by its values (NaN matches NaN, Infinity matches Infinity)
     var kind = KINDS[q.type], envs = [];
     bases(q).slice(0, 3).forEach(function (base) {
       kind.samples.forEach(function (v) { var e = Object.assign({}, base); e[kind.lead] = v; envs.push(e); });
@@ -273,7 +273,10 @@
     var mine = vals(tree);
     return (q.wrong || []).filter(function (w) {
       var theirs = vals(PM.parseExpr(w.f, q.vars));
-      return theirs.every(function (v, i) { return isNaN(v) ? isNaN(mine[i]) : PM.close(v, mine[i]); });
+      return theirs.every(function (v, i) {
+        var w = mine[i];
+        return isFinite(v) && isFinite(w) ? PM.close(v, w) : v === w || (isNaN(v) && isNaN(w));
+      });
     })[0];
   }
   /** What a student typed, read as a formula: ε (any spelling) becomes eps, and a leading "N =", "n =" or "δ =" goes. */
@@ -530,6 +533,12 @@
         } else if (res === 'right') {
           box.appendChild(el('p', null, 'Your ' + coldName() + ' survived every challenge the page could throw at it. That isn&rsquo;t a proof (the proof shows it works '
             + 'for <em>every</em> ' + (q.type === 'escN' ? '\\(N\\)' : '\\(\\varepsilon\\)') + '), but it&rsquo;s a good sign. Skip ahead to <strong>Look back</strong>.'));
+          if (q.cold_note) {  // a case the test can't see (m = 0 on Day 22), with an optional jump to the step about it
+            box.appendChild(el('p', null, q.cold_note));
+            if (typeof q.cold_note_step === 'number') {
+              box.appendChild(button('pl-link', 'Take me to that step', function () { set('walk', q.cold_note_step); }));
+            }
+          }
           box.appendChild(button('pl-next', 'On to Look back &rarr;', function () { set('walk', firstOf('Look back')); }));
           box.appendChild(button('pl-link', 'Walk through the whole thing anyway', function () { set('walk', 0); }));
         } else {
