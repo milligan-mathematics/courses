@@ -61,10 +61,10 @@ reading: "Section 9.4, Problems 9.4.11&ndash;9.4.16, and the Archimedean Propert
         <div class="sstep-body">
           <p>To show all three are interchangeable, the arrows must come back:</p>
           <ul>
-            <li>Bolzano&ndash;Weierstrass \(\Rightarrow\) NIP</li>
-            <li>LUBP \(\Rightarrow\) NIP</li>
+            <li>Bolzano&ndash;Weierstrass \(\Rightarrow\) NIP (Problem 9.4.10, Day 32)</li>
+            <li>LUBP \(\Rightarrow\) NIP (Problem 9.4.12, today)</li>
           </ul>
-          <p>Those are your problems for today. With them, any of the three can serve as the starting axiom, and the
+          <p>With both of them, any of the three can serve as the starting axiom, and the
             other two follow &mdash; possibly via the NIP as an intermediate stop.</p>
         </div>
       </li>
@@ -162,7 +162,7 @@ reading: "Section 9.4, Problems 9.4.11&ndash;9.4.16, and the Archimedean Propert
         \mathbb{N}\}\).</p>
     </div>
     <div class="flaw-verdict" data-key="2">
-      <p><strong>True</strong>, once today's problems close the cycle. Implications compose.</p>
+      <p><strong>True</strong>, once Problems 9.4.10 and 9.4.12 close the cycle. Implications compose.</p>
     </div>
     <div class="flaw-verdict" data-key="3">
       <p><strong>True.</strong> "Given positive \(a\) and \(b\) there is an \(n\) with \(na &gt; b\)" is far simpler
@@ -222,7 +222,7 @@ reading: "Section 9.4, Problems 9.4.11&ndash;9.4.16, and the Archimedean Propert
       that isn't the interesting notion here. The content is that each can be <em>derived</em> from the others without
       assuming the rest of the theory.</div>
     <div class="mc-fb" data-key="c">Correct. Chapter 9 proved NIP \(\Rightarrow\) BW and NIP \(\Rightarrow\) LUBP;
-      today's problems supply the arrows back. Then any one may be taken as the axiom.</div>
+      Day 32&rsquo;s 9.4.10 and today&rsquo;s 9.4.12 supply the arrows back. Then any one may be taken as the axiom.</div>
   </div>
 
   <div class="mc" data-answer="a">

@@ -83,7 +83,8 @@ reading: "Section 3.3, Additional Problems"
   <h2>Move 3&ndash;4: differentiate, integrate</h2>
 
   <p>Both are done term by term. (Both are the interchange Day 8 flagged as running on credit &mdash; legitimate here,
-    provable in Chapter 8.)</p>
+    and provable once uniform convergence arrives in Chapter 10; the endpoints of an interval of convergence need one
+    more idea still.)</p>
 
   <p><strong>Demonstration: \(\displaystyle\int_0^x \frac{\sin t}{t}\,\mathrm{d}t\)</strong>, a function with no
     elementary antiderivative at all.</p>
@@ -286,7 +287,7 @@ reading: "Section 3.3, Additional Problems"
     <li>The sine integral has no elementary antiderivative, yet its series is easy. Does having a power series make a
       function "known"? What more would you want?</li>
     <li>Every move today used term-by-term differentiation or integration, or substitution into an infinite sum. Which
-      of these do you now actually believe, and which are you taking on faith until Chapter 8?</li>
+      of these do you now actually believe, and which are you taking on faith until Chapter 10?</li>
   </ol>
 </div>
 

@@ -163,7 +163,7 @@ reading: "Section 3.2, Definition 3.2.7 through the setup of Newton's binomial e
 
   <div class="readout" id="d8-pi-out"></div>
 
-  <p>The reading's own datapoint: a thousand terms gives \(3.142591654\), correct to <em>two</em> decimal places. Each
+  <p>The reading's own datapoint: the terms through \(n = 1000\) (1001 of them) give \(3.142591654\), correct to <em>two</em> decimal places. Each
     additional correct digit costs roughly a hundredfold more work. To reach ten digits you would need something like
     \(10^{10}\) terms &mdash; and the accumulated rounding error would swamp the answer long before you got there.</p>
 

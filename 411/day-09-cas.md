@@ -21,11 +21,12 @@ next_title: "Day 10: The Basel Problem and Euler's Formula"
     actually supported, and which one you reached for reasons the machine never supplied.</p>
   <p>The three answers, up front, so you can check them against what you turned in:</p>
   <ul>
-    <li><strong>3.2.12.</strong> The series converges to \(\sqrt{1+x}\) exactly on \(-1 \le x \le 1\), endpoints
-      included.</li>
+    <li><strong>3.2.12.</strong> The series converges exactly on \(-1 \le x \le 1\), endpoints included, and its
+      values agree with \(\sqrt{1+x}\) there. (Proving that the sum <em>is</em> \(\sqrt{1+x}\) comes later; Step 4
+      below says why.)</li>
     <li><strong>3.2.13.</strong> The first 100 terms give \(0.785493\) against \(\pi/4 = 0.785398\) &mdash; three
       correct decimal places, approached from above.</li>
-    <li><strong>3.2.14(b).</strong> \(S_1\) wins, and not narrowly: at \(N = 20\) it has nine correct decimals and
+    <li><strong>3.2.14(b).</strong> \(S_1\) wins, and not narrowly: at \(N = 20\) it has eight correct decimals (error about \(6.5\times10^{-10}\)) and
       \(S_2\) has one.</li>
   </ul>
 </div>
@@ -160,7 +161,7 @@ Plot[Evaluate[{Sqrt[1 + x], S[x, 5], S[x, 100]}], {x, -2, 2}]</pre>
 
   \[ S(-1,M) \;\approx\; \frac{1}{\sqrt{\pi M}} \]
 
-  <p>so \(M = 100\) gives \(0.0564\), \(M = 3000\) gives \(0.0103\), and three correct decimals would take about
+  <p>so \(M = 100\) gives about \(0.0564\) (the partial sum itself is \(0.0563\)), \(M = 3000\) gives \(0.0103\), and three correct decimals would take about
     \(1.3\) million terms. <strong>Slow convergence and divergence are indistinguishable on any plot</strong>, at any
     resolution, at any \(M\) you can afford. Deciding between them is what the scaffold below is for &mdash; and it is
     why the problem has an analytic half bolted to its visual half.</p>
@@ -204,7 +205,8 @@ Plot[Evaluate[{Sqrt[1 + x], S[x, 5], S[x, 100]}], {x, -2, 2}]</pre>
           <p>What rescues both cases is that the coefficients decay fast enough to be summable:</p>
           \[ |c_n| \;\approx\; \frac{1}{2\sqrt{\pi}\,n^{3/2}} \]
           <p>Since \(3/2 &gt; 1\), the \(p\)-series comparison gives \(\sum |c_n| &lt; \infty\). You can watch this in
-            the first panel: \(|c_{100}| = 2.83\times10^{-4}\) against the estimate \(2.82\times10^{-4}\).</p>
+            the first panel: \(|c_{100}| = 2.83\times10^{-4}\) against the estimate \(2.82\times10^{-4}\). That is
+            evidence for the rate, not a proof of it; the rate can be proved, and we take it as given here.</p>
         </div>
       </li>
 
@@ -217,7 +219,7 @@ Plot[Evaluate[{Sqrt[1 + x], S[x, 5], S[x, 100]}], {x, -2, 2}]</pre>
             differently.</p>
           <p>But neither fact matters, because Step 2 gave absolute convergence, and absolute convergence does not care
             about signs. \(\sum|c_n x^n| = \sum |c_n|\) converges at \(x = \pm 1\) alike, so both endpoints are in.</p>
-          <p>The interval of convergence is \([-1,1]\). \(\blacksquare\)</p>
+          <p>The interval of convergence is \([-1,1]\), granted the rate from Step 2. \(\blacksquare\)</p>
         </div>
       </li>
 
@@ -230,7 +232,8 @@ Plot[Evaluate[{Sqrt[1 + x], S[x, 5], S[x, 100]}], {x, -2, 2}]</pre>
           <p>The evidence that the limit is the right function is still exactly what it was on Day 9: Newton squared
             the series and got \(1 + x\), and the numbers keep agreeing. Watch \(S(1,M)\) climb towards
             \(\sqrt2 = 1.414214\) in the panel above and notice that no amount of that is a proof.</p>
-          <p>Taylor's Theorem in Chapter 4 supplies the remainder estimate that finally does it. Filing this gap where
+          <p>Chapter 4's remainder estimates are the tool: they settle the interior of the interval, and the endpoint
+            \(x = -1\) needs one more idea later. Filing this gap where
             you can find it again is the honest version of "the series converges to \(\sqrt{1+x}\) on \([-1,1]\)."</p>
         </div>
       </li>
@@ -352,7 +355,7 @@ Plot[Evaluate[{Sqrt[1 + x], S[x, 5], S[x, 100]}], {x, -2, 2}]</pre>
 
   <h3>\(S_1\) wins, and the margin is absurd</h3>
 
-  <p>At \(N = 20\), \(S_1 = 3.14159265424\) against \(\pi = 3.14159265359\) &mdash; nine correct decimal places. At the
+  <p>At \(N = 20\), \(S_1 = 3.14159265424\) against \(\pi = 3.14159265359\) &mdash; eight correct decimal places (the error is about \(6.5\times10^{-10}\)). At the
     same \(N\), \(S_2 = 3.18918478\), which does not survive rounding to two decimals. Twenty-one terms each.</p>
 
   <p>The digits plot shows <em>why</em>, and the two shapes are the point. \(S_1\) climbs as a straight line: every
