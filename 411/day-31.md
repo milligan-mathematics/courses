@@ -112,7 +112,7 @@ reading: "Section 9.3, Theorem 9.3.1 through the Bolzano&ndash;Weierstrass Theor
     </div>
     <div class="ctl">
       <label for="d31-k">Bisection steps</label>
-      <input type="range" id="d31-k" min="0" max="14" step="1" value="3">
+      <input type="range" id="d31-k" min="0" max="12" step="1" value="3">
     </div>
   </div>
 
@@ -165,8 +165,10 @@ reading: "Section 9.3, Theorem 9.3.1 through the Bolzano&ndash;Weierstrass Theor
       &mdash; contradicting that the whole interval holds infinitely many.</button>
     <button class="mc-opt" type="button" data-key="b">Because the sequence is increasing.</button>
     <button class="mc-opt" type="button" data-key="c">Because the halves have equal length.</button>
-    <div class="mc-fb" data-key="a">Correct: a union of two finite sets is finite. Which is also why property 5 has to
-      say "infinitely many" rather than "at least one" &mdash; "at least one" would not survive the halving.</div>
+    <div class="mc-fb" data-key="a">Correct: a union of two finite sets is finite. Property 5 says "infinitely many"
+      rather than "at least one" for a different reason. "At least one" would survive the halving, since one term lies in
+      one of the halves. But it would not let you choose \(n_k &gt; n_{k-1}\): the one term in \([a_k,b_k]\) might be
+      one you already used, or come earlier in the sequence.</div>
     <div class="mc-fb" data-key="b">No monotonicity is assumed anywhere.</div>
     <div class="mc-fb" data-key="c">Equal lengths make the intervals shrink at a known rate, but say nothing about
       where the terms are.</div>
@@ -198,7 +200,8 @@ reading: "Section 9.3, Theorem 9.3.1 through the Bolzano&ndash;Weierstrass Theor
     <li>The subsequence is constructed by choosing \(n_k\) one at a time, with no formula. Is that a legitimate way to
       define a sequence? What are you assuming about infinitely many choices?</li>
     <li>For a bounded sequence, how many different limits can its convergent subsequences have? Can it be infinitely
-      many? Try \(\sin n\) from Day 21.</li>
+      many? Try \(\sin n\). You can't prove anything about it yet, but experiment: which values in \([-1,1]\) does
+      it keep coming close to?</li>
   </ol>
 </div>
 
@@ -299,7 +302,7 @@ reading: "Section 9.3, Theorem 9.3.1 through the Bolzano&ndash;Weierstrass Theor
 
     function drawBW() {
       var seq = SEQS[+qSel.value], K = +kIn.value;
-      var NSAMP = 3000;
+      var NSAMP = 200000;
       var vals = [];
       for (var n = 1; n <= NSAMP; n++) vals.push(seq.f(n));
 

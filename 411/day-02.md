@@ -202,8 +202,8 @@ reading: "Lesson Three, the Fundamental Theorem of Arithmetic, and the chain of 
         <em>pseudoprimes</em>. Worse still, there are <em>Carmichael numbers</em> &mdash; \(561 = 3\times11\times17\) is
         the smallest &mdash; which pass the test for <em>every</em> base \(n\) at once, so you cannot patch the hole by
         trying more bases.</p>
-      <p>Both are preset buttons on the widget at the top of this page. \(341\) shows a single green cell at \(n=2\)
-        &mdash; enough on its own to kill the test. \(561\) shows a <em>completely</em> green row while being
+      <p>Both are preset buttons on the widget at the top of this page. \(341\) shows a green cell at \(n=2\)
+        (and a few others, such as \(n = 4, 8, 16\)) &mdash; the one at \(n=2\) is enough on its own to kill the test. \(561\) shows a <em>completely</em> green row while being
         \(3\times11\times17\).</p>
     </div>
     <div class="flaw-verdict" data-key="4">
@@ -366,7 +366,7 @@ reading: "Lesson Three, the Fundamental Theorem of Arithmetic, and the chain of 
       } else if (base2Zero) {
         msg = '<p>\\(m = ' + m + '\\) is composite (' + factorLabel(m) + '), and most cells are nonzero &mdash; ' +
           'but look at <strong>\\(n = 2\\)</strong>, which is \\(0\\). So \\(m \\mid (2^m - 2)\\) even though ' +
-          '\\(m\\) is not prime: it passes the base-2 test and is still composite. That single green cell is ' +
+          '\\(m\\) is not prime: it passes the base-2 test and is still composite. That green cell at \\(n = 2\\) is ' +
           'enough to sink the "primality test" below.</p>';
       } else {
         msg = '<p>\\(m = ' + m + '\\) is composite (' + factorLabel(m) + '), and the pattern breaks: some cells ' +
