@@ -1,0 +1,2125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test 2 Review Games - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        /* ---------- shell ---------- */
+        .prompt-box {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .prompt-box h3 {
+            margin-top: 0;
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+
+        .note {
+            color: var(--color-mountain-gray, #6E6E6E);
+            font-size: 0.92rem;
+        }
+
+        button {
+            font: inherit;
+            font-weight: 600;
+            padding: 0.55rem 1.15rem;
+            border-radius: 6px;
+            border: 1px solid var(--color-primary, #F36E24);
+            background: var(--color-primary, #F36E24);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+        }
+
+        button:hover:not(:disabled) {
+            background: var(--color-primary-dark, #CD5920);
+            border-color: var(--color-primary-dark, #CD5920);
+        }
+
+        button:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
+
+        button.ghost {
+            background: #fff;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        button.ghost:hover:not(:disabled) {
+            background: #fff5ef;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        /* ---------- scoreboard ---------- */
+        .scorebar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 2rem;
+            align-items: center;
+            padding: 0.9rem 1.25rem;
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
+        }
+
+        .stat .k {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .stat .v {
+            font-size: 1.35rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat .v.hot {
+            color: var(--color-primary, #F36E24);
+        }
+
+        .bar-wrap {
+            flex: 1 1 160px;
+            min-width: 140px;
+        }
+
+        .bar {
+            height: 10px;
+            border-radius: 999px;
+            background: #eceef1;
+            overflow: hidden;
+        }
+
+        .bar > span {
+            display: block;
+            height: 100%;
+            width: 0;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #F9A01B, #F36E24);
+            transition: width 0.35s ease;
+        }
+
+        /* ---------- stage map ---------- */
+        .map {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .stage {
+            text-align: left;
+            padding: 1rem 1.1rem;
+            border-radius: 8px;
+            border: 1px solid #e3e6ea;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+        }
+
+        .stage:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.09);
+            border-color: var(--color-primary, #F36E24);
+            background: #fff;
+        }
+
+        .stage .badge {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .stage .nm {
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        .stage .sub {
+            font-size: 0.85rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .stage .res {
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-top: 0.2rem;
+        }
+
+        .stage.done {
+            border-color: var(--color-accent-green, #008552);
+            background: #f4fbf7;
+        }
+
+        .stage.done .res {
+            color: var(--color-accent-green, #008552);
+        }
+
+        .stage.current {
+            border-color: var(--color-primary, #F36E24);
+            box-shadow: 0 0 0 3px rgba(243, 110, 36, 0.14);
+        }
+
+        /* ---------- question card ---------- */
+        .qhead {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .qhead .rnd {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: var(--color-primary, #F36E24);
+        }
+
+        .qhead .cnt {
+            font-size: 0.8rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .qtext {
+            font-size: 1.12rem;
+            line-height: 1.55;
+            margin: 0.35rem 0 1.1rem;
+        }
+
+        .qtext code {
+            background: #f2f4f6;
+            padding: 0.08em 0.35em;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        .figbox {
+            margin: 0 0 1.2rem;
+            padding: 1rem;
+            background: #fafbfc;
+            border: 1px solid #eceef1;
+            border-radius: 8px;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .figbox svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* choices */
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .choice {
+            text-align: left;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #dde1e6;
+            background: #fff;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            line-height: 1.5;
+            transition: border-color 0.12s ease, background 0.12s ease;
+        }
+
+        .choice:hover:not(:disabled) {
+            border-color: var(--color-primary, #F36E24);
+            background: #fffaf6;
+        }
+
+        .choice .ltr {
+            flex: 0 0 auto;
+            width: 1.6rem;
+            height: 1.6rem;
+            border-radius: 50%;
+            background: #eceef1;
+            color: #444;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: grid;
+            place-items: center;
+        }
+
+        .choice.sel {
+            border-color: var(--color-primary, #F36E24);
+            background: #fff3ea;
+        }
+
+        .choice.sel .ltr {
+            background: var(--color-primary, #F36E24);
+            color: #fff;
+        }
+
+        .choice.right {
+            border-color: var(--color-accent-green, #008552);
+            background: #f0faf5;
+        }
+
+        .choice.right .ltr {
+            background: var(--color-accent-green, #008552);
+            color: #fff;
+        }
+
+        .choice.wrong {
+            border-color: #c0392b;
+            background: #fdf3f2;
+        }
+
+        .choice.wrong .ltr {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        /* numeric inputs */
+        .fields {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .field label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .field input {
+            font: inherit;
+            font-size: 1.1rem;
+            padding: 0.5rem 0.7rem;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            width: 9rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .field input:focus {
+            outline: 2px solid rgba(243, 110, 36, 0.35);
+            border-color: var(--color-primary, #F36E24);
+        }
+
+        .field input.right {
+            border-color: var(--color-accent-green, #008552);
+            background: #f0faf5;
+        }
+
+        .field input.wrong {
+            border-color: #c0392b;
+            background: #fdf3f2;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            align-items: center;
+        }
+
+        /* feedback */
+        .fb {
+            margin-top: 1.2rem;
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            border-left: 4px solid #ccc;
+            background: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        .fb.good {
+            border-left-color: var(--color-accent-green, #008552);
+            background: #f2faf6;
+        }
+
+        .fb.bad {
+            border-left-color: #c0392b;
+            background: #fdf4f3;
+        }
+
+        .fb.near {
+            border-left-color: var(--color-accent-sunrise, #F9A01B);
+            background: #fffaf0;
+        }
+
+        .fb .hd {
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .fb p {
+            margin: 0.5rem 0 0;
+        }
+
+        .fb .why {
+            margin-top: 0.7rem;
+            padding-top: 0.7rem;
+            border-top: 1px dashed #d8dce1;
+            font-size: 0.95rem;
+        }
+
+        .pts {
+            font-weight: 700;
+            color: var(--color-accent-green, #008552);
+            white-space: nowrap;
+        }
+
+        /* results */
+        .resultgrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.9rem;
+            margin: 1.2rem 0 1.5rem;
+        }
+
+        .rcard {
+            border: 1px solid #e3e6ea;
+            border-radius: 8px;
+            padding: 0.9rem 1rem;
+            background: #fff;
+        }
+
+        .rcard .nm {
+            font-weight: 700;
+            margin-bottom: 0.15rem;
+        }
+
+        .rcard .sc {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .rcard .tip {
+            font-size: 0.85rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+            margin-top: 0.3rem;
+        }
+
+        .rcard.weak {
+            border-color: var(--color-accent-sunrise, #F9A01B);
+            background: #fffaf0;
+        }
+
+        .bigscore {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--color-primary, #F36E24);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 560px) {
+            .scorebar {
+                position: static;
+                gap: 0.6rem 1.25rem;
+            }
+
+            .field input {
+                width: 7rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 253</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Test 2 Review Games</h1>
+            <p>Seven stages, Chapters 15 &amp; 16 &mdash; samples, graphs, mean and median, box plots,
+                counting, and probability. Every run builds new problems, so you can take it as many times as you
+                like.</p>
+        </div>
+    </header>
+
+    <main class="container page-content">
+
+        <div class="prompt-box" id="intro">
+            <h3>How this works</h3>
+            <ul>
+                <li>Seven stages, 30 questions. Each stage drills one skill from Chapters 15 and 16.</li>
+                <li>You get <strong>two tries</strong> per question &mdash; 100 points on the first, 50 on the
+                    second.</li>
+                <li>Answer three in a row and your <strong>streak bonus</strong> starts stacking.</li>
+                <li>After every question you get the reasoning, not just the answer. That is the part that shows
+                    up on the test.</li>
+            </ul>
+            <p class="note">Nothing is saved or sent anywhere &mdash; refresh and you get a brand new set of
+                problems.</p>
+        </div>
+
+        <!-- scoreboard -->
+        <div class="scorebar" id="scorebar">
+            <div class="stat">
+                <span class="k">Score</span>
+                <span class="v" id="s-score">0</span>
+            </div>
+            <div class="stat">
+                <span class="k">Streak</span>
+                <span class="v" id="s-streak">0</span>
+            </div>
+            <div class="stat">
+                <span class="k">Correct</span>
+                <span class="v" id="s-correct">0 / 0</span>
+            </div>
+            <div class="bar-wrap">
+                <span class="k" style="font-size:0.7rem;font-weight:700;letter-spacing:0.08em;
+                    text-transform:uppercase;color:#6E6E6E;">Progress</span>
+                <div class="bar"><span id="s-bar"></span></div>
+            </div>
+        </div>
+
+        <!-- stage map -->
+        <section class="panel" id="mapPanel">
+            <h2>Pick a stage</h2>
+            <p class="note">Work straight through, or jump to whatever you feel shakiest on. Answers can be whole numbers, decimals, or fractions like 3/8.</p>
+            <div class="map" id="map"></div>
+            <div class="actions">
+                <button id="btn-start">Start from the beginning</button>
+                <button class="ghost" id="btn-reset">New problem set</button>
+            </div>
+        </section>
+
+        <!-- question -->
+        <section class="panel hidden" id="qPanel">
+            <div class="qhead">
+                <span class="rnd" id="q-round"></span>
+                <span class="cnt" id="q-count"></span>
+            </div>
+            <div class="qtext" id="q-text"></div>
+            <div id="q-fig"></div>
+            <div id="q-body"></div>
+            <div class="actions">
+                <button id="btn-check">Check answer</button>
+                <button class="ghost hidden" id="btn-next">Next question</button>
+                <button class="ghost" id="btn-quit">Back to the map</button>
+            </div>
+            <div id="q-fb"></div>
+        </section>
+
+        <!-- results -->
+        <section class="panel hidden" id="rPanel">
+            <h2 id="r-title">Run complete</h2>
+            <div class="bigscore" id="r-score">0</div>
+            <p class="note" id="r-line"></p>
+            <div class="resultgrid" id="r-grid"></div>
+            <div id="r-advice"></div>
+            <div class="actions">
+                <button id="btn-again">Play again with new problems</button>
+                <button class="ghost" id="btn-map">Back to the map</button>
+            </div>
+        </section>
+
+    </main>
+
+
+    <script>
+        'use strict';
+
+        /* =======================================================
+           small helpers
+           ======================================================= */
+        function ri(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+        function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+        function shuffle(a) {
+            a = a.slice();
+            for (var i = a.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var t = a[i]; a[i] = a[j]; a[j] = t;
+            }
+            return a;
+        }
+        function gcd(a, b) { while (b) { var t = b; b = a % b; a = t; } return a; }
+        function sum(a) { return a.reduce(function (s, x) { return s + x; }, 0); }
+        function sortNum(a) { return a.slice().sort(function (x, y) { return x - y; }); }
+        function medianSorted(s) {
+            var n = s.length, m = n >> 1;
+            return n % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+        }
+        /* even n only: the quartiles are the medians of the lower and upper halves */
+        function fiveNum(a) {
+            var s = sortNum(a), n = s.length, h = n >> 1;
+            return [s[0], medianSorted(s.slice(0, h)), medianSorted(s), medianSorted(s.slice(n - h)), s[n - 1]];
+        }
+        /* plain decimal text: no trailing zeros, no float noise */
+        function fmt(x) { return String(Math.round(x * 1e6) / 1e6); }
+        function fmt2(x) { return String(Math.round(x * 100) / 100); }
+        function money(x) {
+            var v = Math.round(Math.abs(x) * 100) / 100;
+            return (x < 0 ? '&minus;' : '') + '$' + v.toFixed(2);
+        }
+        function commas(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+        function fracStr(n, d) {
+            var g = gcd(n, d);
+            return (d / g === 1) ? String(n / g) : (n / g) + '/' + (d / g);
+        }
+        /* a/b rendered as a stacked-looking inline fraction */
+        function fracHtml(n, d) {
+            var g = gcd(n, d);
+            return (d / g === 1) ? String(n / g) : '<sup>' + (n / g) + '</sup>&frasl;<sub>' + (d / g) + '</sub>';
+        }
+        /* 0.535714... -> '15/28' (for showing probability answers) */
+        function asFraction(x) {
+            for (var d = 1; d <= 2000; d++) {
+                var n = Math.round(x * d);
+                if (Math.abs(n / d - x) < 1e-9) return fracStr(n, d);
+            }
+            return fmt(x);
+        }
+        function listStr(a) { return a.join(', '); }
+        function mode(a) {
+            var c = {}, best = 0, out = [];
+            a.forEach(function (x) { c[x] = (c[x] || 0) + 1; if (c[x] > best) best = c[x]; });
+            Object.keys(c).forEach(function (k) { if (c[k] === best) out.push(Number(k)); });
+            return { vals: out, count: best };
+        }
+        var LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        /* typed answers: whole numbers, decimals, or fractions like 3/8 */
+        function parseNum(s) {
+            s = String(s).replace(/−/g, '-').replace(/[,\s$]/g, '');
+            var m = s.match(/^(-?\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+            if (m) { var d = Number(m[2]); return d === 0 ? NaN : Number(m[1]) / d; }
+            if (/^-?(\d+\.?\d*|\.\d+)$/.test(s)) return Number(s);
+            return NaN;
+        }
+        /* round:true questions (probabilities) also accept the exact answer rounded to 2 or 3 places */
+        function matches(v, a, round) {
+            if (!isFinite(v)) return false;
+            if (Math.abs(v - a) < 1e-9) return true;
+            if (!round) return false;
+            return Math.abs(v - Math.round(a * 100) / 100) < 1e-9 ||
+                Math.abs(v - Math.round(a * 1000) / 1000) < 1e-9;
+        }
+
+        /* =======================================================
+           figures (every one has an aria-label that carries the data)
+           ======================================================= */
+        function svgOpen(w, h, label) {
+            return '<svg viewBox="0 0 ' + w + ' ' + h + '" width="' + Math.min(w, 640) +
+                '" role="img" aria-label="' + label + '">';
+        }
+
+        /* bar graph; base is where the vertical axis starts */
+        function barSVG(labels, vals, base, top, step, title) {
+            var W = 440, H = 270, L = 50, B = 46, T = 30, R = 12, pw = W - L - R, ph = H - T - B;
+            var n = labels.length, slot = pw / n, bw = slot * 0.6;
+            function y(v) { return T + ph * (1 - (v - base) / (top - base)); }
+            var desc = title + '. ' + labels.map(function (l, i) { return l + ' ' + vals[i]; }).join(', ') +
+                '. The vertical axis starts at ' + base + '.';
+            var o = svgOpen(W, H, desc);
+            o += '<text x="' + (W / 2) + '" y="16" text-anchor="middle" font-size="12" font-weight="700" ' +
+                'fill="#333">' + title + '</text>';
+            for (var t = base; t <= top + 1e-9; t += step) {
+                o += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(t) + '" y2="' + y(t) +
+                    '" stroke="#e3e6ea"/><text x="' + (L - 6) + '" y="' + (y(t) + 4) +
+                    '" text-anchor="end" font-size="11" fill="#6E6E6E">' + t + '</text>';
+            }
+            o += '<line x1="' + L + '" x2="' + L + '" y1="' + T + '" y2="' + y(base) + '" stroke="#111"/>' +
+                '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(base) + '" y2="' + y(base) + '" stroke="#111"/>';
+            vals.forEach(function (v, i) {
+                var x = L + i * slot + (slot - bw) / 2;
+                o += '<rect x="' + x + '" y="' + y(v) + '" width="' + bw + '" height="' + (y(base) - y(v)) +
+                    '" fill="#F36E24" stroke="#111" stroke-width="1"/>' +
+                    '<text x="' + (x + bw / 2) + '" y="' + (y(base) + 16) +
+                    '" text-anchor="middle" font-size="12" fill="#333">' + labels[i] + '</text>';
+            });
+            return o + '</svg>';
+        }
+
+        /* dot plot of whole-number data on lo..hi */
+        function dotSVG(vals, lo, hi, axisLabel) {
+            var cnt = {}, maxc = 0;
+            vals.forEach(function (v) { cnt[v] = (cnt[v] || 0) + 1; if (cnt[v] > maxc) maxc = cnt[v]; });
+            var S = 30, R = 7, L = 24, W = L * 2 + (hi - lo) * S, H = 40 + maxc * 17 + 34;
+            var desc = 'Dot plot of ' + axisLabel + ': ' + Object.keys(cnt).map(Number).sort(function (a, b) { return a - b; })
+                .map(function (k) { return cnt[k] + (cnt[k] === 1 ? ' dot' : ' dots') + ' at ' + k; }).join(', ');
+            var o = svgOpen(W, H, desc);
+            var ay = H - 42;
+            o += '<line x1="' + (L - 12) + '" x2="' + (W - L + 12) + '" y1="' + ay + '" y2="' + ay + '" stroke="#111"/>';
+            for (var v = lo; v <= hi; v++) {
+                var x = L + (v - lo) * S;
+                o += '<line x1="' + x + '" x2="' + x + '" y1="' + ay + '" y2="' + (ay + 5) + '" stroke="#111"/>' +
+                    '<text x="' + x + '" y="' + (ay + 18) + '" text-anchor="middle" font-size="12" fill="#333">' + v + '</text>';
+                for (var j = 0; j < (cnt[v] || 0); j++) {
+                    o += '<circle cx="' + x + '" cy="' + (ay - 10 - j * 17) + '" r="' + R +
+                        '" fill="#9fd3b5" stroke="#111" stroke-width="1"/>';
+                }
+            }
+            o += '<text x="' + (W / 2) + '" y="' + (H - 3) + '" text-anchor="middle" font-size="11" ' +
+                'fill="#6E6E6E">' + axisLabel + '</text>';
+            return o + '</svg>';
+        }
+
+        /* box-and-whisker plot on 0..hi, ticks every 5, labels every 10 */
+        function boxSVG(five, hi, axisLabel, labelled) {
+            var W = 460, L = 24, R = 24, H = 108, pw = W - L - R;
+            function x(v) { return L + pw * v / hi; }
+            var desc = 'Box-and-whisker plot of ' + axisLabel + (labelled
+                ? ': minimum ' + five[0] + ', first quartile ' + five[1] + ', median ' + five[2] +
+                ', third quartile ' + five[3] + ', maximum ' + five[4]
+                : '. Read the five numbers off the axis. The axis runs from 0 to ' + hi + '.');
+            var o = svgOpen(W, H, desc), ay = 62, by = 14, bh = 30;
+            o += '<line x1="' + x(0) + '" x2="' + x(hi) + '" y1="' + ay + '" y2="' + ay + '" stroke="#111"/>';
+            for (var t = 0; t <= hi; t += 5) {
+                o += '<line x1="' + x(t) + '" x2="' + x(t) + '" y1="' + ay + '" y2="' + (ay + (t % 10 === 0 ? 7 : 4)) +
+                    '" stroke="#111"/>';
+                if (t % 10 === 0) {
+                    o += '<text x="' + x(t) + '" y="' + (ay + 20) + '" text-anchor="middle" font-size="11" ' +
+                        'fill="#333">' + t + '</text>';
+                }
+            }
+            o += '<line x1="' + x(five[0]) + '" x2="' + x(five[1]) + '" y1="' + (by + bh / 2) + '" y2="' + (by + bh / 2) +
+                '" stroke="#111" stroke-width="1.6"/>' +
+                '<line x1="' + x(five[3]) + '" x2="' + x(five[4]) + '" y1="' + (by + bh / 2) + '" y2="' + (by + bh / 2) +
+                '" stroke="#111" stroke-width="1.6"/>' +
+                '<line x1="' + x(five[0]) + '" x2="' + x(five[0]) + '" y1="' + (by + 6) + '" y2="' + (by + bh - 6) +
+                '" stroke="#111" stroke-width="1.6"/>' +
+                '<line x1="' + x(five[4]) + '" x2="' + x(five[4]) + '" y1="' + (by + 6) + '" y2="' + (by + bh - 6) +
+                '" stroke="#111" stroke-width="1.6"/>' +
+                '<rect x="' + x(five[1]) + '" y="' + by + '" width="' + (x(five[3]) - x(five[1])) + '" height="' + bh +
+                '" fill="#fde3d0" stroke="#111" stroke-width="1.6"/>' +
+                '<line x1="' + x(five[2]) + '" x2="' + x(five[2]) + '" y1="' + by + '" y2="' + (by + bh) +
+                '" stroke="#111" stroke-width="2.6"/>';
+            o += '<text x="' + (W / 2) + '" y="' + (H - 4) + '" text-anchor="middle" font-size="11" ' +
+                'fill="#6E6E6E">' + axisLabel + '</text>';
+            return o + '</svg>';
+        }
+
+        /* =======================================================
+           STAGE 1 - Sampling Station (15.1)
+           ======================================================= */
+        function stageSampling() {
+            var qs = [];
+
+            /* --- 1. which one is a statistical question? --- */
+            (function () {
+                var stat = [
+                    'How many pets do the students at our school have?',
+                    'How many minutes does it take students in this class to get to school?',
+                    'How many hours do fourth graders sleep on a school night?',
+                    'How tall are the sunflowers in the school garden?',
+                    'How many books did each student in our grade read this month?',
+                    'How long can the students in this class hold their breath?'
+                ];
+                var non = [
+                    'How many students are in Ms. Ortiz’s class today?',
+                    'What time does the first bell ring on Mondays?',
+                    'How long is the school hallway?',
+                    'What is the area of the gym floor?',
+                    'How many pennies are in this jar right now?',
+                    'What is the tallest sunflower in the school garden?'
+                ];
+                var right = pick(stat), wrongs = shuffle(non).slice(0, 3);
+                qs.push({
+                    prompt: 'Which of these is a <strong>statistical question</strong>?',
+                    type: 'choice',
+                    choices: shuffle([{ html: right, correct: true }].concat(
+                        wrongs.map(function (w) { return { html: w, correct: false }; }))),
+                    meta: { kind: 'conceptual' },
+                    explain: function () {
+                        return '<p>A statistical question is one where you <strong>expect the answers to vary</strong>, ' +
+                            'so you need a whole set of data to answer it: <em>' + right + '</em></p>' +
+                            '<p class="why">The others each have one fixed answer you could find by looking, ' +
+                            'counting, or measuring one thing. No variability, no data set, no statistics.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. which plan gives a representative sample? --- */
+            (function () {
+                var sc = pick([
+                    {
+                        who: 'A town has <strong>N</strong> households, and the city wants to know what fraction recycle. ' +
+                            'It will survey <strong>n</strong> households.',
+                        right: 'Number every household and have a computer pick n numbers at random.',
+                        wrong: [
+                            'Survey the first n households that visit the recycling center on Saturday.',
+                            'Mail a survey to every household and use the first n that come back.',
+                            'Survey n households on the street where the survey’s organizer lives.'
+                        ]
+                    },
+                    {
+                        who: 'A school has <strong>N</strong> students, and the technology teacher wants to know what fraction ' +
+                            'own a smartphone. She will survey <strong>n</strong> students.',
+                        right: 'Put the student roster in a random order and survey the first n names on the shuffled list.',
+                        wrong: [
+                            'Survey n students at the school’s technology fair.',
+                            'Post an online poll and use the first n answers.',
+                            'Survey the n students who sit nearest the cafeteria windows.'
+                        ]
+                    },
+                    {
+                        who: 'A county fair sold <strong>N</strong> tickets, and the organizers want to know which ride people ' +
+                            'liked best. They will ask <strong>n</strong> people.',
+                        right: 'Number all the tickets sold and pick n ticket numbers at random.',
+                        wrong: [
+                            'Ask n people waiting in line for the biggest roller coaster.',
+                            'Ask n children at the petting zoo.',
+                            'Ask the n people who walk up to the survey booth.'
+                        ]
+                    }
+                ]);
+                var n = pick([30, 40, 50, 60]), N = n * ri(8, 20);
+                function fill(s) { return s.replace(/\bN\b/g, commas(N)).replace(/\bn\b/g, String(n)); }
+                qs.push({
+                    prompt: fill(sc.who) + '<br><br>Which plan is <strong>most likely to give a representative sample</strong>?',
+                    type: 'choice',
+                    choices: shuffle([{ html: fill(sc.right), correct: true }].concat(
+                        sc.wrong.map(function (w) { return { html: fill(w), correct: false }; }))),
+                    meta: { kind: 'conceptual', N: N, n: n },
+                    explain: function () {
+                        return '<p>Only the random plan gives <strong>every</strong> member of the population the same chance ' +
+                            'of being chosen, so no kind of person is favored.</p>' +
+                            '<p class="why">Each of the other plans quietly leaves some people out or over-counts others ' +
+                            '(the people who are at that place, who volunteer, or who are close to the organizer). ' +
+                            'A bigger sample does not fix that. It just gives you a more precise wrong answer.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. estimate a population from a sample --- */
+            (function () {
+                var n = pick([20, 25, 40, 50]), k = ri(1, 5), mult = ri(20, 60), bm = ri(2, 6);
+                var N = n * mult, B = n * bm;
+                var thing = pick([
+                    { s: 'seeds', f: 'did not sprout', unit: 'bags', box: 'a bag' },
+                    { s: 'batteries', f: 'were dead', unit: 'boxes', box: 'a box' },
+                    { s: 'crayons', f: 'were broken', unit: 'boxes', box: 'a box' }
+                ]);
+                qs.push({
+                    prompt: 'A shipment contains <strong>' + commas(N) + '</strong> ' + thing.s + '. An inspector picks ' +
+                        '<strong>' + n + '</strong> of them at random, and <strong>' + k + '</strong> ' + thing.f + '.' +
+                        '<br><br>Based on the sample, about how many ' + thing.s + ' in the whole shipment ' + thing.f +
+                        '? And if the ' + thing.s + ' are packed ' + B + ' to ' + thing.box +
+                        ', about how many would you expect in ' + thing.box + '?',
+                    type: 'num',
+                    labels: ['In the shipment', 'In ' + thing.box],
+                    answer: [N * k / n, B * k / n],
+                    meta: { kind: 'sample-est', N: N, n: n, k: k, B: B },
+                    explain: function () {
+                        return '<p>If the sample is representative, the shipment has the same <em>rate</em> as the sample: ' +
+                            k + ' out of ' + n + ' is <strong>' + fracHtml(k, n) + '</strong> of the ' + thing.s + '.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' +
+                            commas(N) + ' &middot; ' + k + '/' + n + ' = ' + commas(N * k / n) + '<br>' +
+                            B + ' &middot; ' + k + '/' + n + ' = ' + (B * k / n) + '</p>' +
+                            '<p class="why">The word that matters is <em>about</em>. A different random sample would give a ' +
+                            'slightly different estimate, which is why we want the sample to be random and not tiny.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. tag and recapture --- */
+            (function () {
+                var T, n, k, tries = 0;
+                do {
+                    T = pick([30, 40, 50, 60, 80, 100]); n = pick([30, 40, 50, 60, 80]); k = ri(2, 10);
+                    tries++;
+                    /* 250 is the answer to the real test's capture-recapture item (30 tagged, 6 of 50), so it never appears here */
+                } while ((T * n) % k !== 0 || T * n / k < 200 || T * n / k > 2500 || k >= n / 3 || T * n / k === 250);
+                var animal = pick(['frogs', 'turtles', 'trout', 'ground squirrels']);
+                qs.push({
+                    prompt: 'A park ranger wants to estimate how many ' + animal + ' live in a pond. She catches ' +
+                        '<strong>' + T + '</strong> ' + animal + ', puts a small tag on each, and lets them go. A week later, once they have ' +
+                        'mixed back in, she catches <strong>' + n + '</strong> ' + animal + ' and finds ' +
+                        '<strong>' + k + '</strong> of them tagged.<br><br>About how many ' + animal + ' are in the pond?',
+                    type: 'num',
+                    labels: ['Estimate'],
+                    answer: [T * n / k],
+                    meta: { kind: 'recapture', T: T, n: n, k: k },
+                    explain: function () {
+                        return '<p>The tagged ones are <strong>' + fracHtml(k, n) + '</strong> of the second catch. If that ' +
+                            'catch looks like the whole pond, then the ' + T + ' tagged ' + animal + ' are also about ' +
+                            fracHtml(k, n) + ' of the whole pond.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + k + '/' + n + ' = ' + T + '/P' +
+                            '<br>P = ' + T + ' &middot; ' + n + '/' + k + ' = ' + (T * n / k) + '</p>' +
+                            '<p class="why">This only works if the tagged animals really mixed in, and if nothing was born, ' +
+                            'died, or wandered off in between. That is the kind of assumption the Statfloof Forest activity ' +
+                            'asked you to break on purpose.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           STAGE 2 - Graph Gallery (15.2)
+           ======================================================= */
+        function stageGraphs() {
+            var qs = [];
+
+            /* --- 1. which display fits the data? --- */
+            (function () {
+                var types = {
+                    line: {
+                        name: 'Line graph',
+                        why: 'The data change over time, and a line graph shows the ups and downs from one time to the next.',
+                        sc: ['the number of library books checked out each month from September through May',
+                            'the temperature of a cup of tea measured every 5 minutes for an hour',
+                            'the height of a bean plant measured each week for ten weeks']
+                    },
+                    bar: {
+                        name: 'Bar graph',
+                        why: 'The data are separate categories, and bars make it easy to compare how big each category is.',
+                        sc: ['how many students chose each of five lunch options',
+                            'the number of goals scored by each of six soccer teams this season',
+                            'how many votes each of four book titles got in a class election']
+                    },
+                    pie: {
+                        name: 'Circle graph',
+                        why: 'The data are parts of one whole, and a circle graph shows what fraction of the whole each part is.',
+                        sc: ['what percent of the school’s yearly budget goes to salaries, supplies, buildings, and busing',
+                            'what fraction of a family’s weekly spending goes to food, housing, travel, and savings',
+                            'what percent of the day a koala spends sleeping, eating, and awake but resting']
+                    },
+                    dot: {
+                        name: 'Dot plot (line plot)',
+                        why: 'There is one number for each of many individuals, and a dot plot shows how those values are spread out and where they pile up.',
+                        sc: ['the number of cavities that each of 25 fourth graders has had',
+                            'how many siblings each of 28 students in a class has',
+                            'the number of goals each of 30 players scored in a single game']
+                    }
+                };
+                var keys = ['line', 'bar', 'pie', 'dot'], t = pick(keys);
+                var s = pick(types[t].sc);
+                qs.push({
+                    prompt: 'You want to display data about <strong>' + s + '</strong>.<br><br>Which display fits best?',
+                    type: 'choice',
+                    choices: shuffle(keys.map(function (k) {
+                        return { html: types[k].name, correct: k === t, key: k };
+                    })),
+                    meta: { kind: 'conceptual', want: t },
+                    explain: function () {
+                        return '<p><strong>' + types[t].name + '.</strong> ' + types[t].why + '</p>' +
+                            '<p class="why">A quick sort: change over time &rarr; line graph; compare separate categories &rarr; ' +
+                            'bar graph; parts of one whole &rarr; circle graph; one value per individual, shown with its spread ' +
+                            '&rarr; dot plot or histogram.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. which level of graph reading? --- */
+            (function () {
+                var months = ['Sep', 'Oct', 'Nov', 'Dec'];
+                var vals = [], i;
+                for (i = 0; i < 4; i++) vals.push(ri(2, 9) * 10);
+                while (new Set(vals).size < 4) { vals[ri(0, 3)] = ri(2, 9) * 10; }
+                var a = ri(0, 3), b = (a + ri(1, 3)) % 4;
+                var level = pick(['reading', 'between', 'beyond']);
+                var qtext;
+                if (level === 'reading') qtext = 'How many books were checked out in ' + months[a] + '?';
+                else if (level === 'between') qtext = 'How many more books were checked out in ' + months[a] + ' than in ' +
+                    months[b] + '?';
+                else qtext = 'If this keeps up, about how many books will be checked out next month?';
+                var names = { reading: 'Reading the data', between: 'Reading between the data', beyond: 'Reading beyond the data' };
+                var why = {
+                    reading: 'The answer is a single value you can read straight off the graph. Nothing to compute or predict.',
+                    between: 'No single bar gives the answer. You have to compare bars or combine values (here, subtract two of them).',
+                    beyond: 'The graph cannot show the answer. You have to predict or infer something that is not in the data.'
+                };
+                qs.push({
+                    prompt: 'A bar graph shows the number of books checked out of the school library each month. A student asks: ' +
+                        '<em>&ldquo;' + qtext + '&rdquo;</em><br><br>Which of the three graph-reading levels does that question need?',
+                    type: 'choice',
+                    fig: barSVG(months, vals, 0, 100, 10, 'Library books checked out'),
+                    choices: shuffle(['reading', 'between', 'beyond'].map(function (k) {
+                        return { html: names[k], correct: k === level, key: k };
+                    })),
+                    meta: { kind: 'conceptual', level: level, vals: vals },
+                    explain: function () {
+                        var extra = level === 'reading' ? ' The bar for ' + months[a] + ' reaches ' + vals[a] + '.'
+                            : level === 'between' ? ' ' + vals[a] + ' &minus; ' + vals[b] + ' = ' + (vals[a] - vals[b]) + '.' : '';
+                        return '<p><strong>' + names[level] + '.</strong> ' + why[level] + extra + '</p>' +
+                            '<p class="why">Easy to remember: <em>reading the data</em> is look it up; <em>between</em> is ' +
+                            'compare or compute with it; <em>beyond</em> is predict or infer past it.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. a misleading vertical axis --- */
+            (function () {
+                var v1, v2, d, r, tries = 0;
+                do {
+                    v1 = pick([40, 50, 60, 80, 100, 120]);
+                    v2 = Math.round(v1 * pick([1.2, 1.25, 1.5]) * 100) / 100;
+                    var diff = v2 - v1;
+                    var ds = [2, 4, 5, 10, 20, 25].filter(function (x) { return diff % x === 0 && x < v1 && 1 + diff / x >= 2 && 1 + diff / x <= 8; });
+                    d = ds.length ? pick(ds) : 0;
+                    tries++;
+                } while (!(Number.isInteger(v2) && d) && tries < 500);
+                var base = v1 - d;
+                r = (v2 - base) / (v1 - base);
+                var title = pick(['Weekly sales of two stores (in $ thousands)', 'Average test score by class', 'Free-throw percent by team']);
+                var top = v2 + d, step = d;
+                qs.push({
+                    prompt: 'The bar graph below compares two groups, <strong>' + v1 + '</strong> and <strong>' + v2 +
+                        '</strong>. Notice where the vertical axis starts.<br><br>How many times as tall does the second bar ' +
+                        '<em>look</em>, and how many times as large is its value <em>really</em>? (Decimals are fine.)',
+                    type: 'num',
+                    fig: barSVG(['Group 1', 'Group 2'], [v1, v2], base, top, step, title),
+                    labels: ['Looks (times as tall)', 'Really (times as large)'],
+                    answer: [r, v2 / v1],
+                    meta: { kind: 'trunc', v1: v1, v2: v2, base: base },
+                    explain: function () {
+                        return '<p>The bars are measured from the axis start, <strong>' + base + '</strong>, not from 0. ' +
+                            'The first bar is ' + (v1 - base) + ' units tall and the second is ' + (v2 - base) +
+                            ' units tall: ' + (v2 - base) + ' &divide; ' + (v1 - base) + ' = <strong>' + fmt(r) + '</strong> ' +
+                            'times as tall.</p>' +
+                            '<p>The actual values compare as ' + v2 + ' &divide; ' + v1 + ' = <strong>' + fmt(v2 / v1) +
+                            '</strong>.</p>' +
+                            '<p class="why">A bar graph that does not start at zero exaggerates differences, because we judge ' +
+                            'bars by their <em>length</em>. Check the axis before you trust the picture.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. reading a dot plot --- */
+            (function () {
+                var lo = 0, hi = ri(6, 8), vals = [], n = ri(18, 25), i, v;
+                var center = ri(2, hi - 2);
+                for (i = 0; i < n; i++) {
+                    v = center + Math.round((Math.random() + Math.random() + Math.random() - 1.5) * 3);
+                    v = Math.max(lo, Math.min(hi, v));
+                    vals.push(v);
+                }
+                var cnt = {}, maxc = 0;
+                vals.forEach(function (x) { cnt[x] = (cnt[x] || 0) + 1; maxc = Math.max(maxc, cnt[x]); });
+                var k = ri(Math.max(1, center - 1), Math.min(hi - 1, center + 1));
+                var above = vals.filter(function (x) { return x > k; }).length;
+                var what = pick([
+                    { who: 'students', ax: 'Number of pets' },
+                    { who: 'students', ax: 'Books read this month' },
+                    { who: 'players', ax: 'Goals scored in the game' }
+                ]);
+                var word = what.who === 'students' ? 'students' : 'players';
+                var noun = what.ax === 'Number of pets' ? 'pet' : what.ax === 'Books read this month' ? 'book' : 'goal';
+                var tail = 'more than ' + k + ' ' + noun + (k === 1 ? '' : 's');
+                qs.push({
+                    prompt: 'The dot plot shows data for a group of ' + word + '. Each dot is one of the ' + word + '.<br><br>' +
+                        'How many ' + word + ' are shown in all, and how many of them have ' + tail + '?',
+                    type: 'num',
+                    fig: dotSVG(vals, lo, hi, what.ax),
+                    labels: ['Total shown', 'With ' + tail],
+                    answer: [n, above],
+                    meta: { kind: 'dots', vals: vals, k: k },
+                    explain: function () {
+                        var pieces = [];
+                        var rt = [];
+                        for (var x = lo; x <= hi; x++) if (cnt[x]) { pieces.push(cnt[x] + ' at ' + x); if (x > k) rt.push(cnt[x]); }
+                        return '<p>Count the dots, not the numbers on the axis: ' + pieces.join(', ') +
+                            ', for a total of <strong>' + n + '</strong>.</p>' +
+                            '<p>Dots to the right of ' + k + ': ' + (rt.length ? rt.join(' + ') : '0') +
+                            ' = <strong>' + above + '</strong>.</p>' +
+                            '<p class="why">A dot plot keeps every individual value, so the list of data is recoverable: ' +
+                            'one value for each dot. Adding up the numbers on the axis (or listing the heights of the ' +
+                            'stacks) is the classic mistake.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           STAGE 3 - Mean Machine (15.3)
+           ======================================================= */
+        function stageMean() {
+            var qs = [];
+
+            /* --- 1. the value that makes the mean come out right --- */
+            (function () {
+                var n, vals, M, x, tries = 0;
+                do {
+                    n = ri(4, 5);
+                    M = ri(8, 16);
+                    vals = [];
+                    for (var i = 0; i < n; i++) vals.push(M + ri(-4, 4));
+                    x = M * (n + 1) - sum(vals);
+                    tries++;
+                } while ((x < 1 || x > 3 * M || new Set(vals).size < 3) && tries < 1000);
+                var ctx = pick([
+                    { a: 'A cyclist rode these numbers of miles on her first ' + n + ' days of a training week',
+                        q: 'How many miles must she ride on day ' + (n + 1) + ' to have an average of ' + M + ' miles per day?', u: 'miles' },
+                    { a: 'A student practiced for these numbers of minutes on his first ' + n + ' days of a music challenge',
+                        q: 'How many minutes must he practice on day ' + (n + 1) + ' to average ' + M + ' minutes per day?', u: 'minutes' },
+                    { a: 'A basketball player made these numbers of free throws in her first ' + n + ' games',
+                        q: 'How many must she make in game ' + (n + 1) + ' to average ' + M + ' per game?', u: 'free throws' }
+                ]);
+                qs.push({
+                    prompt: ctx.a + ': <strong>' + listStr(vals) + '</strong>.<br><br>' + ctx.q,
+                    type: 'num',
+                    labels: ['Needed (' + ctx.u + ')'],
+                    answer: [x],
+                    meta: { kind: 'target-mean', vals: vals, M: M },
+                    explain: function () {
+                        var s = sum(vals);
+                        return '<p>Work with <em>totals</em>. An average of ' + M + ' over ' + (n + 1) + ' days means a total of ' +
+                            (n + 1) + ' &middot; ' + M + ' = ' + (M * (n + 1)) + '.</p>' +
+                            '<p>So far the total is ' + vals.join(' + ') + ' = ' + s + ', which leaves ' + (M * (n + 1)) +
+                            ' &minus; ' + s + ' = <strong>' + x + '</strong> to go.</p>' +
+                            '<p class="why">Leveling-out version: each earlier value is some distance above or below ' + M +
+                            '. The new value has to cover the total shortfall (or give back the surplus) on top of its own ' + M + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. share fairly: leveling out --- */
+            (function () {
+                var n, vals, tries = 0;
+                do {
+                    n = ri(4, 5);
+                    vals = [];
+                    for (var i = 0; i < n; i++) vals.push(ri(4, 18));
+                    tries++;
+                } while ((sum(vals) % n !== 0 || new Set(vals).size < n - 1) && tries < 5000);
+                var m = sum(vals) / n;
+                var moved = sum(vals.filter(function (v) { return v > m; }).map(function (v) { return v - m; }));
+                var names = ['Ana', 'Ben', 'Cy', 'Dee', 'Eli'].slice(0, n);
+                var thing = pick(['stickers', 'marbles', 'trading cards']);
+                qs.push({
+                    prompt: names.length + ' friends have ' + thing + ' as follows: ' +
+                        names.map(function (nm, i) { return nm + ' ' + vals[i]; }).join(', ') + '. They agree to share so that ' +
+                        'everyone ends up with the <strong>same number</strong>, by passing ' + thing + ' from those who have more.' +
+                        '<br><br>How many does each friend end up with, and what is the fewest ' + thing +
+                        ' that have to change hands altogether?',
+                    type: 'num',
+                    labels: ['Each ends with', 'Passed in total'],
+                    answer: [m, moved],
+                    meta: { kind: 'fair-share', vals: vals },
+                    explain: function () {
+                        var over = vals.map(function (v, i) { return v > m ? names[i] + ' gives ' + (v - m) : null; })
+                            .filter(Boolean).join(', ');
+                        return '<p>What each ends with is the <strong>mean</strong>: ' + sum(vals) + ' &divide; ' + n + ' = ' +
+                            '<strong>' + m + '</strong>. Sharing fairly <em>is</em> leveling out.</p>' +
+                            '<p>The friends above the mean have to give away their extras: ' + over + '. That is ' +
+                            '<strong>' + moved + '</strong> altogether, and it exactly fills the shortfalls of the others.</p>' +
+                            '<p class="why">This is the balance-point idea: the amounts above the mean and the amounts ' +
+                            'below the mean cancel exactly. That is what makes the mean the mean.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. combining two averages --- */
+            (function () {
+                var pairs = [[8, 12], [10, 10], [5, 15], [15, 10], [12, 8], [6, 14], [20, 5], [4, 16]];
+                var pr, a1, a2;
+                do {
+                    pr = pick(pairs); a1 = ri(62, 80); a2 = ri(70, 96);
+                } while (a1 === a2);
+                var n1 = pr[0], n2 = pr[1];
+                var ans = (n1 * a1 + n2 * a2) / (n1 + n2);
+                qs.push({
+                    prompt: 'On the same test, a morning section of <strong>' + n1 + '</strong> students averaged <strong>' + a1 +
+                        '</strong>, and an afternoon section of <strong>' + n2 + '</strong> students averaged <strong>' + a2 +
+                        '</strong>.<br><br>What is the average for all ' + (n1 + n2) + ' students together? (Decimals are fine.)',
+                    type: 'num',
+                    labels: ['Overall average'],
+                    answer: [ans],
+                    meta: { kind: 'combined-mean', n1: n1, a1: a1, n2: n2, a2: a2 },
+                    explain: function () {
+                        return '<p>The overall average is <strong>total points &divide; total students</strong>, not the average ' +
+                            'of the two averages.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + n1 + ' &middot; ' + a1 + ' = ' + (n1 * a1) +
+                            '<br>' + n2 + ' &middot; ' + a2 + ' = ' + (n2 * a2) + '<br>total = ' + (n1 * a1 + n2 * a2) +
+                            ' points<br>' + (n1 * a1 + n2 * a2) + ' &divide; ' + (n1 + n2) + ' = ' + fmt(ans) + '</p>' +
+                            '<p class="why">Check: the answer must land between ' + Math.min(a1, a2) + ' and ' + Math.max(a1, a2) +
+                            ', and closer to the average of the <em>bigger</em> section' +
+                            (n1 === n2 ? ' (these sections are the same size, so it is exactly halfway)' : '') +
+                            '. Averaging ' + a1 + ' and ' + a2 + ' would give ' + fmt((a1 + a2) / 2) + ', which ignores how many ' +
+                            'students were in each group.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. what is impossible for a mean? --- */
+            (function () {
+                var N = ri(6, 12);
+                var ctxs = pick(['quiz scores', 'daily step counts', 'heights of plants']);
+                qs.push({
+                    prompt: 'A set of ' + N + ' ' + ctxs + ' has a mean. Which of these is <strong>impossible</strong>?',
+                    type: 'choice',
+                    choices: shuffle([
+                        { html: 'All ' + N + ' values are above the mean.', correct: true },
+                        { html: (N - 1) + ' of the ' + N + ' values are above the mean.', correct: false },
+                        { html: 'Exactly ' + (N / 2 === Math.floor(N / 2) ? N / 2 : (N - 1) / 2) + ' of the values are below the mean.', correct: false },
+                        { html: 'The mean is a number that is not one of the values.', correct: false }
+                    ]),
+                    meta: { kind: 'conceptual', N: N },
+                    explain: function () {
+                        return '<p>The mean is the balance point: the amounts above it and the amounts below it cancel. If <em>every</em> ' +
+                            'value were above the mean, there would be nothing below to balance them, and the mean could not sit ' +
+                            'below all of them.</p>' +
+                            '<p class="why">It <em>is</em> possible for ' + (N - 1) + ' of ' + N + ' to be above the mean: one very ' +
+                            'low value can drag the mean down below everyone else (for example, ' + (N - 1) + ' scores of 9 and ' +
+                            'one score of 0). It is also fine for the mean not to be any of the values (the mean of 1 and 2 is 1.5).</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           STAGE 4 - Middle & Spread (15.3 and 15.4)
+           ======================================================= */
+        function stageSpread() {
+            var qs = [];
+
+            /* --- 1. median and mode --- */
+            (function () {
+                var n, vals, md, tries = 0;
+                do {
+                    n = ri(9, 12);
+                    vals = [];
+                    for (var i = 0; i < n; i++) vals.push(ri(1, 14));
+                    md = mode(vals);
+                    tries++;
+                } while ((md.vals.length !== 1 || md.count < 3) && tries < 5000);
+                var med = medianSorted(sortNum(vals));
+                var ctx = pick(['Text messages sent yesterday by ' + n + ' students',
+                    'Minutes spent on homework last night by ' + n + ' students',
+                    'Laps swum at practice by ' + n + ' swimmers']);
+                qs.push({
+                    prompt: ctx + ': <strong>' + listStr(vals) + '</strong>.<br><br>' +
+                        'Find the median and the mode.',
+                    type: 'num',
+                    labels: ['Median', 'Mode'],
+                    answer: [med, md.vals[0]],
+                    meta: { kind: 'median-mode', vals: vals },
+                    explain: function () {
+                        var s = sortNum(vals);
+                        return '<p>Put the data in order first: <strong>' + s.join(', ') + '</strong>.</p>' +
+                            '<p>There are ' + n + ' values, so ' + (n % 2
+                                ? 'the median is the middle one, number ' + ((n + 1) / 2) + ': <strong>' + med + '</strong>.'
+                                : 'the median is halfway between the two middle values, ' + s[n / 2 - 1] + ' and ' + s[n / 2] +
+                                ': <strong>' + fmt(med) + '</strong>.') + '</p>' +
+                            '<p class="why">The mode is the value that appears most often: <strong>' + md.vals[0] + '</strong>, ' +
+                            md.count + ' times. Forgetting to sort before finding the median is the most common slip.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. which center describes a typical value? --- */
+            (function () {
+                var base = [], i;
+                var scale = pick([{ unit: 'thousands of dollars', what: 'yearly salaries at a small company', lo: 32, hi: 52, big: [160, 240] },
+                    { unit: 'thousands of dollars', what: 'prices of houses on one street', lo: 180, hi: 260, big: [900, 1400] }]);
+                var out, vals, mean, med, tries = 0;
+                do {
+                    out = ri(scale.big[0], scale.big[1]);
+                    base = [];
+                    for (i = 0; i < 6; i++) base.push(ri(scale.lo, scale.hi));
+                    vals = shuffle(base.concat([out]));
+                    mean = sum(vals) / vals.length; med = medianSorted(sortNum(vals));
+                    tries++;
+                    /* the outlier has to pull the mean well clear of the median, or "about the same" becomes arguable */
+                } while ((new Set(base).size < 5 || mean < 1.25 * med) && tries < 500);
+                var meanR = Math.round(mean * 10) / 10;
+                qs.push({
+                    prompt: 'Seven ' + scale.what + ' (in ' + scale.unit + '): <strong>' + listStr(vals) + '</strong>.<br><br>' +
+                        'Someone asks for one number that describes a <em>typical</em> value. Which answer is best?',
+                    type: 'choice',
+                    choices: shuffle([
+                        { html: 'The median, ' + med + ', because the one very large value pulls the mean up to ' + fmt(meanR) + '.', correct: true, key: 'median-outlier' },
+                        { html: 'The mean, ' + fmt(meanR) + ', because it uses every value, so nothing is ignored.', correct: false, key: 'mean-every' },
+                        { html: 'The median, ' + med + ', because the median is always a better choice than the mean.', correct: false, key: 'median-always' },
+                        { html: 'Either one, because the mean and median are about the same here.', correct: false, key: 'either' }
+                    ]),
+                    meta: { kind: 'typical', vals: vals },
+                    explain: function () {
+                        return '<p>The values are all near ' + med + ' except one, ' + out + '. That one outlier drags the mean up to ' +
+                            fmt(meanR) + ', a value that <em>almost none</em> of the seven is close to. The median, <strong>' + med +
+                            '</strong>, is not moved by how extreme the largest value is.</p>' +
+                            '<p class="why">The reason matters: the median is better <em>here</em> because of the outlier, not ' +
+                            'always. With data that has no extreme values, the mean and median agree and either one is fine.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. mean and MAD --- */
+            (function () {
+                var n, vals, m, tries = 0;
+                do {
+                    n = pick([4, 5]);
+                    vals = [];
+                    for (var i = 0; i < n; i++) vals.push(ri(6, 22));
+                    tries++;
+                } while ((sum(vals) % n !== 0 || new Set(vals).size < n - 1) && tries < 5000);
+                m = sum(vals) / n;
+                var devs = vals.map(function (v) { return Math.abs(v - m); });
+                var mad = sum(devs) / n;
+                qs.push({
+                    prompt: 'Find the <strong>mean</strong> and the <strong>MAD</strong> (mean absolute deviation) of ' +
+                        '<strong>' + listStr(vals) + '</strong>. (Decimals are fine.)',
+                    type: 'num',
+                    labels: ['Mean', 'MAD'],
+                    answer: [m, mad],
+                    meta: { kind: 'mad', vals: vals },
+                    explain: function () {
+                        return '<p>Mean: ' + sum(vals) + ' &divide; ' + n + ' = <strong>' + m + '</strong>.</p>' +
+                            '<p>Distance of each value from the mean (always positive): ' +
+                            vals.map(function (v, i) { return '|' + v + ' &minus; ' + m + '| = ' + devs[i]; }).join(', ') + '.</p>' +
+                            '<p>MAD = (' + devs.join(' + ') + ') &divide; ' + n + ' = ' + sum(devs) + ' &divide; ' + n +
+                            ' = <strong>' + fmt(mad) + '</strong>.</p>' +
+                            '<p class="why">The MAD is <em>the mean distance from the mean</em>: how far a typical value sits from the center. ' +
+                            'If you skip the absolute values the distances above and below cancel to 0 every time.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. median pinned down, how far can the mean move? --- */
+            (function () {
+                var M = pick([10, 20]);
+                var m = M === 10 ? ri(4, 8) : ri(8, 16);
+                var lo = 3 * m / 5, hi = (3 * m + 2 * M) / 5;
+                qs.push({
+                    prompt: 'A teacher gives a <strong>' + M + '-point quiz</strong> to <strong>5</strong> students. All scores are ' +
+                        'whole numbers from 0 to ' + M + ', and the <strong>median</strong> score is <strong>' + m + '</strong>.' +
+                        '<br><br>What are the <em>lowest</em> and <em>highest</em> possible values of the <em>mean</em>? (Decimals are fine.)',
+                    type: 'num',
+                    labels: ['Lowest mean', 'Highest mean'],
+                    answer: [lo, hi],
+                    meta: { kind: 'pinned-median', M: M, m: m },
+                    explain: function () {
+                        return '<p>Five scores in order: <em>a, b, ' + m + ', d, e</em>. The middle one is ' + m +
+                            ', so <em>a</em> and <em>b</em> are at most ' + m + ', and <em>d</em> and <em>e</em> are at least ' + m +
+                            ' (and at most ' + M + ').</p>' +
+                            '<p><strong>Lowest mean:</strong> make the small ones as small as possible, <em>a</em> = <em>b</em> = 0, and the ' +
+                            'big ones as small as possible, <em>d</em> = <em>e</em> = ' + m + '. Scores 0, 0, ' + m + ', ' + m + ', ' + m +
+                            ' total ' + (3 * m) + ', so the mean is ' + (3 * m) + ' &divide; 5 = <strong>' + fmt(lo) + '</strong>.</p>' +
+                            '<p><strong>Highest mean:</strong> <em>a</em> = <em>b</em> = ' + m + ' and <em>d</em> = <em>e</em> = ' + M +
+                            '. Scores ' + m + ', ' + m + ', ' + m + ', ' + M + ', ' + M + ' total ' + (3 * m + 2 * M) + ', so the mean is ' +
+                            (3 * m + 2 * M) + ' &divide; 5 = <strong>' + fmt(hi) + '</strong>.</p>' +
+                            '<p class="why">Pinning down the median says nothing about the size of the values on either side of it. ' +
+                            'That is why the mean can still move.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           STAGE 5 - Box Plot Bench (15.4)
+           ======================================================= */
+        function stageBox() {
+            var qs = [];
+
+            /* --- 1. five-number summary from raw data --- */
+            (function () {
+                var n = pick([8, 10, 12]), pool = [], i;
+                for (i = 3; i <= 60; i++) pool.push(i);
+                var vals = shuffle(pool).slice(0, n);
+                var f = fiveNum(vals);
+                qs.push({
+                    prompt: 'Scores on a project, in no particular order: <strong>' + listStr(vals) + '</strong>.<br><br>' +
+                        'Find the five numbers you would use to make a box-and-whisker plot. (Use the median of each half for the ' +
+                        'quartiles. Decimals are fine.)',
+                    type: 'num',
+                    labels: ['Minimum', 'Q1', 'Median', 'Q3', 'Maximum'],
+                    answer: f,
+                    meta: { kind: 'five-num', vals: vals },
+                    explain: function () {
+                        var s = sortNum(vals), h = n / 2;
+                        return '<p>Sort: <strong>' + s.join(', ') + '</strong>.</p>' +
+                            '<p>Median of all ' + n + ' = <strong>' + fmt(f[2]) + '</strong>. It splits the data into a lower half (' +
+                            s.slice(0, h).join(', ') + ') and an upper half (' + s.slice(h).join(', ') + ').</p>' +
+                            '<p>Q1 = median of the lower half = <strong>' + fmt(f[1]) + '</strong>; Q3 = median of the upper half = <strong>' +
+                            fmt(f[3]) + '</strong>. Min and max are ' + f[0] + ' and ' + f[4] + '.</p>' +
+                            '<div class="figbox">' + boxSVG(f, 64, 'Scores', true) + '</div>' +
+                            '<p class="why">Each of the four sections of the plot holds about a quarter of the data. A section being ' +
+                            'long means its values are spread out, not that it has more data.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. reading a box plot --- */
+            (function () {
+                var f, tries = 0;
+                do {
+                    f = sortNum(shuffle([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80]).slice(0, 5));
+                    tries++;
+                } while ((f[0] > 25 || f[4] < 55 || f[3] - f[1] < 15) && tries < 2000);
+                var N = pick([20, 40, 60, 80, 120]);
+                qs.push({
+                    prompt: 'The box plot shows the scores of <strong>' + N + '</strong> students on an 80-point exam.<br><br>' +
+                        'What is the <strong>IQR</strong>, and about how many students scored between the <strong>median and Q3</strong>?',
+                    type: 'num',
+                    fig: boxSVG(f, 80, 'Exam score (out of 80)', false),
+                    labels: ['IQR', 'Students (median to Q3)'],
+                    answer: [f[3] - f[1], N / 4],
+                    meta: { kind: 'box-read', five: f, N: N },
+                    explain: function () {
+                        return '<p>Reading the plot: min ' + f[0] + ', Q1 ' + f[1] + ', median ' + f[2] + ', Q3 ' + f[3] + ', max ' + f[4] + '.</p>' +
+                            '<p>IQR = Q3 &minus; Q1 = ' + f[3] + ' &minus; ' + f[1] + ' = <strong>' + (f[3] - f[1]) + '</strong>. That is ' +
+                            'the length of the box: the spread of the middle half of the scores.</p>' +
+                            '<p>The four sections each hold a quarter of the students, so from the median to Q3 is ' +
+                            N + ' &divide; 4 = <strong>' + (N / 4) + '</strong> students.</p>' +
+                            '<p class="why">The sections have very different lengths here, but every one has about the same ' +
+                            'number of students. Length shows <em>spread</em>, not <em>count</em>.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. percentile --- */
+            (function () {
+                var N = pick([80, 120, 160, 200, 240, 300, 400]);
+                var p = pick([10, 15, 20, 35, 60, 65, 85, 90, 95]);
+                qs.push({
+                    prompt: 'A state test is taken by <strong>' + N + '</strong> students in a grade. One student’s score is at the ' +
+                        '<strong>' + p + 'th percentile</strong>.<br><br>About how many students scored at or below that score, and ' +
+                        'about how many scored above it?',
+                    type: 'num',
+                    labels: ['At or below', 'Above'],
+                    answer: [N * p / 100, N - N * p / 100],
+                    meta: { kind: 'percentile', N: N, p: p },
+                    explain: function () {
+                        return '<p>The ' + p + 'th percentile means about ' + p + '% of the students scored at or below this score: ' +
+                            p + '% of ' + N + ' = <strong>' + (N * p / 100) + '</strong>.</p>' +
+                            '<p>The rest, ' + (100 - p) + '%, scored higher: ' + N + ' &minus; ' + (N * p / 100) + ' = ' +
+                            '<strong>' + (N - N * p / 100) + '</strong>.</p>' +
+                            '<p class="why">A percentile is about <em>rank</em>: where you stand in the group. It says nothing about the ' +
+                            'percent of questions answered correctly.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. what an extreme value changes --- */
+            (function () {
+                var n = pick([8, 10, 12]), pool = [], i;
+                for (i = 5; i <= 50; i++) pool.push(i);
+                var vals = shuffle(pool).slice(0, n);
+                var hi = Math.max.apply(null, vals);
+                var bigger = hi + ri(40, 90);
+                var idx = vals.indexOf(hi);
+                var after = vals.slice(); after[idx] = bigger;
+                qs.push({
+                    prompt: 'Data: <strong>' + listStr(vals) + '</strong>.<br><br>The largest value, <strong>' + hi + '</strong>, is replaced ' +
+                        'by <strong>' + bigger + '</strong> and nothing else changes. Which pair of statistics stays <em>exactly the same</em>?',
+                    type: 'choice',
+                    choices: shuffle([
+                        { html: 'The median and the IQR', correct: true, key: 'median-iqr' },
+                        { html: 'The mean and the range', correct: false, key: 'mean-range' },
+                        { html: 'The mean and the median', correct: false, key: 'mean-median' },
+                        { html: 'The range and the IQR', correct: false, key: 'range-iqr' }
+                    ]),
+                    meta: { kind: 'outlier-effect', vals: vals, newVals: after },
+                    explain: function () {
+                        var a = fiveNum(vals), b = fiveNum(after);
+                        return '<p>Before: median ' + fmt(a[2]) + ', Q1 ' + fmt(a[1]) + ', Q3 ' + fmt(a[3]) + ', so IQR ' + fmt(a[3] - a[1]) +
+                            '. After: median ' + fmt(b[2]) + ', Q1 ' + fmt(b[1]) + ', Q3 ' + fmt(b[3]) + ', IQR ' + fmt(b[3] - b[1]) +
+                            '. <strong>The median and the IQR did not move.</strong></p>' +
+                            '<p>The mean rose from ' + fmt2(sum(vals) / n) + ' to ' + fmt2(sum(after) / n) + ', and the range grew from ' +
+                            (a[4] - a[0]) + ' to ' + (b[4] - b[0]) + '.</p>' +
+                            '<p class="why">The median and quartiles depend on the <em>position</em> of values in the order, not how large the ' +
+                            'extreme ones are. The mean and range use the extreme values directly. That is why the median and IQR are ' +
+                            'called <em>resistant</em>.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           STAGE 6 - Counting Cove (16.2)
+           ======================================================= */
+        function stageCounting() {
+            var qs = [];
+
+            /* --- 1. codes with and without repeats --- */
+            (function () {
+                var k = pick([3, 4]), n = ri(Math.max(k + 1, 5), 9);
+                var rep = Math.pow(n, k), norep = 1;
+                for (var i = 0; i < k; i++) norep *= (n - i);
+                qs.push({
+                    prompt: 'A security code is <strong>' + k + ' letters</strong> chosen from the ' + n + ' letters ' +
+                        LETTERS.slice(0, n).split('').join(', ') + '.<br><br>How many codes are possible if letters <em>may repeat</em>? ' +
+                        'How many if <em>no letter may be used twice</em>?',
+                    type: 'num',
+                    labels: ['Letters may repeat', 'No repeats'],
+                    answer: [rep, norep],
+                    meta: { kind: 'perm-rep', n: n, k: k },
+                    explain: function () {
+                        var a = [], b = [];
+                        for (var j = 0; j < k; j++) { a.push(n); b.push(n - j); }
+                        return '<p>Fill the ' + k + ' positions one at a time and multiply the number of choices for each.</p>' +
+                            '<p><strong>May repeat:</strong> every position has all ' + n + ' choices: ' + a.join(' &middot; ') + ' = ' +
+                            commas(rep) + '.</p>' +
+                            '<p><strong>No repeats:</strong> each position uses up a letter, so the choices shrink: ' +
+                            b.join(' &middot; ') + ' = ' + commas(norep) + '.</p>' +
+                            '<p class="why">Same multiplication principle both times. The only question is whether the number of choices ' +
+                            'for a later position depends on what you chose earlier.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. a menu with an optional course --- */
+            (function () {
+                var a = ri(3, 6), b = ri(3, 5), c = ri(2, 4);
+                qs.push({
+                    prompt: 'A lunch special lets you choose <strong>1 of ' + a + ' sandwiches</strong>, <strong>1 of ' + b +
+                        ' sides</strong>, and, if you like, <strong>1 of ' + c + ' desserts</strong> (or no dessert).<br><br>' +
+                        'How many different lunches are possible?',
+                    type: 'num',
+                    labels: ['Lunches'],
+                    answer: [a * b * (c + 1)],
+                    meta: { kind: 'menu', a: a, b: b, c: c },
+                    explain: function () {
+                        return '<p>Three decisions in a row. The dessert decision has <strong>' + (c + 1) + '</strong> options: the ' + c +
+                            ' desserts <em>and</em> &ldquo;no dessert.&rdquo;</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + a + ' &middot; ' + b + ' &middot; ' + (c + 1) +
+                            ' = ' + (a * b * (c + 1)) + '</p>' +
+                            '<p class="why">Doing nothing counts as a choice. Using only ' + c + ' for the dessert step would give ' +
+                            (a * b * c) + ', which leaves out every lunch with no dessert.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. order matters, or it does not --- */
+            (function () {
+                var N = ri(12, 30);
+                qs.push({
+                    prompt: 'A team has <strong>' + N + '</strong> players. How many ways can the coach choose a <strong>captain and an ' +
+                        'assistant captain</strong> (two different jobs)? How many ways can the coach choose <strong>two co-captains</strong> ' +
+                        '(same job)?',
+                    type: 'num',
+                    labels: ['Captain + assistant', 'Two co-captains'],
+                    answer: [N * (N - 1), N * (N - 1) / 2],
+                    meta: { kind: 'club', N: N },
+                    explain: function () {
+                        return '<p><strong>Captain and assistant:</strong> ' + N + ' choices for captain, then ' + (N - 1) +
+                            ' for assistant: ' + N + ' &middot; ' + (N - 1) + ' = ' + (N * (N - 1)) + '.</p>' +
+                            '<p><strong>Co-captains:</strong> that count lists each pair twice (Ana-Ben and Ben-Ana are the same pair of ' +
+                            'co-captains), so divide by 2: ' + (N * (N - 1)) + ' &divide; 2 = <strong>' + (N * (N - 1) / 2) + '</strong>.</p>' +
+                            '<p class="why">When the jobs are different, order matters. When they are the same, a pair is one outcome ' +
+                            'no matter which person you named first.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. a restriction on one position --- */
+            (function () {
+                var a = pick([2, 3]), b = pick([2, 3]);
+                var ans = Math.pow(26, a) * 9 * Math.pow(10, b - 1);
+                qs.push({
+                    prompt: 'A badge number is <strong>' + a + ' letters followed by ' + b + ' digits</strong>. Letters and digits may repeat, ' +
+                        'but the <strong>first digit cannot be 0</strong>. (There are 26 letters and 10 digits.)<br><br>' +
+                        'How many badge numbers are possible?',
+                    type: 'num',
+                    labels: ['Badge numbers'],
+                    answer: [ans],
+                    meta: { kind: 'plates', a: a, b: b },
+                    explain: function () {
+                        var parts = [];
+                        for (var i = 0; i < a; i++) parts.push('26');
+                        parts.push('9');
+                        for (var j = 1; j < b; j++) parts.push('10');
+                        return '<p>Handle the restricted position first and count it separately: the first digit has only <strong>9</strong> ' +
+                            'choices (1 to 9). Every other position has all its choices.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + parts.join(' &middot; ') + ' = ' + commas(ans) + '</p>' +
+                            '<p class="why">If you used 10 for the first digit, you would count the badge numbers that begin with 0 too: ' +
+                            commas(Math.pow(26, a) * Math.pow(10, b)) + ' in all.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           STAGE 7 - Probability Park (16.1, 16.3, 16.4)
+           ======================================================= */
+        function stageProb() {
+            var qs = [];
+
+            /* --- 1. theoretical probability and the long run --- */
+            (function () {
+                var r = ri(1, 5), bl = ri(2, 6), g = ri(1, 4), n = r + bl + g;
+                var T = n * ri(10, 40);
+                qs.push({
+                    prompt: 'A bag holds <strong>' + r + ' red</strong>, <strong>' + bl + ' blue</strong>, and <strong>' + g +
+                        ' green</strong> marbles. You draw one, record its color, and put it back.<br><br>' +
+                        'What is the probability of drawing red? (A fraction is fine.) If you repeat this <strong>' + commas(T) +
+                        '</strong> times, about how many reds should you expect?',
+                    type: 'num',
+                    round: true,
+                    labels: ['P(red)', 'Reds in ' + commas(T)],
+                    answer: [r / n, T * r / n],
+                    meta: { kind: 'bag-prob', r: r, b: bl, g: g, T: T },
+                    explain: function () {
+                        return '<p>All ' + n + ' marbles are equally likely, and ' + r + ' of them are red: ' +
+                            'P(red) = <strong>' + fracHtml(r, n) + '</strong>.</p>' +
+                            '<p>In the long run about ' + fracHtml(r, n) + ' of the draws are red: ' + commas(T) + ' &middot; ' + r + '/' + n +
+                            ' = <strong>' + commas(T * r / n) + '</strong>.</p>' +
+                            '<p class="why">&ldquo;About&rdquo; is doing real work. You would be surprised to get <em>exactly</em> ' +
+                            commas(T * r / n) + ', but you would be more surprised to be far off.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. critique: two colors does not mean 50-50 --- */
+            (function () {
+                var r = ri(1, 3), w = r + ri(1, 3), n = r + w;
+                var who = pick(['Kevin', 'Marisol', 'Dwayne']);
+                var color = pick([['red', 'white'], ['green', 'yellow'], ['blue', 'orange']]);
+                qs.push({
+                    prompt: who + ' has a bag with <strong>' + r + ' ' + color[0] + '</strong> and <strong>' + w + ' ' + color[1] +
+                        '</strong> balls. ' + who + ' says, &ldquo;There are two colors, so the probability of drawing ' + color[0] +
+                        ' is 1/2.&rdquo;<br><br>Is that right?',
+                    type: 'choice',
+                    choices: shuffle([
+                        { html: 'No. The balls are the equally likely outcomes, so P(' + color[0] + ') = ' + r + '/' + n + '.', correct: true, key: 'balls' },
+                        { html: 'Yes. With two colors, each color is equally likely.', correct: false, key: 'yes' },
+                        { html: 'No. P(' + color[0] + ') = ' + r + '/' + w + ', the number of ' + color[0] + ' to the number of ' + color[1] + '.', correct: false, key: 'ratio' },
+                        { html: 'No. P(' + color[0] + ') = ' + w + '/' + n + '.', correct: false, key: 'swap' }
+                    ]),
+                    meta: { kind: 'conceptual', r: r, w: w },
+                    explain: function () {
+                        return '<p>Probability counts <strong>equally likely outcomes</strong>. Colors are not equally likely here; ' +
+                            'the individual balls are. ' + r + ' of the ' + n + ' balls are ' + color[0] + ', so P(' + color[0] + ') = ' + r + '/' + n + '.</p>' +
+                            '<p class="why">Having two possible outcomes does not make them equally likely. A ' + r + ':' + w +
+                            ' ratio is a comparison of two parts, not a part-to-whole fraction.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. two number cubes, the difference --- */
+            (function () {
+                var d = ri(1, 4);
+                var cnt = 0;
+                for (var a = 1; a <= 6; a++) for (var b = 1; b <= 6; b++) if (Math.abs(a - b) === d) cnt++;
+                qs.push({
+                    prompt: 'You roll two fair number cubes. What is the probability that the two numbers <strong>differ by exactly ' +
+                        d + '</strong> (the larger minus the smaller)? (A fraction is fine.)',
+                    type: 'num',
+                    round: true,
+                    labels: ['Probability'],
+                    answer: [cnt / 36],
+                    meta: { kind: 'dice-diff', d: d },
+                    explain: function () {
+                        var pairs = [];
+                        for (var a = 1; a <= 6; a++) for (var b = 1; b <= 6; b++) if (Math.abs(a - b) === d) pairs.push('(' + a + ',' + b + ')');
+                        return '<p>There are 6 &middot; 6 = 36 equally likely ordered pairs. Those that differ by ' + d + ' are:</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + pairs.join(' ') + '</p>' +
+                            '<p>That is ' + cnt + ' pairs, so the probability is <strong>' + cnt + '/36 = ' + fracHtml(cnt, 36) + '</strong>.</p>' +
+                            '<p class="why">Listing ordered pairs matters: (1,' + (1 + d) + ') and (' + (1 + d) + ',1) are different outcomes, ' +
+                            'which is why most differences come up twice as often as you might expect.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. spinner OR cube --- */
+            (function () {
+                var s = pick([4, 5, 6, 8]), a = ri(1, 2), b = ri(1, 2);
+                var win = 1 - (1 - a / s) * (1 - b / 6);
+                var cubeText = b === 1 ? 'a 6' : 'a 5 or a 6';
+                var num = s * 6 - (s - a) * (6 - b), den = s * 6;
+                qs.push({
+                    prompt: 'A game has a spinner with <strong>' + s + ' equal sectors</strong>, ' + (a === 1 ? 'one of them red' : 'two of them red') +
+                        ', and a number cube. You spin once and roll once. You <strong>win if the spinner lands on red OR the cube shows ' +
+                        cubeText + '</strong> (or both).<br><br>What is the probability that you win? (A fraction is fine.)',
+                    type: 'num',
+                    round: true,
+                    labels: ['P(win)'],
+                    answer: [win],
+                    meta: { kind: 'or-prob', s: s, a: a, b: b },
+                    explain: function () {
+                        return '<p>&ldquo;Or&rdquo; problems are easiest through the opposite: you <strong>lose</strong> only if the spinner misses ' +
+                            'red <em>and</em> the cube misses ' + cubeText + '.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">P(lose) = ' + fracHtml(s - a, s) + ' &middot; ' +
+                            fracHtml(6 - b, 6) + ' = ' + fracHtml((s - a) * (6 - b), s * 6) + '<br>P(win) = 1 &minus; ' +
+                            fracHtml((s - a) * (6 - b), s * 6) + ' = <strong>' + fracHtml(num, den) + '</strong></p>' +
+                            '<p class="why">Adding the two probabilities, ' + fracHtml(a, s) + ' + ' + fracHtml(b, 6) +
+                            ', counts the outcomes where both happen twice. Subtract the overlap, ' + fracHtml(a * b, s * 6) +
+                            ', and you get the same answer.</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. draws without replacement --- */
+            (function () {
+                var r, y, tries = 0;
+                do { r = ri(3, 7); y = ri(2, 6); tries++; } while (tries < 100 && (r === y || r + y === 10));
+                var n = r + y;
+                var kind = pick(['both-red', 'both-yellow', 'one-each']);
+                var num, text;
+                if (kind === 'both-red') { num = r * (r - 1); text = 'both are red'; }
+                else if (kind === 'both-yellow') { num = y * (y - 1); text = 'both are yellow'; }
+                else { num = 2 * r * y; text = 'you get one of each color'; }
+                var den = n * (n - 1);
+                qs.push({
+                    prompt: 'A bag has <strong>' + r + ' red</strong> and <strong>' + y + ' yellow</strong> marbles. You draw two, one after ' +
+                        'the other, <strong>without putting the first one back</strong>.<br><br>What is the probability that ' + text +
+                        '? (A fraction is fine.)',
+                    type: 'num',
+                    round: true,
+                    labels: ['Probability'],
+                    answer: [num / den],
+                    meta: { kind: 'no-replace', r: r, y: y, event: kind },
+                    explain: function () {
+                        var body;
+                        if (kind === 'both-red') body = 'P(red first) &middot; P(red second | red first) = ' + fracHtml(r, n) + ' &middot; ' + fracHtml(r - 1, n - 1);
+                        else if (kind === 'both-yellow') body = 'P(yellow first) &middot; P(yellow second | yellow first) = ' + fracHtml(y, n) + ' &middot; ' + fracHtml(y - 1, n - 1);
+                        else body = 'P(red then yellow) + P(yellow then red) = ' + fracHtml(r, n) + ' &middot; ' + fracHtml(y, n - 1) + ' + ' +
+                            fracHtml(y, n) + ' &middot; ' + fracHtml(r, n - 1);
+                        return '<p>After the first draw the bag has one fewer marble, so the second fraction has a smaller bottom (and ' +
+                            'maybe a smaller top).</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + body + '<br>= ' + num + '/' + den + ' = ' +
+                            fracStr(num, den) + '</p>' +
+                            '<p class="why">' + (kind === 'one-each'
+                                ? 'One of each can happen in two orders, red first or yellow first, so the two paths are added.'
+                                : 'Keep going down: the second draw uses ' + (n - 1) + ' marbles, not ' + n + '.') + '</p>';
+                    }
+                });
+            })();
+
+            /* --- 6. expected earnings --- */
+            (function () {
+                var n = pick([10, 20, 25, 40, 50]), w = ri(1, 3);
+                var T = n * ri(5, 20), fee = pick([25, 50, 75]), cost = pick([1, 2, 3]);
+                var winners = T * w / n, net = T * fee / 100 - winners * cost;
+                qs.push({
+                    prompt: 'At a fund-raiser, a game has <strong>' + n + '</strong> sealed envelopes, and <strong>' + w + '</strong> ' +
+                        (w === 1 ? 'of them holds' : 'of them hold') + ' a prize worth <strong>$' + cost + '</strong> to the school. A player pays ' +
+                        '<strong>' + fee + ' cents</strong> and picks one envelope at random. Suppose <strong>' + commas(T) + '</strong> people play.' +
+                        '<br><br>About how many prizes should the school expect to give out, and what is the expected <em>net</em> ' +
+                        'earnings in dollars? (Use a negative number if the school loses money.)',
+                    type: 'num',
+                    labels: ['Prizes', 'Net ($)'],
+                    answer: [winners, net],
+                    meta: { kind: 'earnings', n: n, w: w, T: T, fee: fee, cost: cost },
+                    explain: function () {
+                        return '<p>P(win) = ' + fracHtml(w, n) + ', so about ' + commas(T) + ' &middot; ' + w + '/' + n + ' = <strong>' +
+                            commas(winners) + '</strong> prizes.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">money in: ' + commas(T) + ' &times; $' + (fee / 100).toFixed(2) +
+                            ' = ' + money(T * fee / 100) + '<br>prizes out: ' + commas(winners) + ' &times; $' + cost + ' = ' + money(winners * cost) +
+                            '<br>net = ' + money(T * fee / 100) + ' &minus; ' + money(winners * cost) + ' = <strong>' + money(net) + '</strong></p>' +
+                            '<p class="why">' + (net < 0
+                                ? 'A negative net means the school expects to lose money: each play costs the school, on average, more than the player pays.'
+                                : 'Net means after the prizes are paid. The money in is not the earnings.') + '</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           stage registry
+           ======================================================= */
+        var STAGES = [
+            { id: 'sampling', name: 'Sampling Station', sub: 'Statistical questions, fair samples, estimates', item: 'Section 15.1', build: stageSampling },
+            { id: 'graphs', name: 'Graph Gallery', sub: 'Choosing, reading, and critiquing displays', item: 'Section 15.2', build: stageGraphs },
+            { id: 'mean', name: 'Mean Machine', sub: 'Leveling out, targets, combining averages', item: 'Section 15.3', build: stageMean },
+            { id: 'spread', name: 'Middle & Spread', sub: 'Median, mode, MAD, and what the mean can do', item: 'Sections 15.3–15.4', build: stageSpread },
+            { id: 'box', name: 'Box Plot Bench', sub: 'Quartiles, IQR, percentiles', item: 'Section 15.4', build: stageBox },
+            { id: 'counting', name: 'Counting Cove', sub: 'The multiplication principle, order, restrictions', item: 'Section 16.2', build: stageCounting },
+            { id: 'prob', name: 'Probability Park', sub: 'Long run, sample spaces, two-step games', item: 'Sections 16.1, 16.3, 16.4', build: stageProb }
+        ];
+
+        /* =======================================================
+           game state + engine
+           ======================================================= */
+        var G = {
+            sets: {},          /* stageId -> [questions] */
+            results: {},       /* stageId -> {correct, total, points} */
+            score: 0, streak: 0, best: 0,
+            correct: 0, answered: 0, total: 0,
+            stage: null, idx: 0, attempts: 0, locked: false, selected: null
+        };
+
+        var el = function (id) { return document.getElementById(id); };
+
+        function buildAll() {
+            G.sets = {}; G.results = {};
+            G.score = 0; G.streak = 0; G.best = 0;
+            G.correct = 0; G.answered = 0; G.total = 0;
+            STAGES.forEach(function (s) {
+                var qs = s.build();
+                G.sets[s.id] = qs;
+                G.total += qs.length;
+            });
+            renderMap();
+            renderScore();
+        }
+
+        function renderScore() {
+            el('s-score').textContent = G.score;
+            el('s-streak').textContent = G.streak;
+            el('s-streak').className = 'v' + (G.streak >= 3 ? ' hot' : '');
+            el('s-correct').textContent = G.correct + ' / ' + G.answered;
+            el('s-bar').style.width = (G.total ? (G.answered / G.total * 100) : 0) + '%';
+        }
+
+        function renderMap() {
+            var m = el('map');
+            m.innerHTML = '';
+            STAGES.forEach(function (s, i) {
+                var r = G.results[s.id];
+                var b = document.createElement('button');
+                b.className = 'stage' + (r ? ' done' : '') +
+                    (G.stage && G.stage.id === s.id ? ' current' : '');
+                b.innerHTML = '<span class="badge">Stage ' + (i + 1) + ' &middot; ' + s.item + '</span>' +
+                    '<span class="nm">' + s.name + '</span>' +
+                    '<span class="sub">' + s.sub + '</span>' +
+                    (r ? '<span class="res">' + r.correct + ' of ' + r.total + ' &middot; ' +
+                        r.points + ' pts</span>'
+                        : '<span class="res" style="color:#6E6E6E">' + G.sets[s.id].length +
+                        ' questions</span>');
+                b.addEventListener('click', function () { startStage(i); });
+                m.appendChild(b);
+            });
+        }
+
+        function show(which) {
+            el('mapPanel').classList.toggle('hidden', which !== 'map');
+            el('qPanel').classList.toggle('hidden', which !== 'q');
+            el('rPanel').classList.toggle('hidden', which !== 'r');
+            el('intro').classList.toggle('hidden', which !== 'map');
+        }
+
+        function startStage(i) {
+            G.stage = STAGES[i];
+            G.idx = 0;
+            if (!G.results[G.stage.id]) {
+                G.results[G.stage.id] = { correct: 0, total: G.sets[G.stage.id].length, points: 0 };
+            } else {
+                /* replaying a stage: clear its old tally so it is not double counted */
+                var old = G.results[G.stage.id];
+                G.score -= old.points;
+                G.correct -= old.correct;
+                G.answered -= old.total;
+                G.results[G.stage.id] = { correct: 0, total: G.sets[G.stage.id].length, points: 0 };
+            }
+            show('q');
+            renderQ();
+        }
+
+        function currentQ() { return G.sets[G.stage.id][G.idx]; }
+
+        function renderQ() {
+            var q = currentQ();
+            G.attempts = 0; G.locked = false; G.selected = null;
+
+            el('q-round').innerHTML = G.stage.name + ' <span style="color:#A2A2A2">&middot; ' +
+                G.stage.item + '</span>';
+            el('q-count').textContent = 'Question ' + (G.idx + 1) + ' of ' + G.sets[G.stage.id].length;
+            el('q-text').innerHTML = q.prompt;
+            el('q-fig').innerHTML = q.fig ? '<div class="figbox">' + q.fig + '</div>' : '';
+            el('q-fb').innerHTML = '';
+            el('btn-check').classList.remove('hidden');
+            el('btn-check').disabled = false;
+            el('btn-check').textContent = 'Check answer';
+            el('btn-next').classList.add('hidden');
+
+            var body = el('q-body');
+            body.innerHTML = '';
+
+            if (q.type === 'choice') {
+                var wrap = document.createElement('div');
+                wrap.className = 'choices';
+                q.choices.forEach(function (c, i) {
+                    var b = document.createElement('button');
+                    b.className = 'choice';
+                    b.type = 'button';
+                    b.dataset.i = i;
+                    b.innerHTML = '<span class="ltr">' + 'ABCD'[i] + '</span><span>' + c.html + '</span>';
+                    b.addEventListener('click', function () {
+                        if (G.locked) return;
+                        wrap.querySelectorAll('.choice').forEach(function (n) { n.classList.remove('sel'); });
+                        b.classList.add('sel');
+                        G.selected = i;
+                    });
+                    wrap.appendChild(b);
+                });
+                body.appendChild(wrap);
+            } else {
+                var f = document.createElement('div');
+                f.className = 'fields';
+                q.labels.forEach(function (lab, i) {
+                    var d = document.createElement('div');
+                    d.className = 'field';
+                    d.innerHTML = '<label for="in' + i + '">' + lab + '</label>' +
+                        '<input id="in' + i + '" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">';
+                    f.appendChild(d);
+                });
+                body.appendChild(f);
+                var first = body.querySelector('input');
+                if (first) setTimeout(function () { first.focus(); }, 30);
+                body.querySelectorAll('input').forEach(function (inp) {
+                    inp.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (!el('btn-next').classList.contains('hidden')) nextQ();
+                            else check();
+                        }
+                    });
+                });
+            }
+        }
+
+        function check() {
+            var q = currentQ();
+            var ok;
+
+            if (q.type === 'choice') {
+                if (G.selected === null) {
+                    flashFB('near', 'Pick an answer first', 'Choose one of the options, then check it.');
+                    return;
+                }
+                ok = !!q.choices[G.selected].correct;
+            } else {
+                var inputs = Array.prototype.slice.call(el('q-body').querySelectorAll('input'));
+                if (inputs.length !== q.answer.length) return;   /* should never happen */
+                if (inputs.some(function (i) { return i.value.trim() === ''; })) {
+                    flashFB('near', 'Fill in every box',
+                        inputs.length > 1 ? 'Every box needs a value before you can check.'
+                            : 'Type an answer before you check it.');
+                    return;
+                }
+                var bad = inputs.filter(function (i) { return !isFinite(parseNum(i.value)); });
+                if (bad.length) {
+                    flashFB('near', 'That is not a number I can read',
+                        'Use digits, a decimal point, or a fraction like 3/8. No units or words.');
+                    return;
+                }
+                ok = inputs.every(function (inp, i) {
+                    return matches(parseNum(inp.value), q.answer[i], q.round);
+                });
+                inputs.forEach(function (inp, i) {
+                    inp.classList.remove('right', 'wrong');
+                    inp.classList.add(matches(parseNum(inp.value), q.answer[i], q.round) ? 'right' : 'wrong');
+                });
+            }
+
+            G.attempts++;
+
+            if (ok) {
+                var base = G.attempts === 1 ? 100 : 50;
+                G.streak++;
+                if (G.streak > G.best) G.best = G.streak;
+                var bonus = G.streak >= 3 ? Math.min(75, (G.streak - 2) * 25) : 0;
+                var gained = base + bonus;
+                G.score += gained;
+                G.correct++;
+                G.answered++;
+                G.results[G.stage.id].correct++;
+                G.results[G.stage.id].points += gained;
+                lockIn();
+                showFB('good', 'Correct', gained, bonus, q);
+            } else if (G.attempts === 1) {
+                G.streak = 0;
+                flashFB('near', 'Not quite &mdash; one more try',
+                    'Have another look. A correct answer on the second try is still worth 50 points.');
+                if (q.type === 'choice') {
+                    var sel = el('q-body').querySelector('.choice.sel');
+                    if (sel) { sel.classList.add('wrong'); sel.classList.remove('sel'); sel.disabled = true; }
+                    G.selected = null;
+                }
+            } else {
+                G.streak = 0;
+                G.answered++;
+                lockIn();
+                showFB('bad', 'Not this time', 0, 0, q);
+            }
+            renderScore();
+        }
+
+        function lockIn() {
+            var q = currentQ();
+            G.locked = true;
+            el('btn-check').classList.add('hidden');
+            el('btn-next').classList.remove('hidden');
+            el('btn-next').textContent = (G.idx + 1 < G.sets[G.stage.id].length)
+                ? 'Next question' : 'See stage results';
+            if (q.type === 'choice') {
+                el('q-body').querySelectorAll('.choice').forEach(function (b) {
+                    var i = Number(b.dataset.i);
+                    b.disabled = true;
+                    b.classList.remove('sel');
+                    if (q.choices[i].correct) b.classList.add('right');
+                });
+            } else {
+                el('q-body').querySelectorAll('input').forEach(function (inp) { inp.disabled = true; });
+            }
+        }
+
+        function flashFB(kind, head, msg) {
+            el('q-fb').innerHTML = '<div class="fb ' + kind + '" role="status"><div class="hd">' + head + '</div>' +
+                '<p>' + msg + '</p></div>';
+        }
+
+        function showFB(kind, head, gained, bonus, q) {
+            var ptline = gained > 0
+                ? ' <span class="pts">+' + gained + ' pts' +
+                (bonus ? ' (' + (gained - bonus) + ' + ' + bonus + ' streak)' : '') + '</span>'
+                : '';
+            var answerLine = '';
+            if (kind === 'bad') {
+                if (q.type === 'choice') {
+                    var right = q.choices.filter(function (c) { return c.correct; })[0];
+                    answerLine = '<p>The answer was <strong>' + right.html + '</strong></p>';
+                } else {
+                    answerLine = '<p>The answer was <strong>' +
+                        q.answer.map(function (a, i) { return q.labels[i] + ' = ' + (q.round ? asFraction(a) : fmt(a)); }).join(', ') +
+                        '</strong>.</p>';
+                }
+            }
+            el('q-fb').innerHTML = '<div class="fb ' + kind + '" role="status">' +
+                '<div class="hd">' + head + ptline + '</div>' +
+                answerLine +
+                (typeof q.explain === 'function' ? q.explain() : (q.explain || '')) +
+                '</div>';
+        }
+
+        function nextQ() {
+            if (G.idx + 1 < G.sets[G.stage.id].length) {
+                G.idx++;
+                renderQ();
+                el('qPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            var doneAll = STAGES.every(function (s) { return G.results[s.id]; });
+            show('r');
+            el('r-score').textContent = G.score;
+
+            var r = G.results[G.stage.id];
+            el('r-title').textContent = doneAll ? 'All seven stages complete' : G.stage.name + ' complete';
+            el('r-line').innerHTML = 'You got <strong>' + r.correct + ' of ' + r.total + '</strong> in ' +
+                G.stage.name + '. Best streak so far: <strong>' + G.best + '</strong>.' +
+                (doneAll ? ' You have now cleared every stage.' : '');
+
+            var grid = el('r-grid');
+            grid.innerHTML = '';
+            STAGES.forEach(function (s) {
+                var res = G.results[s.id];
+                var d = document.createElement('div');
+                var weak = res && res.correct < res.total;
+                d.className = 'rcard' + (weak ? ' weak' : '');
+                d.innerHTML = '<div class="nm">' + s.name + '</div>' +
+                    '<div class="sc">' + (res ? res.correct + '/' + res.total : '&mdash;') + '</div>' +
+                    '<div class="tip">' + (res
+                        ? (weak ? 'Worth another pass &mdash; ' + s.item.toLowerCase()
+                            : 'Clean run &mdash; ' + s.item.toLowerCase())
+                        : 'Not attempted yet') + '</div>';
+                grid.appendChild(d);
+            });
+
+            var weakOnes = STAGES.filter(function (s) {
+                var res = G.results[s.id];
+                return res && res.correct < res.total;
+            });
+            el('r-advice').innerHTML = weakOnes.length
+                ? '<div class="prompt-box"><h3>Where to spend your study time</h3><p>' +
+                weakOnes.map(function (s) {
+                    return '<strong>' + s.name + '</strong> (' + s.item + ')';
+                }).join(', ') + '. Replay those stages &mdash; you will get different problems each time, ' +
+                'so you cannot just memorize the answers.</p></div>'
+                : '<div class="prompt-box"><h3>Nice run</h3><p>No missed questions in the stages you ' +
+                'attempted. Run it again for a fresh set, or go back and do the stages you skipped.</p></div>';
+        }
+
+        /* ---------- wiring ---------- */
+        el('btn-check').addEventListener('click', check);
+        el('btn-next').addEventListener('click', nextQ);
+        el('btn-quit').addEventListener('click', function () { renderMap(); show('map'); });
+        el('btn-map').addEventListener('click', function () { renderMap(); show('map'); });
+        el('btn-start').addEventListener('click', function () { startStage(0); });
+        el('btn-reset').addEventListener('click', function () { buildAll(); show('map'); });
+        el('btn-again').addEventListener('click', function () { buildAll(); startStage(0); });
+
+        /* ---------- go ---------- */
+        buildAll();
+        show('map');
+    </script>
+</body>
+
+</html>

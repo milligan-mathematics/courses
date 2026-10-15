@@ -4,6 +4,10 @@ title: "MATH 253: Fundamental Concepts II"
 parent: Home
 nav_order: 253
 activities:
+  - title: "Test 2 Review Games"
+    url: "test-2-review-games.html"
+    type: "Ch. 15 & 16 Review"
+    description: "Seven stages, 30 questions, and a fresh problem set every run. Samples and estimates, choosing and critiquing graphs, the mean as leveling out, median and MAD, box plots, counting, and probability, each one with the reasoning, not just the answer."
   - title: "Goal Rush"
     url: "goal-rush.html"
     type: "Ch. 16 Extension"
