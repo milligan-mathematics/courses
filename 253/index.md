@@ -4,6 +4,10 @@ title: "MATH 253: Fundamental Concepts II"
 parent: Home
 nav_order: 253
 activities:
+  - title: "Number Necklaces"
+    url: "number-necklaces.html"
+    type: "Ch. 8 Pattern Task"
+    description: "Every whole number gets its own picture made of beads. Step through them, predict the next one before it appears, and find a rule that builds them all. Then string the same beads two other ways and see if your rule survives."
   - title: "Test 2 Review Games"
     url: "test-2-review-games.html"
     type: "Ch. 15 & 16 Review"
