@@ -1089,7 +1089,7 @@
                     answer: [g.gx, g.gy], show: [M(g.gx), M(g.gy)],
                     meta: { kind: 'grad', f: g.expr, p: g.p, q: g.q },
                     explain: function () {
-                        return MD('\\nabla f = ' + g.gtex + ',\\qquad \\nabla f' + pt(g.p, g.q) + ' = ' + vec(g.gx, g.gy)) +
+                        return MD('\\nabla f = ' + g.gtex) + MD('\\nabla f' + pt(g.p, g.q) + ' = ' + vec(g.gx, g.gy)) +
                             '<p class="why">The gradient is just the vector of first partials, evaluated at the point.</p>';
                     }
                 });
