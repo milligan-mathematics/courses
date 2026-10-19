@@ -51,6 +51,11 @@ More sections are on the way.
 ## Review Games
 
 <div class="resource-grid">
+  <a href="test-2-review-game.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-green);">Play on Your Own</div>
+    <h4>Test 2 Review Game — §§13.2–13.8</h4>
+    <p class="resource-desc">Seven stages, 33 questions, and a fresh problem set every run. Limits, partial derivatives, the chain rule, gradients, tangent planes, critical points, and Lagrange multipliers, each with the reasoning, not just the answer.</p>
+  </a>
   <a href="../review-game/host.html" class="resource-card">
     <div class="resource-meta" style="color: var(--color-accent-green);">Live Game (Host)</div>
     <h4>Test 1 Review — §§11.1–12.3</h4>

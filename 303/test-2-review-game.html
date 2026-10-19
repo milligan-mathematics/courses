@@ -1,0 +1,1900 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test 2 Review Game - Math 303 - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        /* ---------- shell ---------- */
+        .prompt-box {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .prompt-box h3 {
+            margin-top: 0;
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+
+        .note {
+            color: var(--color-mountain-gray, #6E6E6E);
+            font-size: 0.92rem;
+        }
+
+        button {
+            font: inherit;
+            font-weight: 600;
+            padding: 0.55rem 1.15rem;
+            border-radius: 6px;
+            border: 1px solid var(--color-primary, #F36E24);
+            background: var(--color-primary, #F36E24);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+        }
+
+        button:hover:not(:disabled) {
+            background: var(--color-primary-dark, #CD5920);
+            border-color: var(--color-primary-dark, #CD5920);
+        }
+
+        button:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
+
+        button.ghost {
+            background: #fff;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        button.ghost:hover:not(:disabled) {
+            background: #fff5ef;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        /* ---------- scoreboard ---------- */
+        .scorebar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 2rem;
+            align-items: center;
+            padding: 0.9rem 1.25rem;
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
+        }
+
+        .stat .k {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .stat .v {
+            font-size: 1.35rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat .v.hot {
+            color: var(--color-primary, #F36E24);
+        }
+
+        .bar-wrap {
+            flex: 1 1 160px;
+            min-width: 140px;
+        }
+
+        .bar {
+            height: 10px;
+            border-radius: 999px;
+            background: #eceef1;
+            overflow: hidden;
+        }
+
+        .bar > span {
+            display: block;
+            height: 100%;
+            width: 0;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #F9A01B, #F36E24);
+            transition: width 0.35s ease;
+        }
+
+        /* ---------- stage map ---------- */
+        .map {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .stage {
+            text-align: left;
+            padding: 1rem 1.1rem;
+            border-radius: 8px;
+            border: 1px solid #e3e6ea;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+        }
+
+        .stage:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.09);
+            border-color: var(--color-primary, #F36E24);
+            background: #fff;
+        }
+
+        .stage .badge {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .stage .nm {
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        .stage .sub {
+            font-size: 0.85rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .stage .res {
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-top: 0.2rem;
+        }
+
+        .stage.done {
+            border-color: var(--color-accent-green, #008552);
+            background: #f4fbf7;
+        }
+
+        .stage.done .res {
+            color: var(--color-accent-green, #008552);
+        }
+
+        .stage.current {
+            border-color: var(--color-primary, #F36E24);
+            box-shadow: 0 0 0 3px rgba(243, 110, 36, 0.14);
+        }
+
+        /* ---------- question card ---------- */
+        .qhead {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .qhead .rnd {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: var(--color-primary, #F36E24);
+        }
+
+        .qhead .cnt {
+            font-size: 0.8rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .qtext {
+            font-size: 1.12rem;
+            line-height: 1.55;
+            margin: 0.35rem 0 1.1rem;
+        }
+
+        .qtext code {
+            background: #f2f4f6;
+            padding: 0.08em 0.35em;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        .figbox {
+            margin: 0 0 1.2rem;
+            padding: 1rem;
+            background: #fafbfc;
+            border: 1px solid #eceef1;
+            border-radius: 8px;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .figbox svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* choices */
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .choice {
+            text-align: left;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #dde1e6;
+            background: #fff;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            line-height: 1.5;
+            transition: border-color 0.12s ease, background 0.12s ease;
+        }
+
+        .choice:hover:not(:disabled) {
+            border-color: var(--color-primary, #F36E24);
+            background: #fffaf6;
+        }
+
+        .choice .ltr {
+            flex: 0 0 auto;
+            width: 1.6rem;
+            height: 1.6rem;
+            border-radius: 50%;
+            background: #eceef1;
+            color: #444;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: grid;
+            place-items: center;
+        }
+
+        .choice.sel {
+            border-color: var(--color-primary, #F36E24);
+            background: #fff3ea;
+        }
+
+        .choice.sel .ltr {
+            background: var(--color-primary, #F36E24);
+            color: #fff;
+        }
+
+        .choice.right {
+            border-color: var(--color-accent-green, #008552);
+            background: #f0faf5;
+        }
+
+        .choice.right .ltr {
+            background: var(--color-accent-green, #008552);
+            color: #fff;
+        }
+
+        .choice.wrong {
+            border-color: #c0392b;
+            background: #fdf3f2;
+        }
+
+        .choice.wrong .ltr {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        /* numeric inputs */
+        .fields {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .field label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .field input {
+            font: inherit;
+            font-size: 1.1rem;
+            padding: 0.5rem 0.7rem;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            width: 9rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .field input:focus {
+            outline: 2px solid rgba(243, 110, 36, 0.35);
+            border-color: var(--color-primary, #F36E24);
+        }
+
+        .field input.right {
+            border-color: var(--color-accent-green, #008552);
+            background: #f0faf5;
+        }
+
+        .field input.wrong {
+            border-color: #c0392b;
+            background: #fdf3f2;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            align-items: center;
+        }
+
+        /* feedback */
+        .fb {
+            margin-top: 1.2rem;
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            border-left: 4px solid #ccc;
+            background: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        .fb.good {
+            border-left-color: var(--color-accent-green, #008552);
+            background: #f2faf6;
+        }
+
+        .fb.bad {
+            border-left-color: #c0392b;
+            background: #fdf4f3;
+        }
+
+        .fb.near {
+            border-left-color: var(--color-accent-sunrise, #F9A01B);
+            background: #fffaf0;
+        }
+
+        .fb .hd {
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .fb p {
+            margin: 0.5rem 0 0;
+        }
+
+        .fb .why {
+            margin-top: 0.7rem;
+            padding-top: 0.7rem;
+            border-top: 1px dashed #d8dce1;
+            font-size: 0.95rem;
+        }
+
+        .pts {
+            font-weight: 700;
+            color: var(--color-accent-green, #008552);
+            white-space: nowrap;
+        }
+
+        /* results */
+        .resultgrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.9rem;
+            margin: 1.2rem 0 1.5rem;
+        }
+
+        .rcard {
+            border: 1px solid #e3e6ea;
+            border-radius: 8px;
+            padding: 0.9rem 1rem;
+            background: #fff;
+        }
+
+        .rcard .nm {
+            font-weight: 700;
+            margin-bottom: 0.15rem;
+        }
+
+        .rcard .sc {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .rcard .tip {
+            font-size: 0.85rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+            margin-top: 0.3rem;
+        }
+
+        .rcard.weak {
+            border-color: var(--color-accent-sunrise, #F9A01B);
+            background: #fffaf0;
+        }
+
+        .bigscore {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--color-primary, #F36E24);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 560px) {
+            .scorebar {
+                position: static;
+                gap: 0.6rem 1.25rem;
+            }
+
+            .field input {
+                width: 7rem;
+            }
+        }
+        /* MATH 303: wide math scrolls inside its own box on phones instead of widening the page */
+        mjx-container[display="true"] { display: block; overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: 2px 0; }
+        .qtext mjx-container, .choice mjx-container, .fb mjx-container { max-width: 100%; }
+        .choice > span:last-child { min-width: 0; }
+    </style>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+            options: { enableMenu: false },
+            startup: {
+                typeset: false,
+                ready: function () {
+                    MathJax.startup.defaultReady();
+                    MathJax.startup.promise.then(function () { if (typeof typeset === 'function') typeset(); });
+                }
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Test 2 Review Game</h1>
+            <p>Seven stages, Sections 13.2&ndash;13.8 &mdash; limits, partial derivatives, the chain rule,
+                gradients, tangent planes, critical points, and Lagrange multipliers. Every run builds new problems,
+                so you can play it as many times as you like.</p>
+        </div>
+    </header>
+
+    <main class="container page-content">
+
+        <div class="prompt-box" id="intro">
+            <h3>How this works</h3>
+            <ul>
+                <li>Seven stages, 33 questions. Each stage drills one section of Chapter 13.</li>
+                <li>You get <strong>two tries</strong> per question &mdash; 100 points on the first, 50 on the
+                    second.</li>
+                <li>Answer three in a row and your <strong>streak bonus</strong> starts stacking.</li>
+                <li>After every question you get the reasoning, not just the answer. That is the part that shows
+                    up on the test.</li>
+            </ul>
+            <p class="note">Nothing is saved or sent anywhere &mdash; refresh and you get a brand new set of
+                problems.</p>
+        </div>
+
+        <!-- scoreboard -->
+        <div class="scorebar" id="scorebar">
+            <div class="stat">
+                <span class="k">Score</span>
+                <span class="v" id="s-score">0</span>
+            </div>
+            <div class="stat">
+                <span class="k">Streak</span>
+                <span class="v" id="s-streak">0</span>
+            </div>
+            <div class="stat">
+                <span class="k">Correct</span>
+                <span class="v" id="s-correct">0 / 0</span>
+            </div>
+            <div class="bar-wrap">
+                <span class="k" style="font-size:0.7rem;font-weight:700;letter-spacing:0.08em;
+                    text-transform:uppercase;color:#6E6E6E;">Progress</span>
+                <div class="bar"><span id="s-bar"></span></div>
+            </div>
+        </div>
+
+        <!-- stage map -->
+        <section class="panel" id="mapPanel">
+            <h2>Pick a stage</h2>
+            <p class="note">Work straight through, or jump to whatever you feel shakiest on. Typed answers can be whole numbers, decimals, fractions like 3/8, square roots like sqrt(5), or multiples of pi like 4pi.</p>
+            <div class="map" id="map"></div>
+            <div class="actions">
+                <button id="btn-start">Start from the beginning</button>
+                <button class="ghost" id="btn-reset">New problem set</button>
+            </div>
+        </section>
+
+        <!-- question -->
+        <section class="panel hidden" id="qPanel">
+            <div class="qhead">
+                <span class="rnd" id="q-round"></span>
+                <span class="cnt" id="q-count"></span>
+            </div>
+            <div class="qtext" id="q-text"></div>
+            <div id="q-fig"></div>
+            <div id="q-body"></div>
+            <div class="actions">
+                <button id="btn-check">Check answer</button>
+                <button class="ghost hidden" id="btn-next">Next question</button>
+                <button class="ghost" id="btn-quit">Back to the map</button>
+            </div>
+            <div id="q-fb"></div>
+        </section>
+
+        <!-- results -->
+        <section class="panel hidden" id="rPanel">
+            <h2 id="r-title">Run complete</h2>
+            <div class="bigscore" id="r-score">0</div>
+            <p class="note" id="r-line"></p>
+            <div class="resultgrid" id="r-grid"></div>
+            <div id="r-advice"></div>
+            <div class="actions">
+                <button id="btn-again">Play again with new problems</button>
+                <button class="ghost" id="btn-map">Back to the map</button>
+            </div>
+        </section>
+
+    </main>
+
+
+    <script>
+        'use strict';
+
+        /* =======================================================
+           small helpers
+           ======================================================= */
+        function ri(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+        function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+        function shuffle(a) {
+            a = a.slice();
+            for (var i = a.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var t = a[i]; a[i] = a[j]; a[j] = t;
+            }
+            return a;
+        }
+        function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = b; b = a % b; a = t; } return a; }
+        function fmt(x) { return String(Math.round(x * 1e6) / 1e6); }
+
+        /* math markup: M() is inline, MD() is display; tp() writes a signed sum of terms */
+        function M(t) { return '\\(' + t + '\\)'; }
+        function MD(t) { return '\\[' + t + '\\]'; }
+        function tp(terms) {
+            var s = '';
+            terms.forEach(function (tm) {
+                var c = tm[0], mono = tm[1];
+                if (c === 0) return;
+                var a = Math.abs(c);
+                var body = mono === '' ? String(a) : (a === 1 ? '' : String(a)) + mono;
+                if (s === '') s = (c < 0 ? '-' : '') + body;
+                else s += (c < 0 ? ' - ' : ' + ') + body;
+            });
+            return s || '0';
+        }
+        function pw(v, n) { return n === 0 ? '' : (n === 1 ? v : v + '^{' + n + '}'); }
+        /* reduced fraction n/d as TeX (and its value) */
+        function fr(n, d) {
+            if (d < 0) { n = -n; d = -d; }
+            var g = gcd(n, d) || 1;
+            return { n: n / g, d: d / g, v: n / d };
+        }
+        function ftex(n, d) {
+            var f = fr(n, d);
+            if (f.d === 1) return String(f.n);
+            return (f.n < 0 ? '-' : '') + '\\frac{' + Math.abs(f.n) + '}{' + f.d + '}';
+        }
+        /* k*sqrt(m) form of sqrt(n), n a positive integer */
+        function sqrtTex(n) {
+            var k = 1, m = n;
+            for (var f = 2; f * f <= m; f++) { while (m % (f * f) === 0) { m /= f * f; k *= f; } }
+            if (m === 1) return String(k);
+            return (k === 1 ? '' : String(k)) + '\\sqrt{' + m + '}';
+        }
+        function vec(a, b, c) {
+            return '\\langle ' + a + ', ' + b + (c === undefined ? '' : ', ' + c) + ' \\rangle';
+        }
+        function pt(a, b, c) { return '(' + a + ', ' + b + (c === undefined ? '' : ', ' + c) + ')'; }
+        /* x - a, written nicely: "x - 2", "x + 3", "x" */
+        function shift(v, a) { return a === 0 ? v : v + (a > 0 ? ' - ' + a : ' + ' + (-a)); }
+        /* c(x - a) + d(y - b) + ...: grouped terms with clean signs, no 1( or + (-2) */
+        function gp(pairs) { return tp(pairs.map(function (q) { return [q[0], '(' + q[1] + ')']; })); }
+        function par(a) { return a < 0 ? '(' + a + ')' : String(a); }
+        function mc(list) { return shuffle(list); }
+
+        /* typed answers: numbers, fractions like 3/8, sqrt(5), 2sqrt(3), pi, 4pi, 3/5 */
+        function parseNum(s) {
+            s = String(s).toLowerCase().replace(/−/g, '-').replace(/[,\s$]/g, '')
+                .replace(/√/g, 'sqrt').replace(/π/g, 'pi').replace(/×/g, '*');
+            if (s === '') return NaN;
+            if (!/^[0-9+\-*/^().a-z]*$/.test(s)) return NaN;
+            var words = s.match(/[a-z]+/g) || [];
+            if (words.some(function (w) { return w !== 'sqrt' && w !== 'pi'; })) return NaN;
+            s = s.replace(/sqrt(\d+(?:\.\d+)?)/g, 'sqrt($1)');
+            s = s.replace(/(\d|\)|pi)(?=sqrt|pi|\()/g, '$1*');
+            s = s.replace(/\^/g, '**').replace(/sqrt/g, 'Math.sqrt').replace(/pi/g, 'Math.PI');
+            try {
+                var v = Function('"use strict"; return (' + s + ');')();
+                return (typeof v === 'number' && isFinite(v)) ? v : NaN;
+            } catch (e) { return NaN; }
+        }
+        /* exact match, or the exact answer rounded to two or more decimal places */
+        function matches(v, a) {
+            if (!isFinite(v)) return false;
+            return Math.abs(v - a) <= 1e-6 * Math.max(1, Math.abs(a)) || Math.abs(v - a) <= 0.005 + 1e-9;
+        }
+
+        /* =======================================================
+           Stage 1, Section 13.2: limits
+           ======================================================= */
+        function stageLimits() {
+            var qs = [];
+
+            /* --- 1. the value along a line y = kx --- */
+            (function () {
+                var a, b, c;
+                do {
+                    a = pick([1, 2, 5, 6]); b = pick([1, 2, 3]); c = pick([1, 3, 4, 5]);
+                } while (c === 2 * b || b === 2 * c || b === c);   /* no multiple of the test's x^2+2y^2 or 2x^2+y^2 */
+                var k = pick([1, 2, 3, -1, -2]);
+                var L = fr(a * k, b + c * k * k);
+                var ftx = '\\frac{' + (a === 1 ? '' : a) + 'xy}{' + (b === 1 ? '' : b) + 'x^2 + ' + c + 'y^2}';
+                var line = 'y = ' + (k === 1 ? '' : (k === -1 ? '-' : k)) + 'x';
+                qs.push({
+                    prompt: 'Let ' + M('f(x,y) = ' + ftx) + '. Along the ' + M('x') + '-axis, ' + M('f') +
+                        ' approaches ' + M('0') + ' as ' + M('(x,y) \\to (0,0)') + '. What does ' + M('f') +
+                        ' approach along the line ' + M(line) + '?',
+                    type: 'num', labels: ['limit along ' + M(line)], answer: [L.v], show: [M(ftex(a * k, b + c * k * k))],
+                    meta: { kind: 'lim-line', a: a, b: b, c: c, k: k, f: a + '*x*y/(' + b + '*x**2+' + c + '*y**2)' },
+                    explain: function () {
+                        return '<p>Substitute ' + M(line) + ' and cancel the ' + M('x^2') + ':</p>' +
+                            MD('f(x,' + k + 'x) = \\frac{' + (a * k) + 'x^2}{' + b + 'x^2 + ' + (c * k * k) + 'x^2} = ' +
+                                '\\frac{' + (a * k) + '}{' + (b + c * k * k) + '} = ' + ftex(a * k, b + c * k * k)) +
+                            '<p class="why">That is not ' + M('0') + ', so two paths give two different limits ' +
+                            'and the limit at the origin does not exist.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. which pair of paths proves it? --- */
+            (function () {
+                var a = pick([2, 3, 4, 5]);
+                var ftx = '\\frac{x^2 - ' + a + 'y^2}{x^2 + y^2}';
+                var diag = ftex(1 - a, 2);
+                qs.push({
+                    prompt: 'Which pair of paths shows that ' + M('\\displaystyle\\lim_{(x,y)\\to(0,0)} ' + ftx) +
+                        ' does <strong>not</strong> exist?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: 'the ' + M('x') + '-axis and the ' + M('y') + '-axis', correct: true, key: 'axes' },
+                        { html: 'the lines ' + M('y = x') + ' and ' + M('y = -x'), correct: false, key: 'diag' },
+                        { html: 'the positive ' + M('x') + '-axis and the negative ' + M('x') + '-axis', correct: false, key: 'xsides' },
+                        { html: 'the ' + M('x') + '-axis, and substituting ' + M('(0,0)') + ' directly', correct: false, key: 'plug' }
+                    ]),
+                    meta: { kind: 'lim-pairs', a: a, f: '(x**2-' + a + '*y**2)/(x**2+y**2)' },
+                    explain: function () {
+                        return '<p>Along the ' + M('x') + '-axis (' + M('y=0') + ') ' + M('f = 1') + '; along the ' +
+                            M('y') + '-axis (' + M('x=0') + ') ' + M('f = -' + a) + '. Two different limits, so the limit ' +
+                            'does not exist.</p><p class="why">The lines ' + M('y = \\pm x') + ' both give ' + M(diag) +
+                            ', and both halves of the ' + M('x') + '-axis give ' + M('1') + ', so those pairs agree and prove ' +
+                            'nothing. Substituting gives ' + M('0/0') + ', which only tells you there is more work to do.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. agreeing paths prove nothing --- */
+            (function () {
+                var L = pick(['0', '1', '2', '\\tfrac12', '-3']);
+                var who = pick(['Ana', 'Ben', 'Caleb', 'Dana', 'Eli', 'Grace']);
+                qs.push({
+                    prompt: who + ' approaches ' + M('(0,0)') + ' along the ' + M('x') + '-axis, the ' + M('y') +
+                        '-axis, and the line ' + M('y = x') + ', and gets ' + M(L) + ' every time. What can ' + who +
+                        ' conclude about ' + M('\\displaystyle\\lim_{(x,y)\\to(0,0)} f(x,y)') + '?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: 'Nothing yet. Paths that agree do not show the limit exists.', correct: true, key: 'nothing' },
+                        { html: 'The limit is ' + M(L) + '.', correct: false, key: 'equals' },
+                        { html: 'The limit does not exist.', correct: false, key: 'dne' },
+                        { html: M('f') + ' is continuous at ' + M('(0,0)') + '.', correct: false, key: 'cont' }
+                    ]),
+                    meta: { kind: 'concept', want: 'nothing' },
+                    explain: function () {
+                        return '<p>Agreement along a few paths is consistent with a limit, but it is not proof. ' +
+                            'There are infinitely many paths, and some functions agree along every line and still ' +
+                            'disagree along a parabola.</p><p class="why">Two paths with <em>different</em> limits do ' +
+                            'prove the limit does not exist. Proving it <em>does</em> exist takes another argument ' +
+                            '(continuity, algebra, or squeezing).</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. continuous: just substitute --- */
+            (function () {
+                var p, q, a, b;
+                do {
+                    p = pick([1, 2, 3, -1]); q = pick([1, 2, -1, -2]);
+                    a = pick([1, 3, 4, -2, -3]); b = pick([1, 3, 4, -1, -3]);
+                } while (p + b * q === 0 || p * p + a * q === 0);
+                var ans = fr(p * p + a * q, p + b * q);
+                var ftx = '\\frac{' + tp([[1, 'x^2'], [a, 'y']]) + '}{' + tp([[1, 'x'], [b, 'y']]) + '}';
+                qs.push({
+                    prompt: 'Find ' + M('\\displaystyle\\lim_{(x,y)\\to' + pt(p, q) + '} ' + ftx) + '.',
+                    type: 'num', labels: ['limit'], answer: [ans.v], show: [M(ftex(p * p + a * q, p + b * q))],
+                    meta: { kind: 'lim-sub', p: p, q: q, a: a, b: b, f: '(x**2+(' + a + ')*y)/(x+(' + b + ')*y)' },
+                    explain: function () {
+                        return '<p>Try substituting first. The denominator at ' + M(pt(p, q)) + ' is ' +
+                            M(String(p + b * q)) + ', not zero, so the function is continuous there and the limit is its value:</p>' +
+                            MD('\\frac{' + par(p) + '^2 + ' + par(a) + '\\cdot' + par(q) + '}{' + par(p) + ' + ' + par(b) +
+                                '\\cdot' + par(q) + '} = \\frac{' + (p * p + a * q) + '}{' + (p + b * q) + '} = ' +
+                                ftex(p * p + a * q, p + b * q)) +
+                            '<p class="why">Paths are only for the hard cases. Most limits are just substitution.</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. when every line agrees but a parabola does not --- */
+            (function () {
+                var a = pick([2, 3, 4, 6]), k = pick([1, 2, -1, 3]);
+                var ans = fr(a * k, 1 + k * k);
+                var par2 = 'y = ' + (k === 1 ? '' : (k === -1 ? '-' : k)) + 'x^2';
+                qs.push({
+                    prompt: 'Let ' + M('f(x,y) = \\dfrac{' + a + 'x^2y}{x^4 + y^2}') + '. Along every line ' + M('y = mx') +
+                        ', ' + M('f') + ' approaches ' + M('0') + ' at the origin. What does ' + M('f') + ' approach along the parabola ' +
+                        M(par2) + '?',
+                    type: 'num', labels: ['limit along ' + M(par2)], answer: [ans.v], show: [M(ftex(a * k, 1 + k * k))],
+                    meta: { kind: 'lim-parabola', a: a, k: k, f: a + '*x**2*y/(x**4+y**2)' },
+                    explain: function () {
+                        return '<p>Substitute ' + M(par2) + '; every term becomes a multiple of ' + M('x^4') + ':</p>' +
+                            MD('\\frac{' + a + 'x^2(' + k + 'x^2)}{x^4 + ' + (k * k) + 'x^4} = \\frac{' + (a * k) + '}{' +
+                                (1 + k * k) + '} = ' + ftex(a * k, 1 + k * k)) +
+                            '<p class="why">The lines give ' + M('0') + ' and the parabola gives something else, so the limit ' +
+                            'does not exist, even though every straight line agreed.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           Stage 2, Section 13.3: partial derivatives
+           ======================================================= */
+        function stagePartials() {
+            var qs = [];
+
+            /* --- 1. product rule + chain rule --- */
+            (function () {
+                var a = pick([2, 3, 4]), k = pick([2, 3, 4, 5]);
+                var E = 'e^{' + k + 'xy}';
+                var c1 = (a === 1 ? '' : a) + pw('x', a - 1) + E;
+                qs.push({
+                    prompt: 'Find ' + M('f_x') + ' for ' + M('f(x,y) = ' + pw('x', a) + E) + '.',
+                    type: 'choice',
+                    choices: mc([
+                        { html: M(c1 + ' + ' + k + pw('x', a) + 'y' + E), correct: true,
+                          expr: a + '*x**' + (a - 1) + '*exp(' + k + '*x*y) + ' + k + '*x**' + a + '*y*exp(' + k + '*x*y)' },
+                        { html: M(c1), correct: false, expr: a + '*x**' + (a - 1) + '*exp(' + k + '*x*y)' },
+                        { html: M((a * k) + pw('x', a - 1) + 'y' + E), correct: false,
+                          expr: (a * k) + '*x**' + (a - 1) + '*y*exp(' + k + '*x*y)' },
+                        { html: M(c1 + ' + ' + k + pw('x', a + 1) + E), correct: false,
+                          expr: a + '*x**' + (a - 1) + '*exp(' + k + '*x*y) + ' + k + '*x**' + (a + 1) + '*exp(' + k + '*x*y)' }
+                    ]),
+                    meta: { kind: 'formula', f: 'x**' + a + '*exp(' + k + '*x*y)', v: 'x' },
+                    explain: function () {
+                        return '<p>Both factors contain ' + M('x') + ', so use the product rule; the chain rule on ' +
+                            M(E) + ' brings down the ' + M('x') + '-derivative of ' + M(k + 'xy') + ', which is ' + M(k + 'y') + ':</p>' +
+                            MD('f_x = ' + a + pw('x', a - 1) + E + ' + ' + pw('x', a) + '\\cdot ' + k + 'y\\,' + E) +
+                            '<p class="why">The usual slips: dropping one product-rule term, multiplying the two ' +
+                            'derivatives together, or taking the inner derivative with respect to ' + M('y') + ' (which gives ' +
+                            M(k + 'x') + ').</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. product rule only when both factors move --- */
+            (function () {
+                var a = pick([2, 3]), k = pick([2, 3, 4, 5]);
+                var C = '\\cos(' + k + 'xy)', S = '\\sin(' + k + 'xy)';
+                qs.push({
+                    prompt: 'Find ' + M('f_x') + ' for ' + M('f(x,y) = ' + pw('y', a) + C) + '.',
+                    type: 'choice',
+                    choices: mc([
+                        { html: M('-' + k + pw('y', a + 1) + S), correct: true, expr: '-' + k + '*y**' + (a + 1) + '*sin(' + k + '*x*y)' },
+                        { html: M(a + pw('y', a - 1) + C + ' - ' + k + pw('y', a + 1) + S), correct: false,
+                          expr: a + '*y**' + (a - 1) + '*cos(' + k + '*x*y) - ' + k + '*y**' + (a + 1) + '*sin(' + k + '*x*y)' },
+                        { html: M('-' + pw('y', a) + S), correct: false, expr: '-y**' + a + '*sin(' + k + '*x*y)' },
+                        { html: M(k + pw('y', a + 1) + S), correct: false, expr: k + '*y**' + (a + 1) + '*sin(' + k + '*x*y)' }
+                    ]),
+                    meta: { kind: 'formula', f: 'y**' + a + '*cos(' + k + '*x*y)', v: 'x' },
+                    explain: function () {
+                        return '<p>For ' + M('f_x') + ', ' + M(pw('y', a)) + ' is a constant, so there is <strong>no product rule</strong>. ' +
+                            'Only the cosine changes, and its chain factor is ' + M(k + 'y') + ':</p>' +
+                            MD('f_x = ' + pw('y', a) + '\\cdot\\bigl(-\\sin(' + k + 'xy)\\bigr)\\cdot ' + k + 'y = -' + k + pw('y', a + 1) + S) +
+                            '<p class="why">Use the product rule only when <em>both</em> factors contain the variable you are ' +
+                            'differentiating with respect to.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. both partials at a point --- */
+            (function () {
+                var A = pick([1, 2, -1]), B = pick([2, 3, -2, -3, 4]), C = pick([1, -1, 2]);
+                var p = pick([1, 2, -1]), q = pick([1, -1, 2]);
+                var fx = 3 * A * p * p * q + B * q * q, fy = A * p * p * p + 2 * B * p * q + 3 * C * q * q;
+                var ftx = tp([[A, 'x^3y'], [B, 'xy^2'], [C, 'y^3']]);
+                qs.push({
+                    prompt: 'Let ' + M('f(x,y) = ' + ftx) + '. Find ' + M('f_x' + pt(p, q)) + ' and ' + M('f_y' + pt(p, q)) + '.',
+                    type: 'num', labels: [M('f_x' + pt(p, q)), M('f_y' + pt(p, q))], answer: [fx, fy], show: [M(fx), M(fy)],
+                    meta: { kind: 'partial-values', f: '(' + A + ')*x**3*y+(' + B + ')*x*y**2+(' + C + ')*y**3', p: p, q: q },
+                    explain: function () {
+                        return MD('f_x = ' + tp([[3 * A, 'x^2y'], [B, 'y^2']]) + ',\\qquad f_y = ' +
+                            tp([[A, 'x^3'], [2 * B, 'xy'], [3 * C, 'y^2']])) +
+                            '<p>At ' + M(pt(p, q)) + ': ' + M('f_x = ' + fx) + ' and ' + M('f_y = ' + fy) + '.</p>' +
+                            '<p class="why">For ' + M('f_x') + ' the ' + M('y^3') + ' term is a constant, so it disappears.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. a mixed partial --- */
+            (function () {
+                var mn = pick([[2, 4], [4, 2], [3, 3], [2, 5], [4, 3], [3, 4]]), m = mn[0], n = mn[1];
+                var c = pick([1, 2, -1]), d = pick([2, 3, -4, 5]), e = pick([1, -2, 3]);
+                var P = pick([[1, 1], [1, -1], [-1, 1], [2, 1], [1, 2]]), p = P[0], q = P[1];
+                var ans = c * m * n * Math.pow(p, m - 1) * Math.pow(q, n - 1) + d;
+                var ftx = tp([[c, pw('x', m) + pw('y', n)], [d, 'xy'], [e, 'y^2']]);
+                qs.push({
+                    prompt: 'Let ' + M('f(x,y) = ' + ftx) + '. Find ' + M('f_{xy}' + pt(p, q)) + '.',
+                    type: 'num', labels: [M('f_{xy}' + pt(p, q))], answer: [ans], show: [M(ans)],
+                    meta: { kind: 'fxy', f: '(' + c + ')*x**' + m + '*y**' + n + '+(' + d + ')*x*y+(' + e + ')*y**2', p: p, q: q },
+                    explain: function () {
+                        return MD('f_x = ' + tp([[c * m, pw('x', m - 1) + pw('y', n)], [d, 'y']]) + ',\\qquad f_{xy} = ' +
+                            tp([[c * m * n, pw('x', m - 1) + pw('y', n - 1)], [d, '']])) +
+                            '<p>At ' + M(pt(p, q)) + ' that is ' + M(String(ans)) + '.</p>' +
+                            '<p class="why">You could also find ' + M('f_y') + ' first and then differentiate in ' + M('x') +
+                            ': the mixed partials agree, ' + M('f_{xy} = f_{yx}') + '.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           Stage 3, Section 13.4: the chain rule
+           ======================================================= */
+        function stageChain() {
+            var qs = [];
+
+            /* --- 1. dz/dt along a curve --- */
+            (function () {
+                var c, p, k, r, t0, x0, y0, ans;
+                do {
+                    c = pick([2, 3, 4, -2, -3]); p = pick([0, 1, -1, 2]);
+                    k = pick([2, 3, -1, -2]); r = pick([0, 1, -1]); t0 = pick([1, 2, -1]);
+                    x0 = t0 * t0 + p; y0 = k * t0 + r;
+                    ans = (3 * x0 * x0 + c * y0) * (2 * t0) + c * x0 * k;
+                } while (ans === 0);
+                var xt = tp([[1, 't^2'], [p, '']]), yt = tp([[k, 't'], [r, '']]);
+                qs.push({
+                    prompt: 'Let ' + M('z = ' + tp([[1, 'x^3'], [c, 'xy']])) + ' with ' + M('x = ' + xt) + ' and ' + M('y = ' + yt) +
+                        '. Find ' + M('\\dfrac{dz}{dt}') + ' when ' + M('t = ' + t0) + '.',
+                    type: 'num', labels: [M('dz/dt') + ' at ' + M('t = ' + t0)], answer: [ans], show: [M(ans)],
+                    meta: { kind: 'chain-t', c: c, p: p, k: k, r: r, t0: t0 },
+                    explain: function () {
+                        return MD('\\frac{dz}{dt} = z_x\\frac{dx}{dt} + z_y\\frac{dy}{dt} = (' + tp([[3, 'x^2'], [c, 'y']]) +
+                            ')(2t) + (' + tp([[c, 'x']]) + ')(' + k + ')') +
+                            '<p>At ' + M('t = ' + t0) + ': ' + M('x = ' + x0) + ', ' + M('y = ' + y0) + ', so ' +
+                            M('\\frac{dz}{dt} = (' + (3 * x0 * x0 + c * y0) + ')(' + (2 * t0) + ') + (' + (c * x0) + ')(' + k + ') = ' + ans) + '.</p>' +
+                            '<p class="why">One term per branch of the tree: ' + M('z') + ' depends on ' + M('x') + ' and ' + M('y') +
+                            ', and each of them depends on ' + M('t') + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. how many terms? --- */
+            (function () {
+                var n = pick([2, 3, 4]);
+                var names = ['x', 'y', 'z', 'u'].slice(0, n);
+                var opts = [n, 2 * n, 1, n + 1];
+                qs.push({
+                    prompt: M('w = f(' + names.join(', ') + ')') + ', and each of ' + M(names.join(', ')) +
+                        ' is a function of ' + M('s') + ' and ' + M('t') + '. How many terms are in the chain rule for ' +
+                        M('\\dfrac{\\partial w}{\\partial s}') + '?',
+                    type: 'choice',
+                    choices: mc(opts.map(function (o, i) { return { html: String(o), correct: i === 0, key: String(o) }; })),
+                    meta: { kind: 'tree', n: n },
+                    explain: function () {
+                        return '<p>' + n + '. The tree has one branch from ' + M('w') + ' to each of ' + M(names.join(', ')) +
+                            ', and each branch continues down to ' + M('s') + ':</p>' +
+                            MD('\\frac{\\partial w}{\\partial s} = ' + names.map(function (v) {
+                                return '\\frac{\\partial w}{\\partial ' + v + '}\\frac{\\partial ' + v + '}{\\partial s}';
+                            }).join(' + ')) +
+                            '<p class="why">The ' + M('t') + '-branches only appear in ' + M('\\partial w/\\partial t') + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. a box changing in three directions --- */
+            (function () {
+                var L, W, H, dL, dW, dH, ans;
+                do {
+                    L = ri(4, 10); W = ri(3, 8); H = ri(2, 6);
+                    dL = pick([1, 2]); dW = -pick([1, 2, 3]); dH = pick([1, 2]);
+                    ans = W * H * dL + L * H * dW + L * W * dH;
+                } while (ans === 0);
+                qs.push({
+                    prompt: 'A rectangular box is changing shape. Right now its length is ' + L + ' cm and growing at ' + dL +
+                        ' cm/s, its width is ' + W + ' cm and <strong>shrinking</strong> at ' + (-dW) + ' cm/s, and its height is ' +
+                        H + ' cm and growing at ' + dH + ' cm/s. How fast is the volume ' + M('V = \\ell w h') + ' changing?',
+                    type: 'num', labels: [M('dV/dt') + ' (cm³/s)'], answer: [ans], show: [M(ans + '\\ \\text{cm}^3/\\text{s}')],
+                    meta: { kind: 'box', L: L, W: W, H: H, dL: dL, dW: dW, dH: dH },
+                    explain: function () {
+                        return MD('\\frac{dV}{dt} = wh\\frac{d\\ell}{dt} + \\ell h\\frac{dw}{dt} + \\ell w\\frac{dh}{dt}') + MD('= (' + W + ')(' + H +
+                            ')(' + dL + ') + (' + L + ')(' + H + ')(' + dW + ') + (' + L + ')(' + W + ')(' + dH + ') = ' + ans) +
+                            '<p>' + (ans > 0 ? 'Positive, so the volume is increasing' : 'Negative, so the volume is decreasing') +
+                            ', at ' + Math.abs(ans) + ' cm³/s.</p>' +
+                            '<p class="why">The shrinking width goes in as ' + M('dw/dt = ' + dW) + '. Getting that sign right ' +
+                            'is half the problem.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. a cylinder (answer in terms of pi) --- */
+            (function () {
+                var r, h, dr, dh, K;
+                do {
+                    r = pick([2, 3, 4, 5]); h = ri(4, 10); dr = pick([1, 2, -1]); dh = pick([-1, -2, 1, 3]);
+                    K = 2 * r * h * dr + r * r * dh;
+                } while (K === 0);
+                var word = function (v, up, down) { return v > 0 ? up + ' at ' + v : down + ' at ' + (-v); };
+                qs.push({
+                    prompt: 'A cylinder’s radius is ' + r + ' in and ' + word(dr, 'increasing', '<strong>decreasing</strong>') +
+                        ' in/min, and its height is ' + h + ' in and ' + word(dh, 'increasing', '<strong>decreasing</strong>') +
+                        ' in/min. How fast is its volume ' + M('V = \\pi r^2 h') + ' changing? (Type ' + M('\\pi') + ' as <em>pi</em>, e.g. <em>12pi</em>.)',
+                    type: 'num', labels: [M('dV/dt') + ' (in³/min)'], answer: [K * Math.PI],
+                    show: [M(K + '\\pi \\approx ' + (Math.round(K * Math.PI * 100) / 100) + '\\ \\text{in}^3/\\text{min}')],
+                    meta: { kind: 'cylinder', r: r, h: h, dr: dr, dh: dh },
+                    explain: function () {
+                        return MD('\\frac{dV}{dt} = 2\\pi r h\\frac{dr}{dt} + \\pi r^2\\frac{dh}{dt}') + MD('= 2\\pi(' + r + ')(' + h + ')(' + dr +
+                            ') + \\pi(' + (r * r) + ')(' + dh + ') = ' + K + '\\pi') +
+                            '<p class="why">Two quantities change, so two terms. Differentiate first, then substitute the numbers.</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. the sign of a decreasing rate --- */
+            (function () {
+                var v = pick([2, 3, 4, 5]);
+                var thing = pick([['radius', 'r', 'cm/s'], ['width', 'w', 'in/min'], ['height', 'h', 'm/s'], ['side length', 's', 'mm/min']]);
+                var opts = [-v, v, 0, -1 / v];
+                qs.push({
+                    prompt: 'In a rate problem, the ' + thing[0] + ' is <strong>decreasing</strong> at ' + v + ' ' + thing[2] +
+                        '. What number do you substitute for ' + M('d' + thing[1] + '/dt') + '?',
+                    type: 'choice',
+                    choices: mc(opts.map(function (o, i) {
+                        return { html: M(i === 3 ? '-\\frac{1}{' + v + '}' : String(o)), correct: i === 0, key: String(i) };
+                    })),
+                    meta: { kind: 'concept', want: '0' },
+                    explain: function () {
+                        return '<p>' + M('-' + v) + '. A rate of change is negative when the quantity is getting smaller; ' +
+                            'the word "decreasing" is the sign.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           Stage 4, Section 13.5: gradients and directional derivatives
+           ======================================================= */
+        function gradPoly() {
+            /* f = a x^2 + b xy + c y^3 (the cubic term keeps it away from every quiz quadratic) */
+            var a = pick([1, 2, 3, -1]), b = pick([2, -3, 4, 5, -2]), c = pick([1, -1, 2]);
+            var p = pick([1, 2, -1]), q = pick([1, -1, 2, -2]);
+            return {
+                a: a, b: b, c: c, p: p, q: q,
+                tex: tp([[a, 'x^2'], [b, 'xy'], [c, 'y^3']]),
+                expr: '(' + a + ')*x**2+(' + b + ')*x*y+(' + c + ')*y**3',
+                gx: 2 * a * p + b * q, gy: b * p + 3 * c * q * q,
+                gtex: vec(tp([[2 * a, 'x'], [b, 'y']]), tp([[b, 'x'], [3 * c, 'y^2']]))
+            };
+        }
+
+        function stageGradient() {
+            var qs = [];
+
+            /* --- 1. the gradient at a point --- */
+            (function () {
+                var g;
+                do { g = gradPoly(); } while (g.gx === 0 && g.gy === 0);
+                qs.push({
+                    prompt: 'Find ' + M('\\nabla f' + pt(g.p, g.q)) + ' for ' + M('f(x,y) = ' + g.tex) + '.',
+                    type: 'num', labels: ['first component ' + M('f_x'), 'second component ' + M('f_y')],
+                    answer: [g.gx, g.gy], show: [M(g.gx), M(g.gy)],
+                    meta: { kind: 'grad', f: g.expr, p: g.p, q: g.q },
+                    explain: function () {
+                        return MD('\\nabla f = ' + g.gtex + ',\\qquad \\nabla f' + pt(g.p, g.q) + ' = ' + vec(g.gx, g.gy)) +
+                            '<p class="why">The gradient is just the vector of first partials, evaluated at the point.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. directional derivative: unit vector first --- */
+            (function () {
+                var g, v, n, dot;
+                do {
+                    g = gradPoly();
+                    v = pick([[3, 4], [4, -3], [-3, 4], [5, 12], [12, -5], [-8, 6], [6, 8], [-4, -3]]);
+                    n = Math.round(Math.sqrt(v[0] * v[0] + v[1] * v[1]));
+                    dot = g.gx * v[0] + g.gy * v[1];
+                } while (dot === 0);
+                var ans = fr(dot, n);
+                qs.push({
+                    prompt: 'Find the directional derivative of ' + M('f(x,y) = ' + g.tex) + ' at ' + M(pt(g.p, g.q)) +
+                        ' in the direction of ' + M('\\mathbf v = ' + vec(v[0], v[1])) + '.',
+                    type: 'num', labels: [M('D_{\\mathbf u}f')], answer: [ans.v], show: [M(ftex(dot, n))],
+                    meta: { kind: 'dirderiv', f: g.expr, p: g.p, q: g.q, v: v },
+                    explain: function () {
+                        return '<p>' + M('\\nabla f' + pt(g.p, g.q) + ' = ' + vec(g.gx, g.gy)) + '. The vector ' + M('\\mathbf v') +
+                            ' has length ' + n + ', so ' + M('\\mathbf u = ' + vec(ftex(v[0], n), ftex(v[1], n))) + ' and</p>' +
+                            MD('D_{\\mathbf u}f = \\nabla f\\cdot\\mathbf u = \\frac{(' + g.gx + ')(' + v[0] + ') + (' + g.gy + ')(' + v[1] +
+                                ')}{' + n + '} = ' + ftex(dot, n)) +
+                            '<p class="why">Dotting with ' + M('\\mathbf v') + ' itself gives ' + M(String(dot)) + ', which is ' + n +
+                            ' times too big. Unit vector first.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. greatest rate of increase --- */
+            (function () {
+                var g;
+                do { g = gradPoly(); } while (g.gx === 0 && g.gy === 0);
+                var n2 = g.gx * g.gx + g.gy * g.gy;
+                qs.push({
+                    prompt: 'What is the greatest rate of increase of ' + M('f(x,y) = ' + g.tex) + ' at ' + M(pt(g.p, g.q)) +
+                        '? (Type a square root as <em>sqrt(…)</em> if you need one.)',
+                    type: 'num', labels: ['greatest rate'], answer: [Math.sqrt(n2)], show: [M(sqrtTex(n2))],
+                    meta: { kind: 'maxrate', f: g.expr, p: g.p, q: g.q },
+                    explain: function () {
+                        return '<p>' + M('\\nabla f' + pt(g.p, g.q) + ' = ' + vec(g.gx, g.gy)) + ', and ' + M('f') +
+                            ' increases fastest in that direction, at the rate</p>' +
+                            MD('\\|\\nabla f\\| = \\sqrt{' + par(g.gx) + '^2 + ' + par(g.gy) + '^2} = ' + (n2 === Math.pow(Math.round(Math.sqrt(n2)), 2) ? '' : '\\sqrt{' + n2 + '} = ') + sqrtTex(n2)) +
+                            '<p class="why">The direction is ' + M('\\nabla f/\\|\\nabla f\\|') + '; the rate is the length ' +
+                            M('\\|\\nabla f\\|') + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. increase, decrease, or no change --- */
+            (function () {
+                var p, q;
+                do { p = pick([1, 2, 3, 4, -1, -2, -3]); q = pick([1, 2, 3, 5, -1, -2, -4]); } while (Math.abs(p) === Math.abs(q));
+                var ask = pick(['increase', 'decrease', 'none']);
+                var words = { increase: 'increases fastest', decrease: 'decreases fastest', none: 'does not change at all' };
+                var opts = [
+                    { html: M(vec(p, q)), key: 'increase' },
+                    { html: M(vec(-p, -q)), key: 'decrease' },
+                    { html: M(vec(-q, p)), key: 'none' },
+                    { html: M(vec(q, p)), key: 'swap' }
+                ];
+                qs.push({
+                    prompt: 'At a point ' + M('P') + ', ' + M('\\nabla f(P) = ' + vec(p, q)) + '. In which direction ' +
+                        M('f') + ' <strong>' + words[ask] + '</strong> at ' + M('P') + '?',
+                    type: 'choice',
+                    choices: mc(opts.map(function (o) { return { html: o.html, correct: o.key === ask, key: o.key }; })),
+                    meta: { kind: 'direction', p: p, q: q, ask: ask },
+                    explain: function () {
+                        return '<p>Fastest increase is along ' + M('\\nabla f = ' + vec(p, q)) + ', fastest decrease along ' +
+                            M('-\\nabla f = ' + vec(-p, -q)) + ', and no change along any direction perpendicular to ' +
+                            M('\\nabla f') + ', such as ' + M(vec(-q, p)) + ' (its dot product with ' + M('\\nabla f') + ' is ' + M('0') + ').</p>' +
+                            '<p class="why">' + M(vec(q, p)) + ' is none of these: it is neither parallel nor perpendicular to ' +
+                            M('\\nabla f') + '.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           Stage 5, Section 13.6: tangent planes
+           ======================================================= */
+        function levelSurface() {
+            var k, m, P, N;
+            do {
+                k = pick([2, 3, 4]); m = pick([1, 2, 3, 5]);
+                P = [pick([1, 2, -1, -2]), pick([1, -1, 2]), pick([1, 2, -1, -2])];
+                N = P[0] * P[0] + k * P[1] * P[1] + m * P[2] * P[2];
+            } while (k === 3 && m === 4);
+            return { k: k, m: m, P: P, N: N, tex: tp([[1, 'x^2'], [k, 'y^2'], [m, 'z^2']]) + ' = ' + N };
+        }
+
+        function stagePlanes() {
+            var qs = [];
+
+            /* --- 1. z = f(x,y): tangent plane by linearization --- */
+            (function () {
+                var a, b, c = pick([3, -2, 4]);
+                do { a = pick([1, 2, -1]); b = pick([1, -1, 2]); } while (a === -b);   /* keeps clear of the quiz's xy^2 - x^2 */
+                var p = pick([1, 2, -1]), q = pick([1, -1, 2]);
+                var z0 = a * p * p + b * p * q * q + c * q, A = 2 * a * p + b * q * q, B = 2 * b * p * q + c, C = z0 - A * p - B * q;
+                var ftx = tp([[a, 'x^2'], [b, 'xy^2'], [c, 'y']]);
+                qs.push({
+                    prompt: 'Find the tangent plane to ' + M('z = ' + ftx) + ' at the point ' + M(pt(p, q, z0)) +
+                        '. Write it as ' + M('z = Ax + By + C') + '.',
+                    type: 'num', labels: [M('A'), M('B'), M('C')], answer: [A, B, C], show: [M(A), M(B), M(C)],
+                    meta: { kind: 'tp-explicit', f: '(' + a + ')*x**2+(' + b + ')*x*y**2+(' + c + ')*y', p: p, q: q },
+                    explain: function () {
+                        return '<p>' + M('f_x = ' + tp([[2 * a, 'x'], [b, 'y^2']])) + ' and ' + M('f_y = ' + tp([[2 * b, 'xy'], [c, '']])) +
+                            ', so at ' + M(pt(p, q)) + ': ' + M('f_x = ' + A) + ', ' + M('f_y = ' + B) + '.</p>' +
+                            MD(shift('z', z0) + ' = ' + gp([[A, shift('x', p)], [B, shift('y', q)]])) +
+                            MD('z = ' + tp([[A, 'x'], [B, 'y'], [C, '']])) +
+                            '<p class="why">Check: at ' + M(pt(p, q)) + ' the plane gives ' + M('z = ' + z0) + ', the height of the surface.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. level surface: the gradient is the normal --- */
+            (function () {
+                var s = levelSurface(), P = s.P;
+                var g = [2 * P[0], 2 * s.k * P[1], 2 * s.m * P[2]];
+                qs.push({
+                    prompt: 'For the surface ' + M(s.tex) + ', find ' + M('\\nabla F' + pt(P[0], P[1], P[2])) + ' where ' +
+                        M('F(x,y,z) = ' + tp([[1, 'x^2'], [s.k, 'y^2'], [s.m, 'z^2']]) + ' - ' + s.N) + '. (That vector is normal to the tangent plane.)',
+                    type: 'num', labels: [M('F_x'), M('F_y'), M('F_z')], answer: g, show: g.map(function (v) { return M(v); }),
+                    meta: { kind: 'tp-grad', k: s.k, m: s.m, P: P, N: s.N },
+                    explain: function () {
+                        return MD('\\nabla F = ' + vec('2x', 2 * s.k + 'y', 2 * s.m + 'z')) + MD('\\nabla F' +
+                            pt(P[0], P[1], P[2]) + ' = ' + vec(g[0], g[1], g[2])) +
+                            '<p>The tangent plane is ' + M(gp([[g[0], shift('x', P[0])], [g[1], shift('y', P[1])], [g[2], shift('z', P[2])]]) + ' = 0') + '.</p>' +
+                            '<p class="why">This is the gradient method. It works for any surface written as ' + M('F(x,y,z) = 0') +
+                            ', including ' + M('z = f(x,y)') + ' rewritten as ' + M('F = f(x,y) - z') + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. which plane is tangent? --- */
+            (function () {
+                var s = levelSurface(), P = s.P, k = s.k, m = s.m;
+                var lhs = tp([[P[0], 'x'], [k * P[1], 'y'], [m * P[2], 'z']]);
+                var lhsFlip = tp([[P[0], 'x'], [k * P[1], 'y'], [-m * P[2], 'z']]);
+                var Nflip = P[0] * P[0] + k * P[1] * P[1] - m * P[2] * P[2];
+                qs.push({
+                    prompt: 'Which equation is the tangent plane to ' + M(s.tex) + ' at ' + M(pt(P[0], P[1], P[2])) + '?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: M(lhs + ' = ' + s.N), correct: true, key: 'right',
+                          plane: [P[0], k * P[1], m * P[2], s.N] },
+                        { html: M(lhsFlip + ' = ' + Nflip), correct: false, key: 'zsign',
+                          plane: [P[0], k * P[1], -m * P[2], Nflip] },
+                        { html: M(lhs + ' = 0'), correct: false, key: 'origin', plane: [P[0], k * P[1], m * P[2], 0] },
+                        { html: M('x = ' + tp([[P[0], ''], [2 * P[0], 't']]) + ',\\ y = ' + tp([[P[1], ''], [2 * k * P[1], 't']]) +
+                            ',\\ z = ' + tp([[P[2], ''], [2 * m * P[2], 't']])), correct: false, key: 'line' }
+                    ]),
+                    meta: { kind: 'tp-pick', k: k, m: m, P: P, N: s.N },
+                    explain: function () {
+                        return '<p>' + M('\\nabla F = ' + vec('2x', 2 * k + 'y', 2 * m + 'z')) + ' gives the normal ' +
+                            M(vec(2 * P[0], 2 * k * P[1], 2 * m * P[2])) + ', or half of it, ' + M(vec(P[0], k * P[1], m * P[2])) + '. Then</p>' +
+                            MD(gp([[P[0], shift('x', P[0])], [k * P[1], shift('y', P[1])], [m * P[2], shift('z', P[2])]]) + ' = 0') +
+                            MD(lhs + ' = ' + s.N) +
+                            '<p class="why">Check by substituting the point: the left side becomes ' + M(String(s.N)) + '. The plane through ' +
+                            'the origin misses the point, the flipped-sign plane has the wrong normal, and the parametric equations ' +
+                            'describe the <em>normal line</em>, not the plane.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. the two methods give the same plane --- */
+            (function () {
+                var A, B, a, b, z0;
+                do {
+                    A = pick([2, 3, -1, 4, -2]); B = pick([1, 3, -2, 5]); a = pick([1, 2, -1, 3]); b = pick([1, 2, -2, 4]);
+                    z0 = pick([2, 5, -3, 4]);
+                } while (a === b || A === B);   /* A = B would make the swapped-point plane correct too */
+                var base = function (cx, cy, cz, xa, yb) {
+                    return gp([[cx, shift('x', xa)], [cy, shift('y', yb)]]);
+                };
+                qs.push({
+                    prompt: 'Lee used linearization and got ' + M(shift('z', z0) + ' = ' + gp([[A, shift('x', a)], [B, shift('y', b)]])) + '. Which of these is the <strong>same plane</strong>?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: M(base(2 * A, 2 * B, 0, a, b) + ' - 2(' + shift('z', z0) + ') = 0'), correct: true, key: 'right',
+                          plane: [2 * A, 2 * B, -2, 2 * A * a + 2 * B * b - 2 * z0] },
+                        { html: M(base(A, B, 0, a, b) + ' + (' + shift('z', z0) + ') = 0'), correct: false, key: 'zsign',
+                          plane: [A, B, 1, A * a + B * b + z0] },
+                        { html: M(base(A, B, 0, a, b) + ' - z = 0'), correct: false, key: 'noz0', plane: [A, B, -1, A * a + B * b] },
+                        { html: M(base(A, B, 0, b, a) + ' - (' + shift('z', z0) + ') = 0'), correct: false, key: 'swap',
+                          plane: [A, B, -1, A * b + B * a - z0] }
+                    ]),
+                    meta: { kind: 'tp-equiv', A: A, B: B, a: a, b: b, z0: z0 },
+                    explain: function () {
+                        return '<p>Move everything to one side: ' + M(gp([[A, shift('x', a)], [B, shift('y', b)], [-1, shift('z', z0)]]) + ' = 0') + '. Multiplying by 2 gives the correct choice.</p>' +
+                            '<p class="why">The normal vector ' + M(vec(A, B, -1)) + ' can be scaled by any nonzero number, and the ' +
+                            'plane must still pass through ' + M(pt(a, b, z0)) + '. That is why the gradient method and the linearization ' +
+                            'method look different but agree.</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. a normal vector to z = f(x,y) --- */
+            (function () {
+                var A, B;
+                do { A = pick([2, 3, -1, 4, -3, 5]); B = pick([1, -2, 3, -4, 6]); } while (A === B);
+                var flip = Math.random() < 0.5;
+                var right = flip ? vec(-A, -B, 1) : vec(A, B, -1);
+                qs.push({
+                    prompt: 'For a surface ' + M('z = f(x,y)') + ', ' + M('f_x(P) = ' + A) + ' and ' + M('f_y(P) = ' + B) +
+                        '. Which vector is normal to the tangent plane at ' + M('P') + '?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: M(right), correct: true, key: 'right', v: flip ? [-A, -B, 1] : [A, B, -1] },
+                        { html: M(vec(A, B, 1)), correct: false, key: 'plus', v: [A, B, 1] },
+                        { html: M(vec(A, B, 0)), correct: false, key: 'flat', v: [A, B, 0] },
+                        { html: M(vec(B, A, -1)), correct: false, key: 'swap', v: [B, A, -1] }
+                    ]),
+                    meta: { kind: 'normal', A: A, B: B },
+                    explain: function () {
+                        return '<p>Rewrite the surface as ' + M('F = f(x,y) - z = 0') + '. Then ' + M('\\nabla F = ' + vec('f_x', 'f_y', '-1') +
+                            ' = ' + vec(A, B, -1)) + (flip ? ', and ' + M(right) + ' is that vector times ' + M('-1') : '') + '.</p>' +
+                            '<p class="why">Any nonzero multiple of a normal vector is also normal. ' + M(vec(A, B, 1)) +
+                            ' is not a multiple: its ' + M('z') + '-component has the wrong sign compared with the others.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           Stage 6, Section 13.7: critical points
+           ======================================================= */
+        function stageExtrema() {
+            var qs = [];
+            var CLS = [
+                { key: 'min', html: 'a local minimum' }, { key: 'max', html: 'a local maximum' },
+                { key: 'saddle', html: 'a saddle point' }, { key: 'fails', html: 'the test gives no conclusion' }
+            ];
+            function clsChoices(want) {
+                return mc(CLS.map(function (c) { return { html: c.html, correct: c.key === want, key: c.key }; }));
+            }
+
+            /* --- 1 & 2. a quadratic: find the critical point, then classify it --- */
+            (function () {
+                var al, b, c, h, k, d, e, D;
+                do {
+                    al = pick([1, -1, 2]); b = pick([1, 2, 3, -1, -2, -3, 4]); c = pick([1, 2, 3, -1, -2]);
+                    h = ri(-3, 3); k = ri(-3, 3);
+                    d = -2 * al * h - b * k; e = -b * h - 2 * c * k;
+                    D = 4 * al * c - b * b;
+                } while (D === 0 || (al === 1 && b === 4 && c === 1 && d === 0 && e === 0) ||
+                         (al === 1 && b === 1 && c === 1 && d === -6 && e === 0));
+                var ftx = tp([[al, 'x^2'], [b, 'xy'], [c, 'y^2'], [d, 'x'], [e, 'y']]);
+                var expr = '(' + al + ')*x**2+(' + b + ')*x*y+(' + c + ')*y**2+(' + d + ')*x+(' + e + ')*y';
+                var want = D < 0 ? 'saddle' : (al > 0 ? 'min' : 'max');
+                qs.push({
+                    prompt: 'Find the critical point of ' + M('f(x,y) = ' + ftx) + '.',
+                    type: 'num', labels: [M('x'), M('y')], answer: [h, k], show: [M(h), M(k)],
+                    meta: { kind: 'cp-quad', f: expr },
+                    explain: function () {
+                        return '<p>Set both partials to zero:</p>' +
+                            MD('f_x = ' + tp([[2 * al, 'x'], [b, 'y'], [d, '']]) + ' = 0,\\qquad f_y = ' + tp([[b, 'x'], [2 * c, 'y'], [e, '']]) + ' = 0') +
+                            '<p>Solving the pair (substitution or elimination) gives ' + M(pt(h, k)) + '.</p>' +
+                            '<p class="why">Check it: ' + M('2(' + al + ')(' + h + ') + (' + b + ')(' + k + ') + (' + d + ') = 0') + '.</p>';
+                    }
+                });
+                qs.push({
+                    prompt: 'Use the second partial derivative test on ' + M('f(x,y) = ' + ftx) + ' at its critical point ' +
+                        M(pt(h, k)) + '. The point is…',
+                    type: 'choice', choices: clsChoices(want),
+                    meta: { kind: 'cp-class', f: expr, P: [h, k], want: want },
+                    explain: function () {
+                        return MD('f_{xx} = ' + (2 * al) + ',\\quad f_{yy} = ' + (2 * c) + ',\\quad f_{xy} = ' + b +
+                            '') + MD('D = (' + (2 * al) + ')(' + (2 * c) + ') - (' + par(b) + ')^2 = ' + D) +
+                            '<p>' + (D < 0 ? M('D < 0') + ', so it is a saddle point.' :
+                                M('D > 0') + ' and ' + M('f_{xx} = ' + (2 * al)) + (al > 0 ? ' > 0' : ' < 0') + ', so it is a local ' +
+                                (al > 0 ? 'minimum' : 'maximum') + '.') + '</p>';
+                    }
+                });
+            })();
+
+            /* --- 3 & 4. a cubic with two critical points --- */
+            (function () {
+                var p = pick([1, 2, 3]), q = pick([-2, -1, 1, 2, 3]);
+                var ftx = tp([[1, 'x^3'], [-3 * p * p, 'x'], [1, 'y^2'], [-2 * q, 'y']]);
+                var expr = 'x**3-' + (3 * p * p) + '*x+y**2-(' + (2 * q) + ')*y';
+                var L = function (pts) { return M(pts.map(function (z) { return pt(z[0], z[1]); }).join(',\\ ')); };
+                qs.push({
+                    prompt: 'Which list contains <strong>all</strong> the critical points of ' + M('f(x,y) = ' + ftx) + '?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: L([[p, q], [-p, q]]), correct: true, key: 'right', pts: [[p, q], [-p, q]] },
+                        { html: L([[p, q]]), correct: false, key: 'onlypos', pts: [[p, q]] },
+                        { html: L([[0, q], [p, q], [-p, q]]), correct: false, key: 'zero', pts: [[0, q], [p, q], [-p, q]] },
+                        { html: L([[p, -q], [-p, -q]]), correct: false, key: 'signq', pts: [[p, -q], [-p, -q]] }
+                    ]),
+                    meta: { kind: 'cp-list', f: expr },
+                    explain: function () {
+                        return MD('f_x = 3x^2 - ' + (3 * p * p) + ' = 0 \\;\\Rightarrow\\; x = \\pm ' + p) + MD('f_y = ' + tp([[2, 'y'], [-2 * q, '']]) +
+                            ' = 0 \\;\\Rightarrow\\; y = ' + q) +
+                            '<p class="why">' + M('x^2 = ' + (p * p)) + ' has two solutions. Keeping only the positive one is the most ' +
+                            'common way to lose a critical point.</p>';
+                    }
+                });
+                var sgn = pick([1, -1]), P = [sgn * p, q], want = sgn > 0 ? 'min' : 'saddle';
+                qs.push({
+                    prompt: 'For the same ' + M('f(x,y) = ' + ftx) + ', classify the critical point ' + M(pt(P[0], P[1])) + '.',
+                    type: 'choice', choices: clsChoices(want),
+                    meta: { kind: 'cp-class', f: expr, P: P, want: want },
+                    explain: function () {
+                        return MD('f_{xx} = 6x,\\quad f_{yy} = 2,\\quad f_{xy} = 0,\\qquad D = 12x') +
+                            '<p>At ' + M(pt(P[0], P[1])) + ', ' + M('D = ' + (12 * P[0])) + (sgn > 0
+                                ? ' > 0 and ' + M('f_{xx} = ' + (6 * p) + ' > 0') + ': a local minimum.'
+                                : ' < 0: a saddle point.') + '</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. classify from the numbers --- */
+            (function () {
+                var want = pick(['min', 'max', 'saddle', 'fails']);
+                var fxx, fyy, fxy, D;
+                do {
+                    fxx = pick([2, 3, 4, 6, -2, -3, -4, -6]); fyy = pick([1, 2, 3, 8, -1, -2, -8]); fxy = pick([0, 1, 2, -2, 3, 4, -4]);
+                    D = fxx * fyy - fxy * fxy;
+                } while (!((want === 'min' && D > 0 && fxx > 0) || (want === 'max' && D > 0 && fxx < 0) ||
+                           (want === 'saddle' && D < 0) || (want === 'fails' && D === 0)));
+                qs.push({
+                    prompt: 'At a critical point, ' + M('f_{xx} = ' + fxx) + ', ' + M('f_{yy} = ' + fyy) + ', and ' + M('f_{xy} = ' + fxy) +
+                        '. The point is…',
+                    type: 'choice', choices: clsChoices(want),
+                    meta: { kind: 'D-given', fxx: fxx, fyy: fyy, fxy: fxy, want: want },
+                    explain: function () {
+                        return MD('D = f_{xx}f_{yy} - f_{xy}^2 = (' + fxx + ')(' + fyy + ') - (' + fxy + ')^2 = ' + D) +
+                            '<p>' + (D < 0 ? 'Negative: a saddle point.' : D === 0 ? 'Zero: the test gives no conclusion, and you would ' +
+                                'have to look at the function another way.' : 'Positive, and ' + M('f_{xx}') + (fxx > 0 ? ' > 0' : ' < 0') +
+                                ': a local ' + (fxx > 0 ? 'minimum' : 'maximum') + '.') + '</p>' +
+                            '<p class="why">Watch the square on ' + M('f_{xy}') + ': it is subtracted whatever its sign.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           Stage 7, Section 13.8: Lagrange multipliers
+           ======================================================= */
+        function stageLagrange() {
+            var qs = [];
+
+            /* --- 1. set it up --- */
+            (function () {
+                var k = pick([2, 3, 4, 6]), r2 = pick([4, 9, 16, 25]);
+                var ftx = 'x^2 + ' + k + 'y', gtx = 'x^2 + y^2 = ' + r2;
+                qs.push({
+                    prompt: 'Which system do you solve to find the extreme values of ' + M('f(x,y) = ' + ftx) + ' on the circle ' + M(gtx) + '?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: M('2x = 2\\lambda x,\\ \\ ' + k + ' = 2\\lambda y,\\ \\ ' + gtx), correct: true, key: 'right' },
+                        { html: M('2x = 2\\lambda x,\\ \\ ' + k + ' = 2\\lambda y'), correct: false, key: 'noconstraint' },
+                        { html: M('2x = 2\\lambda y,\\ \\ ' + k + ' = 2\\lambda x,\\ \\ ' + gtx), correct: false, key: 'swapped' },
+                        { html: M(ftx + ' = \\lambda(x^2 + y^2),\\ \\ ' + gtx), correct: false, key: 'fg' }
+                    ]),
+                    meta: { kind: 'concept', want: 'right' },
+                    explain: function () {
+                        return '<p>' + M('\\nabla f = ' + vec('2x', k)) + ' and ' + M('\\nabla g = ' + vec('2x', '2y')) + '. Set ' +
+                            M('\\nabla f = \\lambda\\nabla g') + ' component by component, and keep the constraint:</p>' +
+                            MD('2x = 2\\lambda x,\\qquad ' + k + ' = 2\\lambda y,\\qquad ' + gtx) +
+                            '<p class="why">Without the constraint there are three unknowns and only two equations. The multiplier ' +
+                            'goes on the <em>gradients</em>, matched component by component, not on the functions.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. a linear function on a circle --- */
+            (function () {
+                var ab = pick([[3, 4], [4, -3], [6, 8], [5, 12], [-8, 6], [12, 5]]), r = pick([1, 2, 3]);
+                var h = Math.round(Math.sqrt(ab[0] * ab[0] + ab[1] * ab[1]));
+                qs.push({
+                    prompt: 'Find the maximum and minimum values of ' + M('f(x,y) = ' + tp([[ab[0], 'x'], [ab[1], 'y']])) + ' on the circle ' +
+                        M('x^2 + y^2 = ' + (r * r)) + '.',
+                    type: 'num', labels: ['maximum', 'minimum'], answer: [r * h, -r * h], show: [M(r * h), M(-r * h)],
+                    meta: { kind: 'lag-linear', a: ab[0], b: ab[1], r2: r * r },
+                    explain: function () {
+                        return '<p>' + M(ab[0] + ' = 2\\lambda x') + ' and ' + M(ab[1] + ' = 2\\lambda y') + ' make ' + M(pt('x', 'y')) +
+                            ' a multiple of ' + M(vec(ab[0], ab[1])) + '. Scale that vector to length ' + r + ': ' +
+                            M(pt('x', 'y') + ' = \\pm\\frac{' + r + '}{' + h + '}' + vec(ab[0], ab[1])) + '.</p>' +
+                            '<p>Then ' + M('f = \\pm\\frac{' + r + '}{' + h + '}(' + (ab[0] * ab[0]) + ' + ' + (ab[1] * ab[1]) + ') = \\pm ' + (r * h)) + '.</p>' +
+                            '<p class="why">Evaluate ' + M('f') + ' at every candidate; the larger value is the max and the smaller the min.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. distance from the origin on an ellipse --- */
+            (function () {
+                var a, b, c;
+                do { a = pick([1, 2, 3, 4, 5]); b = pick([1, 2, 3, 4, 5]); c = pick([4, 6, 12, 10, 20]); } while (a === b || (a === 2 && b === 3 && c === 8));
+                var lo = Math.min(a, b), hi = Math.max(a, b);
+                var gtx = tp([[a, 'x^2'], [b, 'y^2']]) + ' = ' + c;
+                qs.push({
+                    prompt: 'Find the maximum and minimum values of ' + M('f(x,y) = x^2 + y^2') + ' subject to ' + M(gtx) + '.',
+                    type: 'num', labels: ['maximum', 'minimum'], answer: [c / lo, c / hi], show: [M(ftex(c, lo)), M(ftex(c, hi))],
+                    meta: { kind: 'lag-ellipse', a: a, b: b, c: c },
+                    explain: function () {
+                        return MD('2x = ' + (2 * a) + '\\lambda x,\\qquad 2y = ' + (2 * b) + '\\lambda y,\\qquad ' + gtx) +
+                            '<p>The first says ' + M('x = 0') + ' or ' + M('\\lambda = ' + ftex(1, a)) + '; the second says ' + M('y = 0') +
+                            ' or ' + M('\\lambda = ' + ftex(1, b)) + '. Exactly one of ' + M('x, y') + ' is zero.</p>' +
+                            '<p>' + M('y = 0') + ': ' + M('x^2 = ' + ftex(c, a)) + ', ' + M('f = ' + ftex(c, a)) + '. &nbsp; ' + M('x = 0') + ': ' +
+                            M('y^2 = ' + ftex(c, b)) + ', ' + M('f = ' + ftex(c, b)) + '.</p>' +
+                            '<p class="why">Do not divide ' + M('2x = ' + (2 * a) + '\\lambda x') + ' by ' + M('x') + '; the ' + M('x = 0') +
+                            ' case is one of the answers.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. closest point on a line --- */
+            (function () {
+                var a, b, c;
+                do { a = pick([1, 2, 3, -1, -2]); b = pick([1, 2, 3, -1, 4]); c = pick([5, 10, -5, 4, 6]); } while (a === 0 || b === 0);
+                var s = a * a + b * b;
+                var X = fr(a * c, s), Y = fr(b * c, s);
+                var ltx = tp([[a, 'x'], [b, 'y']]) + ' = ' + c;
+                qs.push({
+                    prompt: 'Use Lagrange multipliers to find the point on the line ' + M(ltx) + ' closest to the origin. ' +
+                        '(Minimize ' + M('x^2 + y^2') + '.)',
+                    type: 'num', labels: [M('x'), M('y')], answer: [X.v, Y.v], show: [M(ftex(a * c, s)), M(ftex(b * c, s))],
+                    meta: { kind: 'lag-closest', a: a, b: b, c: c },
+                    explain: function () {
+                        return MD('2x = ' + a + '\\lambda,\\qquad 2y = ' + b + '\\lambda') +
+                            '<p>So ' + M('x = ' + ftex(a, 2) + '\\lambda') + ' and ' + M('y = ' + ftex(b, 2) + '\\lambda') + '. Substituting into the line: ' +
+                            M(ftex(s, 2) + '\\lambda = ' + c) + ', so ' + M('\\lambda = ' + ftex(2 * c, s)) + '.</p>' +
+                            '<p>The point is ' + M(pt(ftex(a * c, s), ftex(b * c, s))) + '.</p>' +
+                            '<p class="why">Minimizing the squared distance avoids a square root and gives the same point.</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. don't divide away a case --- */
+            (function () {
+                var v = pick(['x', 'y']);
+                qs.push({
+                    prompt: 'Solving a Lagrange system, a student reaches ' + M('2' + v + ' = 6\\lambda ' + v) + ', divides both sides by ' + M(v) +
+                        ', and writes ' + M('\\lambda = \\tfrac13') + '. What is the problem?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: 'Any solutions with ' + M(v + ' = 0') + ' are thrown away, and one of them could be the max or min.', correct: true, key: 'right' },
+                        { html: 'Nothing. ' + M('\\lambda = \\tfrac13') + ' is the only possibility.', correct: false, key: 'fine' },
+                        { html: M('\\lambda') + ' should be ' + M('3') + ', not ' + M('\\tfrac13') + '.', correct: false, key: 'recip' },
+                        { html: 'You may never solve for ' + M('\\lambda') + ' in a Lagrange problem.', correct: false, key: 'never' }
+                    ]),
+                    meta: { kind: 'concept', want: 'right' },
+                    explain: function () {
+                        return '<p>Factor instead: ' + M('2' + v + '(1 - 3\\lambda) = 0') + ', so ' + M(v + ' = 0') + ' <em>or</em> ' +
+                            M('\\lambda = \\tfrac13') + '. Follow both cases.</p>' +
+                            '<p class="why">Same rule as in 13.7: never divide by a variable that could be zero.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        var STAGES = [
+            { id: 'limits', name: 'Path Finder', sub: 'Two paths, substitution, and when lines aren’t enough', item: 'Section 13.2', build: stageLimits },
+            { id: 'partials', name: 'Partial Pit Stop', sub: 'Product rule, chain rule, which variable moves', item: 'Section 13.3', build: stagePartials },
+            { id: 'chain', name: 'Chain Reaction', sub: 'Tree diagrams and rates of change', item: 'Section 13.4', build: stageChain },
+            { id: 'gradient', name: 'Gradient Grove', sub: 'Gradients, directional derivatives, steepest ascent', item: 'Section 13.5', build: stageGradient },
+            { id: 'planes', name: 'Plane Spotter', sub: 'Tangent planes two ways', item: 'Section 13.6', build: stagePlanes },
+            { id: 'extrema', name: 'Critical Point Camp', sub: 'Find them all, then test each one', item: 'Section 13.7', build: stageExtrema },
+            { id: 'lagrange', name: 'Lagrange Lookout', sub: 'Set it up, solve it, check every candidate', item: 'Section 13.8', build: stageLagrange }
+        ];
+
+        /* typeset any math in the question panel (MathJax loads asynchronously) */
+        function typeset() {
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise([document.getElementById('qPanel')]).catch(function () { });
+            }
+        }
+
+
+        /* =======================================================
+           game state + engine
+           ======================================================= */
+        var G = {
+            sets: {},          /* stageId -> [questions] */
+            results: {},       /* stageId -> {correct, total, points} */
+            score: 0, streak: 0, best: 0,
+            correct: 0, answered: 0, total: 0,
+            stage: null, idx: 0, attempts: 0, locked: false, selected: null
+        };
+
+        var el = function (id) { return document.getElementById(id); };
+
+        function buildAll() {
+            G.sets = {}; G.results = {};
+            G.score = 0; G.streak = 0; G.best = 0;
+            G.correct = 0; G.answered = 0; G.total = 0;
+            STAGES.forEach(function (s) {
+                var qs = s.build();
+                G.sets[s.id] = qs;
+                G.total += qs.length;
+            });
+            renderMap();
+            renderScore();
+        }
+
+        function renderScore() {
+            el('s-score').textContent = G.score;
+            el('s-streak').textContent = G.streak;
+            el('s-streak').className = 'v' + (G.streak >= 3 ? ' hot' : '');
+            el('s-correct').textContent = G.correct + ' / ' + G.answered;
+            el('s-bar').style.width = (G.total ? (G.answered / G.total * 100) : 0) + '%';
+        }
+
+        function renderMap() {
+            var m = el('map');
+            m.innerHTML = '';
+            STAGES.forEach(function (s, i) {
+                var r = G.results[s.id];
+                var b = document.createElement('button');
+                b.className = 'stage' + (r ? ' done' : '') +
+                    (G.stage && G.stage.id === s.id ? ' current' : '');
+                b.innerHTML = '<span class="badge">Stage ' + (i + 1) + ' &middot; ' + s.item + '</span>' +
+                    '<span class="nm">' + s.name + '</span>' +
+                    '<span class="sub">' + s.sub + '</span>' +
+                    (r ? '<span class="res">' + r.correct + ' of ' + r.total + ' &middot; ' +
+                        r.points + ' pts</span>'
+                        : '<span class="res" style="color:#6E6E6E">' + G.sets[s.id].length +
+                        ' questions</span>');
+                b.addEventListener('click', function () { startStage(i); });
+                m.appendChild(b);
+            });
+        }
+
+        function show(which) {
+            el('mapPanel').classList.toggle('hidden', which !== 'map');
+            el('qPanel').classList.toggle('hidden', which !== 'q');
+            el('rPanel').classList.toggle('hidden', which !== 'r');
+            el('intro').classList.toggle('hidden', which !== 'map');
+        }
+
+        function startStage(i) {
+            G.stage = STAGES[i];
+            G.idx = 0;
+            if (!G.results[G.stage.id]) {
+                G.results[G.stage.id] = { correct: 0, total: G.sets[G.stage.id].length, points: 0 };
+            } else {
+                /* replaying a stage: clear its old tally so it is not double counted */
+                var old = G.results[G.stage.id];
+                G.score -= old.points;
+                G.correct -= old.correct;
+                G.answered -= old.total;
+                G.results[G.stage.id] = { correct: 0, total: G.sets[G.stage.id].length, points: 0 };
+            }
+            show('q');
+            renderQ();
+        }
+
+        function currentQ() { return G.sets[G.stage.id][G.idx]; }
+
+        function renderQ() {
+            var q = currentQ();
+            G.attempts = 0; G.locked = false; G.selected = null;
+
+            el('q-round').innerHTML = G.stage.name + ' <span style="color:#A2A2A2">&middot; ' +
+                G.stage.item + '</span>';
+            el('q-count').textContent = 'Question ' + (G.idx + 1) + ' of ' + G.sets[G.stage.id].length;
+            el('q-text').innerHTML = q.prompt;
+            el('q-fig').innerHTML = q.fig ? '<div class="figbox">' + q.fig + '</div>' : '';
+            el('q-fb').innerHTML = '';
+            el('btn-check').classList.remove('hidden');
+            el('btn-check').disabled = false;
+            el('btn-check').textContent = 'Check answer';
+            el('btn-next').classList.add('hidden');
+
+            var body = el('q-body');
+            body.innerHTML = '';
+
+            if (q.type === 'choice') {
+                var wrap = document.createElement('div');
+                wrap.className = 'choices';
+                q.choices.forEach(function (c, i) {
+                    var b = document.createElement('button');
+                    b.className = 'choice';
+                    b.type = 'button';
+                    b.dataset.i = i;
+                    b.innerHTML = '<span class="ltr">' + 'ABCD'[i] + '</span><span>' + c.html + '</span>';
+                    b.addEventListener('click', function () {
+                        if (G.locked) return;
+                        wrap.querySelectorAll('.choice').forEach(function (n) { n.classList.remove('sel'); });
+                        b.classList.add('sel');
+                        G.selected = i;
+                    });
+                    wrap.appendChild(b);
+                });
+                body.appendChild(wrap);
+            } else {
+                var f = document.createElement('div');
+                f.className = 'fields';
+                q.labels.forEach(function (lab, i) {
+                    var d = document.createElement('div');
+                    d.className = 'field';
+                    d.innerHTML = '<label for="in' + i + '">' + lab + '</label>' +
+                        '<input id="in' + i + '" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">';
+                    f.appendChild(d);
+                });
+                body.appendChild(f);
+                var first = body.querySelector('input');
+                if (first) setTimeout(function () { first.focus(); }, 30);
+                body.querySelectorAll('input').forEach(function (inp) {
+                    inp.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (!el('btn-next').classList.contains('hidden')) nextQ();
+                            else check();
+                        }
+                    });
+                });
+            }
+            typeset();
+        }
+
+        function check() {
+            var q = currentQ();
+            var ok;
+
+            if (q.type === 'choice') {
+                if (G.selected === null) {
+                    flashFB('near', 'Pick an answer first', 'Choose one of the options, then check it.');
+                    return;
+                }
+                ok = !!q.choices[G.selected].correct;
+            } else {
+                var inputs = Array.prototype.slice.call(el('q-body').querySelectorAll('input'));
+                if (inputs.length !== q.answer.length) return;   /* should never happen */
+                if (inputs.some(function (i) { return i.value.trim() === ''; })) {
+                    flashFB('near', 'Fill in every box',
+                        inputs.length > 1 ? 'Every box needs a value before you can check.'
+                            : 'Type an answer before you check it.');
+                    return;
+                }
+                var bad = inputs.filter(function (i) { return !isFinite(parseNum(i.value)); });
+                if (bad.length) {
+                    flashFB('near', 'That is not a number I can read',
+                        'Use digits, a fraction like 3/8, sqrt(5), or pi. No units or words.');
+                    return;
+                }
+                ok = inputs.every(function (inp, i) {
+                    return matches(parseNum(inp.value), q.answer[i], q.round);
+                });
+                inputs.forEach(function (inp, i) {
+                    inp.classList.remove('right', 'wrong');
+                    inp.classList.add(matches(parseNum(inp.value), q.answer[i], q.round) ? 'right' : 'wrong');
+                });
+            }
+
+            G.attempts++;
+
+            if (ok) {
+                var base = G.attempts === 1 ? 100 : 50;
+                G.streak++;
+                if (G.streak > G.best) G.best = G.streak;
+                var bonus = G.streak >= 3 ? Math.min(75, (G.streak - 2) * 25) : 0;
+                var gained = base + bonus;
+                G.score += gained;
+                G.correct++;
+                G.answered++;
+                G.results[G.stage.id].correct++;
+                G.results[G.stage.id].points += gained;
+                lockIn();
+                showFB('good', 'Correct', gained, bonus, q);
+            } else if (G.attempts === 1) {
+                G.streak = 0;
+                flashFB('near', 'Not quite &mdash; one more try',
+                    'Have another look. A correct answer on the second try is still worth 50 points.');
+                if (q.type === 'choice') {
+                    var sel = el('q-body').querySelector('.choice.sel');
+                    if (sel) { sel.classList.add('wrong'); sel.classList.remove('sel'); sel.disabled = true; }
+                    G.selected = null;
+                }
+            } else {
+                G.streak = 0;
+                G.answered++;
+                lockIn();
+                showFB('bad', 'Not this time', 0, 0, q);
+            }
+            renderScore();
+        }
+
+        function lockIn() {
+            var q = currentQ();
+            G.locked = true;
+            el('btn-check').classList.add('hidden');
+            el('btn-next').classList.remove('hidden');
+            el('btn-next').textContent = (G.idx + 1 < G.sets[G.stage.id].length)
+                ? 'Next question' : 'See stage results';
+            if (q.type === 'choice') {
+                el('q-body').querySelectorAll('.choice').forEach(function (b) {
+                    var i = Number(b.dataset.i);
+                    b.disabled = true;
+                    b.classList.remove('sel');
+                    if (q.choices[i].correct) b.classList.add('right');
+                });
+            } else {
+                el('q-body').querySelectorAll('input').forEach(function (inp) { inp.disabled = true; });
+            }
+        }
+
+        function flashFB(kind, head, msg) {
+            el('q-fb').innerHTML = '<div class="fb ' + kind + '" role="status"><div class="hd">' + head + '</div>' +
+                '<p>' + msg + '</p></div>';
+            typeset();
+        }
+
+        function showFB(kind, head, gained, bonus, q) {
+            var ptline = gained > 0
+                ? ' <span class="pts">+' + gained + ' pts' +
+                (bonus ? ' (' + (gained - bonus) + ' + ' + bonus + ' streak)' : '') + '</span>'
+                : '';
+            var answerLine = '';
+            if (kind === 'bad') {
+                if (q.type === 'choice') {
+                    var right = q.choices.filter(function (c) { return c.correct; })[0];
+                    answerLine = '<p>The answer was <strong>' + right.html + '</strong></p>';
+                } else {
+                    answerLine = '<p>The answer was <strong>' +
+                        q.answer.map(function (a, i) { return q.labels[i] + ' = ' + (q.show ? q.show[i] : fmt(a)); }).join(', ') +
+                        '</strong>.</p>';
+                }
+            }
+            el('q-fb').innerHTML = '<div class="fb ' + kind + '" role="status">' +
+                '<div class="hd">' + head + ptline + '</div>' +
+                answerLine +
+                (typeof q.explain === 'function' ? q.explain() : (q.explain || '')) +
+                '</div>';
+            typeset();
+        }
+
+        function nextQ() {
+            if (G.idx + 1 < G.sets[G.stage.id].length) {
+                G.idx++;
+                renderQ();
+                el('qPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            var doneAll = STAGES.every(function (s) { return G.results[s.id]; });
+            show('r');
+            el('r-score').textContent = G.score;
+
+            var r = G.results[G.stage.id];
+            el('r-title').textContent = doneAll ? 'All seven stages complete' : G.stage.name + ' complete';
+            el('r-line').innerHTML = 'You got <strong>' + r.correct + ' of ' + r.total + '</strong> in ' +
+                G.stage.name + '. Best streak so far: <strong>' + G.best + '</strong>.' +
+                (doneAll ? ' You have now cleared every stage.' : '');
+
+            var grid = el('r-grid');
+            grid.innerHTML = '';
+            STAGES.forEach(function (s) {
+                var res = G.results[s.id];
+                var d = document.createElement('div');
+                var weak = res && res.correct < res.total;
+                d.className = 'rcard' + (weak ? ' weak' : '');
+                d.innerHTML = '<div class="nm">' + s.name + '</div>' +
+                    '<div class="sc">' + (res ? res.correct + '/' + res.total : '&mdash;') + '</div>' +
+                    '<div class="tip">' + (res
+                        ? (weak ? 'Worth another pass &mdash; ' + s.item.toLowerCase()
+                            : 'Clean run &mdash; ' + s.item.toLowerCase())
+                        : 'Not attempted yet') + '</div>';
+                grid.appendChild(d);
+            });
+
+            var weakOnes = STAGES.filter(function (s) {
+                var res = G.results[s.id];
+                return res && res.correct < res.total;
+            });
+            el('r-advice').innerHTML = weakOnes.length
+                ? '<div class="prompt-box"><h3>Where to spend your study time</h3><p>' +
+                weakOnes.map(function (s) {
+                    return '<strong>' + s.name + '</strong> (' + s.item + ')';
+                }).join(', ') + '. Replay those stages &mdash; you will get different problems each time, ' +
+                'so you cannot just memorize the answers.</p></div>'
+                : '<div class="prompt-box"><h3>Nice run</h3><p>No missed questions in the stages you ' +
+                'attempted. Run it again for a fresh set, or go back and do the stages you skipped.</p></div>';
+        }
+
+        /* ---------- wiring ---------- */
+        el('btn-check').addEventListener('click', check);
+        el('btn-next').addEventListener('click', nextQ);
+        el('btn-quit').addEventListener('click', function () { renderMap(); show('map'); });
+        el('btn-map').addEventListener('click', function () { renderMap(); show('map'); });
+        el('btn-start').addEventListener('click', function () { startStage(0); });
+        el('btn-reset').addEventListener('click', function () { buildAll(); show('map'); });
+        el('btn-again').addEventListener('click', function () { buildAll(); startStage(0); });
+
+        /* ---------- go ---------- */
+        buildAll();
+        show('map');
+    </script>
+</body>
+
+</html>
