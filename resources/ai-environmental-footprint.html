@@ -175,7 +175,8 @@ than the estimates many people remember.</p>
   electricity than running a television over the same period of time.&rdquo;</em><sup class="cite"><a href="#src-2">2</a></sup></li>
 </ul>
 
-<figure class="aif-fig" data-chart="log" data-min="0.1" data-max="100000" data-ticks="0.1,1,10,100,1000,10000,100000" data-ticklabels="0.1,1,10,100,1k,10k,100k" data-unit="watt-hours" data-legend="ai:AI tasks|cmp:Everyday activities">
+<figure class="aif-fig" data-chart="log" data-min="0.1" data-max="100000" data-ticks="0.1,1,10,100,1000,10000,100000" data-ticklabels="0.1,1,10,100,1k,10k,100k" data-unit="watt-hours" data-legend="ai:AI tasks|cmp:Everyday activities"
+  data-scales='[{"key":"log","label":"Log scale","note":"Logarithmic scale: each gridline is ten times the one before. Bars show ranges between estimates."},{"key":"lin","label":"Linear scale","max":30000,"ticks":[0,10000,20000,30000],"labels":["0","10k","20k","30k"],"unit":"watt-hours","note":"Linear scale: distance is proportional to energy. Next to a home&rsquo;s daily use, almost everything else is a sliver near zero."},{"key":"zoom","label":"Linear, zoomed in","max":3000,"ticks":[0,1000,2000,3000],"labels":["0","1k","2k","3k"],"unit":"watt-hours","note":"Linear scale, zoomed to 3,000 Wh. Solid bars run to the low estimate and faint bars to the high one. A home&rsquo;s day runs off the scale."}]'>
   <figcaption><span class="t">Energy per activity, in watt-hours</span><span class="s">Logarithmic scale: each gridline is ten times the one before. Bars show ranges between estimates.</span></figcaption>
   <table class="aif-data">
     <thead><tr><th>Activity</th><th>Watt-hours</th><th>Basis</th></tr></thead>
@@ -189,6 +190,7 @@ than the estimates many people remember.</p>
       <tr data-v="16.7" data-g="cmp"><td>A microwave for a minute</td><td>&asymp;17 Wh</td><td>1,000-watt microwave</td></tr>
       <tr data-v="77" data-g="cmp"><td>An hour of streaming video</td><td>&asymp;77 Wh</td><td>IEA central estimate (2019 data), including networks and devices</td></tr>
       <tr data-lo="30" data-hi="944" data-g="ai"><td>A 5-second AI video clip</td><td>&asymp;30&ndash;944 Wh</td><td>Open-source video model, older and newer versions (MIT Technology Review)</td></tr>
+      <tr data-lo="300" data-hi="3000" data-g="ai"><td>Researching and writing this report</td><td>&asymp;300&ndash;3,000 Wh</td><td>Estimated from this project&rsquo;s logged token counts; best guess about 1,000 Wh. See &ldquo;What did this report cost?&rdquo; below.</td></tr>
       <tr data-v="29600" data-g="cmp"><td>A typical U.S. home for a day</td><td>&asymp;29,600 Wh</td><td>EIA: 10,791 kWh per year</td></tr>
     </tbody>
   </table>
@@ -229,6 +231,42 @@ challenge.<sup class="cite"><a href="#src-24">24</a></sup></p>
   120 U.S. homes use in a year.<sup class="cite"><a href="#src-17">17</a></sup> Epoch AI estimates that a 2025 frontier
   model, Grok&nbsp;4, took about 310&nbsp;GWh, roughly 240 times as much. The power used by frontier training runs is
   growing about 2.1&times; a year.<sup class="cite"><a href="#src-18">18</a></sup></p>
+</div>
+
+<div class="aif-callout" id="this-report">
+  <h4>What did this report cost?</h4>
+  <p>This page was researched and drafted in about an hour by Claude Opus, with four Claude Sonnet research assistants
+  working in parallel. The work took 168 model calls, about 100 web-page reads and 100 searches. The models re-read about
+  19&nbsp;million tokens of saved (&ldquo;cached&rdquo;) context, read about 700,000 new tokens, and wrote about
+  180,000.</p>
+  <p>Anthropic has not published energy figures for its models, so this is an estimate. We scaled the token counts by Epoch
+  AI&rsquo;s figures for a large model<sup class="cite"><a href="#src-12">12</a></sup>. Cached tokens count at a tenth of the
+  rate for new input: Anthropic charges 5&ndash;10% of the input price for them, a rough sign of how much less work they
+  take.<sup class="cite"><a href="#src-57">57</a></sup> The total also includes the laptop.</p>
+  <p><strong>Best guess: about 1&nbsp;kWh</strong>, with a plausible range of 0.3 to 3&nbsp;kWh. That is roughly 3,000 typical
+  text prompts, 13 hours of streaming video, or 50 minutes of an average U.S. home&rsquo;s electricity. On the average
+  U.S. grid, about 0.81&nbsp;lb of CO&#8322; per kWh<sup class="cite"><a href="#src-58">58</a></sup>, it comes to about
+  370&nbsp;g of CO&#8322;, about the same as driving a gasoline car one mile.</p>
+  <details class="aif-tv">
+    <summary>Show the arithmetic</summary>
+    <table class="aif-eq">
+      <thead><tr><th>Part of the work</th><th>Amount &times; rate &asymp; energy</th></tr></thead>
+      <tbody>
+        <tr><td>Text the models wrote</td><td>&asymp;180,000 tokens &times; 0.6&nbsp;Wh per 1,000 &asymp; 110&nbsp;Wh</td></tr>
+        <tr><td>New input the models read</td><td>&asymp;700,000 tokens &times; 0.25&nbsp;Wh per 1,000 &asymp; 175&nbsp;Wh</td></tr>
+        <tr><td>Cached context re-read on each call</td><td>&asymp;19.2&nbsp;million tokens &times; 0.025&nbsp;Wh per 1,000 &asymp; 480&nbsp;Wh</td></tr>
+        <tr><td>Web pages condensed by a smaller model</td><td>&asymp;2&nbsp;million tokens (rough) &times; 0.05&nbsp;Wh per 1,000 &asymp; 100&nbsp;Wh</td></tr>
+        <tr><td>Web searches</td><td>&asymp;110 &times; 0.3&nbsp;Wh &asymp; 35&nbsp;Wh</td></tr>
+        <tr><td>The laptop, about 1.5 hours</td><td>&asymp;35&nbsp;W &times; 1.5&nbsp;h &asymp; 50&nbsp;Wh</td></tr>
+        <tr><td>Total</td><td>&asymp;950&nbsp;Wh, call it 1&nbsp;kWh; &divide;3 to &times;3 for the range</td></tr>
+      </tbody>
+    </table>
+    <p class="small mute">Token counts come from the session logs. The research assistants&rsquo; written output was
+    estimated from the length of their text, since their logs undercount it. The rates are Epoch AI&rsquo;s estimate for
+    GPT-4o (about 0.3&nbsp;Wh per 500-token answer, 2.5&nbsp;Wh per 10,000-token input). Claude models may be larger or
+    smaller and run on different hardware, which is why the range is wide. The figures cover the report&rsquo;s first
+    version; later revisions add a little.</p>
+  </details>
 </div>
 </section>
 
@@ -467,7 +505,8 @@ matters.</p>
 electricity, per-use footprints, water, and emissions and local impacts. Figures were checked against the text of the
 original reports wherever it could be accessed, and key IEA quotations were checked against the full reports. A few items
 rely on news coverage of documents that could not be read directly; they are cited to that coverage. The work was
-directed and reviewed by Ian Lundholm.</p>
+directed and reviewed by Ian Lundholm. An estimate of what the work itself used is in
+<a href="#this-report">&ldquo;What did this report cost?&rdquo;</a></p>
 <p>This field moves quickly: several figures here were revised within the past year, and per-prompt energy is falling fast. If you
 spot an error or a better source, please say so.</p>
 </section>
@@ -554,6 +593,12 @@ spot an error or a better source, please say so.</p>
 <ol start="55">
   <li id="src-55">Grantham Research Institute (LSE) and Systemiq, <a href="https://www.lse.ac.uk/granthaminstitute/news/new-study-finds-ai-could-reduce-global-emissions-annually-by-3-2-to-5-4-billion-tonnes-of-carbon-dioxide-equivalent-by-2035/">AI could reduce global emissions annually by 3.2 to 5.4 billion tonnes by 2035</a>, <em>npj Climate Action</em> (June 2025).</li>
   <li id="src-56">Lam et al., <a href="https://www.science.org/doi/10.1126/science.adi2336">Learning skillful medium-range global weather forecasting</a>, <em>Science</em> (2023).</li>
+</ol>
+
+<h3>This report&rsquo;s own footprint</h3>
+<ol start="57">
+  <li id="src-57">Anthropic, <a href="https://platform.claude.com/docs/en/about-claude/pricing">Claude API pricing</a>: cache hits are billed at 0.05&ndash;0.1&times; the base input price.</li>
+  <li id="src-58">U.S. Energy Information Administration, <a href="https://www.eia.gov/tools/faqs/faq.php?id=74&amp;t=11">How much carbon dioxide is produced per kilowatt-hour of U.S. electricity generation?</a> (about 0.81 lb per kWh in 2023).</li>
 </ol>
 </section>
 

@@ -77,9 +77,9 @@
     return ts.map(function (t, i) { return given ? given[i] : fmt(t); });
   }
 
-  function axis(box, fig, ts, labels, pos) {
+  function axis(box, fig, ts, labels, pos, unit) {
     var ax = el('div', 'aif-axis', box);
-    el('div', 'unit', ax).textContent = fig.dataset.unit || '';
+    el('div', 'unit', ax).textContent = unit || fig.dataset.unit || '';
     var tk = el('div', 'ticks', ax);
     ts.forEach(function (t, i) {
       var s = el('span', i === 0 ? 'first' : (i === ts.length - 1 ? 'last' : ''), tk);
@@ -88,20 +88,24 @@
     });
   }
 
-  /* Horizontal bars, linear or log scale. */
-  function hbars(fig, rows, box, isLog) {
-    var max = parseFloat(fig.dataset.max), min = parseFloat(fig.dataset.min || (isLog ? 0.1 : 0));
+  /* Horizontal bars, linear or log scale. A log chart can also be redrawn on a linear scale (sc), where each
+     activity becomes a bar from zero: solid to the low estimate, faint to the high one. */
+  function hbars(fig, rows, box, isLog, sc) {
+    sc = sc || {};
+    var magnitude = fig.dataset.chart === 'log' && !isLog;
+    var max = sc.max != null ? sc.max : parseFloat(fig.dataset.max);
+    var min = sc.max != null ? 0 : parseFloat(fig.dataset.min || (isLog ? 0.1 : 0));
     var pos = isLog
       ? function (v) { return 100 * (Math.log10(v) - Math.log10(min)) / (Math.log10(max) - Math.log10(min)); }
-      : function (v) { return 100 * (v - min) / (max - min); };
-    var ts = ticks(fig);
-    var labels = tickLabels(fig, ts, function (t) { return t + (fig.dataset.fmt || ''); });
+      : function (v) { return Math.min(100, 100 * (v - min) / (max - min)); };
+    var ts = sc.ticks || ticks(fig);
+    var labels = sc.labels || tickLabels(fig, ts, function (t) { return t + (fig.dataset.fmt || ''); });
     var grid = el('div', 'aif-rows', box);
     rows.forEach(function (r) {
       var row = el('div', 'aif-row', grid);
       var lab = el('div', 'lab', row);
       lab.textContent = r.label;
-      if (isLog) el('span', 'sh', lab).textContent = r.shown;
+      if (fig.dataset.chart === 'log') el('span', 'sh', lab).textContent = r.shown;
       var trk = el('div', 'trk', row);
       ts.forEach(function (t, i) { var g = el('div', 'aif-gl' + (i === 0 && !isLog ? ' base' : ''), trk); g.style.left = pos(t) + '%'; });
       var g = 'aif-g-' + r.g;
@@ -112,6 +116,22 @@
           b.style.width = Math.max(pos(r.hi) - pos(r.lo), 1) + '%';
         } else {
           el('div', 'aif-dot ' + g, trk).style.left = pos(r.v) + '%';
+        }
+      } else if (magnitude) {
+        var a = r.lo != null ? r.lo : r.v, z = r.hi != null ? r.hi : r.v;
+        var solid = el('div', 'aif-bar ' + g, trk);
+        solid.style.left = '0';
+        solid.style.width = pos(a) + '%';
+        if (z > a) {
+          var faint = el('div', 'aif-bar soft ' + g, trk);
+          faint.style.left = pos(a) + '%';
+          faint.style.width = (pos(z) - pos(a)) + '%';
+        }
+        if (z > max) {
+          var off = el('span', 'aif-val off', trk);
+          off.textContent = 'off the scale →';
+          off.style.right = '0';
+          off.style.marginRight = '6px';
         }
       } else {
         var w = Math.max(pos(r.v), 0.4);
@@ -133,7 +153,7 @@
       }
       hover(trk, row, r);
     });
-    axis(box, fig, ts, labels, pos);
+    axis(box, fig, ts, labels, pos, sc.unit);
   }
 
   /* Vertical columns over time, with optional range whiskers. */
@@ -166,6 +186,32 @@
     });
   }
 
+  /* Buttons that redraw a log chart on other scales (data-scales: JSON list of {key, label, note, max, ticks, labels, unit}). */
+  function scaleSwitch(fig, rows, box) {
+    var scales = JSON.parse(fig.dataset.scales);
+    var sub = fig.querySelector('figcaption .s');
+    var bar = el('div', 'aif-scale', box);
+    bar.setAttribute('role', 'group');
+    bar.setAttribute('aria-label', 'Chart scale');
+    legend(fig, box);
+    var plot = el('div', '', box);
+    var buttons = scales.map(function (sc) {
+      var b = el('button', '', bar);
+      b.type = 'button';
+      b.textContent = sc.label;
+      b.addEventListener('click', function () { draw(sc); });
+      return b;
+    });
+    function draw(sc) {
+      hideTip();
+      plot.innerHTML = '';
+      hbars(fig, rows, plot, sc.key === 'log', sc.key === 'log' ? null : sc);
+      if (sub && sc.note) sub.textContent = sc.note;
+      buttons.forEach(function (b, i) { b.setAttribute('aria-pressed', scales[i] === sc ? 'true' : 'false'); });
+    }
+    draw(scales[0]);
+  }
+
   Array.prototype.forEach.call(document.querySelectorAll('.aif-fig[data-chart]'), function (fig) {
     var table = fig.querySelector('table.aif-data');
     if (!table) return;
@@ -173,9 +219,12 @@
     var box = document.createElement('div');
     box.className = 'aif-chart';
     table.parentNode.insertBefore(box, table);
-    legend(fig, box);
     var kind = fig.dataset.chart;
-    if (kind === 'cols') cols(fig, rows, box); else hbars(fig, rows, box, kind === 'log');
+    if (fig.dataset.scales) scaleSwitch(fig, rows, box);
+    else {
+      legend(fig, box);
+      if (kind === 'cols') cols(fig, rows, box); else hbars(fig, rows, box, kind === 'log');
+    }
     var det = document.createElement('details');
     det.className = 'aif-tv';
     var sum = el('summary', '', det);
