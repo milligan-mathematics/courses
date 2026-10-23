@@ -1,0 +1,562 @@
+---
+layout: course
+title: "AI's Environmental Footprint, in Perspective"
+parent: Home
+nav_order: 9003
+hide_from_home: true
+---
+
+<link rel="stylesheet" href="{{ site.baseurl }}/assets/css/ai-footprint.css">
+
+<article class="aif mathjax_ignore tex2jax_ignore">
+
+<header class="aif-head">
+  <p class="aif-eyebrow"><a href="{{ site.baseurl }}/resources/">Milligan Mathematics resource</a> &middot; October 2026</p>
+  <h1>AI&rsquo;s Environmental Footprint, in Perspective</h1>
+  <p class="aif-lede">Many thoughtful people hesitate to use AI because of what it costs the planet. That hesitation
+  deserves real numbers. This report gathers the best current evidence on the electricity, water, and emissions behind AI
+  and the data centers it runs in, and sets each one beside other parts of the economy we rarely think twice about.</p>
+  <p class="aif-byline">Prepared by Ian Lundholm for faculty conversations on AI &middot; sources linked throughout &middot;
+  <a href="#method">how this was made</a></p>
+</header>
+
+<div class="aif-tiles" role="list">
+  <div class="aif-tile" role="listitem"><span class="v">&asymp;0.3&nbsp;Wh</span><span class="l">for a typical text prompt, about one second of a microwave<sup class="cite"><a href="#src-9">9</a>,<a href="#src-11">11</a></sup></span></div>
+  <div class="aif-tile" role="listitem"><span class="v">1.5%</span><span class="l">of the world&rsquo;s electricity goes to data centers (all uses, not only AI)<sup class="cite"><a href="#src-2">2</a></sup></span></div>
+  <div class="aif-tile" role="listitem"><span class="v">17%</span><span class="l">growth in data-center electricity in 2025; AI-focused centers grew 50%<sup class="cite"><a href="#src-2">2</a></sup></span></div>
+  <div class="aif-tile" role="listitem"><span class="v">&asymp;0.5%</span><span class="l">of global CO&#8322; from burning fuel, about a fifth of aviation&rsquo;s share<sup class="cite"><a href="#src-1">1</a>,<a href="#src-36">36</a></sup></span></div>
+</div>
+
+<section class="aif-short" aria-labelledby="short">
+  <h2 id="short">The short version</h2>
+  <ol>
+    <li><strong>One person&rsquo;s chatbot use is small.</strong> A typical text prompt uses roughly 0.24&ndash;0.34 watt-hours,
+    about a second of a microwave or a few seconds of TV. Ten prompts a day for a year adds about one-hundredth of one percent to a
+    typical U.S. household&rsquo;s electricity.</li>
+    <li><strong>The build-out is large, and it is fast.</strong> Data centers use about 1.5% of the world&rsquo;s electricity, a
+    share projected to double to about 3% by 2030. In the U.S. it is about 4.7% today and could reach roughly 12% by 2030.
+    Five tech companies now invest more each year than the whole world invests in oil and gas production.</li>
+    <li><strong>Modest globally, intense locally.</strong> Data centers draw about a quarter of the electricity in Virginia and
+    Ireland. The real harms are local: strained grids, water in small or dry systems, higher bills in tight power markets, and
+    air pollution from gas turbines near homes, as in South Memphis.</li>
+    <li><strong>Emissions are small as a share and growing fast.</strong> Data centers produce about 0.5% of energy-related CO&#8322;,
+    well behind cement, steel, aviation, or cars. But big tech companies&rsquo; own emissions are rising sharply, and much of the
+    new power is coming from natural gas.</li>
+    <li><strong>Not all AI is alike.</strong> Images, long documents, &ldquo;reasoning&rdquo; models, and especially video use
+    tens to thousands of times more energy than a short text answer. Energy per task is falling about tenfold a year, yet the
+    total keeps climbing.</li>
+  </ol>
+</section>
+
+<ul class="aif-toc" aria-label="On this page">
+  <li><a href="#read">Reading the numbers</a></li>
+  <li><a href="#electricity">Electricity</a></li>
+  <li><a href="#prompt">One prompt</a></li>
+  <li><a href="#water">Water</a></li>
+  <li><a href="#emissions">Emissions</a></li>
+  <li><a href="#who-pays">Who pays</a></li>
+  <li><a href="#tool">AI as a climate tool</a></li>
+  <li><a href="#weigh">Real vs. overstated</a></li>
+  <li><a href="#questions">For discussion</a></li>
+  <li><a href="#sources">Sources</a></li>
+</ul>
+
+<!-- ============================================================ -->
+<section id="read" aria-labelledby="h-read">
+<h2 id="h-read"><span class="num">1</span>Why the numbers seem to disagree</h2>
+<p>Headlines about AI&rsquo;s footprint often seem to contradict each other: one says a question to a chatbot &ldquo;drinks a
+bottle of water,&rdquo; another says it uses five drops. Usually both are reporting real estimates that measure different
+things. Five distinctions explain most of the gap.</p>
+<div class="aif-defs">
+  <div class="aif-def"><h4>Per use vs. in total</h4><p>A single prompt is tiny; billions of prompts plus training plus
+  everything else a data center does is not. Both statements can be true at once.</p></div>
+  <div class="aif-def"><h4>Measured vs. projected</h4><p>Today&rsquo;s figures are estimates from good data. Figures for 2030
+  are scenarios, and they have swung widely as forecasters revise them.</p></div>
+  <div class="aif-def"><h4>Water withdrawn vs. consumed</h4><p>Withdrawn water is borrowed and mostly returned. Consumed water
+  evaporates. And &ldquo;AI water&rdquo; may count only cooling at the data center, or also the water used at power plants
+  (often far larger).</p></div>
+  <div class="aif-def"><h4>Market-based vs. location-based carbon</h4><p>Companies may subtract the clean energy they buy
+  (market-based). Counting the actual local grid instead (location-based) can make the same data center&rsquo;s emissions
+  several times larger.</p></div>
+  <div class="aif-def"><h4>Who did the measuring</h4><p>The best per-prompt numbers come from the companies themselves and are not
+  independently verified. Outside estimates rely on models of hardware and usage.</p></div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="electricity" aria-labelledby="h-elec">
+<h2 id="h-elec"><span class="num">2</span>Electricity: small slice, fast growth</h2>
+<p class="aif-kicker">Data centers worldwide used about <strong>485&nbsp;TWh</strong> of electricity in 2025, slightly more than
+1.5% of global demand. The International Energy Agency (IEA) expects that to roughly double, to about 950&nbsp;TWh, by 2030,
+around 3% of the world&rsquo;s electricity.<sup class="cite"><a href="#src-2">2</a></sup></p>
+<p>Those totals cover everything data centers do: streaming, email, cloud storage, banking, and AI. AI is the main reason for the
+growth. In 2024, servers built for AI drew about 15% of data-center electricity, and their consumption is growing around 30% a
+year. They account for almost half of the increase expected by 2030.<sup class="cite"><a href="#src-1">1</a></sup> In 2025, total
+data-center use grew 17%, and AI-focused data centers grew 50%.<sup class="cite"><a href="#src-2">2</a></sup></p>
+
+<figure class="aif-fig" data-chart="bar" data-max="30" data-ticks="0,10,20,30" data-fmt="%" data-unit="% of electricity">
+  <figcaption><span class="t">Small globally, large locally</span><span class="s">Share of all electricity used by data centers</span></figcaption>
+  <table class="aif-data">
+    <thead><tr><th>Where</th><th>Share</th><th>Year and source</th></tr></thead>
+    <tbody>
+      <tr data-v="1.5" data-g="ai"><td>World</td><td>&asymp;1.5%</td><td>2025, 485 TWh (IEA)</td></tr>
+      <tr data-v="4.7" data-g="ai"><td>United States</td><td>4.7%</td><td>2024, 192 TWh (Lawrence Berkeley National Laboratory)</td></tr>
+      <tr data-v="23" data-g="ai"><td>Ireland</td><td>23%</td><td>2025, up from 5% in 2015 (Central Statistics Office)</td></tr>
+      <tr data-v="25" data-g="ai"><td>Virginia</td><td>&asymp;25%</td><td>2024 (IEA). EPRI projects 39&ndash;57% by 2030.</td></tr>
+    </tbody>
+  </table>
+  <p class="aif-fnote">Sources: IEA<sup class="cite"><a href="#src-1">1</a>,<a href="#src-2">2</a></sup>; LBNL<sup class="cite"><a href="#src-4">4</a></sup>; Ireland CSO<sup class="cite"><a href="#src-6">6</a></sup>; EPRI<sup class="cite"><a href="#src-5">5</a></sup>.</p>
+</figure>
+
+<h3>Putting it beside the rest of the economy</h3>
+<ul>
+  <li><strong>Other drivers of new demand are bigger.</strong> The IEA finds data centers account for about one-tenth of global
+  electricity demand growth to 2030, <em>&ldquo;less than the share from industrial motors, air conditioning in homes and offices,
+  or electric vehicles.&rdquo;</em><sup class="cite"><a href="#src-1">1</a></sup> From 2014 to 2024, space cooling added about
+  700&nbsp;TWh of demand worldwide, while data centers added about 250&nbsp;TWh.<sup class="cite"><a href="#src-1">1</a></sup></li>
+  <li><strong>Bitcoin is a useful yardstick.</strong> Bitcoin mining alone used about 138&nbsp;TWh a year in mid-2024, roughly
+  0.5% of the world&rsquo;s electricity and about a third as much as every data center combined.<sup class="cite"><a href="#src-8">8</a></sup></li>
+  <li><strong>In the U.S., the picture is starker.</strong> The IEA projects that by 2030 the country will use more electricity for
+  data centers <em>&ldquo;than for the production of aluminium, steel, cement, chemicals and all other energy-intensive goods
+  combined,&rdquo;</em> and that data centers will make up nearly half of U.S. demand growth through 2030.<sup class="cite"><a href="#src-1">1</a></sup>
+  Lawrence Berkeley National Laboratory (LBNL) puts the figure at about a third, alongside a 24% rise in demand from
+  everything else.<sup class="cite"><a href="#src-4">4</a></sup></li>
+  <li><strong>The money is enormous.</strong> The largest tech companies spent more than $400&nbsp;billion on capital
+  investment in 2025, with another 75% jump expected in 2026. <em>&ldquo;Capital expenditure of just five technology companies is
+  now larger than global investment in oil and natural gas production.&rdquo;</em><sup class="cite"><a href="#src-2">2</a></sup></li>
+</ul>
+
+<figure class="aif-fig" data-chart="cols" data-max="900" data-ticks="0,300,600,900" data-legend="ai:Estimated use|proj:Projection (LBNL reference case, with range)">
+  <figcaption><span class="t">U.S. data-center electricity, in terawatt-hours per year</span><span class="s">Tripled in a decade; projected to roughly triple again by 2030</span></figcaption>
+  <table class="aif-data">
+    <thead><tr><th>Year</th><th>TWh (share of U.S.)</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr data-v="60" data-g="ai"><td>2014</td><td>&asymp;60 (&asymp;1.5%)</td><td>Flat at about 60 TWh in 2014&ndash;2016 (LBNL 2024)</td></tr>
+      <tr data-v="76" data-g="ai"><td>2018</td><td>76 (1.9%)</td><td>LBNL 2024</td></tr>
+      <tr data-v="176" data-g="ai"><td>2023</td><td>176 (4.4%)</td><td>LBNL 2024</td></tr>
+      <tr data-v="192" data-g="ai"><td>2024</td><td>192 (4.7%)</td><td>LBNL 2025 update; at the low end of earlier forecasts</td></tr>
+      <tr data-v="464" data-lo="325" data-hi="580" data-g="proj"><td>2028</td><td>464 (325&ndash;580)</td><td>LBNL 2025 reference case; range from LBNL 2024 (6.7&ndash;12% of U.S.)</td></tr>
+      <tr data-v="649" data-lo="521" data-hi="843" data-g="proj"><td>2030</td><td>649 (521&ndash;843)</td><td>LBNL 2025 reference case, 11.8% of U.S. (range 9.5&ndash;15.3%)</td></tr>
+    </tbody>
+  </table>
+  <p class="aif-fnote">Sources: LBNL 2024 report<sup class="cite"><a href="#src-3">3</a></sup> and 2025 update<sup class="cite"><a href="#src-4">4</a></sup>.
+  EPRI, which also counts crypto mining, projects 9&ndash;17% of U.S. electricity by 2030.<sup class="cite"><a href="#src-5">5</a></sup>
+  The 2014 share is approximate.</p>
+</figure>
+
+<div class="aif-callout">
+  <h4>Treat forecasts with care</h4>
+  <p>Projections are uncertain in both directions. Texas has received requests to connect about 474&nbsp;gigawatts of new
+  load, about 90% of it data centers. That is more than five times the state&rsquo;s record peak demand, and many of those
+  projects will never be built.<sup class="cite"><a href="#src-7">7</a></sup> LBNL revised its 2024 estimate to the low end of its
+  earlier range because fewer AI chips shipped than expected.<sup class="cite"><a href="#src-4">4</a></sup> The IEA notes that
+  shortages of grid equipment, chips and memory are making the most aggressive near-term scenarios less likely.<sup class="cite"><a href="#src-2">2</a></sup></p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="prompt" aria-labelledby="h-prompt">
+<h2 id="h-prompt"><span class="num">3</span>One prompt, compared with everyday life</h2>
+<p class="aif-kicker">In 2025 the major AI companies published per-prompt energy figures for the first time. They are much lower
+than the estimates many people remember.</p>
+<ul>
+  <li><strong>Google:</strong> the median Gemini text prompt uses <strong>0.24&nbsp;Wh</strong>, emits 0.03&nbsp;g CO&#8322;e and
+  consumes 0.26&nbsp;mL of water (&ldquo;about five drops&rdquo;). Google says energy per prompt fell 33-fold in the
+  previous year.<sup class="cite"><a href="#src-9">9</a>,<a href="#src-10">10</a></sup> The figure includes idle machines and
+  cooling but not training. It uses market-based carbon accounting and has not been independently verified. Counting the local
+  grid instead gives about 0.08&nbsp;g CO&#8322;e.</li>
+  <li><strong>OpenAI:</strong> the average ChatGPT query uses <strong>about 0.34&nbsp;Wh</strong>, according to Sam
+  Altman. He gave no methodology.<sup class="cite"><a href="#src-11">11</a></sup></li>
+  <li><strong>Independent estimate:</strong> Epoch AI&rsquo;s model gives roughly <strong>0.3&nbsp;Wh</strong> for a typical
+  GPT-4o answer. Long inputs cost much more: about 2.5&nbsp;Wh for a 10,000-token input, and 40&nbsp;Wh for a
+  100,000-token input (roughly a book chapter versus a whole book).<sup class="cite"><a href="#src-12">12</a></sup></li>
+  <li><strong>The old &ldquo;10&times; a Google search&rdquo; figure</strong> (about 3&nbsp;Wh) came from a 2023 estimate that
+  assumed older hardware and long responses. The IEA now says <em>&ldquo;simple text queries now typically consume less
+  electricity than running a television over the same period of time.&rdquo;</em><sup class="cite"><a href="#src-2">2</a></sup></li>
+</ul>
+
+<figure class="aif-fig" data-chart="log" data-min="0.1" data-max="100000" data-ticks="0.1,1,10,100,1000,10000,100000" data-ticklabels="0.1,1,10,100,1k,10k,100k" data-unit="watt-hours" data-legend="ai:AI tasks|cmp:Everyday activities">
+  <figcaption><span class="t">Energy per activity, in watt-hours</span><span class="s">Logarithmic scale: each gridline is ten times the one before. Bars show ranges between estimates.</span></figcaption>
+  <table class="aif-data">
+    <thead><tr><th>Activity</th><th>Watt-hours</th><th>Basis</th></tr></thead>
+    <tbody>
+      <tr data-v="0.3" data-g="cmp"><td>A Google search (2009 figure)</td><td>&asymp;0.3 Wh</td><td>Google&rsquo;s 2009 estimate. Dated but often quoted.</td></tr>
+      <tr data-lo="0.24" data-hi="0.34" data-g="ai"><td>A typical AI text prompt</td><td>0.24&ndash;0.34 Wh</td><td>Google median (0.24) and OpenAI average (0.34), 2025</td></tr>
+      <tr data-lo="0.3" data-hi="2.9" data-g="ai"><td>One AI-generated image</td><td>&asymp;0.3&ndash;2.9 Wh</td><td>Stable Diffusion 3 (MIT Technology Review) to the average of models tested by Luccioni et al.</td></tr>
+      <tr data-lo="2.5" data-hi="40" data-g="ai"><td>Question about a long document</td><td>&asymp;2.5&ndash;40 Wh</td><td>Epoch AI estimate for 10,000- to 100,000-token inputs</td></tr>
+      <tr data-lo="3" data-hi="30" data-g="ai"><td>A &ldquo;reasoning&rdquo; model answer</td><td>&asymp;3&ndash;30 Wh (rough)</td><td>Hugging Face finds reasoning models use about 30&times; more energy on average (open models). Long prompts to the most intensive models exceed 29 Wh (Jegham et al.).</td></tr>
+      <tr data-v="10" data-g="cmp"><td>An LED bulb for an hour</td><td>10 Wh</td><td>10-watt bulb</td></tr>
+      <tr data-v="16.7" data-g="cmp"><td>A microwave for a minute</td><td>&asymp;17 Wh</td><td>1,000-watt microwave</td></tr>
+      <tr data-v="77" data-g="cmp"><td>An hour of streaming video</td><td>&asymp;77 Wh</td><td>IEA central estimate (2019 data), including networks and devices</td></tr>
+      <tr data-lo="30" data-hi="944" data-g="ai"><td>A 5-second AI video clip</td><td>&asymp;30&ndash;944 Wh</td><td>Open-source video model, older and newer versions (MIT Technology Review)</td></tr>
+      <tr data-v="29600" data-g="cmp"><td>A typical U.S. home for a day</td><td>&asymp;29,600 Wh</td><td>EIA: 10,791 kWh per year</td></tr>
+    </tbody>
+  </table>
+  <p class="aif-fnote">Sources: Google<sup class="cite"><a href="#src-9">9</a></sup>, OpenAI<sup class="cite"><a href="#src-11">11</a></sup>,
+  Epoch AI<sup class="cite"><a href="#src-12">12</a></sup>, Luccioni et al.<sup class="cite"><a href="#src-14">14</a></sup>, MIT
+  Technology Review<sup class="cite"><a href="#src-15">15</a></sup>, Hugging Face<sup class="cite"><a href="#src-16">16</a></sup>, IEA via
+  Carbon Brief<sup class="cite"><a href="#src-19">19</a></sup>, EIA<sup class="cite"><a href="#src-20">20</a></sup>. AI figures for
+  images, video and reasoning come from open models; closed commercial models may differ.</p>
+</figure>
+
+<h3>What one text prompt is roughly equal to</h3>
+<p>These comparisons use about 0.3&nbsp;Wh and 0.03&ndash;0.1&nbsp;g CO&#8322;e per prompt. The carbon range runs from
+Google&rsquo;s market-based figure to the same energy on an average grid.</p>
+<table class="aif-eq">
+  <thead><tr><th>One text prompt &asymp;</th><th>How we got there</th></tr></thead>
+  <tbody>
+    <tr><td>About 1 second of a microwave</td><td>0.3&nbsp;Wh &divide; 1,000&nbsp;W &asymp; 1.1&nbsp;seconds</td></tr>
+    <tr><td>About 2 minutes of an LED bulb</td><td>0.3&nbsp;Wh &divide; 10&nbsp;W &asymp; 1.8&nbsp;minutes</td></tr>
+    <tr><td>About 14 seconds of streaming video</td><td>0.3 &divide; 77&nbsp;Wh per hour<sup class="cite"><a href="#src-19">19</a></sup></td></tr>
+    <tr><td>Driving a gasoline car 5 to 18 inches</td><td>0.03&ndash;0.12&nbsp;g &divide; 400&nbsp;g CO&#8322; per mile<sup class="cite"><a href="#src-21">21</a></sup></td></tr>
+    <tr><td>1/70,000 of a quarter-pound beef patty</td><td>Beef &asymp; 60&nbsp;kg CO&#8322;e per kg, so a 113&nbsp;g patty &asymp; 6.8&nbsp;kg<sup class="cite"><a href="#src-22">22</a></sup></td></tr>
+    <tr><td>10 prompts a day for a year &asymp; 0.01% of a U.S. home&rsquo;s electricity</td><td>10 &times; 0.3&nbsp;Wh &times; 365 &asymp; 1.1&nbsp;kWh, versus 10,791&nbsp;kWh<sup class="cite"><a href="#src-20">20</a></sup></td></tr>
+  </tbody>
+</table>
+<p>Environmental scientist Hannah Ritchie of Our World in Data comes to a similar conclusion. For a typical person, text
+chatbots are a negligible part of their footprint. She adds that managing the growth in total demand is a real
+challenge.<sup class="cite"><a href="#src-24">24</a></sup></p>
+
+<div class="aif-callout warm">
+  <h4>If prompts are so small, what are the data centers for?</h4>
+  <p>ChatGPT users sent about 2.5&nbsp;billion prompts a day in mid-2025.<sup class="cite"><a href="#src-23">23</a></sup> At
+  0.34&nbsp;Wh each, that is about 310&nbsp;GWh a year, about what 29,000 U.S. homes use and less than a tenth of a percent of
+  global data-center electricity. The IEA runs the same arithmetic for 10&nbsp;billion queries a day at 1&nbsp;Wh each and gets
+  under 1% of data-center use. It concludes that <em>&ldquo;the bulk of planned capacity must be destined for other
+  workloads,&rdquo;</em> such as training, video and image generation, autonomous agents and enterprise systems. No
+  company has disclosed how its capacity is split among them.<sup class="cite"><a href="#src-2">2</a></sup></p>
+  <p>Training is a one-time cost, but it keeps growing. Training GPT-3 in 2020 used about 1,287&nbsp;MWh, about what
+  120 U.S. homes use in a year.<sup class="cite"><a href="#src-17">17</a></sup> Epoch AI estimates that a 2025 frontier
+  model, Grok&nbsp;4, took about 310&nbsp;GWh, roughly 240 times as much. The power used by frontier training runs is
+  growing about 2.1&times; a year.<sup class="cite"><a href="#src-18">18</a></sup></p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="water" aria-labelledby="h-water">
+<h2 id="h-water"><span class="num">4</span>Water: a minor national issue, a real local one</h2>
+<p class="aif-kicker">Data centers use water in two ways: evaporating it to cool servers on site, and indirectly through the
+power plants that supply their electricity. Which of these an estimate counts explains most of the disagreement.</p>
+
+<h3>Per prompt</h3>
+<ul>
+  <li><strong>&ldquo;A bottle of water per conversation&rdquo;</strong> traces to a 2023 paper by Shaolei Ren and colleagues
+  at UC Riverside.<sup class="cite"><a href="#src-25">25</a></sup> As later revised, it estimates that GPT-3 &ldquo;drinks&rdquo; a
+  500&nbsp;mL bottle for roughly <em>10&ndash;50 medium-length responses</em>, not for each one, depending on location. The
+  estimate includes power-plant water, which makes up most of the total, and assumes 2023 hardware.</li>
+  <li><strong>Google</strong> reports 0.26&nbsp;mL per median Gemini prompt, but counts only on-site cooling.
+  Ren&rsquo;s group calls that comparison apples to oranges.<sup class="cite"><a href="#src-9">9</a>,<a href="#src-26">26</a></sup></li>
+  <li><strong>Mistral&rsquo;s</strong> full life-cycle analysis, which includes hardware manufacturing and electricity, gives
+  45&nbsp;mL per 400-token response.<sup class="cite"><a href="#src-13">13</a></sup></li>
+</ul>
+<p>So a 500&nbsp;mL bottle corresponds to somewhere between about a dozen and nearly 2,000 prompts, depending on what is counted.
+For scale, the water footprint of a single quarter-pound beef patty is roughly 1,700&nbsp;liters, most of it rain falling on
+grazing land and feed crops.<sup class="cite"><a href="#src-33">33</a></sup></p>
+
+<figure class="aif-fig" data-chart="bar" data-max="1000" data-ticks="0,250,500,750,1000" data-unit="billion gal / yr" data-legend="ai:Data centers|cmp:Other U.S. water uses">
+  <figcaption><span class="t">U.S. water use per year, in billions of gallons</span><span class="s">All U.S. data centers compared with a few familiar uses</span></figcaption>
+  <table class="aif-data">
+    <thead><tr><th>Use</th><th>Billion gallons per year</th><th>Year and source</th></tr></thead>
+    <tbody>
+      <tr data-v="17.4" data-g="ai"><td>Data centers, on-site cooling</td><td>&asymp;17</td><td>2023, water consumed (LBNL)</td></tr>
+      <tr data-v="228" data-g="ai"><td>Data centers, including power-plant water</td><td>&asymp;228</td><td>2023: 17 on site plus about 211 at power plants (LBNL)</td></tr>
+      <tr data-v="547" data-g="cmp"><td>Golf course irrigation</td><td>&asymp;550</td><td>2020: 1.68 million acre-feet applied (GCSAA)</td></tr>
+      <tr data-v="900" data-g="cmp"><td>Household leaks</td><td>&asymp;900</td><td>EPA WaterSense estimate</td></tr>
+    </tbody>
+  </table>
+  <p class="aif-fnote">Off the chart: U.S. irrigated agriculture consumes about 26,700&nbsp;billion gallons a year, about 30
+  times the longest bar here (USGS, 2015).<sup class="cite"><a href="#src-30">30</a></sup> The kinds of use differ (evaporated,
+  applied or leaked), so read these as order-of-magnitude comparisons. Sources: LBNL<sup class="cite"><a href="#src-3">3</a></sup>,
+  GCSAA<sup class="cite"><a href="#src-31">31</a></sup>, EPA<sup class="cite"><a href="#src-32">32</a></sup>.</p>
+</figure>
+
+<p>Spread across the country, data centers&rsquo; on-site and power-plant water comes to about 1.9&nbsp;gallons per person per
+day. The average American uses about 82&nbsp;gallons a day at home.<sup class="cite"><a href="#src-3">3</a>,<a href="#src-32">32</a></sup>
+The trend matters more than the level. Google&rsquo;s water consumption rose 28% in 2024, to about 8.1&nbsp;billion gallons,
+more than double its 2020 figure. Google describes this as <em>&ldquo;about what it takes to irrigate 54 golf courses
+annually&rdquo;</em> in the Southwest.<sup class="cite"><a href="#src-27">27</a></sup></p>
+
+<div class="aif-callout cool">
+  <h4>Where water really is a problem</h4>
+  <p>National totals hide local strain. In The Dalles, Oregon, Google&rsquo;s data centers used about a third of the
+  city&rsquo;s water in 2024. Their usage figures became public only after a 13-month records fight, and city water rates are
+  projected to roughly double by 2036. The mayor disputes that Google is the cause.<sup class="cite"><a href="#src-29">29</a></sup>
+  Cooling towers evaporate the most water in hot, dry summers, exactly when water is scarcest.</p>
+  <p>The industry is responding with air-cooled and closed-loop designs. Google says its sites in Mesa, Arizona and Canelones,
+  Uruguay will use air cooling.<sup class="cite"><a href="#src-27">27</a></sup> Microsoft says its new designs use no
+  water for cooling, about 125&nbsp;million liters a year less per data center, at the cost of somewhat more
+  electricity.<sup class="cite"><a href="#src-28">28</a></sup> That trades on-site water for power-plant water and
+  emissions.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="emissions" aria-labelledby="h-emis">
+<h2 id="h-emis"><span class="num">5</span>Emissions: compared with other sectors</h2>
+<p class="aif-kicker">Electricity use in data centers produces about <strong>180&nbsp;million tonnes of CO&#8322;</strong> a
+year, roughly 0.5% of global CO&#8322; from burning fuel. The IEA projects 300&ndash;350&nbsp;million tonnes by 2035, still
+less than 1.5% of energy-sector emissions.<sup class="cite"><a href="#src-1">1</a>,<a href="#src-2">2</a></sup></p>
+
+<figure class="aif-fig" data-chart="bar" data-max="12" data-ticks="0,3,6,9,12" data-fmt="%" data-unit="% of global GHG" data-legend="ai:Data centers today|proj:Data centers, 2035 projection|cmp:Other sectors">
+  <figcaption><span class="t">Share of global greenhouse-gas emissions, by source</span><span class="s">Data centers today and as projected for 2035, beside other familiar sectors</span></figcaption>
+  <table class="aif-data">
+    <thead><tr><th>Source</th><th>Share of global GHG</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr data-v="11.9" data-g="cmp"><td>Road transport</td><td>11.9%</td><td>Climate Watch via Our World in Data (2016)</td></tr>
+      <tr data-v="10.9" data-g="cmp"><td>Energy in homes</td><td>10.9%</td><td>Residential buildings (2016)</td></tr>
+      <tr data-v="7.2" data-g="cmp"><td>Iron and steel</td><td>7.2%</td><td>2016</td></tr>
+      <tr data-v="5.8" data-g="cmp"><td>Livestock and manure</td><td>5.8%</td><td>2016</td></tr>
+      <tr data-v="3.0" data-g="cmp"><td>Cement (chemical process)</td><td>3.0%</td><td>2016; excludes the fuel burned in kilns</td></tr>
+      <tr data-v="1.9" data-g="cmp"><td>Aviation</td><td>1.9%</td><td>2016 (about 2.5% of CO&#8322; alone in 2019)</td></tr>
+      <tr data-v="1.7" data-g="cmp"><td>Shipping</td><td>1.7%</td><td>2016</td></tr>
+      <tr data-v="0.31" data-g="ai"><td>Data centers, today</td><td>&asymp;0.3%</td><td>180 Mt CO&#8322; (IEA, 2024) out of about 57.7 Gt of greenhouse gases (UNEP, 2024)</td></tr>
+      <tr data-v="0.56" data-g="proj"><td>Data centers, 2035</td><td>&asymp;0.5&ndash;0.6%</td><td>300&ndash;350 Mt (IEA central projections), assuming total emissions stay level</td></tr>
+    </tbody>
+  </table>
+  <p class="aif-fnote">Sources: Our World in Data<sup class="cite"><a href="#src-34">34</a>,<a href="#src-36">36</a></sup>, IEA<sup class="cite"><a href="#src-1">1</a>,<a href="#src-2">2</a></sup>,
+  UNEP via Carbon Brief<sup class="cite"><a href="#src-35">35</a></sup>. The sector shares are 2016 data and the data-center figures are
+  newer, so treat this as a comparison of size, not a single ledger.</p>
+</figure>
+
+<h3>Why the small share is not the whole story</h3>
+<ul>
+  <li><strong>Company emissions are rising fast.</strong> Google&rsquo;s total emissions rose 18% in 2025, to about 81% above
+  its 2019 baseline.<sup class="cite"><a href="#src-37">37</a></sup> Microsoft&rsquo;s rose 25% in fiscal 2025, partly because it
+  stopped counting certain clean-energy certificates.<sup class="cite"><a href="#src-38">38</a></sup> Amazon&rsquo;s rose 16%, to
+  80.9&nbsp;million tonnes.<sup class="cite"><a href="#src-39">39</a></sup></li>
+  <li><strong>Accounting choices matter.</strong> A 2024 <em>Guardian</em> analysis recalculated Google, Microsoft, Meta and
+  Apple&rsquo;s in-house data-center emissions using the local grid instead of purchased certificates. Over 2020&ndash;22 the
+  results came out about 7.6 times higher than reported.<sup class="cite"><a href="#src-40">40</a></sup></li>
+  <li><strong>New gas is being built.</strong> The IEA expects renewables to supply over a third of data-center electricity by
+  2030, but gas-fired generation for data centers also doubles. More than 100&nbsp;GW of gas capacity is planned specifically to
+  power data centers on site.<sup class="cite"><a href="#src-2">2</a></sup> U.S. gas capacity in development rose 50% in the
+  first half of 2026, to 378&nbsp;GW. Of the 52&nbsp;GW under construction, 16.9&nbsp;GW is meant to power data centers
+  directly.<sup class="cite"><a href="#src-41">41</a></sup></li>
+  <li><strong>Coal is retiring more slowly.</strong> Only 4.6&nbsp;GW of the 12.3&nbsp;GW of U.S. coal capacity scheduled to
+  retire in 2025 actually did, after federal emergency orders and amid rising demand.<sup class="cite"><a href="#src-42">42</a></sup></li>
+  <li><strong>Clean-energy deals are real too.</strong> The tech sector signed about 40% of all corporate renewable-power
+  contracts worldwide in 2025.<sup class="cite"><a href="#src-2">2</a></sup> The Three Mile Island Unit&nbsp;1 reactor (renamed
+  Crane) is slated to restart in 2027 under a 20-year contract with Microsoft.<sup class="cite"><a href="#src-43">43</a></sup></li>
+  <li><strong>Hardware has a footprint as well.</strong> Large AI models alone could add 1.2&ndash;5.0&nbsp;million tonnes of
+  electronic waste from 2020 to 2030, against about 62&nbsp;million tonnes of e-waste the world produced in 2022
+  alone. Reuse and recycling could cut that by up to 86%.<sup class="cite"><a href="#src-44">44</a></sup></li>
+</ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="who-pays" aria-labelledby="h-pays">
+<h2 id="h-pays"><span class="num">6</span>Who pays: bills, air, and neighbors</h2>
+<p class="aif-kicker">The strongest evidence of harm is local, and it falls on particular communities.</p>
+
+<h3>Close to home: the Tennessee Valley</h3>
+<ul>
+  <li><strong>TVA&rsquo;s load is shifting.</strong> Data centers were 18% of TVA&rsquo;s industrial load in 2025, and TVA
+  expects that demand to double in the region by 2030. TVA is building 1.5-GW gas plants at Cumberland and Kingston as coal
+  units there retire.<sup class="cite"><a href="#src-45">45</a></sup> In August 2026 its board created a separate, higher rate
+  for data centers, reported as about 10%, so that households would not carry the cost.<sup class="cite"><a href="#src-46">46</a></sup></li>
+  <li><strong>Memphis.</strong> xAI&rsquo;s Colossus supercomputer began by running more than 400&nbsp;MW of on-site gas
+  turbines until a grid connection arrived.<sup class="cite"><a href="#src-2">2</a></sup> Flyovers counted as many as 35
+  turbines in South Memphis while xAI sought a permit for 15. The Southern Environmental Law Center, representing the NAACP
+  and a local group, has appealed the 15-turbine permit the county granted in July 2025.<sup class="cite"><a href="#src-47">47</a>,<a href="#src-48">48</a></sup></li>
+  <li><strong>Southaven, Mississippi</strong> (just across the state line). The NAACP and environmental groups sued
+  xAI in April 2026 under the Clean Air Act over turbines powering its second site. On 19 October 2026 the court denied a
+  bid to dismiss the case.<sup class="cite"><a href="#src-49">49</a></sup></li>
+</ul>
+
+<h3>Health effects</h3>
+<p>Researchers at UC Riverside and Caltech estimate that air pollution from power generation for U.S. data centers could carry
+public-health costs of more than $20&nbsp;billion in 2028. In the most affected counties, the burden per household is about
+seven times the national average.<sup class="cite"><a href="#src-50">50</a></sup> These are model projections, but they point to a
+cost that national carbon totals leave out.</p>
+
+<h3>Electricity bills: it depends where you live</h3>
+<ul>
+  <li><strong>Where power is tight, bills rise.</strong> In PJM, the grid serving 13 mid-Atlantic and Midwest states, the
+  independent market monitor attributes about $29&nbsp;billion of $64&nbsp;billion in capacity costs over four auctions to
+  data-center demand.<sup class="cite"><a href="#src-51">51</a></sup> Virginia&rsquo;s legislative auditors estimated that a typical
+  Dominion household&rsquo;s generation and transmission costs could rise $14&ndash;$37 a month by 2040, depending on how fast
+  demand grows.<sup class="cite"><a href="#src-52">52</a></sup></li>
+  <li><strong>Where there is spare capacity, they can fall.</strong> Studies by Berkeley Lab and Brattle found that the states
+  adding the most load saw average real prices decline. An EPRI analysis estimates prices would be about 6% higher without data
+  centers. Analysts note that those declines came where there was spare capacity, which tight markets like PJM no longer have.<sup class="cite"><a href="#src-53">53</a></sup></li>
+  <li><strong>Contracts matter.</strong> Harvard&rsquo;s Electricity Law Initiative reviewed about 50 regulatory proceedings.
+  It found that confidential special contracts between utilities and tech companies can shift costs to ordinary
+  customers.<sup class="cite"><a href="#src-54">54</a></sup></li>
+</ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="tool" aria-labelledby="h-tool">
+<h2 id="h-tool"><span class="num">7</span>Can AI help pay its own way?</h2>
+<p>The IEA estimates that widespread use of AI applications that already exist could cut about 1,400&nbsp;million tonnes of
+CO&#8322; a year by 2035, by making industry, transport and the power grid more efficient. That is several times the
+emissions of data centers themselves. The IEA is blunt about the caveats: these gains are <em>&ldquo;far smaller than what is
+needed to address climate change,&rdquo;</em> barriers to adoption are significant, and rebound effects, such as autonomous cars
+pulling riders off public transit, <em>&ldquo;could undercut some of these benefits.&rdquo;</em> Its verdict: <em>&ldquo;AI can
+be a tool in reducing emissions, but it is not a silver bullet.&rdquo;</em><sup class="cite"><a href="#src-1">1</a></sup></p>
+<p>Other estimates run higher: a study from the London School of Economics&rsquo; Grantham Institute and Systemiq puts the figure
+at 3.2&ndash;5.4&nbsp;billion tonnes a year by 2035 in power, food and transport.<sup class="cite"><a href="#src-55">55</a></sup>
+There are concrete examples too. Google DeepMind&rsquo;s GraphCast beat the leading conventional weather model on 90% of
+1,380 test measures, and it produces a 10-day forecast in under a minute.<sup class="cite"><a href="#src-56">56</a></sup> Still,
+these are <em>potential</em> savings set against emissions that are <em>already happening</em>, and there is no guarantee
+the potential is realized.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="weigh" aria-labelledby="h-weigh">
+<h2 id="h-weigh"><span class="num">8</span>What is real, and what is overstated</h2>
+<div class="aif-two">
+  <div class="real">
+    <h3>Concerns the evidence supports</h3>
+    <ul>
+      <li>The <strong>speed and concentration</strong> of growth, which strains local grids (Virginia, Ireland, Texas).</li>
+      <li><strong>New fossil-fuel infrastructure</strong>: gas plants and on-site turbines built for data centers, and
+      coal retiring more slowly.</li>
+      <li><strong>Local air pollution</strong> where turbines run near homes, as in South Memphis and Southaven.</li>
+      <li><strong>Water stress</strong> in small or dry water systems, such as The Dalles.</li>
+      <li><strong>Costs shifted</strong> onto households in tight power markets, and opaque special contracts.</li>
+      <li><strong>Rising corporate emissions</strong> and thin disclosure, especially for the heavy uses (video,
+      reasoning, agents) driving the build-out.</li>
+    </ul>
+  </div>
+  <div class="over">
+    <h3>Claims that are often overstated</h3>
+    <ul>
+      <li>&ldquo;Every ChatGPT question uses a bottle of water.&rdquo; The original estimate was one bottle per 10&ndash;50
+      responses, mostly water at power plants, on 2023 hardware.</li>
+      <li>&ldquo;AI is a major share of global emissions.&rdquo; Data centers of every kind produce about 0.5% of energy-related
+      CO&#8322;.</li>
+      <li>&ldquo;My chatbot use is a meaningful part of my footprint.&rdquo; Ten prompts a day is about 0.01% of household
+      electricity; one burger equals tens of thousands of prompts.</li>
+      <li>&ldquo;A prompt uses ten times a Google search.&rdquo; Current disclosures (0.24&ndash;0.34&nbsp;Wh) are about the same
+      as the oft-quoted 2009 search figure.</li>
+      <li>&ldquo;Data centers are why everyone&rsquo;s bill is rising.&rdquo; The effect is real in some markets and absent in
+      others.</li>
+    </ul>
+  </div>
+</div>
+<p>The two columns fit together. Individual use of text chatbots is not where the environmental cost lies. That cost lies
+in how fast the industry is building, where it builds, what powers it, and who has a say. Those are questions for companies,
+utilities, regulators and communities more than for individual users. That is also why public conversation, including ours,
+matters.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="questions" aria-labelledby="h-q">
+<h2 id="h-q"><span class="num">9</span>Questions for conversation</h2>
+<ol class="aif-qs">
+  <li><strong>Where does responsibility sit?</strong> If one person&rsquo;s chatbot use is tiny but the industry&rsquo;s
+  build-out is large, how should responsibility be shared among users, companies, utilities and regulators?</li>
+  <li><strong>What makes energy use worthwhile?</strong> We accept footprints for things we value: travel to conferences, air
+  conditioning, streaming, a hamburger. What standard would we apply to AI in teaching and scholarship?</li>
+  <li><strong>Compared with what?</strong> Is the right comparison AI versus no AI, AI versus a person doing the work, or AI
+  versus some other tool? The answer changes the calculation.</li>
+  <li><strong>Efficiency and appetite.</strong> Energy per task has fallen roughly tenfold a year, yet total use keeps rising.
+  Is that a failure, or simply what happens when something becomes useful?</li>
+  <li><strong>Our neighbors.</strong> The heaviest costs fall on particular places, such as South Memphis or a small Oregon
+  town. What do care for creation and love of neighbor ask of the institutions and individuals who benefit?</li>
+  <li><strong>What should we ask for?</strong> Before our campus adopts AI tools, what would we want vendors to disclose, and
+  which uses of AI deserve the most scrutiny?</li>
+</ol>
+</section>
+
+<!-- ============================================================ -->
+<section id="method" aria-labelledby="h-method">
+<h2 id="h-method"><span class="num">10</span>How this report was made</h2>
+<p>This report was researched and drafted with AI assistance (Claude, by Anthropic). Separate research passes covered
+electricity, per-use footprints, water, and emissions and local impacts. Figures were checked against the text of the
+original reports wherever it could be accessed, and key IEA quotations were checked against the full reports. A few items
+rely on news coverage of documents that could not be read directly; they are cited to that coverage. The work was
+directed and reviewed by Ian Lundholm.</p>
+<p>This field moves quickly: several figures here were revised within the past year, and per-prompt energy is falling fast. If you
+spot an error or a better source, please say so.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="sources" class="aif-sources" aria-labelledby="h-src">
+<h2 id="h-src">Sources</h2>
+
+<h3>Electricity and the build-out</h3>
+<ol start="1">
+  <li id="src-1">International Energy Agency, <a href="https://iea.blob.core.windows.net/assets/dd7c2387-2f60-4b60-8c5f-6563b6aa1e4c/EnergyandAI.pdf"><em>Energy and AI</em></a> (April 2025).</li>
+  <li id="src-2">International Energy Agency, <a href="https://iea.blob.core.windows.net/assets/3179f7f8-01f6-4dd6-bffa-c9f7b73f1dc9/KeyQuestionsonEnergyandAI.pdf"><em>Key Questions on Energy and AI</em></a>, World Energy Outlook special report (2026).</li>
+  <li id="src-3">Shehabi et al., Lawrence Berkeley National Laboratory, <a href="https://eta-publications.lbl.gov/sites/default/files/2024-12/lbnl-2024-united-states-data-center-energy-usage-report_1.pdf"><em>2024 United States Data Center Energy Usage Report</em></a> (December 2024).</li>
+  <li id="src-4">Lawrence Berkeley National Laboratory, <a href="https://www.osti.gov/biblio/3374245"><em>United States Data Center Energy Usage Report: 2025 Update</em></a> (June 2026).</li>
+  <li id="src-5">Electric Power Research Institute, <a href="https://restservice.epri.com/publicattachment/97025"><em>Powering Intelligence</em> update brief</a> (2026).</li>
+  <li id="src-6">Central Statistics Office (Ireland), <a href="https://www.cso.ie/en/releasesandpublications/ep/p-dcmec/datacentresmeteredelectricityconsumption2025/keyfindings/">Data Centres Metered Electricity Consumption 2025</a> (July 2026).</li>
+  <li id="src-7">Utility Dive, <a href="https://www.utilitydive.com/news/texas-hits-pause-data-center-interconnections/827046/">Texas hits pause on data center interconnections</a> (August 2026).</li>
+  <li id="src-8">Cambridge Centre for Alternative Finance, <a href="https://www.jbs.cam.ac.uk/wp-content/uploads/2025/04/2025-04-cambridge-digital-mining-industry-report.pdf"><em>Cambridge Digital Mining Industry Report</em></a> (April 2025); see also the <a href="https://ccaf.io/cbnsi/cbeci">Cambridge Bitcoin Electricity Consumption Index</a>.</li>
+</ol>
+
+<h3>Per-use and training footprints</h3>
+<ol start="9">
+  <li id="src-9">Amin Vahdat and Jeff Dean, Google Cloud, <a href="https://cloud.google.com/blog/products/infrastructure/measuring-the-environmental-impact-of-ai-inference">Measuring the environmental impact of AI inference</a> (August 2025).</li>
+  <li id="src-10">Google, <a href="https://arxiv.org/abs/2508.15734">Measuring the environmental impact of delivering AI at Google scale</a>, arXiv:2508.15734 (August 2025).</li>
+  <li id="src-11">Sam Altman, <a href="https://blog.samaltman.com/the-gentle-singularity">The Gentle Singularity</a> (June 2025).</li>
+  <li id="src-12">Josh You, Epoch AI, <a href="https://epoch.ai/gradient-updates/how-much-energy-does-chatgpt-use">How much energy does ChatGPT use?</a> (February 2025).</li>
+  <li id="src-13">Mistral AI, <a href="https://mistral.ai/news/our-contribution-to-a-global-environmental-standard-for-ai">Our contribution to a global environmental standard for AI</a> (July 2025).</li>
+  <li id="src-14">Luccioni, Jernite and Strubell, <a href="https://arxiv.org/abs/2311.16863">Power Hungry Processing: Watts Driving the Cost of AI Deployment?</a>, ACM FAccT (2024).</li>
+  <li id="src-15">James O&rsquo;Donnell and Casey Crownhart, MIT Technology Review, <a href="https://www.technologyreview.com/2025/05/20/1116327/ai-energy-usage-climate-footprint-big-tech/">We did the math on AI&rsquo;s energy footprint</a> (May 2025).</li>
+  <li id="src-16">Sasha Luccioni and Boris Gamazaychikov, Hugging Face, <a href="https://huggingface.co/blog/sasha/ai-energy-score-v2">AI Energy Score v2</a> (December 2025); see also Jegham et al., <a href="https://arxiv.org/abs/2505.09598">How Hungry is AI?</a>, arXiv:2505.09598.</li>
+  <li id="src-17">Patterson et al., <a href="https://arxiv.org/abs/2104.10350">Carbon Emissions and Large Neural Network Training</a>, arXiv:2104.10350 (2021).</li>
+  <li id="src-18">Epoch AI, <a href="https://epoch.ai/data-insights/grok-4-training-resources">Grok 4 training resources</a> (September 2025) and <a href="https://epoch.ai/data-insights/power-usage-trend">power usage trend</a>.</li>
+  <li id="src-19">Carbon Brief, <a href="https://www.carbonbrief.org/factcheck-what-is-the-carbon-footprint-of-streaming-video-on-netflix/">Factcheck: What is the carbon footprint of streaming video?</a> (IEA estimate; updated 2020).</li>
+  <li id="src-20">U.S. Energy Information Administration, <a href="https://www.eia.gov/tools/faqs/faq.php?id=97&amp;t=3">How much electricity does an American home use?</a></li>
+  <li id="src-21">U.S. EPA, <a href="https://www.epa.gov/greenvehicles/greenhouse-gas-emissions-typical-passenger-vehicle">Greenhouse gas emissions from a typical passenger vehicle</a>.</li>
+  <li id="src-22">Our World in Data, <a href="https://ourworldindata.org/environmental-impacts-of-food">Environmental impacts of food production</a> (after Poore and Nemecek, 2018).</li>
+  <li id="src-23">TechCrunch, <a href="https://techcrunch.com/2025/07/21/chatgpt-users-send-2-5-billion-prompts-a-day/">ChatGPT users send 2.5 billion prompts a day</a> (July 2025).</li>
+  <li id="src-24">Hannah Ritchie, <a href="https://hannahritchie.substack.com/p/ai-footprint-august-2025">What&rsquo;s the carbon footprint of using ChatGPT or Gemini?</a> (August 2025).</li>
+</ol>
+
+<h3>Water</h3>
+<ol start="25">
+  <li id="src-25">Li, Yang, Islam and Ren, <a href="https://arxiv.org/abs/2304.03271">Making AI Less &ldquo;Thirsty&rdquo;</a>, arXiv:2304.03271; published in <em>Communications of the ACM</em> 68(7) (2025).</li>
+  <li id="src-26">The Register, <a href="https://www.theregister.com/2025/08/22/googles_gemini_water/">Google&rsquo;s Gemini water figures questioned</a> (August 2025).</li>
+  <li id="src-27">Google, <a href="https://sustainability.google/google-2025-environmental-report/">2025 Environmental Report</a> (covering 2024).</li>
+  <li id="src-28">Microsoft, <a href="https://www.microsoft.com/en-us/microsoft-cloud/blog/2024/12/09/sustainable-by-design-next-generation-datacenters-consume-zero-water-for-cooling/">Sustainable by design: next-generation datacenters consume zero water for cooling</a> (December 2024).</li>
+  <li id="src-29">OPB, <a href="https://www.opb.org/article/2026/01/15/as-googles-water-demands-grow-the-dalles-aims-to-pull-more-from-mount-hood-forest/">As Google&rsquo;s water demands grow, The Dalles aims to pull more from Mount Hood forest</a> (January 2026).</li>
+  <li id="src-30">U.S. Geological Survey, <a href="https://pubs.usgs.gov/fs/2018/3035/fs20183035.pdf">Summary of Estimated Water Use in the United States in 2015</a>, Fact Sheet 2018-3035.</li>
+  <li id="src-31">Golf Course Superintendents Association of America, <a href="https://www.gcsaa.org/who-we-are/media/news-release/2025/12/30/golf-courses-reduce-water-usage-by-31-percent-according-to-national-survey">Golf courses reduce water usage by 31 percent</a> (December 2025).</li>
+  <li id="src-32">U.S. EPA WaterSense, <a href="https://www.epa.gov/watersense/statistics-and-facts">Statistics and facts</a>.</li>
+  <li id="src-33">Mekonnen and Hoekstra, <a href="https://doi.org/10.1007/s10021-011-9517-8">A Global Assessment of the Water Footprint of Farm Animal Products</a>, <em>Ecosystems</em> (2012): about 15,400 liters per kg of beef.</li>
+</ol>
+
+<h3>Emissions</h3>
+<ol start="34">
+  <li id="src-34">Our World in Data, <a href="https://ourworldindata.org/ghg-emissions-by-sector">Greenhouse gas emissions by sector</a> (Climate Watch data, 2016).</li>
+  <li id="src-35">Carbon Brief, <a href="https://www.carbonbrief.org/unep-new-country-climate-plans-barely-move-needle-on-expected-warming">UNEP Emissions Gap Report 2025</a> coverage (57.7 GtCO&#8322;e in 2024).</li>
+  <li id="src-36">Our World in Data, <a href="https://ourworldindata.org/global-aviation-emissions">What share of global CO&#8322; emissions come from aviation?</a>; see also <a href="https://ourworldindata.org/how-much-energy-do-data-centers-and-artificial-intelligence-use">How much energy do data centers and AI use?</a> (July 2026) and Carbon Brief, <a href="https://www.carbonbrief.org/ai-five-charts-that-put-data-centre-energy-use-and-emissions-into-context">AI: five charts that put data-centre energy use and emissions into context</a>.</li>
+  <li id="src-37">ESG Dive, <a href="https://www.esgdive.com/news/googles-emissions-continue-to-climb-due-to-ai-buildout/824373/">Google&rsquo;s emissions continue to climb due to AI buildout</a> (July 2026).</li>
+  <li id="src-38">ESG Dive, <a href="https://www.esgdive.com/news/microsofts-data-center-expansion-drove-25-emissions-spike-2025-environmental-sustainability-report/825082/">Microsoft&rsquo;s data center expansion drove 25% emissions spike</a> (2026).</li>
+  <li id="src-39">GeekWire, <a href="https://www.geekwire.com/2026/the-cost-of-the-ai-boom-amazon-emissions-jump-16-as-company-stands-by-net-zero-pledge/">Amazon emissions jump 16% as company stands by net-zero pledge</a> (July 2026).</li>
+  <li id="src-40">Isabel O&rsquo;Brien, <em>The Guardian</em>, <a href="https://www.theguardian.com/technology/2024/sep/15/data-center-gas-emissions-tech">Data center emissions probably 662% higher than big tech claims</a> (September 2024).</li>
+  <li id="src-41">Global Energy Monitor, <a href="https://globalenergymonitor.org/research/us-gas-power-proposals-tied-data-centers-nearly-double-six-months">U.S. gas power proposals tied to data centers nearly double in six months</a> (August 2026).</li>
+  <li id="src-42">U.S. Energy Information Administration, <a href="https://www.eia.gov/todayinenergy/detail.php?id=67206">Today in Energy: coal retirements in 2025</a>.</li>
+  <li id="src-43">Nuclear News Network, <a href="https://www.nuclearnewsnetwork.com/news/nuclear-power-data-centers-explained">Nuclear power and data centers, explained</a>.</li>
+  <li id="src-44">Wang et al., <a href="https://www.nature.com/articles/s43588-024-00712-6">E-waste challenges of generative artificial intelligence</a>, <em>Nature Computational Science</em> (October 2024).</li>
+</ol>
+
+<h3>Local impacts, health and bills</h3>
+<ol start="45">
+  <li id="src-45">Utility Dive, <a href="https://www.utilitydive.com/news/tva-tennessee-valley-authority-nuclear-gas-demand-growth/811306/">TVA plans for nuclear, gas amid demand growth</a> (February 2026).</li>
+  <li id="src-46">Action News 5, <a href="https://www.actionnews5.com/2026/08/20/tva-approves-10-rate-spike-data-centers-protect-household-rate-payers/">TVA approves 10% rate spike for data centers to protect household ratepayers</a> (August 2026); see also <a href="https://www.timesfreepress.com/news/2026/aug/20/tva-to-charge-data-centers-more-for-power-under/">Chattanooga Times Free Press</a>.</li>
+  <li id="src-47">Southern Environmental Law Center, <a href="https://www.selc.org/press-release/groups-appeal-permit-for-xais-south-memphis-data-center-decisions-around-unpermitted-methane-gas-turbines/">Groups appeal permit for xAI&rsquo;s South Memphis data center</a> (July 2025).</li>
+  <li id="src-48">Scientific American, <a href="https://www.scientificamerican.com/article/spacexais-colossus-data-center-is-fueling-a-massive-backlash/">xAI&rsquo;s Colossus data center is fueling a massive backlash</a> (September 2026).</li>
+  <li id="src-49">Earthjustice, <a href="https://earthjustice.org/case/xai-illegal-gas-power-plant-data-center-colossus">xAI illegal gas power plant (Colossus 2) case page</a> (updated October 2026).</li>
+  <li id="src-50">Han, Wu, Li, Wierman and Ren, <a href="https://arxiv.org/abs/2412.06288">The Unpaid Toll: Quantifying the Public Health Impact of Data Centers</a>, arXiv:2412.06288 (revised October 2025).</li>
+  <li id="src-51">Utility Dive, <a href="https://www.utilitydive.com/news/pjm-data-centers-capacity-auction-imm-bowring/825626/">PJM market monitor on data centers and capacity costs</a> (July 2026).</li>
+  <li id="src-52">Virginia Joint Legislative Audit and Review Commission, <a href="https://jlarc.virginia.gov/landing-2024-data-centers-in-virginia.asp"><em>Data Centers in Virginia</em></a> (December 2024).</li>
+  <li id="src-53">Marketplace, <a href="https://www.marketplace.org/story/2026/07/10/data-centers-lowered-electric-bills-in-some-places-for-now">Data centers lowered electric bills in some places, for now</a> (July 2026).</li>
+  <li id="src-54">Martin and Peskoe, Harvard Electricity Law Initiative, <a href="https://eelp.law.harvard.edu/extracting-profits-from-the-public-how-utility-ratepayers-are-paying-for-big-techs-power/">Extracting Profits from the Public: How Utility Ratepayers Are Paying for Big Tech&rsquo;s Power</a> (March 2025).</li>
+</ol>
+
+<h3>AI as a climate tool</h3>
+<ol start="55">
+  <li id="src-55">Grantham Research Institute (LSE) and Systemiq, <a href="https://www.lse.ac.uk/granthaminstitute/news/new-study-finds-ai-could-reduce-global-emissions-annually-by-3-2-to-5-4-billion-tonnes-of-carbon-dioxide-equivalent-by-2035/">AI could reduce global emissions annually by 3.2 to 5.4 billion tonnes by 2035</a>, <em>npj Climate Action</em> (June 2025).</li>
+  <li id="src-56">Lam et al., <a href="https://www.science.org/doi/10.1126/science.adi2336">Learning skillful medium-range global weather forecasting</a>, <em>Science</em> (2023).</li>
+</ol>
+</section>
+
+</article>
+
+<script src="{{ site.baseurl }}/assets/js/ai-footprint.js"></script>

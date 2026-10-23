@@ -33,3 +33,13 @@ instant feedback, and copy a report to share with your instructor. Everything ru
 studying in higher education. Dyslexia is not one thing — it comes in patterns, and which pattern someone has
 changes which study techniques actually help. Eight short self-checks, then strategies aimed at the reading
 that technical and quantitative coursework demands.</p>
+
+## AI and society
+
+<div class="day-grid">
+  <a class="day-card" href="ai-environmental-footprint.html"><span class="n">Report</span><span class="t">AI's Environmental Footprint, in Perspective</span></a>
+</div>
+
+<p style="font-size:0.95rem;color:#6E6E6E">How much electricity, water, and carbon does AI really use? A sourced
+look at the data-center build-out, from a single prompt to the national grid, set beside other parts of the
+economy: what the evidence supports, what is often overstated, and questions for conversation.</p>
