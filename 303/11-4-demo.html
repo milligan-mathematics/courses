@@ -21,7 +21,7 @@
 
         .dashboard {
             display: grid;
-            grid-template-columns: 1.2fr 1fr;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
             gap: 2rem;
             margin-bottom: 2rem;
             align-items: start;
@@ -29,7 +29,7 @@
 
         @media (max-width: 900px) {
             .dashboard {
-                grid-template-columns: 1fr;
+                grid-template-columns: minmax(0, 1fr);
             }
         }
 
@@ -39,6 +39,7 @@
             border-radius: 8px;
             padding: 1.5rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            min-width: 0;
         }
 
         .scene-wrap {
@@ -162,6 +163,7 @@
             padding: 1rem;
             margin-top: 0.75rem;
             font-size: 0.95rem;
+            overflow-x: auto;
             min-height: 1.5rem;
             overflow-x: auto;
         }
@@ -223,7 +225,8 @@
 
         <div class="dashboard">
             <div class="panel scene-wrap">
-                <canvas id="scene" width="600" height="600"></canvas>
+                <canvas id="scene" width="600" height="600" role="img"
+                    aria-label="3D scene of vectors u, v and w, the cross product u times v, the parallelogram they span, and the parallelepiped when w is shown. Drag to rotate. The readouts beside the scene give the components, area and volume."></canvas>
                 <div class="scene-hint">Drag to rotate &middot; scroll to zoom</div>
                 <div class="legend">
                     <div><span class="swatch" style="background:#F36E24;"></span>u</div>
@@ -250,15 +253,15 @@
                 <div class="control-block">
                     <h4>Vector u</h4>
                     <div class="triple-input">
-                        <label>u&#8321;</label><input type="number" id="u-x" value="-2" step="0.5">
-                        <label>u&#8322;</label><input type="number" id="u-y" value="5" step="0.5">
-                        <label>u&#8323;</label><input type="number" id="u-z" value="1" step="0.5">
+                        <label for="u-x">u&#8321;</label><input type="number" id="u-x" aria-label="Vector u, component u1 (x direction)" value="-2" step="0.5">
+                        <label for="u-y">u&#8322;</label><input type="number" id="u-y" aria-label="Vector u, component u2 (y direction)" value="5" step="0.5">
+                        <label for="u-z">u&#8323;</label><input type="number" id="u-z" aria-label="Vector u, component u3 (z direction)" value="1" step="0.5">
                     </div>
                     <h4>Vector v</h4>
                     <div class="triple-input">
-                        <label>v&#8321;</label><input type="number" id="v-x" value="1" step="0.5">
-                        <label>v&#8322;</label><input type="number" id="v-y" value="3" step="0.5">
-                        <label>v&#8323;</label><input type="number" id="v-z" value="-1" step="0.5">
+                        <label for="v-x">v&#8321;</label><input type="number" id="v-x" aria-label="Vector v, component v1 (x direction)" value="1" step="0.5">
+                        <label for="v-y">v&#8322;</label><input type="number" id="v-y" aria-label="Vector v, component v2 (y direction)" value="3" step="0.5">
+                        <label for="v-z">v&#8323;</label><input type="number" id="v-z" aria-label="Vector v, component v3 (z direction)" value="-1" step="0.5">
                     </div>
                     <button class="btn" onclick="computeCross()">Compute u &times; v</button>
                     <div class="output-box" id="cross-output">Set u and v, then click "Compute u &times; v."</div>
@@ -269,9 +272,9 @@
                     <p class="hint">Check "Show parallelepiped" above, then compute the volume of the box spanned
                         by u, v, and w.</p>
                     <div class="triple-input">
-                        <label>w&#8321;</label><input type="number" id="w-x" value="0" step="0.5">
-                        <label>w&#8322;</label><input type="number" id="w-y" value="0" step="0.5">
-                        <label>w&#8323;</label><input type="number" id="w-z" value="3" step="0.5">
+                        <label for="w-x">w&#8321;</label><input type="number" id="w-x" aria-label="Vector w, component w1 (x direction)" value="0" step="0.5">
+                        <label for="w-y">w&#8322;</label><input type="number" id="w-y" aria-label="Vector w, component w2 (y direction)" value="0" step="0.5">
+                        <label for="w-z">w&#8323;</label><input type="number" id="w-z" aria-label="Vector w, component w3 (z direction)" value="3" step="0.5">
                     </div>
                     <button class="btn" onclick="computeVolume()">Compute Volume</button>
                     <div class="output-box" id="volume-output">Set w, then click "Compute Volume."</div>

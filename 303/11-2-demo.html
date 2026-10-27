@@ -21,7 +21,7 @@
 
         .dashboard {
             display: grid;
-            grid-template-columns: 1.2fr 1fr;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
             gap: 2rem;
             margin-bottom: 2rem;
             align-items: start;
@@ -29,7 +29,7 @@
 
         @media (max-width: 900px) {
             .dashboard {
-                grid-template-columns: 1fr;
+                grid-template-columns: minmax(0, 1fr);
             }
         }
 
@@ -39,6 +39,7 @@
             border-radius: 8px;
             padding: 1.5rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            min-width: 0;
         }
 
         .scene-wrap {
@@ -180,6 +181,7 @@
             padding: 1rem;
             margin-top: 0.75rem;
             font-size: 0.95rem;
+            overflow-x: auto;
         }
 
         .output-box p {
@@ -230,7 +232,8 @@
 
         <div class="dashboard">
             <div class="panel scene-wrap">
-                <canvas id="scene" width="600" height="600"></canvas>
+                <canvas id="scene" width="600" height="600" role="img"
+                    aria-label="Graph in the xy-plane of vectors u (orange) and v (blue) drawn from the origin, with the sum, difference, scalar multiple and unit vectors you switch on. Drag an arrowhead to move a vector, or type components in the boxes. The live readout beside the graph gives every number."></canvas>
                 <div class="scene-hint">Drag an arrowhead to change that vector &middot; scroll to zoom</div>
                 <div class="legend">
                     <span><span class="swatch" style="background:#F36E24;"></span> u</span>
@@ -249,14 +252,14 @@
                 <div class="control-block">
                     <h4>Vector u</h4>
                     <div class="triple-input">
-                        <label>x</label><input type="number" id="u-x" value="4" step="0.5">
-                        <label>y</label><input type="number" id="u-y" value="2" step="0.5">
+                        <label for="u-x">x</label><input type="number" id="u-x" aria-label="Vector u, x component" value="4" step="0.5">
+                        <label for="u-y">y</label><input type="number" id="u-y" aria-label="Vector u, y component" value="2" step="0.5">
                         <button class="btn" onclick="setFromInputs()">Set</button>
                     </div>
                     <h4>Vector v</h4>
                     <div class="triple-input">
-                        <label>x</label><input type="number" id="v-x" value="-2" step="0.5">
-                        <label>y</label><input type="number" id="v-y" value="3" step="0.5">
+                        <label for="v-x">x</label><input type="number" id="v-x" aria-label="Vector v, x component" value="-2" step="0.5">
+                        <label for="v-y">y</label><input type="number" id="v-y" aria-label="Vector v, y component" value="3" step="0.5">
                         <button class="btn" onclick="setFromInputs()">Set</button>
                     </div>
                 </div>
@@ -288,8 +291,8 @@
                         <label for="show-scalar">show c&middot;u</label>
                     </div>
                     <div class="slider-row">
-                        <label>c =</label>
-                        <input type="range" id="scalar-c" min="-3" max="3" step="0.5" value="2">
+                        <label for="scalar-c">c =</label>
+                        <input type="range" id="scalar-c" aria-label="Scalar c, from minus 3 to 3" min="-3" max="3" step="0.5" value="2">
                         <span class="slider-value" id="scalar-c-value">2</span>
                     </div>
                 </div>

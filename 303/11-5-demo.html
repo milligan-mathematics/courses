@@ -21,7 +21,7 @@
 
         .dashboard {
             display: grid;
-            grid-template-columns: 1.2fr 1fr;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
             gap: 2rem;
             margin-bottom: 2rem;
             align-items: start;
@@ -29,7 +29,7 @@
 
         @media (max-width: 900px) {
             .dashboard {
-                grid-template-columns: 1fr;
+                grid-template-columns: minmax(0, 1fr);
             }
         }
 
@@ -39,6 +39,7 @@
             border-radius: 8px;
             padding: 1.5rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            min-width: 0;
         }
 
         .scene-wrap {
@@ -176,6 +177,7 @@
             padding: 1rem;
             margin-top: 0.75rem;
             font-size: 0.95rem;
+            overflow-x: auto;
             min-height: 1.5rem;
         }
 
@@ -229,7 +231,8 @@
 
         <div class="dashboard">
             <div class="panel scene-wrap">
-                <canvas id="scene" width="600" height="600"></canvas>
+                <canvas id="scene" width="600" height="600" role="img"
+                    aria-label="3D scene of a line with its direction vector (orange), a plane with its normal vector (blue), and the point where they meet or the distance to a chosen point (green). Drag to rotate. The readouts beside the scene give the equations and the numbers."></canvas>
                 <div class="scene-hint">Drag to rotate &middot; scroll to zoom</div>
                 <div class="legend">
                     <span><span class="swatch" style="background:#F36E24;"></span> Line &amp; direction vector</span>
@@ -249,15 +252,15 @@
                     <div class="sub">Point \(P_0\) and direction vector \(\vec{v}\)</div>
                     <div class="triple-input">
                         <strong style="width:60px;">Point</strong>
-                        <label>x</label><input type="number" id="ln-x" value="4" step="0.5">
-                        <label>y</label><input type="number" id="ln-y" value="2" step="0.5">
-                        <label>z</label><input type="number" id="ln-z" value="-1" step="0.5">
+                        <label for="ln-x">x</label><input type="number" id="ln-x" aria-label="Line, point P0, x coordinate" value="4" step="0.5">
+                        <label for="ln-y">y</label><input type="number" id="ln-y" aria-label="Line, point P0, y coordinate" value="2" step="0.5">
+                        <label for="ln-z">z</label><input type="number" id="ln-z" aria-label="Line, point P0, z coordinate" value="-1" step="0.5">
                     </div>
                     <div class="triple-input">
                         <strong style="width:60px;">Direction</strong>
-                        <label>a</label><input type="number" id="ln-a" value="-3" step="0.5">
-                        <label>b</label><input type="number" id="ln-b" value="0" step="0.5">
-                        <label>c</label><input type="number" id="ln-c" value="4" step="0.5">
+                        <label for="ln-a">a</label><input type="number" id="ln-a" aria-label="Line, direction vector, a component" value="-3" step="0.5">
+                        <label for="ln-b">b</label><input type="number" id="ln-b" aria-label="Line, direction vector, b component" value="0" step="0.5">
+                        <label for="ln-c">c</label><input type="number" id="ln-c" aria-label="Line, direction vector, c component" value="4" step="0.5">
                     </div>
                     <button class="btn" onclick="updateLine()">Update Line</button>
                     <div class="output-box" id="line-output">Set a point and direction, then click "Update Line."
@@ -269,15 +272,15 @@
                     <div class="sub">Point \(P_0\) and normal vector \(\vec{n}\)</div>
                     <div class="triple-input">
                         <strong style="width:60px;">Point</strong>
-                        <label>x</label><input type="number" id="pl-x" value="0" step="0.5">
-                        <label>y</label><input type="number" id="pl-y" value="0" step="0.5">
-                        <label>z</label><input type="number" id="pl-z" value="1.25" step="0.5">
+                        <label for="pl-x">x</label><input type="number" id="pl-x" aria-label="Plane, point P0, x coordinate" value="0" step="0.5">
+                        <label for="pl-y">y</label><input type="number" id="pl-y" aria-label="Plane, point P0, y coordinate" value="0" step="0.5">
+                        <label for="pl-z">z</label><input type="number" id="pl-z" aria-label="Plane, point P0, z coordinate" value="1.25" step="0.5">
                     </div>
                     <div class="triple-input">
                         <strong style="width:60px;">Normal</strong>
-                        <label>a</label><input type="number" id="pl-a" value="4" step="0.5">
-                        <label>b</label><input type="number" id="pl-b" value="-1" step="0.5">
-                        <label>c</label><input type="number" id="pl-c" value="2" step="0.5">
+                        <label for="pl-a">a</label><input type="number" id="pl-a" aria-label="Plane, normal vector, a component" value="4" step="0.5">
+                        <label for="pl-b">b</label><input type="number" id="pl-b" aria-label="Plane, normal vector, b component" value="-1" step="0.5">
+                        <label for="pl-c">c</label><input type="number" id="pl-c" aria-label="Plane, normal vector, c component" value="2" step="0.5">
                     </div>
                     <button class="btn" onclick="updatePlane()">Update Plane</button>
                     <div class="output-box" id="plane-output">Set a point and normal, then click "Update Plane."
@@ -306,9 +309,9 @@
                         \(\vec{n}\).</div>
                     <div class="triple-input">
                         <strong style="width:20px;">Q</strong>
-                        <label>x</label><input type="number" id="qp-x" value="3" step="0.5">
-                        <label>y</label><input type="number" id="qp-y" value="1" step="0.5">
-                        <label>z</label><input type="number" id="qp-z" value="-2" step="0.5">
+                        <label for="qp-x">x</label><input type="number" id="qp-x" aria-label="Point Q, x coordinate" value="3" step="0.5">
+                        <label for="qp-y">y</label><input type="number" id="qp-y" aria-label="Point Q, y coordinate" value="1" step="0.5">
+                        <label for="qp-z">z</label><input type="number" id="qp-z" aria-label="Point Q, z coordinate" value="-2" step="0.5">
                     </div>
                     <button class="btn" onclick="findDistance()">Compute Distance</button>
                     <button class="btn btn-secondary" onclick="clearDistance()">Clear</button>

@@ -21,7 +21,7 @@
 
         .dashboard {
             display: grid;
-            grid-template-columns: 1.2fr 1fr;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
             gap: 2rem;
             margin-bottom: 2rem;
             align-items: start;
@@ -29,7 +29,7 @@
 
         @media (max-width: 900px) {
             .dashboard {
-                grid-template-columns: 1fr;
+                grid-template-columns: minmax(0, 1fr);
             }
         }
 
@@ -39,6 +39,7 @@
             border-radius: 8px;
             padding: 1.5rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            min-width: 0;
         }
 
         .scene-wrap {
@@ -183,6 +184,7 @@
             padding: 1rem;
             margin-top: 0.75rem;
             font-size: 0.95rem;
+            overflow-x: auto;
             min-height: 1.5rem;
         }
 
@@ -268,7 +270,8 @@
 
         <div class="dashboard">
             <div class="panel scene-wrap">
-                <canvas id="scene" width="600" height="600"></canvas>
+                <canvas id="scene" width="600" height="600" role="img"
+                    aria-label="3D wireframe of the chosen quadric surface with a slicing plane x = k, y = k or z = k and the curve where the plane cuts the surface. Drag to rotate. The equation and the trace readout beside the scene name the curve."></canvas>
                 <div class="scene-hint">Drag to rotate &middot; scroll to zoom</div>
                 <div id="equation-output"></div>
                 <div class="checkbox-row" style="margin-top: 0.5rem;">
@@ -290,7 +293,7 @@
             <div class="panel">
                 <div class="control-block">
                     <h4>Choose a Surface</h4>
-                    <select id="surface-type">
+                    <select id="surface-type" aria-label="Quadric surface">
                         <option value="ellipsoid">Ellipsoid</option>
                         <option value="paraboloid-elliptic">Elliptic Paraboloid</option>
                         <option value="paraboloid-hyperbolic">Hyperbolic Paraboloid (saddle)</option>
@@ -303,21 +306,21 @@
                 <div class="control-block">
                     <h4>Adjust the Coefficients</h4>
                     <div class="triple-input">
-                        <label>a</label><input type="number" id="coef-a" value="1.6" min="0.5" max="2.5" step="0.1">
-                        <label>b</label><input type="number" id="coef-b" value="1.1" min="0.5" max="2.5" step="0.1">
-                        <label>c</label><input type="number" id="coef-c" value="1.0" min="0.5" max="2.5" step="0.1">
+                        <label for="coef-a">a</label><input type="number" id="coef-a" aria-label="Coefficient a" value="1.6" min="0.5" max="2.5" step="0.1">
+                        <label for="coef-b">b</label><input type="number" id="coef-b" aria-label="Coefficient b" value="1.1" min="0.5" max="2.5" step="0.1">
+                        <label for="coef-c">c</label><input type="number" id="coef-c" aria-label="Coefficient c" value="1.0" min="0.5" max="2.5" step="0.1">
                     </div>
                 </div>
 
                 <div class="control-block">
                     <h4>Slice It: Choose a Plane</h4>
-                    <div class="radio-row" id="axis-radio">
+                    <div class="radio-row" id="axis-radio" role="radiogroup" aria-label="Slicing plane direction">
                         <label><input type="radio" name="slice-axis" value="x"> x = k</label>
                         <label><input type="radio" name="slice-axis" value="y"> y = k</label>
                         <label><input type="radio" name="slice-axis" value="z" checked> z = k</label>
                     </div>
                     <div class="slider-row">
-                        <input type="range" id="slice-k" min="-3" max="3" step="0.1" value="0">
+                        <input type="range" id="slice-k" aria-label="Slicing plane position k" min="-3" max="3" step="0.1" value="0">
                         <span id="slice-k-value">0.0</span>
                     </div>
                     <div class="output-box" id="trace-output">Pick a surface and drag the slider &mdash; the

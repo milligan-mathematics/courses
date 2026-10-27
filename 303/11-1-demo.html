@@ -21,7 +21,7 @@
 
         .dashboard {
             display: grid;
-            grid-template-columns: 1.2fr 1fr;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
             gap: 2rem;
             margin-bottom: 2rem;
             align-items: start;
@@ -29,7 +29,7 @@
 
         @media (max-width: 900px) {
             .dashboard {
-                grid-template-columns: 1fr;
+                grid-template-columns: minmax(0, 1fr);
             }
         }
 
@@ -39,6 +39,7 @@
             border-radius: 8px;
             padding: 1.5rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            min-width: 0;
         }
 
         .scene-wrap {
@@ -164,6 +165,7 @@
             padding: 1rem;
             margin-top: 0.75rem;
             font-size: 0.95rem;
+            overflow-x: auto;
             min-height: 1.5rem;
         }
 
@@ -211,7 +213,8 @@
 
         <div class="dashboard">
             <div class="panel scene-wrap">
-                <canvas id="scene" width="600" height="600"></canvas>
+                <canvas id="scene" width="600" height="600" role="img"
+                    aria-label="3D coordinate scene with x, y and z axes. It shows the points you plot, the two points and the right-angle path used in the distance calculator, and the sphere you build. The same numbers are written in the point list and the readouts beside the scene."></canvas>
                 <div class="scene-hint">Drag to rotate &middot; scroll to zoom</div>
                 <div class="checkbox-row" style="margin-top: 1rem;">
                     <input type="checkbox" id="show-grid" checked>
@@ -229,9 +232,9 @@
                 <div class="control-block">
                     <h4>Plot a Point</h4>
                     <div class="triple-input">
-                        <label>x</label><input type="number" id="pt-x" value="1" step="0.5">
-                        <label>y</label><input type="number" id="pt-y" value="2" step="0.5">
-                        <label>z</label><input type="number" id="pt-z" value="3" step="0.5">
+                        <label for="pt-x">x</label><input type="number" id="pt-x" aria-label="Point to plot, x coordinate" value="1" step="0.5">
+                        <label for="pt-y">y</label><input type="number" id="pt-y" aria-label="Point to plot, y coordinate" value="2" step="0.5">
+                        <label for="pt-z">z</label><input type="number" id="pt-z" aria-label="Point to plot, z coordinate" value="3" step="0.5">
                         <button class="btn" onclick="plotPoint()">Plot</button>
                     </div>
                     <ul class="point-list" id="point-list"></ul>
@@ -241,15 +244,15 @@
                     <h4>Distance Between Two Points</h4>
                     <div class="triple-input">
                         <strong style="width: 24px;">P&#8321;</strong>
-                        <label>x</label><input type="number" id="d1-x" value="-2" step="0.5">
-                        <label>y</label><input type="number" id="d1-y" value="5" step="0.5">
-                        <label>z</label><input type="number" id="d1-z" value="1" step="0.5">
+                        <label for="d1-x">x</label><input type="number" id="d1-x" aria-label="Point P1, x coordinate" value="-2" step="0.5">
+                        <label for="d1-y">y</label><input type="number" id="d1-y" aria-label="Point P1, y coordinate" value="5" step="0.5">
+                        <label for="d1-z">z</label><input type="number" id="d1-z" aria-label="Point P1, z coordinate" value="1" step="0.5">
                     </div>
                     <div class="triple-input">
                         <strong style="width: 24px;">P&#8322;</strong>
-                        <label>x</label><input type="number" id="d2-x" value="3" step="0.5">
-                        <label>y</label><input type="number" id="d2-y" value="0" step="0.5">
-                        <label>z</label><input type="number" id="d2-z" value="-1" step="0.5">
+                        <label for="d2-x">x</label><input type="number" id="d2-x" aria-label="Point P2, x coordinate" value="3" step="0.5">
+                        <label for="d2-y">y</label><input type="number" id="d2-y" aria-label="Point P2, y coordinate" value="0" step="0.5">
+                        <label for="d2-z">z</label><input type="number" id="d2-z" aria-label="Point P2, z coordinate" value="-1" step="0.5">
                     </div>
                     <button class="btn" onclick="calculateDistance()">Calculate Distance</button>
                     <button class="btn btn-secondary" onclick="clearDistance()">Clear</button>
@@ -261,13 +264,13 @@
                     <h4>Sphere Builder</h4>
                     <div class="triple-input">
                         <strong style="width: 55px;">Center</strong>
-                        <label>a</label><input type="number" id="sp-a" value="2" step="0.5">
-                        <label>b</label><input type="number" id="sp-b" value="3" step="0.5">
-                        <label>c</label><input type="number" id="sp-c" value="-1" step="0.5">
+                        <label for="sp-a">a</label><input type="number" id="sp-a" aria-label="Sphere center, a (x coordinate)" value="2" step="0.5">
+                        <label for="sp-b">b</label><input type="number" id="sp-b" aria-label="Sphere center, b (y coordinate)" value="3" step="0.5">
+                        <label for="sp-c">c</label><input type="number" id="sp-c" aria-label="Sphere center, c (z coordinate)" value="-1" step="0.5">
                     </div>
                     <div class="triple-input">
                         <strong style="width: 55px;">Radius</strong>
-                        <input type="number" id="sp-r" value="2" step="0.5" min="0.5">
+                        <input type="number" id="sp-r" aria-label="Sphere radius" value="2" step="0.5" min="0.5">
                     </div>
                     <button class="btn" onclick="buildSphere()">Build Sphere</button>
                     <button class="btn btn-secondary" onclick="removeSphere()">Remove Sphere</button>
