@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balance the Plate - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        .dashboard > * {
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard .panel {
+            margin-bottom: 0;
+        }
+
+        .panel h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        canvas#scene {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .control-block {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #eee;
+        }
+
+        .control-block:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            min-width: 0;
+            accent-color: var(--color-accent-blue, #009CDE);
+        }
+
+        .slider-row input[type="number"] {
+            width: 5.5rem;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #6E6E6E;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4A4A4A;
+        }
+
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .readouts {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.4rem 0.9rem;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .readouts dt {
+            color: var(--text-muted);
+        }
+
+        .readouts dd {
+            margin: 0;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            overflow-wrap: anywhere;
+        }
+
+        .readouts .final {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .status {
+            margin-top: 0.75rem;
+            min-height: 1.4rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--color-accent-green, #008552);
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .things ol {
+            padding-left: 1.25rem;
+            margin: 0;
+        }
+
+        .things li {
+            margin-bottom: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Balance the Plate</h1>
+            <p>&sect;14.2 &mdash; find the balance point of a thin plate by moving a pivot, then compare your guess with
+                the center of mass and the moments of inertia from the double integrals.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Each plate is a flat region with a density <em>&rho;</em>(<em>x</em>, <em>y</em>); darker blue means
+                denser. Click or drag in the picture, or use the number boxes, to put the blue pivot where you think the
+                plate would balance. The two <strong>torque</strong> readouts say how hard the plate tips about the
+                vertical and the horizontal line through the pivot (they are <em>M</em><sub>y</sub> &minus;
+                <em>p</em><sub>x</sub><em>M</em> and <em>M</em><sub>x</sub> &minus; <em>p</em><sub>y</sub><em>M</em>).
+                When both are zero the plate balances. The numbers for the moments of inertia and radii of gyration do not
+                depend on the pivot.
+            </p>
+            <p class="hint">The center of mass is hidden until you tick &ldquo;Reveal the center of mass&rdquo;, so you can
+                guess first.</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel">
+                <canvas id="scene" width="600" height="600" tabindex="0" role="img"
+                    aria-label="A thin plate with a pivot point."></canvas>
+                <div class="scene-hint">Click or drag to move the pivot &middot; arrow keys nudge it</div>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#009CDE;"></span>the plate (darker = denser) and your pivot</div>
+                    <div><span class="swatch" style="background:#008552;"></span>vertical and horizontal lines through the pivot</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>center of mass</div>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="reveal">
+                    <label for="reveal">Reveal the center of mass</label>
+                </div>
+                <div class="btn-row">
+                    <button class="btn" id="snap" type="button">Move pivot to the center of mass</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <label class="field-label" for="preset">Plate</label>
+                    <select id="preset"></select>
+                    <div class="hint" id="rho-label"></div>
+                    <label class="field-label" for="px-slider">Pivot <em>p</em><sub>x</sub></label>
+                    <div class="slider-row">
+                        <input type="range" id="px-slider" min="-1" max="1" step="0.01" value="0">
+                        <input type="number" id="px-num" step="any" value="0" aria-label="Type the x-coordinate of the pivot">
+                    </div>
+                    <label class="field-label" for="py-slider">Pivot <em>p</em><sub>y</sub></label>
+                    <div class="slider-row">
+                        <input type="range" id="py-slider" min="-1" max="1" step="0.01" value="0">
+                        <input type="number" id="py-num" step="any" value="0" aria-label="Type the y-coordinate of the pivot">
+                    </div>
+                </div>
+                <div class="control-block">
+                    <h4>Does it balance?</h4>
+                    <dl class="readouts">
+                        <dt>Torque about the vertical line <em>x</em> = <em>p</em><sub>x</sub></dt><dd id="r-tx" class="final"></dd>
+                        <dt>Torque about the horizontal line <em>y</em> = <em>p</em><sub>y</sub></dt><dd id="r-ty" class="final"></dd>
+                    </dl>
+                    <div class="status" id="status"></div>
+                </div>
+                <div class="control-block">
+                    <h4>Mass and center of mass</h4>
+                    <dl class="readouts">
+                        <dt>Mass <em>M</em></dt><dd id="r-M"></dd>
+                        <dt>Moment <em>M</em><sub>x</sub></dt><dd id="r-Mx"></dd>
+                        <dt>Moment <em>M</em><sub>y</sub></dt><dd id="r-My"></dd>
+                        <dt>Center of mass (x&#772;, y&#772;)</dt><dd id="r-com"></dd>
+                    </dl>
+                </div>
+                <div class="control-block">
+                    <h4>Second moments</h4>
+                    <dl class="readouts">
+                        <dt><em>I</em><sub>x</sub></dt><dd id="r-Ix"></dd>
+                        <dt><em>I</em><sub>y</sub></dt><dd id="r-Iy"></dd>
+                        <dt><em>I</em><sub>0</sub> = <em>I</em><sub>x</sub> + <em>I</em><sub>y</sub></dt><dd id="r-I0"></dd>
+                        <dt>Radius of gyration <em>r</em><sub>x</sub></dt><dd id="r-rx"></dd>
+                        <dt>Radius of gyration <em>r</em><sub>y</sub></dt><dd id="r-ry"></dd>
+                        <dt>Radius of gyration <em>r</em><sub>0</sub></dt><dd id="r-r0"></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel things">
+            <h4>Things to try</h4>
+            <ol>
+                <li>Pick plate 1, the triangle with density <em>x</em><sup>2</sup> + <em>y</em>. Before you reveal
+                    anything, drag the pivot to your best guess for the balance point. Is it nearer the right side or
+                    the left, and why? Then read the two torques: which way do they say it tips? Reveal the center
+                    of mass to see how close you were. (The section page computes this one by hand.)</li>
+                <li>On plate 4 (density 1 + <em>x</em>), the plate is symmetric top to bottom. Predict the <em>y</em>
+                    coordinate of the center of mass without any torque readout, then check. What does the symmetry tell
+                    you about <em>M</em><sub>x</sub>?</li>
+                <li>Pick plate 5, the annulus. Predict where its center of mass is, then reveal it. Is the pivot placed
+                    there actually touching the plate? What does that say about the center of mass of an object?</li>
+                <li>Compare plate 6 (a disk) with plate 5 (an annulus). Both have constant density 1 and the same outer
+                    radius. Predict which has the bigger <em>I</em><sub>0</sub> and which has the bigger <em>r</em><sub>0</sub>,
+                    then check the readouts. For the annulus, test the formula <em>I</em><sub>0</sub> =
+                    &frac12;<em>M</em>(<em>a</em><sub>1</sub><sup>2</sup> + <em>a</em><sub>2</sub><sup>2</sup>) from the section
+                    page.</li>
+                <li>Pick plate 3, the half-disk. Its center of mass is not at the middle of the flat edge and not at
+                    the middle of the whole region. Guess its height above the flat edge, then reveal it and compare
+                    with the radius 2.</li>
+            </ol>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            'use strict';
+
+            const TAU = 2 * Math.PI;
+
+            // ---------- Gauss-Legendre nodes (computed once), used for exact-to-rounding integrals ----------
+            function gaussLegendre(n) {
+                const xs = [], ws = [];
+                for (let i = 0; i < n; i++) {
+                    let z = Math.cos(Math.PI * (i + 0.75) / (n + 0.5)), pp = 1;
+                    for (let it = 0; it < 100; it++) {
+                        let p1 = 1, p2 = 0;
+                        for (let j = 0; j < n; j++) {
+                            const p3 = p2; p2 = p1;
+                            p1 = ((2 * j + 1) * z * p2 - j * p3) / (j + 1);
+                        }
+                        pp = n * (z * p1 - p2) / (z * z - 1);
+                        const z1 = z;
+                        z = z1 - p1 / pp;
+                        if (Math.abs(z - z1) < 1e-15) break;
+                    }
+                    xs.push(z); ws.push(2 / ((1 - z * z) * pp * pp));
+                }
+                return { x: xs, w: ws };
+            }
+            const GL = gaussLegendre(8);
+
+            function integrate1(g, a, b, panels) {
+                let s = 0;
+                const h = (b - a) / panels;
+                for (let p = 0; p < panels; p++) {
+                    const lo = a + p * h, mid = lo + h / 2;
+                    for (let k = 0; k < GL.x.length; k++) s += GL.w[k] * g(mid + GL.x[k] * h / 2) * h / 2;
+                }
+                return s;
+            }
+
+            // Each plate is described by its region (Cartesian limits, or polar limits for round plates) and its density.
+            const PLATES = [
+                {
+                    name: 'Triangle (0,0), (1,0), (1,1), density x² + y',
+                    short: 'the triangle with vertices (0,0), (1,0), (1,1) and density x squared plus y',
+                    rho: (x, y) => x * x + y, rhoText: 'Density ρ(x, y) = x² + y',
+                    inside: (x, y) => x >= 0 && x <= 1 && y >= 0 && y <= x,
+                    cart: { x0: 0, x1: 1, y0: x => 0, y1: x => x },
+                    box: [0, 1, 0, 1], pivot: [0.5, 0.3]
+                },
+                {
+                    name: 'Between y = 3x² and y = 2 + x², density 1',
+                    short: 'the region between y equals 3 x squared and y equals 2 plus x squared, with constant density 1',
+                    rho: () => 1, rhoText: 'Density ρ(x, y) = 1 (constant)',
+                    inside: (x, y) => Math.abs(x) <= 1 && y >= 3 * x * x && y <= 2 + x * x,
+                    cart: { x0: -1, x1: 1, y0: x => 3 * x * x, y1: x => 2 + x * x },
+                    box: [-1, 1, 0, 3], pivot: [0.4, 1]
+                },
+                {
+                    name: 'Half-disk of radius 2 (y ≥ 0), density 1',
+                    short: 'the upper half of the disk of radius 2, with constant density 1',
+                    rho: () => 1, rhoText: 'Density ρ(x, y) = 1 (constant)',
+                    inside: (x, y) => y >= 0 && x * x + y * y <= 4,
+                    polar: { r0: 0, r1: 2, t0: 0, t1: Math.PI },
+                    box: [-2, 2, 0, 2], pivot: [0.5, 0.5]
+                },
+                {
+                    name: 'Rectangle [0, 3] × [0, 1], density 1 + x',
+                    short: 'the rectangle from x equals 0 to 3 and y equals 0 to 1 with density 1 plus x',
+                    rho: (x, y) => 1 + x, rhoText: 'Density ρ(x, y) = 1 + x',
+                    inside: (x, y) => x >= 0 && x <= 3 && y >= 0 && y <= 1,
+                    cart: { x0: 0, x1: 3, y0: x => 0, y1: x => 1 },
+                    box: [0, 3, 0, 1], pivot: [1.5, 0.3]
+                },
+                {
+                    name: 'Annulus 1 ≤ r ≤ 2, density 1',
+                    short: 'the ring between radius 1 and radius 2, with constant density 1',
+                    rho: () => 1, rhoText: 'Density ρ(x, y) = 1 (constant)',
+                    inside: (x, y) => { const q = x * x + y * y; return q >= 1 && q <= 4; },
+                    polar: { r0: 1, r1: 2, t0: 0, t1: TAU },
+                    box: [-2, 2, -2, 2], pivot: [0.8, 0.6]
+                },
+                {
+                    name: 'Disk of radius 2, density 1',
+                    short: 'the disk of radius 2 centered at the origin, with constant density 1',
+                    rho: () => 1, rhoText: 'Density ρ(x, y) = 1 (constant)',
+                    inside: (x, y) => x * x + y * y <= 4,
+                    polar: { r0: 0, r1: 2, t0: 0, t1: TAU },
+                    box: [-2, 2, -2, 2], pivot: [0.6, -0.4]
+                }
+            ];
+
+            // integral over the plate of w(x, y) * rho(x, y) dA
+            function plateIntegral(P, w) {
+                if (P.cart) {
+                    const c = P.cart;
+                    return integrate1(x => integrate1(y => w(x, y) * P.rho(x, y), c.y0(x), c.y1(x), 1), c.x0, c.x1, 4);
+                }
+                const q = P.polar;
+                return integrate1(t => integrate1(r => w(r * Math.cos(t), r * Math.sin(t)) * P.rho(r * Math.cos(t), r * Math.sin(t)) * r, q.r0, q.r1, 2), q.t0, q.t1, 4);
+            }
+
+            const canvas = document.getElementById('scene');
+            const ctx = canvas.getContext('2d');
+            const $ = id => document.getElementById(id);
+            const sel = $('preset');
+            const pxS = $('px-slider'), pxN = $('px-num'), pyS = $('py-slider'), pyN = $('py-num');
+
+            PLATES.forEach((p, i) => {
+                const o = document.createElement('option');
+                o.value = i;
+                o.textContent = (i + 1) + '. ' + p.name;
+                sel.appendChild(o);
+            });
+
+            let P = PLATES[0], mom = null;
+            let px = 0, py = 0;
+            let W = 600, win = { cx: 0, cy: 0, half: 1 };
+            let shade = null;
+
+            // ---------- helpers ----------
+            function clean(x) { return Math.abs(x) < 1e-9 ? 0 : x; }
+            function fmt(x) {
+                if (!isFinite(x)) return '—';
+                const r = Number(clean(x).toPrecision(4));
+                return String(r === 0 ? 0 : r);
+            }
+            const toX = x => W / 2 + (x - win.cx) / win.half * W / 2;
+            const toY = y => W / 2 - (y - win.cy) / win.half * W / 2;
+            const fromX = sx => win.cx + (sx - W / 2) / (W / 2) * win.half;
+            const fromY = sy => win.cy - (sy - W / 2) / (W / 2) * win.half;
+
+            function computeMoments() {
+                const M = plateIntegral(P, () => 1);
+                const Mx = plateIntegral(P, (x, y) => y);
+                const My = plateIntegral(P, (x, y) => x);
+                const Ix = plateIntegral(P, (x, y) => y * y);
+                const Iy = plateIntegral(P, (x, y) => x * x);
+                mom = { M: M, Mx: Mx, My: My, Ix: Ix, Iy: Iy, I0: Ix + Iy, xbar: My / M, ybar: Mx / M };
+            }
+
+            // density shading is drawn once into an off-screen canvas
+            function buildShade() {
+                const G = 220;
+                const off = document.createElement('canvas');
+                off.width = off.height = Math.round(W);
+                const o = off.getContext('2d');
+                const cell = W / G;
+                const vals = [];
+                let lo = Infinity, hi = -Infinity;
+                for (let j = 0; j < G; j++) {
+                    for (let i = 0; i < G; i++) {
+                        const x = fromX((i + 0.5) * cell), y = fromY((j + 0.5) * cell);
+                        if (P.inside(x, y)) {
+                            const r = P.rho(x, y);
+                            vals.push([i, j, r]);
+                            lo = Math.min(lo, r); hi = Math.max(hi, r);
+                        }
+                    }
+                }
+                vals.forEach(v => {
+                    const t = hi - lo < 1e-9 ? 0.5 : (v[2] - lo) / (hi - lo);
+                    o.fillStyle = 'rgba(0,156,222,' + (0.2 + 0.65 * t).toFixed(3) + ')';
+                    o.fillRect(v[0] * cell, v[1] * cell, cell + 0.6, cell + 0.6);
+                });
+                shade = off;
+            }
+
+            function drawAxes() {
+                ctx.strokeStyle = '#999';
+                ctx.lineWidth = 1;
+                ctx.font = '12px sans-serif';
+                ctx.fillStyle = '#555';
+                const x0 = toX(0), y0 = toY(0);
+                ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(W, y0); ctx.moveTo(x0, 0); ctx.lineTo(x0, W); ctx.stroke();
+                const span = win.half;
+                const step = span > 2.5 ? 1 : 0.5;
+                for (let v = Math.ceil((win.cx - span) / step) * step; v <= win.cx + span + 1e-9; v += step) {
+                    if (Math.abs(v) < 1e-9) continue;
+                    ctx.beginPath(); ctx.moveTo(toX(v), y0 - 3); ctx.lineTo(toX(v), y0 + 3); ctx.stroke();
+                    ctx.fillText(String(Number(v.toFixed(2))), toX(v) - 6, Math.min(W - 4, Math.max(12, y0 + 16)));
+                }
+                for (let v = Math.ceil((win.cy - span) / step) * step; v <= win.cy + span + 1e-9; v += step) {
+                    if (Math.abs(v) < 1e-9) continue;
+                    ctx.beginPath(); ctx.moveTo(x0 - 3, toY(v)); ctx.lineTo(x0 + 3, toY(v)); ctx.stroke();
+                    ctx.fillText(String(Number(v.toFixed(2))), Math.min(W - 24, Math.max(4, x0 + 6)), toY(v) + 4);
+                }
+                ctx.font = 'bold 14px sans-serif';
+                ctx.fillStyle = '#333';
+                ctx.fillText('x', W - 14, Math.min(W - 6, Math.max(14, y0 - 6)));
+                ctx.fillText('y', Math.min(W - 14, Math.max(4, x0 + 8)), 14);
+            }
+
+            function draw() {
+                ctx.setTransform(canvas.width / W, 0, 0, canvas.width / W, 0, 0);
+                ctx.clearRect(0, 0, W, W);
+                drawAxes();
+                if (shade) ctx.drawImage(shade, 0, 0, W, W);
+
+                // lines through the pivot
+                ctx.strokeStyle = '#008552';
+                ctx.lineWidth = 1.6;
+                ctx.setLineDash([6, 5]);
+                ctx.beginPath();
+                ctx.moveTo(toX(px), 0); ctx.lineTo(toX(px), W);
+                ctx.moveTo(0, toY(py)); ctx.lineTo(W, toY(py));
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                const reveal = $('reveal').checked;
+                if (reveal) {
+                    ctx.strokeStyle = '#F36E24';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath(); ctx.arc(toX(mom.xbar), toY(mom.ybar), 9, 0, TAU); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(toX(mom.xbar) - 14, toY(mom.ybar)); ctx.lineTo(toX(mom.xbar) + 14, toY(mom.ybar));
+                    ctx.moveTo(toX(mom.xbar), toY(mom.ybar) - 14); ctx.lineTo(toX(mom.xbar), toY(mom.ybar) + 14); ctx.stroke();
+                }
+
+                ctx.fillStyle = '#009CDE';
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(toX(px), toY(py), 7, 0, TAU); ctx.fill(); ctx.stroke();
+
+                // readouts
+                const ty = mom.My - px * mom.M, tx = mom.Mx - py * mom.M;
+                $('r-tx').textContent = fmt(ty);
+                $('r-ty').textContent = fmt(tx);
+                const tol = 0.004 * mom.M * win.half;
+                let msg = '';
+                if (Math.abs(ty) <= tol && Math.abs(tx) <= tol) msg = 'Balanced: both torques are zero.';
+                else {
+                    const parts = [];
+                    if (Math.abs(ty) > tol) parts.push('more mass to the ' + (ty > 0 ? 'right' : 'left') + ' of the vertical line');
+                    if (Math.abs(tx) > tol) parts.push('more mass ' + (tx > 0 ? 'above' : 'below') + ' the horizontal line');
+                    msg = 'Tips: ' + parts.join('; ') + '.';
+                }
+                $('status').textContent = msg;
+                $('r-M').textContent = fmt(mom.M);
+                $('r-Mx').textContent = reveal ? fmt(mom.Mx) : 'hidden';
+                $('r-My').textContent = reveal ? fmt(mom.My) : 'hidden';
+                $('r-com').textContent = reveal ? '(' + fmt(mom.xbar) + ', ' + fmt(mom.ybar) + ')' : 'hidden';
+                $('r-Ix').textContent = fmt(mom.Ix);
+                $('r-Iy').textContent = fmt(mom.Iy);
+                $('r-I0').textContent = fmt(mom.I0);
+                $('r-rx').textContent = fmt(Math.sqrt(mom.Ix / mom.M));
+                $('r-ry').textContent = fmt(Math.sqrt(mom.Iy / mom.M));
+                $('r-r0').textContent = fmt(Math.sqrt(mom.I0 / mom.M));
+                canvas.setAttribute('aria-label',
+                    'A thin plate: ' + P.short + '. The pivot is at (' + fmt(px) + ', ' + fmt(py) + '). Torque about the vertical line through the pivot is ' +
+                    fmt(ty) + ' and about the horizontal line is ' + fmt(tx) + '. ' + msg +
+                    (reveal ? ' The center of mass is at (' + fmt(mom.xbar) + ', ' + fmt(mom.ybar) + ').' : ''));
+            }
+
+            // ---------- preset and controls ----------
+            function setPlate(i) {
+                P = PLATES[i];
+                computeMoments();
+                const b = P.box;
+                win.cx = (b[0] + b[1]) / 2; win.cy = (b[2] + b[3]) / 2;
+                win.half = Math.max(b[1] - b[0], b[3] - b[2]) / 2 * 1.25;
+                [pxS, pxN].forEach(e => { e.min = win.cx - win.half; e.max = win.cx + win.half; });
+                [pyS, pyN].forEach(e => { e.min = win.cy - win.half; e.max = win.cy + win.half; });
+                $('rho-label').textContent = P.rhoText;
+                buildShade();
+                setPivot(P.pivot[0], P.pivot[1]);
+            }
+
+            function setPivot(x, y) {
+                px = Math.min(win.cx + win.half, Math.max(win.cx - win.half, x));
+                py = Math.min(win.cy + win.half, Math.max(win.cy - win.half, y));
+                pxS.value = px; pyS.value = py;
+                pxN.value = Number(px.toFixed(3)); pyN.value = Number(py.toFixed(3));
+                draw();
+            }
+
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                W = Math.max(200, rect.width);
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = Math.round(W * dpr);
+                canvas.height = Math.round(W * dpr);
+                buildShade();
+                draw();
+            }
+
+            sel.addEventListener('change', () => setPlate(parseInt(sel.value, 10)));
+            pxS.addEventListener('input', () => setPivot(parseFloat(pxS.value), py));
+            pyS.addEventListener('input', () => setPivot(px, parseFloat(pyS.value)));
+            pxN.addEventListener('change', () => { const v = parseFloat(pxN.value); setPivot(isFinite(v) ? v : px, py); });
+            pyN.addEventListener('change', () => { const v = parseFloat(pyN.value); setPivot(px, isFinite(v) ? v : py); });
+            $('reveal').addEventListener('change', draw);
+            $('snap').addEventListener('click', () => setPivot(mom.xbar, mom.ybar));
+
+            // click or drag to place the pivot
+            let dragging = false;
+            function place(e) {
+                const rect = canvas.getBoundingClientRect();
+                setPivot(fromX(e.clientX - rect.left), fromY(e.clientY - rect.top));
+            }
+            canvas.addEventListener('pointerdown', e => { dragging = true; canvas.setPointerCapture(e.pointerId); place(e); });
+            canvas.addEventListener('pointermove', e => { if (dragging) place(e); });
+            canvas.addEventListener('pointerup', e => { dragging = false; if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId); });
+            canvas.addEventListener('pointercancel', () => { dragging = false; });
+            canvas.addEventListener('keydown', e => {
+                const s = win.half * 0.02;
+                if (e.key === 'ArrowLeft') setPivot(px - s, py);
+                else if (e.key === 'ArrowRight') setPivot(px + s, py);
+                else if (e.key === 'ArrowUp') setPivot(px, py + s);
+                else if (e.key === 'ArrowDown') setPivot(px, py - s);
+                else return;
+                e.preventDefault();
+            });
+
+            window.addEventListener('resize', resize);
+            setPlate(0);
+            resize();
+        })();
+    </script>
+</body>
+
+</html>

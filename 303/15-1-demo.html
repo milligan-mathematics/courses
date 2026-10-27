@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Field Flow - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        .dashboard > * {
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard .panel {
+            margin-bottom: 0;
+        }
+
+        .panel h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        canvas.field {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .control-block {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #eee;
+        }
+
+        .control-block:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            min-width: 0;
+            accent-color: var(--color-accent-blue, #009CDE);
+        }
+
+        .slider-row input[type="number"] {
+            width: 5.5rem;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 0.75rem;
+        }
+
+        .button-row button {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #fff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .button-row button:hover {
+            border-color: var(--color-accent-blue, #009CDE);
+        }
+
+        .readouts {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.4rem 0.9rem;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .readouts dt {
+            color: var(--text-muted);
+        }
+
+        .readouts dd {
+            margin: 0;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            overflow-wrap: anywhere;
+        }
+
+        .readouts .final {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .status {
+            margin-top: 0.75rem;
+            min-height: 1.4rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--color-accent-green, #008552);
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .things ol {
+            padding-left: 1.25rem;
+            margin: 0;
+        }
+
+        .things li {
+            margin-bottom: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Field Flow</h1>
+            <p>&sect;15.1 &mdash; pick a vector field, drag a probe to read the vector at any point, and release particles
+                that flow along the arrows.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Each arrow is the vector <strong>F</strong>(<em>x</em>, <em>y</em>) = &lang;<em>P</em>, <em>Q</em>&rang; drawn
+                with its tail at its point. Drag the blue <strong>probe</strong> (or type its coordinates) to read the vector
+                there. Click an empty spot on the picture, or press <strong>Release a particle at the probe</strong>, to start
+                a particle. A particle moves so that its velocity is the field at its position, so it follows the arrows.
+                The last two readouts try the <strong>component test</strong> &part;<em>P</em>/&part;<em>y</em> =
+                &part;<em>Q</em>/&part;<em>x</em> at the probe and over the whole picture.
+            </p>
+            <p class="hint">The picture shows &minus;3 &le; <em>x</em>, <em>y</em> &le; 3. Where a field is not defined (the
+                center of the inverse-square and outflow fields) nothing is drawn, and a particle that reaches it is removed.
+                The gravity field here is the slice <em>z</em> = 0 of the section page&rsquo;s gravitational field with
+                <em>GMm</em> = 1.</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel">
+                <canvas id="cv" class="field" width="560" height="560" role="img" tabindex="0"
+                    aria-label="A vector field drawn as arrows on a grid."></canvas>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#008552;"></span>field arrows</div>
+                    <div><span class="swatch" style="background:#009CDE;"></span>the probe (you move it)</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>particles and their trails</div>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="unit">
+                    <label for="unit">Draw every arrow the same length (direction only)</label>
+                </div>
+                <div class="button-row">
+                    <button type="button" id="drop">Release a particle at the probe</button>
+                    <button type="button" id="play" aria-pressed="false">Pause</button>
+                    <button type="button" id="step">Step</button>
+                    <button type="button" id="clear">Clear particles</button>
+                </div>
+                <div class="status" id="status" role="status"></div>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <label class="field-label" for="field">Vector field F(x, y)</label>
+                    <select id="field"></select>
+                    <label class="field-label" for="n-slider">Arrows per side</label>
+                    <div class="slider-row">
+                        <input type="range" id="n-slider" min="7" max="25" step="1" value="15">
+                        <input type="number" id="n-num" min="7" max="25" step="1" value="15" aria-label="Type the number of arrows per side">
+                    </div>
+                    <label class="field-label" for="speed-slider">Particle speed</label>
+                    <div class="slider-row">
+                        <input type="range" id="speed-slider" min="0.25" max="3" step="0.25" value="1">
+                        <input type="number" id="speed-num" min="0.25" max="3" step="0.25" value="1" aria-label="Type the particle speed">
+                    </div>
+                </div>
+                <div class="control-block">
+                    <h4>The probe</h4>
+                    <label class="field-label" for="px-slider">Probe <em>x</em></label>
+                    <div class="slider-row">
+                        <input type="range" id="px-slider" min="-3" max="3" step="0.1" value="1">
+                        <input type="number" id="px-num" min="-3" max="3" step="0.1" value="1" aria-label="Type the x-coordinate of the probe">
+                    </div>
+                    <label class="field-label" for="py-slider">Probe <em>y</em></label>
+                    <div class="slider-row">
+                        <input type="range" id="py-slider" min="-3" max="3" step="0.1" value="1">
+                        <input type="number" id="py-num" min="-3" max="3" step="0.1" value="1" aria-label="Type the y-coordinate of the probe">
+                    </div>
+                    <dl class="readouts">
+                        <dt>Point (<em>x</em>, <em>y</em>)</dt><dd id="r-pt"></dd>
+                        <dt><strong>F</strong> there = &lang;<em>P</em>, <em>Q</em>&rang;</dt><dd id="r-F" class="final"></dd>
+                        <dt>Length &#8741;<strong>F</strong>&#8741;</dt><dd id="r-mag"></dd>
+                        <dt>&part;<em>P</em>/&part;<em>y</em> at the probe</dt><dd id="r-py"></dd>
+                        <dt>&part;<em>Q</em>/&part;<em>x</em> at the probe</dt><dd id="r-qx"></dd>
+                        <dt>Component test at the probe</dt><dd id="r-here"></dd>
+                        <dt>Component test over the picture</dt><dd id="r-all"></dd>
+                    </dl>
+                </div>
+                <div class="control-block">
+                    <h4>Particles</h4>
+                    <dl class="readouts">
+                        <dt>Particles flowing</dt><dd id="r-n"></dd>
+                        <dt>Newest particle at</dt><dd id="r-last" class="final"></dd>
+                        <dt>Its time so far</dt><dd id="r-time"></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel things">
+            <h4>Things to try</h4>
+            <ol>
+                <li>Pick the swirl <strong>F</strong> = &lang;&minus;<em>y</em>, <em>x</em>&rang; (the first example on the section
+                    page). Before you release anything, predict which way a particle started at (2, 0) will go and whether it
+                    speeds up or slows down as it goes around. Release it and check. Then read the length at (1, 0) and at (2, 0).</li>
+                <li>Pick the outflow field &lang;<em>x</em>, <em>y</em>&rang;/(2&#8741;<strong>r</strong>&#8741;). Predict the length
+                    readout at three very different probe points, then check them. Why do all the arrows have the same length?
+                    Tick &ldquo;same length&rdquo; and see what changes (and what doesn&rsquo;t).</li>
+                <li>Pick the gravity slice. Put the probe at distance 1 from the center, read the length, then predict the
+                    length at distance 2 and at distance 3 before you move the probe. How do the readouts compare with the
+                    inverse-square law?</li>
+                <li>Pick the gradient field &lang;2<em>x</em> + cos <em>y</em>, &minus;<em>x</em> sin <em>y</em>&rang;. Move the probe
+                    anywhere and compare the two component-test numbers. Then pick the swirl and do the same. Which
+                    one will pass everywhere, and which one fails everywhere?</li>
+                <li>Pick the spiral &lang;<em>x</em> &minus; <em>y</em>, <em>x</em> + <em>y</em>&rang;. It is a swirl plus an outflow.
+                    Predict the path of a particle before you release it, then release two particles at different
+                    distances. For the pendulum field &lang;<em>y</em>, &minus;sin <em>x</em>&rang;, do the particles near the
+                    origin behave differently from the ones near (3, 0)?</li>
+            </ol>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            'use strict';
+
+            const TAU = 2 * Math.PI;
+            const sin = Math.sin, cos = Math.cos, sqrt = Math.sqrt;
+            const L = 3;                       // the picture shows -L <= x, y <= L
+
+            // Each field: P, Q, and the two partial derivatives the component test compares, written out by hand.
+            // sing: the field is undefined at the origin.
+            const FIELDS = [
+                {
+                    name: '⟨−y, x⟩  (the swirl, section page)', short: 'the swirl, F equals minus y, x',
+                    P: (x, y) => -y, Q: (x, y) => x, Py: () => -1, Qx: () => 1, sing: false
+                },
+                {
+                    name: '⟨x, y⟩ / (2‖r‖)  (outflow, section page)', short: 'the outflow field, x, y divided by twice the distance from the origin',
+                    P: (x, y) => x / (2 * sqrt(x * x + y * y)), Q: (x, y) => y / (2 * sqrt(x * x + y * y)),
+                    Py: (x, y) => -x * y / (2 * Math.pow(x * x + y * y, 1.5)), Qx: (x, y) => -x * y / (2 * Math.pow(x * x + y * y, 1.5)), sing: true
+                },
+                {
+                    name: '−⟨x, y⟩ / (x² + y²)^(3/2)  (gravity, slice z = 0)', short: 'the inverse-square gravity field pointing at the origin',
+                    P: (x, y) => -x / Math.pow(x * x + y * y, 1.5), Q: (x, y) => -y / Math.pow(x * x + y * y, 1.5),
+                    Py: (x, y) => 3 * x * y / Math.pow(x * x + y * y, 2.5), Qx: (x, y) => 3 * x * y / Math.pow(x * x + y * y, 2.5), sing: true
+                },
+                {
+                    name: '⟨2x + cos y, −x sin y⟩  (a gradient field, section page)', short: 'the gradient field of x squared plus x cosine y',
+                    P: (x, y) => 2 * x + cos(y), Q: (x, y) => -x * sin(y), Py: (x, y) => -sin(y), Qx: (x, y) => -sin(y), sing: false
+                },
+                {
+                    name: '⟨y, −sin x⟩  (the pendulum)', short: 'the pendulum field, y, minus sine x',
+                    P: (x, y) => y, Q: (x, y) => -sin(x), Py: () => 1, Qx: (x, y) => -cos(x), sing: false
+                },
+                {
+                    name: '⟨x − y, x + y⟩  (the spiral)', short: 'the spiral field, x minus y, x plus y',
+                    P: (x, y) => x - y, Q: (x, y) => x + y, Py: () => -1, Qx: () => 1, sing: false
+                }
+            ];
+
+            const $ = id => document.getElementById(id);
+            const fieldSel = $('field');
+            FIELDS.forEach((p, i) => { const o = document.createElement('option'); o.value = i; o.textContent = (i + 1) + '. ' + p.name; fieldSel.appendChild(o); });
+
+            const cv = $('cv'), ctx = cv.getContext('2d');
+            let W = 560;
+            let F = FIELDS[0];
+            let N = 15, speed = 1, playing = true;
+            let probe = { x: 1, y: 1 };
+            let parts = [];
+            let totalDropped = 0;
+            const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduceMotion) playing = false;
+
+            // ---------- helpers ----------
+            function clean(x) { return Math.abs(x) < 1e-9 ? 0 : x; }
+            function fmt(x) {
+                if (!isFinite(x)) return '—';
+                const r = Number(clean(x).toPrecision(4));
+                return String(r === 0 ? 0 : r);
+            }
+            const toX = x => W / 2 + x / L * W / 2;
+            const toY = y => W / 2 - y / L * W / 2;
+            const fromX = px => (px - W / 2) / (W / 2) * L;
+            const fromY = py => -(py - W / 2) / (W / 2) * L;
+
+            function defined(x, y) {
+                if (F.sing && x * x + y * y < 1e-4) return false;
+                const p = F.P(x, y), q = F.Q(x, y);
+                return isFinite(p) && isFinite(q);
+            }
+            function vec(x, y) { return defined(x, y) ? [F.P(x, y), F.Q(x, y)] : null; }
+
+            // ---------- drawing ----------
+            function arrow(x0, y0, dx, dy, color, width) {
+                const len = Math.hypot(dx, dy);
+                if (len < 1) return;
+                const x1 = x0 + dx, y1 = y0 + dy;
+                ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width;
+                ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+                const head = Math.min(7, Math.max(3, len * 0.35));
+                const a = Math.atan2(dy, dx);
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x1 - head * cos(a - 0.45), y1 - head * sin(a - 0.45));
+                ctx.lineTo(x1 - head * cos(a + 0.45), y1 - head * sin(a + 0.45));
+                ctx.closePath(); ctx.fill();
+            }
+
+            function gridInfo() {
+                const cell = 2 * L / N;
+                const pts = [];
+                const mags = [];
+                for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+                    const x = -L + (i + 0.5) * cell, y = -L + (j + 0.5) * cell;
+                    const v = vec(x, y);
+                    if (v) { pts.push({ x: x, y: y, v: v }); mags.push(Math.hypot(v[0], v[1])); }
+                }
+                mags.sort((a, b) => a - b);
+                const ref = mags.length ? Math.max(mags[Math.floor(0.75 * (mags.length - 1))], 1e-9) : 1;
+                return { cell: cell, pts: pts, ref: ref };
+            }
+
+            function draw() {
+                ctx.setTransform(cv.width / W, 0, 0, cv.width / W, 0, 0);
+                ctx.clearRect(0, 0, W, W);
+                // axes and ticks
+                ctx.strokeStyle = '#bbb'; ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, toY(0)); ctx.lineTo(W, toY(0)); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), W);
+                ctx.stroke();
+                ctx.fillStyle = '#666'; ctx.font = '11px sans-serif';
+                for (let k = -2; k <= 2; k++) {
+                    if (k === 0) continue;
+                    ctx.beginPath(); ctx.moveTo(toX(k), toY(0) - 3); ctx.lineTo(toX(k), toY(0) + 3); ctx.moveTo(toX(0) - 3, toY(k)); ctx.lineTo(toX(0) + 3, toY(k)); ctx.stroke();
+                    ctx.fillText(String(k), toX(k) - 3, toY(0) + 15);
+                    ctx.fillText(String(k), toX(0) + 6, toY(k) + 4);
+                }
+                ctx.fillStyle = '#333'; ctx.font = 'bold 13px sans-serif';
+                ctx.fillText('x', W - 14, toY(0) - 6);
+                ctx.fillText('y', toX(0) + 6, 14);
+
+                // field arrows
+                const g = gridInfo();
+                const unit = $('unit').checked;
+                const cellPx = g.cell / (2 * L) * W;
+                g.pts.forEach(p => {
+                    const mag = Math.hypot(p.v[0], p.v[1]);
+                    if (mag < 1e-12) return;
+                    let len = unit ? 0.8 * cellPx : Math.min(1.4 * cellPx, 0.9 * cellPx * mag / g.ref);
+                    const dx = p.v[0] / mag * len, dy = -p.v[1] / mag * len;
+                    arrow(toX(p.x), toY(p.y), dx, dy, 'rgba(0,110,72,0.85)', 1.4);
+                    ctx.fillStyle = 'rgba(0,110,72,0.9)';
+                    ctx.beginPath(); ctx.arc(toX(p.x), toY(p.y), 1.6, 0, TAU); ctx.fill();
+                });
+
+                // particles
+                parts.forEach(p => {
+                    ctx.strokeStyle = 'rgba(243,110,36,0.55)'; ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    p.trail.forEach((t, k) => { if (k === 0) ctx.moveTo(toX(t[0]), toY(t[1])); else ctx.lineTo(toX(t[0]), toY(t[1])); });
+                    ctx.lineTo(toX(p.x), toY(p.y));
+                    ctx.stroke();
+                    ctx.fillStyle = '#F36E24';
+                    ctx.beginPath(); ctx.arc(toX(p.x), toY(p.y), 4.5, 0, TAU); ctx.fill();
+                    ctx.strokeStyle = '#CD5920'; ctx.lineWidth = 1.5; ctx.stroke();
+                });
+
+                // probe, with its own arrow in blue
+                const v = vec(probe.x, probe.y);
+                if (v) {
+                    const mag = Math.hypot(v[0], v[1]);
+                    if (mag > 1e-12) {
+                        const len = unit ? 0.8 * cellPx : Math.min(1.4 * cellPx, 0.9 * cellPx * mag / g.ref);
+                        arrow(toX(probe.x), toY(probe.y), v[0] / mag * len, -v[1] / mag * len, '#007bb0', 2.6);
+                    }
+                }
+                ctx.fillStyle = '#009CDE'; ctx.strokeStyle = '#005f87'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(toX(probe.x), toY(probe.y), 7, 0, TAU); ctx.fill(); ctx.stroke();
+            }
+
+            // ---------- readouts ----------
+            function testAll() {
+                // sample the component test over a 21 x 21 grid of the picture (skipping undefined points)
+                let worst = 0, count = 0;
+                for (let i = 0; i < 21; i++) for (let j = 0; j < 21; j++) {
+                    const x = -L + (i + 0.5) * 2 * L / 21, y = -L + (j + 0.5) * 2 * L / 21;
+                    if (!defined(x, y)) continue;
+                    const d = Math.abs(F.Py(x, y) - F.Qx(x, y));
+                    const scale = Math.max(1, Math.abs(F.Py(x, y)), Math.abs(F.Qx(x, y)));
+                    worst = Math.max(worst, d / scale); count++;
+                }
+                return { worst: worst, count: count };
+            }
+
+            function readouts() {
+                const x = probe.x, y = probe.y;
+                $('r-pt').textContent = '(' + fmt(x) + ', ' + fmt(y) + ')';
+                const v = vec(x, y);
+                if (v) {
+                    $('r-F').textContent = '⟨' + fmt(v[0]) + ', ' + fmt(v[1]) + '⟩';
+                    $('r-mag').textContent = fmt(Math.hypot(v[0], v[1]));
+                    const py = F.Py(x, y), qx = F.Qx(x, y);
+                    $('r-py').textContent = fmt(py);
+                    $('r-qx').textContent = fmt(qx);
+                    $('r-here').textContent = Math.abs(py - qx) <= 1e-9 * Math.max(1, Math.abs(py), Math.abs(qx)) ? 'equal here' : 'not equal here';
+                } else {
+                    ['r-F', 'r-mag', 'r-py', 'r-qx'].forEach(k => { $(k).textContent = '—'; });
+                    $('r-here').textContent = 'F is not defined here';
+                }
+                const t = testAll();
+                $('r-all').textContent = t.worst <= 1e-9 ? 'equal at every point sampled' : 'fails at points sampled';
+                $('r-n').textContent = String(parts.length);
+                const last = parts[parts.length - 1];
+                $('r-last').textContent = last ? '(' + fmt(last.x) + ', ' + fmt(last.y) + ')' : '—';
+                $('r-time').textContent = last ? fmt(last.t) : '—';
+                cv.setAttribute('aria-label',
+                    'A grid of ' + N + ' by ' + N + ' arrows for ' + F.short + ', shown for x and y between minus 3 and 3. ' +
+                    'The probe is at (' + fmt(x) + ', ' + fmt(y) + ')' + (v ? ' where the vector is ⟨' + fmt(v[0]) + ', ' + fmt(v[1]) + '⟩.' : ' where the field is not defined.') +
+                    ' There ' + (parts.length === 1 ? 'is 1 particle' : 'are ' + parts.length + ' particles') + ' flowing along the field.');
+                $('play').textContent = playing ? 'Pause' : 'Play';
+                $('play').setAttribute('aria-pressed', playing ? 'false' : 'true');
+            }
+
+            function refresh() { readouts(); draw(); }
+
+            // ---------- particles: x' = P, y' = Q, advanced by RK4 ----------
+            const H = 0.03;                       // time per substep at speed 1
+            function rk4(p, h) {
+                const f = (x, y) => vec(x, y);
+                const k1 = f(p.x, p.y); if (!k1) return false;
+                const k2 = f(p.x + h / 2 * k1[0], p.y + h / 2 * k1[1]); if (!k2) return false;
+                const k3 = f(p.x + h / 2 * k2[0], p.y + h / 2 * k2[1]); if (!k3) return false;
+                const k4 = f(p.x + h * k3[0], p.y + h * k3[1]); if (!k4) return false;
+                p.x += h / 6 * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]);
+                p.y += h / 6 * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]);
+                p.t += h;
+                return true;
+            }
+            function advance(steps) {
+                const h = H * speed;
+                let removed = null;
+                for (let s = 0; s < steps; s++) {
+                    parts = parts.filter(p => {
+                        const ok = rk4(p, h) && Math.abs(p.x) < 2 * L && Math.abs(p.y) < 2 * L && !(F.sing && p.x * p.x + p.y * p.y < 0.01);
+                        if (!ok) removed = Math.abs(p.x) >= 2 * L || Math.abs(p.y) >= 2 * L ? 'A particle left the picture and was removed.' : 'A particle reached a point where the field is undefined and was removed.';
+                        return ok;
+                    });
+                    if (s % 3 === 0) parts.forEach(p => { p.trail.push([p.x, p.y]); if (p.trail.length > 90) p.trail.shift(); });
+                }
+                if (removed) $('status').textContent = removed;
+            }
+            function addParticle(x, y) {
+                if (!defined(x, y)) { $('status').textContent = 'The field is not defined there. Try another point.'; return; }
+                if (parts.length >= 30) parts.shift();
+                parts.push({ x: x, y: y, t: 0, trail: [] });
+                totalDropped++;
+                $('status').textContent = '';
+                refresh();
+            }
+
+            let last = 0;
+            function frame(ts) {
+                if (playing && parts.length && ts - last > 16) { advance(2); last = ts; refresh(); }
+                requestAnimationFrame(frame);
+            }
+            requestAnimationFrame(frame);
+
+            // ---------- controls ----------
+            function setProbe(x, y) {
+                probe.x = Math.min(L, Math.max(-L, x)); probe.y = Math.min(L, Math.max(-L, y));
+                $('px-slider').value = probe.x; $('px-num').value = Number(probe.x.toFixed(2));
+                $('py-slider').value = probe.y; $('py-num').value = Number(probe.y.toFixed(2));
+                refresh();
+            }
+            function setN(n) {
+                N = Math.min(25, Math.max(7, Math.round(n)));
+                $('n-slider').value = N; $('n-num').value = N;
+                refresh();
+            }
+            function setSpeed(s) {
+                speed = Math.min(3, Math.max(0.25, isFinite(s) ? s : 1));
+                $('speed-slider').value = speed; $('speed-num').value = speed;
+            }
+            function resize() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = cv.getBoundingClientRect();
+                W = Math.max(200, rect.width);
+                cv.width = Math.round(W * dpr);
+                cv.height = Math.round(W * dpr);
+                draw();
+            }
+
+            // pointer: near the probe drags it, anywhere else starts a particle
+            let dragging = false;
+            function localXY(e) {
+                const r = cv.getBoundingClientRect();
+                return [(e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * W];
+            }
+            cv.addEventListener('pointerdown', e => {
+                const [px, py] = localXY(e);
+                if (Math.hypot(px - toX(probe.x), py - toY(probe.y)) < 16) {
+                    dragging = true;
+                    try { cv.setPointerCapture(e.pointerId); } catch (err) { }
+                } else {
+                    addParticle(fromX(px), fromY(py));
+                }
+                e.preventDefault();
+            });
+            cv.addEventListener('pointermove', e => {
+                if (!dragging) return;
+                const [px, py] = localXY(e);
+                setProbe(Math.round(fromX(px) * 20) / 20, Math.round(fromY(py) * 20) / 20);
+            });
+            const stopDrag = () => { dragging = false; };
+            cv.addEventListener('pointerup', stopDrag);
+            cv.addEventListener('pointercancel', stopDrag);
+            cv.addEventListener('keydown', e => {
+                const d = { ArrowLeft: [-0.1, 0], ArrowRight: [0.1, 0], ArrowUp: [0, 0.1], ArrowDown: [0, -0.1] }[e.key];
+                if (d) { setProbe(probe.x + d[0], probe.y + d[1]); e.preventDefault(); }
+            });
+
+            fieldSel.addEventListener('change', () => {
+                F = FIELDS[parseInt(fieldSel.value, 10)];
+                parts = []; $('status').textContent = '';
+                refresh();
+            });
+            $('n-slider').addEventListener('input', () => setN(parseFloat($('n-slider').value)));
+            $('n-num').addEventListener('change', () => { const v = parseFloat($('n-num').value); setN(isFinite(v) ? v : N); });
+            $('speed-slider').addEventListener('input', () => setSpeed(parseFloat($('speed-slider').value)));
+            $('speed-num').addEventListener('change', () => setSpeed(parseFloat($('speed-num').value)));
+            $('px-slider').addEventListener('input', () => setProbe(parseFloat($('px-slider').value), probe.y));
+            $('py-slider').addEventListener('input', () => setProbe(probe.x, parseFloat($('py-slider').value)));
+            $('px-num').addEventListener('change', () => { const v = parseFloat($('px-num').value); setProbe(isFinite(v) ? v : probe.x, probe.y); });
+            $('py-num').addEventListener('change', () => { const v = parseFloat($('py-num').value); setProbe(probe.x, isFinite(v) ? v : probe.y); });
+            $('unit').addEventListener('change', refresh);
+            $('drop').addEventListener('click', () => addParticle(probe.x, probe.y));
+            $('play').addEventListener('click', () => { playing = !playing; refresh(); });
+            $('step').addEventListener('click', () => { advance(10); refresh(); });
+            $('clear').addEventListener('click', () => { parts = []; $('status').textContent = ''; refresh(); });
+
+            window.addEventListener('resize', resize);
+            setSpeed(1);
+            resize();
+            refresh();
+        })();
+    </script>
+</body>
+
+</html>

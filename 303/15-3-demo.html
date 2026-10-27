@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Paths, One Field - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        .dashboard > * {
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard .panel {
+            margin-bottom: 0;
+        }
+
+        .panel h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        canvas.field {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        canvas.graph {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 7;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+
+        .cap {
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .control-block {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #eee;
+        }
+
+        .control-block:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: #fff;
+            margin-bottom: 1rem;
+        }
+
+        details.points {
+            margin-top: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        details.points summary {
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .pt-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem 0.75rem;
+            margin-top: 0.6rem;
+        }
+
+        .pt-grid label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            min-width: 0;
+        }
+
+        .pt-grid input[type="number"] {
+            width: 100%;
+            min-width: 0;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .readouts {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.4rem 0.9rem;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .readouts dt {
+            color: var(--text-muted);
+        }
+
+        .readouts dd {
+            margin: 0;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            overflow-wrap: anywhere;
+        }
+
+        .readouts .final {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .status {
+            margin-top: 0.75rem;
+            min-height: 1.4rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--color-accent-green, #008552);
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .things ol {
+            padding-left: 1.25rem;
+            margin: 0;
+        }
+
+        .things li {
+            margin-bottom: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Two Paths, One Field</h1>
+            <p>&sect;15.3 &mdash; draw two paths from A to B through a vector field, compare the work along each, and compare both
+                with the change in the potential function.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Both paths run from <strong>A</strong> to <strong>B</strong>. Path 1 is the solid blue curve and path 2 is the dashed
+                blue curve; drag any handle (or type its position). The readouts give the work &int;<strong>F</strong>&middot;d<strong>r</strong>
+                along each path. If the field is conservative, <strong>F</strong> = &nabla;<em>f</em> and the Fundamental Theorem says
+                both works equal <em>f</em>(B) &minus; <em>f</em>(A); the bars compare all three numbers. If the field is not
+                conservative there is no potential, and the two works are free to disagree. Their difference is the work around
+                the loop made by path 1 followed by path 2 backward.
+            </p>
+            <p class="hint">Each path is a cubic B&eacute;zier curve, and every integral is computed numerically along it (Gauss&ndash;Legendre on 8 pieces),
+                so the readouts are accurate to the digits shown. The picture shows &minus;4 &le; <em>x</em>, <em>y</em> &le; 4.</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel">
+                <canvas id="cv" class="field" width="560" height="560" role="img"
+                    aria-label="A vector field with two paths from A to B."></canvas>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#008552;"></span>field arrows</div>
+                    <div><span class="swatch" style="background:#009CDE;"></span>the two paths and their handles (you move them)</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>the results (bars)</div>
+                </div>
+                <div class="cap">The work along each path, and the change in the potential <em>f</em>(B) &minus; <em>f</em>(A)</div>
+                <canvas id="gr" class="graph" width="640" height="280" role="img"
+                    aria-label="Bar chart comparing the work along the two paths."></canvas>
+                <div class="status" id="status" role="status"></div>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <label class="field-label" for="field">Vector field F(x, y)</label>
+                    <select id="field"></select>
+                    <label class="field-label" for="shape">Pair of paths</label>
+                    <select id="shape"></select>
+                    <details class="points">
+                        <summary>Type the handle positions</summary>
+                        <div class="pt-grid" id="pt-grid"></div>
+                    </details>
+                </div>
+                <div class="control-block">
+                    <h4>Work along each path</h4>
+                    <dl class="readouts">
+                        <dt>Path 1 (solid)</dt><dd id="r-w1" class="final"></dd>
+                        <dt>Path 2 (dashed)</dt><dd id="r-w2" class="final"></dd>
+                        <dt>Path 1 &minus; path 2 (the loop: path 1, then path 2 backward)</dt><dd id="r-diff"></dd>
+                        <dt>Same work on both paths?</dt><dd id="r-same"></dd>
+                    </dl>
+                </div>
+                <div class="control-block">
+                    <h4>The field</h4>
+                    <dl class="readouts">
+                        <dt>Component test over the picture</dt><dd id="r-test"></dd>
+                        <dt>Potential function <em>f</em></dt><dd id="r-fname"></dd>
+                        <dt><em>f</em>(A), <em>f</em>(B)</dt><dd id="r-fab"></dd>
+                        <dt><em>f</em>(B) &minus; <em>f</em>(A)</dt><dd id="r-df" class="final"></dd>
+                        <dt>Work on path 1 &minus; (<em>f</em>(B) &minus; <em>f</em>(A))</dt><dd id="r-gap"></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel things">
+            <h4>Things to try</h4>
+            <ol>
+                <li>Pick the field &lang;2<em>x</em> cos <em>y</em>, &minus;<em>x</em>&sup2; sin <em>y</em>&rang; (the last example on the section
+                    page) and the pair &ldquo;Same endpoints as the page example&rdquo;. Predict the work on each path and on the
+                    <em>f</em>(B) &minus; <em>f</em>(A) bar (the page says &minus;1). Then drag any handle of either path somewhere wild.
+                    What changes and what doesn&rsquo;t?</li>
+                <li>Pick the Gaussian-bump gradient field. Make path 2 pass through the middle of the bump and path 1 go all the way
+                    around it. Predict whether the works agree before you read them.</li>
+                <li>Pick the field &lang;<em>y</em>&sup2;, <em>x</em>&sup2;&rang; (the not-conservative example on the page) and the first pair of
+                    paths. Predict which path will have more work, then check. Is there any way to place the handles so the two
+                    works agree? (Try it, and notice what that does and doesn&rsquo;t prove.)</li>
+                <li>Choose &ldquo;A loop: A = B&rdquo; and a conservative field. Predict the work on a closed path, then drag the
+                    handles to change the loop&rsquo;s shape and size. Now switch to the swirl &lang;&minus;<em>y</em>, <em>x</em>&rang; and predict again.</li>
+                <li>With the swirl and the pair &ldquo;Two arcs from A to B&rdquo;, predict the sign of &ldquo;path 1 &minus; path 2&rdquo;
+                    (which way does the loop go around?). Then swap by dragging the handles of path 1 to the other side of path 2.</li>
+            </ol>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            'use strict';
+
+            const TAU = 2 * Math.PI, PI = Math.PI;
+            const sin = Math.sin, cos = Math.cos, exp = Math.exp;
+            const L = 4;                       // the picture shows -L <= x, y <= L
+
+            // ---------- Gauss-Legendre quadrature ----------
+            function gaussLegendre(n) {
+                const xs = [], ws = [];
+                for (let i = 0; i < n; i++) {
+                    let z = Math.cos(Math.PI * (i + 0.75) / (n + 0.5)), pp = 1;
+                    for (let it = 0; it < 100; it++) {
+                        let p1 = 1, p2 = 0;
+                        for (let j = 0; j < n; j++) {
+                            const p3 = p2; p2 = p1;
+                            p1 = ((2 * j + 1) * z * p2 - j * p3) / (j + 1);
+                        }
+                        pp = n * (z * p1 - p2) / (z * z - 1);
+                        const z1 = z;
+                        z = z1 - p1 / pp;
+                        if (Math.abs(z - z1) < 1e-15) break;
+                    }
+                    xs.push(z); ws.push(2 / ((1 - z * z) * pp * pp));
+                }
+                return { x: xs, w: ws };
+            }
+            const GL = gaussLegendre(10);
+            function integrate1(g, a, b, panels) {
+                let s = 0;
+                const h = (b - a) / panels;
+                for (let p = 0; p < panels; p++) {
+                    const mid = a + (p + 0.5) * h;
+                    for (let k = 0; k < GL.x.length; k++) s += GL.w[k] * g(mid + GL.x[k] * h / 2) * h / 2;
+                }
+                return s;
+            }
+
+            // Each field: P, Q, partial derivatives for the component test, and the potential if there is one.
+            const FIELDS = [
+                {
+                    name: '⟨2x cos y, −x² sin y⟩  (section page, last example)', short: 'the field 2x cosine y, minus x squared sine y',
+                    P: (x, y) => 2 * x * cos(y), Q: (x, y) => -x * x * sin(y), Py: (x, y) => -2 * x * sin(y), Qx: (x, y) => -2 * x * sin(y),
+                    f: (x, y) => x * x * cos(y), fname: 'x² cos y'
+                },
+                {
+                    name: '−½ e^(−(x²+y²)/4) ⟨x, y⟩  (gradient of a bump)', short: 'the gradient field of the Gaussian bump',
+                    P: (x, y) => -0.5 * exp(-(x * x + y * y) / 4) * x, Q: (x, y) => -0.5 * exp(-(x * x + y * y) / 4) * y,
+                    Py: (x, y) => 0.25 * x * y * exp(-(x * x + y * y) / 4), Qx: (x, y) => 0.25 * x * y * exp(-(x * x + y * y) / 4),
+                    f: (x, y) => exp(-(x * x + y * y) / 4), fname: 'e^(−(x²+y²)/4)'
+                },
+                {
+                    name: '⟨y², x²⟩  (not conservative, section page)', short: 'the field y squared, x squared',
+                    P: (x, y) => y * y, Q: (x, y) => x * x, Py: (x, y) => 2 * y, Qx: (x, y) => 2 * x, f: null, fname: 'none'
+                },
+                {
+                    name: '⟨−y, x⟩  (the swirl)', short: 'the swirl, minus y, x',
+                    P: (x, y) => -y, Q: (x, y) => x, Py: () => -1, Qx: () => 1, f: null, fname: 'none'
+                },
+                {
+                    name: '⟨x − y, x + y⟩  (the spiral)', short: 'the spiral, x minus y, x plus y',
+                    P: (x, y) => x - y, Q: (x, y) => x + y, Py: () => -1, Qx: () => 1, f: null, fname: 'none'
+                }
+            ];
+            // points: A, B, then handles 1, 2 of path 1, then handles 1, 2 of path 2
+            const SHAPES = [
+                { name: 'Two arcs from A to B', pts: [[-3, -2], [3, 2], [-2.5, 2.5], [0, 3.5], [0, -3.5], [2.5, -2.5]] },
+                { name: 'A straight path and an S-curve', pts: [[-3, -1], [3, 1], [-1, -1 / 3], [1, 1 / 3], [-1, 3.5], [1, -3.5]] },
+                { name: 'Same endpoints as the page example: A = (0, 0), B = (1, π)', pts: [[0, 0], [1, PI], [0.5, 1], [0.5, 2.2], [-1.5, 1], [3, 2.2]] },
+                { name: 'A loop: A = B', pts: [[-1, 0], [-1, 0], [3, 3], [3, -3], [-3, 3.5], [-3, -3.5]] },
+                { name: 'Custom (you moved a handle)', pts: null }
+            ];
+
+            const $ = id => document.getElementById(id);
+            const fieldSel = $('field'), shapeSel = $('shape');
+            FIELDS.forEach((p, i) => { const o = document.createElement('option'); o.value = i; o.textContent = (i + 1) + '. ' + p.name; fieldSel.appendChild(o); });
+            SHAPES.forEach((p, i) => { const o = document.createElement('option'); o.value = i; o.textContent = p.name; shapeSel.appendChild(o); });
+
+            const NAMES = ['A (start)', 'B (end)', 'path 1 handle 1', 'path 1 handle 2', 'path 2 handle 1', 'path 2 handle 2'];
+            const grid = $('pt-grid');
+            for (let i = 0; i < 6; i++) {
+                ['x', 'y'].forEach(c => {
+                    const lab = document.createElement('label');
+                    lab.setAttribute('for', 'p' + i + c);
+                    lab.innerHTML = '<span>' + NAMES[i] + ' ' + c + '</span>';
+                    const inp = document.createElement('input');
+                    inp.type = 'number'; inp.id = 'p' + i + c; inp.min = -L; inp.max = L; inp.step = 0.05;
+                    lab.appendChild(inp); grid.appendChild(lab);
+                });
+            }
+
+            const cv = $('cv'), ctx = cv.getContext('2d');
+            const gr = $('gr'), gctx = gr.getContext('2d');
+            let W = 560, GW = 640, GH = 280;
+            let F = FIELDS[0];
+            let pts = SHAPES[2].pts.map(p => p.slice());
+            shapeSel.value = '2';
+
+            // ---------- helpers ----------
+            function clean(x) { return Math.abs(x) < 1e-9 ? 0 : x; }
+            function fmt(x) {
+                if (!isFinite(x)) return '—';
+                const r = Number(clean(x).toPrecision(4));
+                return String(r === 0 ? 0 : r);
+            }
+            const toX = x => W / 2 + x / L * W / 2;
+            const toY = y => W / 2 - y / L * W / 2;
+            const fromX = px => (px - W / 2) / (W / 2) * L;
+            const fromY = py => -(py - W / 2) / (W / 2) * L;
+
+            // path k (1 or 2) is the cubic Bezier A, handle 1, handle 2, B
+            function ctrl(k) { return k === 1 ? [pts[0], pts[2], pts[3], pts[1]] : [pts[0], pts[4], pts[5], pts[1]]; }
+            function bez(c, u) {
+                const a = (1 - u) * (1 - u) * (1 - u), b = 3 * (1 - u) * (1 - u) * u, cc = 3 * (1 - u) * u * u, d = u * u * u;
+                return [a * c[0][0] + b * c[1][0] + cc * c[2][0] + d * c[3][0], a * c[0][1] + b * c[1][1] + cc * c[2][1] + d * c[3][1]];
+            }
+            function dbez(c, u) {
+                const a = 3 * (1 - u) * (1 - u), b = 6 * (1 - u) * u, cc = 3 * u * u;
+                return [a * (c[1][0] - c[0][0]) + b * (c[2][0] - c[1][0]) + cc * (c[3][0] - c[2][0]),
+                        a * (c[1][1] - c[0][1]) + b * (c[2][1] - c[1][1]) + cc * (c[3][1] - c[2][1])];
+            }
+            function work(k) {
+                const c = ctrl(k);
+                return integrate1(t => { const r = bez(c, t), v = dbez(c, t); return F.P(r[0], r[1]) * v[0] + F.Q(r[0], r[1]) * v[1]; }, 0, 1, 8);
+            }
+            function componentTest() {
+                let worst = 0;
+                for (let i = 0; i < 21; i++) for (let j = 0; j < 21; j++) {
+                    const x = -L + (i + 0.5) * 2 * L / 21, y = -L + (j + 0.5) * 2 * L / 21;
+                    const a = F.Py(x, y), b = F.Qx(x, y);
+                    worst = Math.max(worst, Math.abs(a - b) / Math.max(1, Math.abs(a), Math.abs(b)));
+                }
+                return worst <= 1e-9;
+            }
+
+            // ---------- drawing ----------
+            function arrow(c, x0, y0, dx, dy, color, width) {
+                const len = Math.hypot(dx, dy);
+                if (len < 1) return;
+                const x1 = x0 + dx, y1 = y0 + dy;
+                c.strokeStyle = color; c.fillStyle = color; c.lineWidth = width;
+                c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y1); c.stroke();
+                const head = Math.min(8, Math.max(3, len * 0.35));
+                const a = Math.atan2(dy, dx);
+                c.beginPath();
+                c.moveTo(x1, y1);
+                c.lineTo(x1 - head * cos(a - 0.45), y1 - head * sin(a - 0.45));
+                c.lineTo(x1 - head * cos(a + 0.45), y1 - head * sin(a + 0.45));
+                c.closePath(); c.fill();
+            }
+
+            function drawCurve(c, dashed) {
+                ctx.setLineDash(dashed ? [10, 6] : []);
+                ctx.strokeStyle = dashed ? '#005f87' : '#009CDE'; ctx.lineWidth = dashed ? 3 : 3.5;
+                ctx.beginPath();
+                for (let k = 0; k <= 120; k++) { const r = bez(c, k / 120); if (k === 0) ctx.moveTo(toX(r[0]), toY(r[1])); else ctx.lineTo(toX(r[0]), toY(r[1])); }
+                ctx.stroke();
+                ctx.setLineDash([]);
+                const mid = bez(c, 0.5), vm = dbez(c, 0.5), sp = Math.hypot(vm[0], vm[1]);
+                if (sp > 1e-9) arrow(ctx, toX(mid[0]) - vm[0] / sp * 7, toY(mid[1]) + vm[1] / sp * 7, vm[0] / sp * 14, -vm[1] / sp * 14, '#005f87', 3);
+            }
+
+            function drawField() {
+                ctx.setTransform(cv.width / W, 0, 0, cv.width / W, 0, 0);
+                ctx.clearRect(0, 0, W, W);
+                ctx.strokeStyle = '#bbb'; ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, toY(0)); ctx.lineTo(W, toY(0)); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), W);
+                ctx.stroke();
+                ctx.fillStyle = '#666'; ctx.font = '11px sans-serif';
+                for (let k = -3; k <= 3; k++) {
+                    if (k === 0) continue;
+                    ctx.beginPath(); ctx.moveTo(toX(k), toY(0) - 3); ctx.lineTo(toX(k), toY(0) + 3); ctx.moveTo(toX(0) - 3, toY(k)); ctx.lineTo(toX(0) + 3, toY(k)); ctx.stroke();
+                    ctx.fillText(String(k), toX(k) - 3, toY(0) + 15);
+                    ctx.fillText(String(k), toX(0) + 6, toY(k) + 4);
+                }
+                ctx.fillStyle = '#333'; ctx.font = 'bold 13px sans-serif';
+                ctx.fillText('x', W - 14, toY(0) - 6);
+                ctx.fillText('y', toX(0) + 6, 14);
+
+                const N = 13, cell = 2 * L / N, cellPx = cell / (2 * L) * W;
+                const list = [], mags = [];
+                for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+                    const x = -L + (i + 0.5) * cell, y = -L + (j + 0.5) * cell;
+                    const p = F.P(x, y), q = F.Q(x, y);
+                    list.push([x, y, p, q]); mags.push(Math.hypot(p, q));
+                }
+                const sorted = mags.slice().sort((a, b) => a - b);
+                const ref = Math.max(sorted[Math.floor(0.75 * (sorted.length - 1))], 1e-9);
+                list.forEach(e => {
+                    const mag = Math.hypot(e[2], e[3]);
+                    if (mag < 1e-12) return;
+                    const len = Math.min(1.3 * cellPx, 0.85 * cellPx * mag / ref);
+                    arrow(ctx, toX(e[0]), toY(e[1]), e[2] / mag * len, -e[3] / mag * len, 'rgba(0,110,72,0.5)', 1.2);
+                });
+
+                // control polygons, paths
+                ctx.setLineDash([3, 4]); ctx.strokeStyle = 'rgba(0,120,170,0.45)'; ctx.lineWidth = 1;
+                [[0, 2], [1, 3], [0, 4], [1, 5]].forEach(e => {
+                    ctx.beginPath(); ctx.moveTo(toX(pts[e[0]][0]), toY(pts[e[0]][1])); ctx.lineTo(toX(pts[e[1]][0]), toY(pts[e[1]][1])); ctx.stroke();
+                });
+                ctx.setLineDash([]);
+                drawCurve(ctrl(2), true);
+                drawCurve(ctrl(1), false);
+
+                // handles
+                for (let i = 0; i < 6; i++) {
+                    const end = i < 2;
+                    ctx.fillStyle = end ? '#009CDE' : (i < 4 ? '#fff' : '#cfe9f5'); ctx.strokeStyle = '#005f87'; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.arc(toX(pts[i][0]), toY(pts[i][1]), end ? 8 : 6, 0, TAU); ctx.fill(); ctx.stroke();
+                }
+                ctx.fillStyle = '#003d57'; ctx.font = 'bold 13px sans-serif';
+                ctx.fillText('A', toX(pts[0][0]) + 10, toY(pts[0][1]) - 8);
+                ctx.fillText('B', toX(pts[1][0]) + 10, toY(pts[1][1]) - 8);
+                ctx.font = '11px sans-serif';
+                ctx.fillText('1', toX(pts[2][0]) + 8, toY(pts[2][1]) - 6); ctx.fillText('1', toX(pts[3][0]) + 8, toY(pts[3][1]) - 6);
+                ctx.fillText('2', toX(pts[4][0]) + 8, toY(pts[4][1]) - 6); ctx.fillText('2', toX(pts[5][0]) + 8, toY(pts[5][1]) - 6);
+            }
+
+            function drawBars(w1, w2, df) {
+                const c = gctx, w = GW, h = GH;
+                c.setTransform(gr.width / w, 0, 0, gr.width / w, 0, 0);
+                c.clearRect(0, 0, w, h);
+                const vals = [{ v: w1, label: 'Path 1', color: 'rgba(243,110,36,0.85)' }, { v: w2, label: 'Path 2', color: 'rgba(243,110,36,0.85)' }];
+                if (df !== null) vals.push({ v: df, label: 'f(B) − f(A)', color: 'rgba(0,133,82,0.8)' });
+                let top = 0.5;
+                vals.forEach(e => { top = Math.max(top, Math.abs(e.v)); });
+                top *= 1.2;
+                const ml = 12, mr = 12, mt = 14, mb = 30;
+                const gy = v => mt + (1 - (v + top) / (2 * top)) * (h - mt - mb);
+                c.strokeStyle = '#bbb'; c.lineWidth = 1;
+                c.beginPath(); c.moveTo(ml, gy(0)); c.lineTo(w - mr, gy(0)); c.stroke();
+                const slot = (w - ml - mr) / 3, bw = Math.min(70, slot * 0.55);
+                vals.forEach((e, i) => {
+                    const cx = ml + slot * (i + 0.5);
+                    c.fillStyle = e.color;
+                    const y0 = gy(0), y1 = gy(e.v);
+                    c.fillRect(cx - bw / 2, Math.min(y0, y1), bw, Math.max(1, Math.abs(y1 - y0)));
+                    c.fillStyle = '#333'; c.font = 'bold 12px sans-serif'; c.textAlign = 'center';
+                    c.fillText(e.label, cx, h - 10);
+                    c.font = '12px sans-serif';
+                    c.fillText(fmt(e.v), cx, e.v >= 0 ? y1 - 5 : y1 + 14);
+                    c.textAlign = 'left';
+                });
+                if (df === null) {
+                    c.fillStyle = '#666'; c.font = '12px sans-serif'; c.textAlign = 'center';
+                    c.fillText('no potential function', ml + slot * 2.5, gy(0) - 8); c.textAlign = 'left';
+                }
+            }
+
+            // ---------- readouts ----------
+            function readouts() {
+                const w1 = work(1), w2 = work(2);
+                const diff = w1 - w2;
+                $('r-w1').textContent = fmt(w1);
+                $('r-w2').textContent = fmt(w2);
+                $('r-diff').textContent = fmt(diff);
+                const same = Math.abs(diff) <= 5e-4 * Math.max(1, Math.abs(w1), Math.abs(w2));
+                $('r-same').textContent = same ? 'yes, to the digits shown' : 'no';
+                const ok = componentTest();
+                $('r-test').textContent = ok ? 'passes at every point sampled' : 'fails at points sampled';
+                $('r-fname').textContent = F.f ? F.fname : 'none (not conservative)';
+                let df = null;
+                if (F.f) {
+                    const fa = F.f(pts[0][0], pts[0][1]), fb = F.f(pts[1][0], pts[1][1]);
+                    df = fb - fa;
+                    $('r-fab').textContent = fmt(fa) + ', ' + fmt(fb);
+                    $('r-df').textContent = fmt(df);
+                    $('r-gap').textContent = fmt(w1 - df);
+                } else {
+                    $('r-fab').textContent = '—'; $('r-df').textContent = '—'; $('r-gap').textContent = '—';
+                }
+                $('status').textContent = F.f ? 'This field is conservative, so both works equal f(B) − f(A).'
+                    : (same ? 'These two paths happen to agree, but this field is not conservative; other paths would not.' : 'Not conservative: the work depends on the path.');
+                cv.setAttribute('aria-label',
+                    'The field ' + F.short + ' with two paths from A at (' + fmt(pts[0][0]) + ', ' + fmt(pts[0][1]) + ') to B at (' + fmt(pts[1][0]) + ', ' + fmt(pts[1][1]) +
+                    '). The work along path 1 is ' + fmt(w1) + ' and along path 2 is ' + fmt(w2) + (df !== null ? '; the potential changes by ' + fmt(df) + '.' : '; this field has no potential function.'));
+                gr.setAttribute('aria-label', 'Bar chart: path 1 ' + fmt(w1) + ', path 2 ' + fmt(w2) + (df !== null ? ', change in potential ' + fmt(df) : ', no potential function') + '.');
+                for (let i = 0; i < 6; i++) ['x', 'y'].forEach((c, ci) => {
+                    const el = $('p' + i + c);
+                    if (document.activeElement !== el) el.value = Number(pts[i][ci].toFixed(3));
+                });
+                return { w1: w1, w2: w2, df: df };
+            }
+
+            function refresh() {
+                const r = readouts();
+                drawField();
+                drawBars(r.w1, r.w2, r.df);
+            }
+
+            // ---------- controls ----------
+            function customShape() { shapeSel.value = String(SHAPES.length - 1); }
+            function resize() {
+                const dpr = window.devicePixelRatio || 1;
+                let rect = cv.getBoundingClientRect();
+                W = Math.max(200, rect.width);
+                cv.width = Math.round(W * dpr); cv.height = Math.round(W * dpr);
+                rect = gr.getBoundingClientRect();
+                GW = Math.max(240, rect.width); GH = GW * 7 / 16;
+                gr.width = Math.round(GW * dpr); gr.height = Math.round(GH * dpr);
+                refresh();
+            }
+            function movePoint(i, x, y) {
+                pts[i] = [Math.min(L, Math.max(-L, x)), Math.min(L, Math.max(-L, y))];
+                customShape();
+                refresh();
+            }
+
+            let drag = -1;
+            function localXY(e) {
+                const r = cv.getBoundingClientRect();
+                return [(e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * W];
+            }
+            cv.addEventListener('pointerdown', e => {
+                const [px, py] = localXY(e);
+                let best = -1, bd = 22;
+                for (let i = 5; i >= 0; i--) {
+                    const d = Math.hypot(px - toX(pts[i][0]), py - toY(pts[i][1]));
+                    if (d < bd) { bd = d; best = i; }
+                }
+                if (best >= 0) {
+                    drag = best;
+                    try { cv.setPointerCapture(e.pointerId); } catch (err) { }
+                    e.preventDefault();
+                }
+            });
+            cv.addEventListener('pointermove', e => {
+                if (drag < 0) return;
+                const [px, py] = localXY(e);
+                movePoint(drag, Math.round(fromX(px) * 20) / 20, Math.round(fromY(py) * 20) / 20);
+            });
+            const stop = () => { drag = -1; };
+            cv.addEventListener('pointerup', stop);
+            cv.addEventListener('pointercancel', stop);
+
+            fieldSel.addEventListener('change', () => { F = FIELDS[parseInt(fieldSel.value, 10)]; refresh(); });
+            shapeSel.addEventListener('change', () => {
+                const s = SHAPES[parseInt(shapeSel.value, 10)];
+                if (s.pts) pts = s.pts.map(p => p.slice());
+                refresh();
+            });
+            for (let i = 0; i < 6; i++) ['x', 'y'].forEach((c, ci) => {
+                $('p' + i + c).addEventListener('change', () => {
+                    const v = parseFloat($('p' + i + c).value);
+                    if (!isFinite(v)) { refresh(); return; }
+                    const q = pts[i].slice(); q[ci] = v;
+                    movePoint(i, q[0], q[1]);
+                });
+            });
+
+            window.addEventListener('resize', resize);
+            resize();
+        })();
+    </script>
+</body>
+
+</html>

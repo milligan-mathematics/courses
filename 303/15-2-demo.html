@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Along a Curve - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        .dashboard > * {
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard .panel {
+            margin-bottom: 0;
+        }
+
+        .panel h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        canvas.field {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        canvas.graph {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 7;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+
+        .cap {
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .control-block {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #eee;
+        }
+
+        .control-block:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            min-width: 0;
+            accent-color: var(--color-accent-blue, #009CDE);
+        }
+
+        .slider-row input[type="number"] {
+            width: 5.5rem;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        details.points {
+            margin-top: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        details.points summary {
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .pt-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem 0.75rem;
+            margin-top: 0.6rem;
+        }
+
+        .pt-grid label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            min-width: 0;
+        }
+
+        .pt-grid input[type="number"] {
+            width: 100%;
+            min-width: 0;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .readouts {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.4rem 0.9rem;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .readouts dt {
+            color: var(--text-muted);
+        }
+
+        .readouts dd {
+            margin: 0;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            overflow-wrap: anywhere;
+        }
+
+        .readouts .final {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .status {
+            margin-top: 0.75rem;
+            min-height: 1.4rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--color-accent-green, #008552);
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .things ol {
+            padding-left: 1.25rem;
+            margin: 0;
+        }
+
+        .things li {
+            margin-bottom: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Work Along a Curve</h1>
+            <p>&sect;15.2 &mdash; bend a path through a vector field, watch the component of the field along the path, and see the
+                line integral as the area under that graph.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                The blue curve is a path from <strong>A</strong> to <strong>B</strong>; drag its four handles (or type their
+                positions). The orange arrow at the <strong>tracer</strong> is the part of the field that points along the path,
+                (<strong>F</strong>&middot;<strong>T</strong>)<strong>T</strong>, where <strong>T</strong> is the unit tangent. The graph below plots
+                <strong>F</strong>&middot;<strong>T</strong> against arc length <em>s</em>. Since
+                &int;<sub><em>C</em></sub> <strong>F</strong>&middot;d<strong>r</strong> = &int; (<strong>F</strong>&middot;<strong>T</strong>) d<em>s</em>,
+                the work is the <em>signed area</em> under that graph: orange above the axis counts positive, gray below counts negative.
+                The scalar integral &int;<sub><em>C</em></sub> &rho; d<em>s</em> is shown for comparison.
+            </p>
+            <p class="hint">The curve is a cubic B&eacute;zier curve. Every integral is computed numerically along the curve
+                (Gauss&ndash;Legendre on 8 pieces), so the readouts are accurate to the digits shown. Tick &ldquo;Reverse the direction&rdquo;
+                to walk from B to A along the same curve.</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel">
+                <canvas id="cv" class="field" width="560" height="560" role="img"
+                    aria-label="A vector field with a curve drawn through it."></canvas>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#008552;"></span>field arrows</div>
+                    <div><span class="swatch" style="background:#009CDE;"></span>the curve and its handles (you move them)</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>the part of F along the path</div>
+                </div>
+                <div class="cap">The component of <strong>F</strong> along the path, <strong>F</strong>&middot;<strong>T</strong>, against arc length <em>s</em></div>
+                <canvas id="gr" class="graph" width="640" height="280" role="img"
+                    aria-label="Graph of the tangential component of the field along the curve."></canvas>
+                <div class="status" id="status" role="status"></div>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <label class="field-label" for="field">Vector field F(x, y)</label>
+                    <select id="field"></select>
+                    <label class="field-label" for="shape">Curve shape</label>
+                    <select id="shape"></select>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="rev">
+                        <label for="rev">Reverse the direction (walk from B to A)</label>
+                    </div>
+                    <details class="points">
+                        <summary>Type the handle positions</summary>
+                        <div class="pt-grid" id="pt-grid"></div>
+                    </details>
+                </div>
+                <div class="control-block">
+                    <h4>The line integrals</h4>
+                    <dl class="readouts">
+                        <dt>Direction</dt><dd id="r-dir"></dd>
+                        <dt>Work &int; <strong>F</strong>&middot;d<strong>r</strong></dt><dd id="r-work" class="final"></dd>
+                        <dt>Arc length &int; d<em>s</em></dt><dd id="r-len"></dd>
+                        <dt>Average of <strong>F</strong>&middot;<strong>T</strong> (work &divide; length)</dt><dd id="r-avg"></dd>
+                    </dl>
+                    <label class="field-label" for="rho" style="margin-top:0.9rem;">Wire density &rho;(x, y) for the scalar integral</label>
+                    <select id="rho"></select>
+                    <dl class="readouts">
+                        <dt>Mass &int; &rho; d<em>s</em></dt><dd id="r-mass" class="final"></dd>
+                    </dl>
+                </div>
+                <div class="control-block">
+                    <h4>The tracer</h4>
+                    <label class="field-label" for="tau-slider">Position along the path (0 = start, 1 = end)</label>
+                    <div class="slider-row">
+                        <input type="range" id="tau-slider" min="0" max="1" step="0.01" value="0.4">
+                        <input type="number" id="tau-num" min="0" max="1" step="0.01" value="0.4" aria-label="Type the position along the path">
+                    </div>
+                    <dl class="readouts">
+                        <dt>Point (<em>x</em>, <em>y</em>)</dt><dd id="t-pt"></dd>
+                        <dt><strong>F</strong> there</dt><dd id="t-F"></dd>
+                        <dt>Unit tangent <strong>T</strong></dt><dd id="t-T"></dd>
+                        <dt><strong>F</strong>&middot;<strong>T</strong> there</dt><dd id="t-FT" class="final"></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel things">
+            <h4>Things to try</h4>
+            <ol>
+                <li>Pick the swirl &lang;&minus;<em>y</em>, <em>x</em>&rang; and the &ldquo;Quarter circle of radius 2&rdquo; shape. The field is tangent to the
+                    circle and has length 2 there, so predict the shape of the <strong>F</strong>&middot;<strong>T</strong> graph, the arc
+                    length, and the work. (Compare the unit circle on the section page, where the field has length 1 and the
+                    whole circle gives 2&pi;.) Check it, then tick &ldquo;Reverse the direction&rdquo; and predict what changes in the
+                    work, in the arc length, and in the mass.</li>
+                <li>Keep the swirl and pick &ldquo;Straight line through the origin&rdquo;. Predict <strong>F</strong>&middot;<strong>T</strong> along a
+                    path that heads straight at the center, and the work. Then drag one handle off the line a little.</li>
+                <li>Pick the constant push &lang;1, 1/2&rang;. Predict whether bending the path changes the work. Try three
+                    different shapes with the same A and B (drag only the two inner handles).</li>
+                <li>Pick the field &lang;0, <em>x</em>&rang; (a vertical push that grows with <em>x</em>) and the &ldquo;Arch&rdquo; shape. Predict the
+                    sign of the work on the left half and on the right half of the arch, then read the graph. Does the
+                    total come out positive, negative, or zero?</li>
+                <li>Put A and B at the same point with the swirl, so the path is a loop (type them into the handle boxes). Predict the
+                    sign of the work for a loop that goes counterclockwise, then drag the inner handles to flip the loop and check.
+                    Compare the arc length and the work.</li>
+            </ol>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            'use strict';
+
+            const TAU = 2 * Math.PI, PI = Math.PI;
+            const sin = Math.sin, cos = Math.cos, sqrt = Math.sqrt, exp = Math.exp;
+            const L = 4;                       // the picture shows -L <= x, y <= L
+
+            // ---------- Gauss-Legendre quadrature ----------
+            function gaussLegendre(n) {
+                const xs = [], ws = [];
+                for (let i = 0; i < n; i++) {
+                    let z = Math.cos(Math.PI * (i + 0.75) / (n + 0.5)), pp = 1;
+                    for (let it = 0; it < 100; it++) {
+                        let p1 = 1, p2 = 0;
+                        for (let j = 0; j < n; j++) {
+                            const p3 = p2; p2 = p1;
+                            p1 = ((2 * j + 1) * z * p2 - j * p3) / (j + 1);
+                        }
+                        pp = n * (z * p1 - p2) / (z * z - 1);
+                        const z1 = z;
+                        z = z1 - p1 / pp;
+                        if (Math.abs(z - z1) < 1e-15) break;
+                    }
+                    xs.push(z); ws.push(2 / ((1 - z * z) * pp * pp));
+                }
+                return { x: xs, w: ws };
+            }
+            const GL = gaussLegendre(10);
+            function integrate1(g, a, b, panels) {
+                let s = 0;
+                const h = (b - a) / panels;
+                for (let p = 0; p < panels; p++) {
+                    const mid = a + (p + 0.5) * h;
+                    for (let k = 0; k < GL.x.length; k++) s += GL.w[k] * g(mid + GL.x[k] * h / 2) * h / 2;
+                }
+                return s;
+            }
+
+            // ---------- fields and densities ----------
+            const FIELDS = [
+                { name: '⟨−y, x⟩  (the swirl, section page)', short: 'the swirl, minus y, x', P: (x, y) => -y, Q: (x, y) => x },
+                { name: '⟨1, 1/2⟩  (a constant push)', short: 'the constant push, 1, one half', P: () => 1, Q: () => 0.5 },
+                { name: '⟨0, x⟩  (a vertical push that grows with x)', short: 'the field 0, x', P: () => 0, Q: (x, y) => x },
+                { name: '⟨y cos x, sin x⟩  (a gradient field)', short: 'the gradient field y cosine x, sine x', P: (x, y) => y * cos(x), Q: (x, y) => sin(x) }
+            ];
+            const RHOS = [
+                { name: 'ρ = x² + y²  (section page, Example 1)', short: 'x squared plus y squared', f: (x, y) => x * x + y * y },
+                { name: 'ρ = 2 + sin x', short: '2 plus sine x', f: (x, y) => 2 + sin(x) },
+                { name: 'ρ = e^(−(x² + y²)/8)', short: 'e to the minus x squared plus y squared over 8', f: (x, y) => exp(-(x * x + y * y) / 8) }
+            ];
+            // a cubic Bezier is A, C1, C2, B
+            const K = 0.5522847498;
+            const SHAPES = [
+                { name: 'S-curve', pts: [[-3, -2], [-1, 3], [1, -3], [3, 2]] },
+                { name: 'Straight line through the origin', pts: [[-3, -2], [-1, -2 / 3], [1, 2 / 3], [3, 2]] },
+                { name: 'Quarter circle of radius 2', pts: [[2, 0], [2, 2 * K], [2 * K, 2], [0, 2]] },
+                { name: 'Arch', pts: [[-3, 0], [-2, 3], [2, 3], [3, 0]] },
+                { name: 'Custom (you moved a handle)', pts: null }
+            ];
+
+            const $ = id => document.getElementById(id);
+            const fieldSel = $('field'), shapeSel = $('shape'), rhoSel = $('rho');
+            FIELDS.forEach((p, i) => { const o = document.createElement('option'); o.value = i; o.textContent = (i + 1) + '. ' + p.name; fieldSel.appendChild(o); });
+            SHAPES.forEach((p, i) => { const o = document.createElement('option'); o.value = i; o.textContent = p.name; shapeSel.appendChild(o); });
+            RHOS.forEach((p, i) => { const o = document.createElement('option'); o.value = i; o.textContent = p.name; rhoSel.appendChild(o); });
+
+            const NAMES = ['A (start)', 'handle 1', 'handle 2', 'B (end)'];
+            const grid = $('pt-grid');
+            for (let i = 0; i < 4; i++) {
+                ['x', 'y'].forEach((c, ci) => {
+                    const lab = document.createElement('label');
+                    lab.setAttribute('for', 'p' + i + c);
+                    lab.innerHTML = '<span>' + NAMES[i] + ' ' + c + '</span>';
+                    const inp = document.createElement('input');
+                    inp.type = 'number'; inp.id = 'p' + i + c; inp.min = -L; inp.max = L; inp.step = 0.05;
+                    lab.appendChild(inp); grid.appendChild(lab);
+                });
+            }
+
+            const cv = $('cv'), ctx = cv.getContext('2d');
+            const gr = $('gr'), gctx = gr.getContext('2d');
+            let W = 560, GW = 640, GH = 280;
+            let F = FIELDS[0], RHO = RHOS[0];
+            let pts = SHAPES[0].pts.map(p => p.slice());
+            let rev = false, tau = 0.4;
+
+            // ---------- helpers ----------
+            function clean(x) { return Math.abs(x) < 1e-9 ? 0 : x; }
+            function fmt(x) {
+                if (!isFinite(x)) return '—';
+                const r = Number(clean(x).toPrecision(4));
+                return String(r === 0 ? 0 : r);
+            }
+            const toX = x => W / 2 + x / L * W / 2;
+            const toY = y => W / 2 - y / L * W / 2;
+            const fromX = px => (px - W / 2) / (W / 2) * L;
+            const fromY = py => -(py - W / 2) / (W / 2) * L;
+
+            // Bezier position and derivative at u in [0,1]; the walked curve is r(t) = B(t), or B(1 - t) if reversed
+            function bez(u) {
+                const a = (1 - u) * (1 - u) * (1 - u), b = 3 * (1 - u) * (1 - u) * u, c = 3 * (1 - u) * u * u, d = u * u * u;
+                return [a * pts[0][0] + b * pts[1][0] + c * pts[2][0] + d * pts[3][0], a * pts[0][1] + b * pts[1][1] + c * pts[2][1] + d * pts[3][1]];
+            }
+            function dbez(u) {
+                const a = 3 * (1 - u) * (1 - u), b = 6 * (1 - u) * u, c = 3 * u * u;
+                return [a * (pts[1][0] - pts[0][0]) + b * (pts[2][0] - pts[1][0]) + c * (pts[3][0] - pts[2][0]),
+                        a * (pts[1][1] - pts[0][1]) + b * (pts[2][1] - pts[1][1]) + c * (pts[3][1] - pts[2][1])];
+            }
+            function pos(t) { return bez(rev ? 1 - t : t); }
+            function vel(t) { const d = dbez(rev ? 1 - t : t); return rev ? [-d[0], -d[1]] : d; }
+
+            function workIntegral() {
+                return integrate1(t => { const r = pos(t), v = vel(t); return F.P(r[0], r[1]) * v[0] + F.Q(r[0], r[1]) * v[1]; }, 0, 1, 8);
+            }
+            function lengthIntegral() { return integrate1(t => Math.hypot(...vel(t)), 0, 1, 8); }
+            function massIntegral() { return integrate1(t => { const r = pos(t); return RHO.f(r[0], r[1]) * Math.hypot(...vel(t)); }, 0, 1, 8); }
+
+            // ---------- drawing ----------
+            function arrow(c, x0, y0, dx, dy, color, width) {
+                const len = Math.hypot(dx, dy);
+                if (len < 1) return;
+                const x1 = x0 + dx, y1 = y0 + dy;
+                c.strokeStyle = color; c.fillStyle = color; c.lineWidth = width;
+                c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y1); c.stroke();
+                const head = Math.min(8, Math.max(3, len * 0.35));
+                const a = Math.atan2(dy, dx);
+                c.beginPath();
+                c.moveTo(x1, y1);
+                c.lineTo(x1 - head * cos(a - 0.45), y1 - head * sin(a - 0.45));
+                c.lineTo(x1 - head * cos(a + 0.45), y1 - head * sin(a + 0.45));
+                c.closePath(); c.fill();
+            }
+
+            function drawField() {
+                ctx.setTransform(cv.width / W, 0, 0, cv.width / W, 0, 0);
+                ctx.clearRect(0, 0, W, W);
+                ctx.strokeStyle = '#bbb'; ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, toY(0)); ctx.lineTo(W, toY(0)); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), W);
+                ctx.stroke();
+                ctx.fillStyle = '#666'; ctx.font = '11px sans-serif';
+                for (let k = -3; k <= 3; k++) {
+                    if (k === 0) continue;
+                    ctx.beginPath(); ctx.moveTo(toX(k), toY(0) - 3); ctx.lineTo(toX(k), toY(0) + 3); ctx.moveTo(toX(0) - 3, toY(k)); ctx.lineTo(toX(0) + 3, toY(k)); ctx.stroke();
+                    ctx.fillText(String(k), toX(k) - 3, toY(0) + 15);
+                    ctx.fillText(String(k), toX(0) + 6, toY(k) + 4);
+                }
+                ctx.fillStyle = '#333'; ctx.font = 'bold 13px sans-serif';
+                ctx.fillText('x', W - 14, toY(0) - 6);
+                ctx.fillText('y', toX(0) + 6, 14);
+
+                // field arrows (light, so the curve stands out)
+                const N = 13, cell = 2 * L / N, cellPx = cell / (2 * L) * W;
+                const list = [], mags = [];
+                for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+                    const x = -L + (i + 0.5) * cell, y = -L + (j + 0.5) * cell;
+                    const p = F.P(x, y), q = F.Q(x, y);
+                    list.push([x, y, p, q]); mags.push(Math.hypot(p, q));
+                }
+                const sorted = mags.slice().sort((a, b) => a - b);
+                const ref = Math.max(sorted[Math.floor(0.75 * (sorted.length - 1))], 1e-9);
+                list.forEach(e => {
+                    const mag = Math.hypot(e[2], e[3]);
+                    if (mag < 1e-12) return;
+                    const len = Math.min(1.3 * cellPx, 0.85 * cellPx * mag / ref);
+                    arrow(ctx, toX(e[0]), toY(e[1]), e[2] / mag * len, -e[3] / mag * len, 'rgba(0,110,72,0.45)', 1.2);
+                });
+
+                // control polygon, curve, direction mark
+                ctx.setLineDash([4, 4]); ctx.strokeStyle = 'rgba(0,120,170,0.5)'; ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(toX(pts[0][0]), toY(pts[0][1])); ctx.lineTo(toX(pts[1][0]), toY(pts[1][1]));
+                ctx.moveTo(toX(pts[3][0]), toY(pts[3][1])); ctx.lineTo(toX(pts[2][0]), toY(pts[2][1])); ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.strokeStyle = '#009CDE'; ctx.lineWidth = 3.5;
+                ctx.beginPath();
+                for (let k = 0; k <= 120; k++) { const r = bez(k / 120); if (k === 0) ctx.moveTo(toX(r[0]), toY(r[1])); else ctx.lineTo(toX(r[0]), toY(r[1])); }
+                ctx.stroke();
+                // direction arrowhead at the middle of the walk
+                const mid = pos(0.5), vm = vel(0.5), sp = Math.hypot(vm[0], vm[1]);
+                if (sp > 1e-9) arrow(ctx, toX(mid[0]) - vm[0] / sp * 7, toY(mid[1]) + vm[1] / sp * 7, vm[0] / sp * 14, -vm[1] / sp * 14, '#005f87', 3);
+
+                // the tracer: F, and its part along the path
+                const r = pos(tau), v = vel(tau), spd = Math.hypot(v[0], v[1]);
+                const p = F.P(r[0], r[1]), q = F.Q(r[0], r[1]), magF = Math.hypot(p, q);
+                const arrowLen = m => Math.min(1.8 * cellPx, m / ref * 1.36 * cellPx);
+                if (magF > 1e-12) arrow(ctx, toX(r[0]), toY(r[1]), p / magF * arrowLen(magF), -q / magF * arrowLen(magF), 'rgba(0,110,72,0.95)', 2);
+                if (spd > 1e-9) {
+                    const T = [v[0] / spd, v[1] / spd], ft = p * T[0] + q * T[1];
+                    const sc = arrowLen(Math.abs(ft)) * (ft < 0 ? -1 : 1);
+                    arrow(ctx, toX(r[0]), toY(r[1]), T[0] * sc, -T[1] * sc, '#F36E24', 4);
+                }
+                ctx.fillStyle = '#fff'; ctx.strokeStyle = '#CD5920'; ctx.lineWidth = 2.5;
+                ctx.beginPath(); ctx.arc(toX(r[0]), toY(r[1]), 5, 0, TAU); ctx.fill(); ctx.stroke();
+
+                // handles
+                for (let i = 0; i < 4; i++) {
+                    const end = i === 0 || i === 3;
+                    ctx.fillStyle = end ? '#009CDE' : '#fff'; ctx.strokeStyle = '#005f87'; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.arc(toX(pts[i][0]), toY(pts[i][1]), end ? 8 : 6, 0, TAU); ctx.fill(); ctx.stroke();
+                }
+                ctx.fillStyle = '#003d57'; ctx.font = 'bold 13px sans-serif';
+                ctx.fillText('A', toX(pts[0][0]) + 10, toY(pts[0][1]) - 8);
+                ctx.fillText('B', toX(pts[3][0]) + 10, toY(pts[3][1]) - 8);
+            }
+
+            // samples of F.T against arc length, for the graph
+            function samples() {
+                const n = 240, out = [];
+                let s = 0, prev = null;
+                for (let k = 0; k <= n; k++) {
+                    const t = k / n, r = pos(t), v = vel(t), spd = Math.hypot(v[0], v[1]);
+                    if (prev) s += 0.5 * (spd + prev.spd) / n;
+                    const ft = spd > 1e-9 ? (F.P(r[0], r[1]) * v[0] + F.Q(r[0], r[1]) * v[1]) / spd : 0;
+                    out.push({ t: t, s: s, ft: ft, spd: spd });
+                    prev = out[out.length - 1];
+                }
+                return out;
+            }
+
+            function drawGraph(sm) {
+                const c = gctx, w = GW, h = GH;
+                c.setTransform(gr.width / w, 0, 0, gr.width / w, 0, 0);
+                c.clearRect(0, 0, w, h);
+                const S = Math.max(sm[sm.length - 1].s, 1e-9);
+                let top = 0.5;
+                sm.forEach(e => { top = Math.max(top, Math.abs(e.ft)); });
+                top *= 1.15;
+                const ml = 42, mr = 12, mt = 12, mb = 28;
+                const gx = s => ml + s / S * (w - ml - mr);
+                const gy = v => mt + (1 - (v + top) / (2 * top)) * (h - mt - mb);
+                c.strokeStyle = '#bbb'; c.lineWidth = 1; c.fillStyle = '#666'; c.font = '11px sans-serif';
+                c.beginPath(); c.moveTo(ml, gy(0)); c.lineTo(w - mr, gy(0)); c.moveTo(ml, mt); c.lineTo(ml, h - mb); c.stroke();
+                c.fillText(fmt(top), 4, mt + 10); c.fillText(fmt(-top), 4, h - mb - 2); c.fillText('0', 28, gy(0) + 4);
+                c.fillText('0', ml - 3, h - mb + 14); c.fillText(fmt(S), w - mr - 28, h - mb + 14);
+                c.font = 'bold 12px sans-serif'; c.fillStyle = '#333';
+                c.fillText('s (arc length)', (w + ml) / 2 - 36, h - 6); c.fillText('F·T', 6, mt + 24 + 10);
+                // shaded signed area
+                for (let k = 0; k < sm.length - 1; k++) {
+                    const a = sm[k], b = sm[k + 1], v = (a.ft + b.ft) / 2;
+                    c.fillStyle = v >= 0 ? 'rgba(243,110,36,0.55)' : 'rgba(80,80,80,0.4)';
+                    c.beginPath(); c.moveTo(gx(a.s), gy(0)); c.lineTo(gx(a.s), gy(a.ft)); c.lineTo(gx(b.s), gy(b.ft)); c.lineTo(gx(b.s), gy(0)); c.closePath(); c.fill();
+                }
+                c.strokeStyle = '#CD5920'; c.lineWidth = 2;
+                c.beginPath(); sm.forEach((e, k) => { if (k === 0) c.moveTo(gx(e.s), gy(e.ft)); else c.lineTo(gx(e.s), gy(e.ft)); }); c.stroke();
+                // tracer marker
+                let near = sm[0];
+                sm.forEach(e => { if (Math.abs(e.t - tau) < Math.abs(near.t - tau)) near = e; });
+                c.strokeStyle = '#009CDE'; c.lineWidth = 2; c.setLineDash([5, 4]);
+                c.beginPath(); c.moveTo(gx(near.s), mt); c.lineTo(gx(near.s), h - mb); c.stroke(); c.setLineDash([]);
+                c.fillStyle = '#fff'; c.strokeStyle = '#CD5920'; c.lineWidth = 2.5;
+                c.beginPath(); c.arc(gx(near.s), gy(near.ft), 5, 0, TAU); c.fill(); c.stroke();
+            }
+
+            // ---------- readouts ----------
+            function readouts() {
+                const W_ = workIntegral(), len = lengthIntegral(), mass = massIntegral();
+                $('r-dir').textContent = rev ? 'B to A' : 'A to B';
+                $('r-work').textContent = fmt(W_);
+                $('r-len').textContent = fmt(len);
+                $('r-avg').textContent = len > 1e-9 ? fmt(W_ / len) : '—';
+                $('r-mass').textContent = fmt(mass);
+                const r = pos(tau), v = vel(tau), spd = Math.hypot(v[0], v[1]);
+                const p = F.P(r[0], r[1]), q = F.Q(r[0], r[1]);
+                $('t-pt').textContent = '(' + fmt(r[0]) + ', ' + fmt(r[1]) + ')';
+                $('t-F').textContent = '⟨' + fmt(p) + ', ' + fmt(q) + '⟩';
+                if (spd > 1e-9) {
+                    const T = [v[0] / spd, v[1] / spd];
+                    $('t-T').textContent = '⟨' + fmt(T[0]) + ', ' + fmt(T[1]) + '⟩';
+                    $('t-FT').textContent = fmt(p * T[0] + q * T[1]);
+                } else { $('t-T').textContent = '—'; $('t-FT').textContent = '—'; }
+                $('status').textContent = len < 1e-6 ? 'The curve has no length (A and B coincide and the handles are on top of them).' : '';
+                cv.setAttribute('aria-label',
+                    'The field ' + F.short + ' with a curve from A at (' + fmt(pts[0][0]) + ', ' + fmt(pts[0][1]) + ') to B at (' + fmt(pts[3][0]) + ', ' + fmt(pts[3][1]) +
+                    '), walked ' + (rev ? 'from B to A' : 'from A to B') + '. The work is ' + fmt(W_) + ', the arc length is ' + fmt(len) + ', and the mass of a wire with density ' + RHO.short + ' is ' + fmt(mass) + '.');
+                gr.setAttribute('aria-label',
+                    'Graph of F dot T against arc length from 0 to ' + fmt(len) + '. The signed area under it is the work, ' + fmt(W_) + '.');
+                for (let i = 0; i < 4; i++) ['x', 'y'].forEach((c, ci) => {
+                    const el = $('p' + i + c);
+                    if (document.activeElement !== el) el.value = Number(pts[i][ci].toFixed(3));
+                });
+            }
+
+            function refresh() {
+                readouts();
+                drawField();
+                drawGraph(samples());
+            }
+
+            // ---------- controls ----------
+            function customShape() { shapeSel.value = String(SHAPES.length - 1); }
+            function setShape(i) {
+                if (SHAPES[i].pts) pts = SHAPES[i].pts.map(p => p.slice());
+                refresh();
+            }
+            function resize() {
+                const dpr = window.devicePixelRatio || 1;
+                let rect = cv.getBoundingClientRect();
+                W = Math.max(200, rect.width);
+                cv.width = Math.round(W * dpr); cv.height = Math.round(W * dpr);
+                rect = gr.getBoundingClientRect();
+                GW = Math.max(240, rect.width); GH = GW * 7 / 16;
+                gr.width = Math.round(GW * dpr); gr.height = Math.round(GH * dpr);
+                refresh();
+            }
+            function movePoint(i, x, y) {
+                pts[i] = [Math.min(L, Math.max(-L, x)), Math.min(L, Math.max(-L, y))];
+                customShape();
+                refresh();
+            }
+
+            let drag = -1;
+            function localXY(e) {
+                const r = cv.getBoundingClientRect();
+                return [(e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * W];
+            }
+            cv.addEventListener('pointerdown', e => {
+                const [px, py] = localXY(e);
+                let best = -1, bd = 22;
+                for (let i = 0; i < 4; i++) {
+                    const d = Math.hypot(px - toX(pts[i][0]), py - toY(pts[i][1]));
+                    if (d < bd) { bd = d; best = i; }
+                }
+                if (best >= 0) {
+                    drag = best;
+                    try { cv.setPointerCapture(e.pointerId); } catch (err) { }
+                    e.preventDefault();
+                }
+            });
+            cv.addEventListener('pointermove', e => {
+                if (drag < 0) return;
+                const [px, py] = localXY(e);
+                movePoint(drag, Math.round(fromX(px) * 20) / 20, Math.round(fromY(py) * 20) / 20);
+            });
+            const stop = () => { drag = -1; };
+            cv.addEventListener('pointerup', stop);
+            cv.addEventListener('pointercancel', stop);
+
+            fieldSel.addEventListener('change', () => { F = FIELDS[parseInt(fieldSel.value, 10)]; refresh(); });
+            rhoSel.addEventListener('change', () => { RHO = RHOS[parseInt(rhoSel.value, 10)]; refresh(); });
+            shapeSel.addEventListener('change', () => setShape(parseInt(shapeSel.value, 10)));
+            $('rev').addEventListener('change', () => { rev = $('rev').checked; refresh(); });
+            $('tau-slider').addEventListener('input', () => { tau = parseFloat($('tau-slider').value); $('tau-num').value = tau; refresh(); });
+            $('tau-num').addEventListener('change', () => {
+                const v = parseFloat($('tau-num').value); tau = Math.min(1, Math.max(0, isFinite(v) ? v : tau));
+                $('tau-slider').value = tau; $('tau-num').value = tau; refresh();
+            });
+            for (let i = 0; i < 4; i++) ['x', 'y'].forEach((c, ci) => {
+                $('p' + i + c).addEventListener('change', () => {
+                    const v = parseFloat($('p' + i + c).value);
+                    if (!isFinite(v)) { refresh(); return; }
+                    const q = pts[i].slice(); q[ci] = v;
+                    movePoint(i, q[0], q[1]);
+                });
+            });
+
+            window.addEventListener('resize', resize);
+            resize();
+        })();
+    </script>
+</body>
+
+</html>

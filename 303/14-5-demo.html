@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordinate Boxes - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        .dashboard > * {
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard .panel {
+            margin-bottom: 0;
+        }
+
+        .panel h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        canvas#scene {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        canvas#scene:active {
+            cursor: grabbing;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .control-block {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #eee;
+        }
+
+        .control-block:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            min-width: 0;
+            accent-color: var(--color-accent-blue, #009CDE);
+        }
+
+        .slider-row input[type="number"] {
+            width: 5.5rem;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #6E6E6E;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4A4A4A;
+        }
+
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .readouts {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.4rem 0.9rem;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .readouts dt {
+            color: var(--text-muted);
+        }
+
+        .readouts dd {
+            margin: 0;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            overflow-wrap: anywhere;
+        }
+
+        .readouts .final {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .status {
+            margin-top: 0.75rem;
+            min-height: 1.4rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--color-accent-green, #008552);
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .things ol {
+            padding-left: 1.25rem;
+            margin: 0;
+        }
+
+        .things li {
+            margin-bottom: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Coordinate Boxes</h1>
+            <p>&sect;14.5 &mdash; fill a solid with cylindrical or spherical coordinate boxes, see why a box&rsquo;s volume
+                carries the factor <em>r</em> or &rho;&sup2;&nbsp;sin&nbsp;&phi;, and watch the sum close in on the integral.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Pick a solid. It is cut into <em>m</em> &times; <em>n</em> &times; <em>k</em> coordinate boxes: in cylindrical
+                coordinates a box has <em>r</em>, &theta;, and <em>z</em> each in a small interval, and in spherical coordinates
+                the same for &rho;, &phi;, and &theta;. A box counts if its center is in the solid, and each blue dot is the
+                center of a counted box. The sum adds <em>f</em> at each center times the box&rsquo;s volume, and the exact
+                integral is shown for comparison. Use the three <strong>inspect</strong> sliders to pick one box (shown in orange)
+                and compare its true volume with the product of its three widths. Drag inside the scene to orbit it.
+            </p>
+            <p class="hint">The sample point is the center of each box. Boxes along a curved edge of the solid are not counted
+                exactly, so the sum only closes in on the integral as the boxes get smaller. The green outline is the
+                coordinate box that contains the whole solid.</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel">
+                <canvas id="scene" width="600" height="600" tabindex="0" role="img"
+                    aria-label="3D view of a solid filled with coordinate boxes."></canvas>
+                <div class="scene-hint">Drag to rotate &middot; scroll to zoom &middot; arrow keys also rotate</div>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#009CDE;"></span>centers of counted boxes</div>
+                    <div><span class="swatch" style="background:#008552;"></span>the coordinate box around the solid</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>the box you are inspecting</div>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="no-factor">
+                    <label for="no-factor">Leave out the factor (the common mistake)</label>
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="reset-view" type="button">Reset View</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <label class="field-label" for="solid">Solid</label>
+                    <select id="solid"></select>
+                    <label class="field-label" for="func">Function <em>f</em>(<em>x</em>, <em>y</em>, <em>z</em>)</label>
+                    <select id="func"></select>
+                    <label class="field-label" for="m-slider" id="m-label"></label>
+                    <div class="slider-row">
+                        <input type="range" id="m-slider" min="1" max="12" step="1" value="4">
+                        <input type="number" id="m-num" min="1" max="12" step="1" value="4" aria-label="Type the number of pieces in the first coordinate">
+                    </div>
+                    <label class="field-label" for="n-slider" id="n-label"></label>
+                    <div class="slider-row">
+                        <input type="range" id="n-slider" min="1" max="24" step="1" value="8">
+                        <input type="number" id="n-num" min="1" max="24" step="1" value="8" aria-label="Type the number of pieces in the second coordinate">
+                    </div>
+                    <label class="field-label" for="k-slider" id="k-label"></label>
+                    <div class="slider-row">
+                        <input type="range" id="k-slider" min="1" max="12" step="1" value="4">
+                        <input type="number" id="k-num" min="1" max="12" step="1" value="4" aria-label="Type the number of pieces in the third coordinate">
+                    </div>
+                </div>
+                <div class="control-block">
+                    <h4>The Riemann sum</h4>
+                    <dl class="readouts">
+                        <dt>Boxes counted</dt><dd id="r-count"></dd>
+                        <dt id="r-steps-label">Widths</dt><dd id="r-steps"></dd>
+                        <dt id="r-sum-label">Sum</dt><dd id="r-sum" class="final"></dd>
+                        <dt>Exact integral</dt><dd id="r-exact"></dd>
+                        <dt>Sum &minus; exact</dt><dd id="r-err"></dd>
+                    </dl>
+                    <div class="status" id="status"></div>
+                </div>
+                <div class="control-block">
+                    <h4>Inspect one box</h4>
+                    <label class="field-label" for="i-slider" id="i-label"></label>
+                    <div class="slider-row">
+                        <input type="range" id="i-slider" min="1" max="4" step="1" value="1">
+                        <input type="number" id="i-num" min="1" max="4" step="1" value="1" aria-label="Type the box number in the first coordinate">
+                    </div>
+                    <label class="field-label" for="j-slider" id="j-label"></label>
+                    <div class="slider-row">
+                        <input type="range" id="j-slider" min="1" max="8" step="1" value="1">
+                        <input type="number" id="j-num" min="1" max="8" step="1" value="1" aria-label="Type the box number in the second coordinate">
+                    </div>
+                    <label class="field-label" for="l-slider" id="l-label"></label>
+                    <div class="slider-row">
+                        <input type="range" id="l-slider" min="1" max="4" step="1" value="1">
+                        <input type="number" id="l-num" min="1" max="4" step="1" value="1" aria-label="Type the box number in the third coordinate">
+                    </div>
+                    <dl class="readouts">
+                        <dt>Center (<em>x</em>, <em>y</em>, <em>z</em>)</dt><dd id="c-xyz"></dd>
+                        <dt>Product of the three widths (the wrong volume)</dt><dd id="c-naive"></dd>
+                        <dt id="c-fac-label">With the factor</dt><dd id="c-fac"></dd>
+                        <dt>True volume of this box</dt><dd id="c-true" class="final"></dd>
+                    </dl>
+                    <div class="hint" id="c-note" style="margin-top:0.5rem;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel things">
+            <h4>Things to try</h4>
+            <ol>
+                <li>Pick the paraboloid bowl (cylindrical) with <em>f</em> = 1. Predict which boxes have the biggest true volume:
+                    those near the axis or those far from it, and by what factor. Then inspect ring 1 and the outermost ring (any
+                    wedge, any layer) and compare the true volume with <em>r</em>*&nbsp;&Delta;<em>r</em>&nbsp;&Delta;&theta;&nbsp;&Delta;<em>z</em>.</li>
+                <li>Pick the ice-cream cone (spherical), <em>f</em> = 1. The coordinate box is exactly the solid, so every box counts.
+                    Predict the answer you get with the factor left out (think: what is the product of the three ranges?). Then tick
+                    the box and check it against the exact volume &pi;(2 &minus; &radic;3)/3 &approx; 0.2806.</li>
+                <li>Pick the spherical shell sector with <em>f</em> = <em>x</em>&sup2; + <em>y</em>&sup2;. The section page gets
+                    31&pi;/12 &approx; 8.116. Raise <em>m</em>, <em>n</em>, <em>k</em> and watch the sum settle there. Which of the
+                    three sliders matters most?</li>
+                <li>Pick any solid and <em>f</em> = <em>x</em>. Before you read the exact value, decide from the shape whether it
+                    should be zero. For which solids is it not zero, and why?</li>
+                <li>Pick the shifted cylinder (the page&rsquo;s mass example, <em>f</em> = <em>x</em>) and look at the outline from above
+                    with the arrow keys. Why do the &theta;-values run only from &minus;&pi;/2 to &pi;/2?
+                    The exact value is 64/15 &approx; 4.267.</li>
+            </ol>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            'use strict';
+
+            const TAU = 2 * Math.PI, PI = Math.PI;
+            const sin = Math.sin, cos = Math.cos;
+
+            // ---------- Gauss-Legendre quadrature for the exact value ----------
+            function gaussLegendre(n) {
+                const xs = [], ws = [];
+                for (let i = 0; i < n; i++) {
+                    let z = Math.cos(Math.PI * (i + 0.75) / (n + 0.5)), pp = 1;
+                    for (let it = 0; it < 100; it++) {
+                        let p1 = 1, p2 = 0;
+                        for (let j = 0; j < n; j++) {
+                            const p3 = p2; p2 = p1;
+                            p1 = ((2 * j + 1) * z * p2 - j * p3) / (j + 1);
+                        }
+                        pp = n * (z * p1 - p2) / (z * z - 1);
+                        const z1 = z;
+                        z = z1 - p1 / pp;
+                        if (Math.abs(z - z1) < 1e-15) break;
+                    }
+                    xs.push(z); ws.push(2 / ((1 - z * z) * pp * pp));
+                }
+                return { x: xs, w: ws };
+            }
+            const GL = gaussLegendre(10);
+            function integrate1(g, a, b, panels) {
+                let s = 0;
+                const h = (b - a) / panels;
+                for (let p = 0; p < panels; p++) {
+                    const mid = a + (p + 0.5) * h;
+                    for (let k = 0; k < GL.x.length; k++) s += GL.w[k] * g(mid + GL.x[k] * h / 2) * h / 2;
+                }
+                return s;
+            }
+
+            // Coordinates: cylindrical u = (r, theta, z); spherical u = (rho, phi, theta).
+            const SYS = {
+                cyl: {
+                    names: ['r', 'θ', 'z'],
+                    labels: ['Rings, m (r pieces)', 'Wedges, n (θ pieces)', 'Layers, k (z pieces)'],
+                    inspect: ['Ring number', 'Wedge number', 'Layer number'],
+                    map: u => [u[0] * cos(u[1]), u[0] * sin(u[1]), u[2]],
+                    trueVol: (lo, hi) => 0.5 * (hi[0] * hi[0] - lo[0] * lo[0]) * (hi[1] - lo[1]) * (hi[2] - lo[2]),
+                    factor: mid => mid[0],
+                    facText: 'r* Δr Δθ Δz'
+                },
+                sph: {
+                    names: ['ρ', 'φ', 'θ'],
+                    labels: ['Shells, m (ρ pieces)', 'Cones, n (φ pieces)', 'Wedges, k (θ pieces)'],
+                    inspect: ['Shell number', 'Cone number', 'Wedge number'],
+                    map: u => [u[0] * sin(u[1]) * cos(u[2]), u[0] * sin(u[1]) * sin(u[2]), u[0] * cos(u[1])],
+                    trueVol: (lo, hi) => (hi[0] ** 3 - lo[0] ** 3) / 3 * (cos(lo[1]) - cos(hi[1])) * (hi[2] - lo[2]),
+                    factor: mid => mid[0] * mid[0] * sin(mid[1]),
+                    facText: 'ρ*² sin φ* Δρ Δφ Δθ'
+                }
+            };
+
+            // Each solid: its system, the coordinate box that contains it, an inside test in its coordinates, and the
+            // limits (innermost last) used to compute the exact integral.
+            const SOLIDS = [
+                {
+                    sys: 'cyl', name: 'Cylindrical: bowl, r² ≤ z ≤ 1 (page example)', short: 'the bowl above the paraboloid z equals r squared and below the plane z equals 1',
+                    lo: [0, 0, 0], hi: [1, TAU, 1],
+                    inside: u => u[2] >= u[0] * u[0],
+                    lims: { o: [0, TAU], m: () => [0, 1], i: (a, b) => [b * b, 1] }          // theta, r(theta), z(r, theta); (a, b) = (theta, r)
+                },
+                {
+                    sys: 'cyl', name: 'Cylindrical: inside r = 2 cos θ, between z = 0 and the cone z = r (page example)', short: 'the solid over the circle r equals 2 cosine theta, under the cone z equals r',
+                    lo: [0, -PI / 2, 0], hi: [2, PI / 2, 2],
+                    inside: u => u[0] <= 2 * cos(u[1]) && u[2] <= u[0],
+                    lims: { o: [-PI / 2, PI / 2], m: th => [0, 2 * cos(th)], i: (th, r) => [0, r] }
+                },
+                {
+                    sys: 'cyl', name: 'Cylindrical: above the cone z = r, below z = 3', short: 'the solid above the cone z equals r and below the plane z equals 3',
+                    lo: [0, 0, 0], hi: [3, TAU, 3],
+                    inside: u => u[2] >= u[0],
+                    lims: { o: [0, TAU], m: () => [0, 3], i: (th, r) => [r, 3] }
+                },
+                {
+                    sys: 'sph', name: 'Spherical: ice-cream cone, ρ ≤ 1, φ ≤ π/6 (page example)', short: 'the ice-cream cone under the sphere rho equals 1 and inside the cone phi equals pi over 6',
+                    lo: [0, 0, 0], hi: [1, PI / 6, TAU],
+                    inside: () => true,
+                    lims: { o: [0, TAU], m: () => [0, PI / 6], i: () => [0, 1] }              // theta, phi(theta), rho(phi, theta)
+                },
+                {
+                    sys: 'sph', name: 'Spherical: first octant of (x − 2)² + y² + z² ≤ 4 (page example)', short: 'the first-octant part of the ball of radius 2 centered at 2, 0, 0',
+                    lo: [0, 0, 0], hi: [4, PI / 2, PI / 2],
+                    inside: u => u[0] <= 4 * sin(u[1]) * cos(u[2]),
+                    lims: { o: [0, PI / 2], m: () => [0, PI / 2], i: (th, ph) => [0, 4 * sin(ph) * cos(th)] }
+                },
+                {
+                    sys: 'sph', name: 'Spherical: shell 1 ≤ ρ ≤ 2 above the cone φ = π/3 (page example)', short: 'the part of the shell between spheres of radius 1 and 2 inside the cone phi equals pi over 3',
+                    lo: [1, 0, 0], hi: [2, PI / 3, TAU],
+                    inside: () => true,
+                    lims: { o: [0, TAU], m: () => [0, PI / 3], i: () => [1, 2] }
+                }
+            ];
+
+            const FUNCS = [
+                { name: 'f = 1  (volume)', short: 'one', f: () => 1 },
+                { name: 'f = x', short: 'x', f: (x, y, z) => x },
+                { name: 'f = z', short: 'z', f: (x, y, z) => z },
+                { name: 'f = x² + y²', short: 'x squared plus y squared', f: (x, y, z) => x * x + y * y }
+            ];
+
+            const canvas = document.getElementById('scene');
+            const ctx = canvas.getContext('2d');
+            const $ = id => document.getElementById(id);
+            const solidSel = $('solid'), fSel = $('func');
+            SOLIDS.forEach((p, i) => { const o = document.createElement('option'); o.value = i; o.textContent = (i + 1) + '. ' + p.name; solidSel.appendChild(o); });
+            FUNCS.forEach((p, i) => { const o = document.createElement('option'); o.value = i; o.textContent = (i + 1) + '. ' + p.name; fSel.appendChild(o); });
+
+            const DEFAULT_VIEW = { theta: -0.75, phi: 0.5, zoom: 1 };
+            let view = Object.assign({}, DEFAULT_VIEW);
+            let G = SOLIDS[0], Y = SYS.cyl, F = FUNCS[0];
+            let cnt = [4, 8, 4], ins = [1, 1, 1];
+            let center = [0, 0, 0], R = 1, W = 600;
+
+            // ---------- helpers ----------
+            function clean(x) { return Math.abs(x) < 1e-9 ? 0 : x; }
+            function fmt(x) {
+                if (!isFinite(x)) return '—';
+                const r = Number(clean(x).toPrecision(4));
+                return String(r === 0 ? 0 : r);
+            }
+
+            function exact() {
+                const L = G.lims, sys = G.sys;
+                return integrate1(a => integrate1(b => {
+                    const [lo, hi] = L.i(a, b);
+                    return integrate1(c => {
+                        // (a, b, c) = (theta, r, z) for cylindrical; (theta, phi, rho) for spherical
+                        const u = sys === 'cyl' ? [b, a, c] : [c, b, a];
+                        const p = Y.map(u);
+                        return F.f(p[0], p[1], p[2]) * (sys === 'cyl' ? b : c * c * sin(b));
+                    }, lo, hi, 4);
+                }, ...L.m(a), 6), L.o[0], L.o[1], 12);
+            }
+
+            function sums() {
+                const d = [0, 1, 2].map(q => (G.hi[q] - G.lo[q]) / cnt[q]);
+                const noF = $('no-factor').checked;
+                let s = 0, count = 0;
+                const pts = [];
+                for (let i = 0; i < cnt[0]; i++) for (let j = 0; j < cnt[1]; j++) for (let l = 0; l < cnt[2]; l++) {
+                    const mid = [G.lo[0] + (i + 0.5) * d[0], G.lo[1] + (j + 0.5) * d[1], G.lo[2] + (l + 0.5) * d[2]];
+                    if (!G.inside(mid)) continue;
+                    count++;
+                    const p = Y.map(mid);
+                    pts.push(p);
+                    s += F.f(p[0], p[1], p[2]) * (noF ? 1 : Y.factor(mid)) * d[0] * d[1] * d[2];
+                }
+                return { sum: s, count: count, d: d, pts: pts };
+            }
+
+            // ---------- projection (same orbit scheme as the Chapter 11 to 14 demos) ----------
+            function project(p) {
+                const x = p[0] - center[0], y = p[1] - center[1], z = p[2] - center[2];
+                const ct = cos(view.theta), st = sin(view.theta);
+                const x1 = x * ct - y * st;
+                const y1 = x * st + y * ct;
+                const cp = cos(view.phi), sp = sin(view.phi);
+                const z2 = y1 * sp + z * cp;
+                const k = 0.5 * W / R * view.zoom;
+                return { sx: W / 2 + x1 * k, sy: W / 2 - z2 * k, depth: y1 * cp - z * sp };
+            }
+            function line3d(a, b, color, width) {
+                const pa = project(a), pb = project(b);
+                ctx.strokeStyle = color; ctx.lineWidth = width || 1;
+                ctx.beginPath(); ctx.moveTo(pa.sx, pa.sy); ctx.lineTo(pb.sx, pb.sy); ctx.stroke();
+            }
+
+            // the point of the box [lo, hi] at fractions (s0, s1, s2) of each range
+            function at(lo, hi, s) { return Y.map([lo[0] + s[0] * (hi[0] - lo[0]), lo[1] + s[1] * (hi[1] - lo[1]), lo[2] + s[2] * (hi[2] - lo[2])]); }
+
+            function drawBoxEdges(lo, hi, color, width) {
+                const N = 28;
+                ctx.strokeStyle = color; ctx.lineWidth = width;
+                for (let a = 0; a < 3; a++) {
+                    for (let e0 = 0; e0 < 2; e0++) for (let e1 = 0; e1 < 2; e1++) {
+                        ctx.beginPath();
+                        for (let k = 0; k <= N; k++) {
+                            const s = [0, 0, 0];
+                            s[a] = k / N; s[(a + 1) % 3] = e0; s[(a + 2) % 3] = e1;
+                            const q = project(at(lo, hi, s));
+                            if (k === 0) ctx.moveTo(q.sx, q.sy); else ctx.lineTo(q.sx, q.sy);
+                        }
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            function drawInspected(lo, hi) {
+                const S = 6, quads = [];
+                for (let a = 0; a < 3; a++) {
+                    const b = (a + 1) % 3, c = (a + 2) % 3;
+                    for (let side = 0; side < 2; side++) {
+                        for (let i = 0; i < S; i++) for (let j = 0; j < S; j++) {
+                            const mk = (ii, jj) => { const s = [0, 0, 0]; s[a] = side; s[b] = ii / S; s[c] = jj / S; return at(lo, hi, s); };
+                            const q = [mk(i, j), mk(i + 1, j), mk(i + 1, j + 1), mk(i, j + 1)].map(project);
+                            quads.push({ q: q, depth: (q[0].depth + q[1].depth + q[2].depth + q[3].depth) / 4 });
+                        }
+                    }
+                }
+                quads.sort((u, v) => v.depth - u.depth);
+                quads.forEach(f => {
+                    ctx.beginPath();
+                    f.q.forEach((p, i) => { if (i === 0) ctx.moveTo(p.sx, p.sy); else ctx.lineTo(p.sx, p.sy); });
+                    ctx.closePath();
+                    ctx.fillStyle = 'rgba(243,110,36,0.55)'; ctx.fill();
+                    ctx.strokeStyle = 'rgba(205,89,32,0.35)'; ctx.lineWidth = 0.6; ctx.stroke();
+                });
+                drawBoxEdges(lo, hi, '#CD5920', 2);
+            }
+
+            function boxOf(i, j, l, d) {
+                const idx = [i, j, l];
+                const lo = [0, 1, 2].map(q => G.lo[q] + (idx[q] - 1) * d[q]);
+                return { lo: lo, hi: [0, 1, 2].map(q => lo[q] + d[q]) };
+            }
+
+            function draw() {
+                ctx.setTransform(canvas.width / W, 0, 0, canvas.width / W, 0, 0);
+                ctx.clearRect(0, 0, W, W);
+
+                // axes
+                const L = R * 0.95;
+                line3d([0, 0, 0], [L, 0, 0], '#555', 1.3); line3d([0, 0, 0], [0, L, 0], '#555', 1.3); line3d([0, 0, 0], [0, 0, L], '#555', 1.3);
+                ctx.fillStyle = '#333'; ctx.font = 'bold 14px sans-serif';
+                [['x', [L, 0, 0]], ['y', [0, L, 0]], ['z', [0, 0, L]]].forEach(l => { const q = project(l[1]); ctx.fillText(l[0], q.sx + 4, q.sy - 4); });
+
+                const sm = sums();
+                drawBoxEdges(G.lo, G.hi, '#008552', 1.6);
+                // centers of counted boxes, far ones first
+                const dots = sm.pts.map(p => project(p)).sort((a, b) => b.depth - a.depth);
+                const rad = Math.max(1.6, Math.min(4, 90 / Math.cbrt(Math.max(1, cnt[0] * cnt[1] * cnt[2]))));
+                ctx.fillStyle = 'rgba(0,156,222,0.65)';
+                dots.forEach(q => { ctx.beginPath(); ctx.arc(q.sx, q.sy, rad, 0, TAU); ctx.fill(); });
+
+                const bx = boxOf(ins[0], ins[1], ins[2], sm.d);
+                drawInspected(bx.lo, bx.hi);
+
+                // readouts
+                const ex = exact(), noF = $('no-factor').checked;
+                $('r-count').textContent = sm.count + ' of ' + (cnt[0] * cnt[1] * cnt[2]);
+                $('r-steps-label').innerHTML = 'Widths &Delta;' + Y.names.join(', &Delta;');
+                $('r-steps').textContent = sm.d.map(fmt).join(', ');
+                $('r-sum-label').textContent = noF ? 'Sum of f · Δ’s (no factor)' : 'Sum of f · ' + Y.facText;
+                $('r-sum').textContent = fmt(sm.sum);
+                $('r-exact').textContent = fmt(ex);
+                const err = sm.sum - ex;
+                $('r-err').textContent = (err > 1e-12 ? '+' : '') + fmt(err);
+                $('status').textContent = noF ? 'Without the factor this is not the triple integral.' : '';
+
+                const mid = [0, 1, 2].map(q => (bx.lo[q] + bx.hi[q]) / 2);
+                const p = Y.map(mid);
+                const naive = sm.d[0] * sm.d[1] * sm.d[2];
+                const tv = Y.trueVol(bx.lo, bx.hi);
+                $('c-xyz').textContent = p.map(fmt).join(', ');
+                $('c-naive').textContent = fmt(naive);
+                $('c-fac-label').textContent = Y.facText;
+                $('c-fac').textContent = fmt(Y.factor(mid) * naive);
+                $('c-true').textContent = fmt(tv);
+                $('c-note').textContent = G.inside(mid) ? 'This box is counted in the sum.' : 'This box is not counted: its center is outside the solid.';
+
+                canvas.setAttribute('aria-label',
+                    '3D view of ' + G.short + ', cut into ' + cnt[0] + ' by ' + cnt[1] + ' by ' + cnt[2] + ' ' + (G.sys === 'cyl' ? 'cylindrical' : 'spherical') +
+                    ' coordinate boxes, ' + sm.count + ' of them counted. The sum for f equal to ' + F.short + ' is ' + fmt(sm.sum) + (noF ? ' (with the factor left out)' : '') +
+                    ' and the exact integral is ' + fmt(ex) + '. The inspected box has true volume ' + fmt(tv) + ' and the product of its three widths is ' + fmt(naive) + '.');
+            }
+
+            // ---------- controls ----------
+            function sizeScene() {
+                let lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
+                const N = 12;
+                for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) for (let k = 0; k <= N; k++) {
+                    if (i % N && j % N && k % N) continue;
+                    const p = at(G.lo, G.hi, [i / N, j / N, k / N]);
+                    for (let q = 0; q < 3; q++) { lo[q] = Math.min(lo[q], p[q]); hi[q] = Math.max(hi[q], p[q]); }
+                }
+                lo = lo.map(v => Math.min(v, 0)); hi = hi.map(v => Math.max(v, 0));
+                center = [0, 1, 2].map(q => (lo[q] + hi[q]) / 2);
+                R = 1.1 * Math.hypot((hi[0] - lo[0]) / 2, (hi[1] - lo[1]) / 2, (hi[2] - lo[2]) / 2);
+            }
+            function syncLabels() {
+                ['m', 'n', 'k'].forEach((c, q) => { $(c + '-label').textContent = Y.labels[q]; });
+                ['i', 'j', 'l'].forEach((c, q) => { $(c + '-label').textContent = Y.inspect[q]; });
+            }
+            function syncInspect() {
+                ['i', 'j', 'l'].forEach((c, q) => {
+                    ins[q] = Math.min(cnt[q], Math.max(1, ins[q]));
+                    $(c + '-slider').max = cnt[q]; $(c + '-num').max = cnt[q];
+                    $(c + '-slider').value = ins[q]; $(c + '-num').value = ins[q];
+                });
+            }
+            const MAXC = [12, 24, 12];
+            function setCounts(a, b, c) {
+                [a, b, c].forEach((v, q) => { cnt[q] = Math.min(MAXC[q], Math.max(1, Math.round(v))); });
+                ['m', 'n', 'k'].forEach((ch, q) => { $(ch + '-slider').value = cnt[q]; $(ch + '-num').value = cnt[q]; });
+                syncInspect();
+                draw();
+            }
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                W = Math.max(200, rect.width);
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = Math.round(W * dpr);
+                canvas.height = Math.round(W * dpr);
+                draw();
+            }
+
+            solidSel.addEventListener('change', () => { G = SOLIDS[parseInt(solidSel.value, 10)]; Y = SYS[G.sys]; syncLabels(); sizeScene(); draw(); });
+            fSel.addEventListener('change', () => { F = FUNCS[parseInt(fSel.value, 10)]; draw(); });
+            ['m', 'n', 'k'].forEach((c, q) => {
+                $(c + '-slider').addEventListener('input', () => { const v = cnt.slice(); v[q] = parseFloat($(c + '-slider').value); setCounts(v[0], v[1], v[2]); });
+                $(c + '-num').addEventListener('change', () => { const v = cnt.slice(); const x = parseFloat($(c + '-num').value); v[q] = isFinite(x) ? x : v[q]; setCounts(v[0], v[1], v[2]); });
+            });
+            ['i', 'j', 'l'].forEach((c, q) => {
+                $(c + '-slider').addEventListener('input', () => { ins[q] = parseInt($(c + '-slider').value, 10); syncInspect(); draw(); });
+                $(c + '-num').addEventListener('change', () => { const x = parseInt($(c + '-num').value, 10); ins[q] = isFinite(x) ? x : ins[q]; syncInspect(); draw(); });
+            });
+            $('no-factor').addEventListener('change', draw);
+            $('reset-view').addEventListener('click', () => { view = Object.assign({}, DEFAULT_VIEW); draw(); });
+
+            // orbit and zoom
+            let dragging = false, lx = 0, ly = 0;
+            canvas.addEventListener('pointerdown', e => {
+                dragging = true; lx = e.clientX; ly = e.clientY;
+                canvas.setPointerCapture(e.pointerId);
+            });
+            canvas.addEventListener('pointerup', e => { dragging = false; if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId); });
+            canvas.addEventListener('pointercancel', () => { dragging = false; });
+            canvas.addEventListener('pointermove', e => {
+                if (!dragging) return;
+                view.theta += (e.clientX - lx) * 0.007;
+                view.phi = Math.max(-1.45, Math.min(1.45, view.phi - (e.clientY - ly) * 0.007));
+                lx = e.clientX; ly = e.clientY;
+                draw();
+            });
+            canvas.addEventListener('wheel', e => {
+                e.preventDefault();
+                view.zoom = Math.max(0.5, Math.min(3, view.zoom * Math.exp(-e.deltaY * 0.001)));
+                draw();
+            }, { passive: false });
+            canvas.addEventListener('keydown', e => {
+                const step = 0.1;
+                if (e.key === 'ArrowLeft') view.theta -= step;
+                else if (e.key === 'ArrowRight') view.theta += step;
+                else if (e.key === 'ArrowUp') view.phi = Math.min(1.45, view.phi + step);
+                else if (e.key === 'ArrowDown') view.phi = Math.max(-1.45, view.phi - step);
+                else return;
+                e.preventDefault();
+                draw();
+            });
+
+            window.addEventListener('resize', resize);
+            syncLabels();
+            syncInspect();
+            sizeScene();
+            resize();
+        })();
+    </script>
+</body>
+
+</html>

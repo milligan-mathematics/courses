@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscribed Polygons and the Unit Tangent - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        .dashboard > * {
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard .panel {
+            margin-bottom: 0;
+        }
+
+        .panel h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        canvas#scene {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        canvas#scene:active {
+            cursor: grabbing;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .control-block {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #eee;
+        }
+
+        .control-block:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        select.full {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            min-width: 0;
+            accent-color: var(--color-accent-blue, #009CDE);
+        }
+
+        .slider-row input[type="number"] {
+            width: 5.5rem;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .slider-row .val {
+            font-weight: bold;
+            width: 3rem;
+            text-align: right;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #6E6E6E;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4A4A4A;
+        }
+
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .readouts {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.4rem 0.9rem;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .readouts dt {
+            color: var(--text-muted);
+        }
+
+        .readouts dd {
+            margin: 0;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            overflow-wrap: anywhere;
+        }
+
+        .readouts .final {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        table.conv {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        table.conv caption {
+            text-align: left;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            padding-bottom: 0.4rem;
+        }
+
+        table.conv th,
+        table.conv td {
+            border-bottom: 1px solid #eee;
+            padding: 3px 6px;
+            text-align: right;
+        }
+
+        table.conv th:first-child,
+        table.conv td:first-child {
+            text-align: left;
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .things ol {
+            padding-left: 1.25rem;
+            margin: 0;
+        }
+
+        .things li {
+            margin-bottom: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Inscribed Polygons and the Unit Tangent</h1>
+            <p>&sect;12.2 &mdash; cut a space curve into straight chords, watch their total length close in on the arc
+                length, and watch T(t) ride along the curve.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                The blue polygon connects <em>n</em> points on the curve with straight chords. Its total length
+                <em>P<sub>n</sub></em> is always a little short of the true arc length <em>L</em>; more chords means a
+                smaller gap. Slide <em>t</em> to move the blue point: the orange arrow is the unit tangent vector
+                <strong>T</strong>(<em>t</em>), and the thick orange part of the curve is the distance <em>s</em>(<em>t</em>)
+                traveled so far. Drag inside the scene to orbit it.
+            </p>
+            <p class="hint">Arrows are drawn at a fixed fraction of their true length so they fit in the picture (the
+                fraction is shown under the legend). The readouts always show the true values.</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel">
+                <canvas id="scene" width="600" height="600" tabindex="0" role="img"
+                    aria-label="3D view of a space curve with an inscribed polygon and the unit tangent vector."></canvas>
+                <div class="scene-hint">Drag to rotate &middot; scroll to zoom &middot; arrow keys also rotate</div>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#009CDE;"></span>chords and the point you move (n, t)</div>
+                    <div><span class="swatch" style="background:#008552;"></span>the curve</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>T(t) and the distance s(t)</div>
+                    <div><span class="swatch" style="background:#6E6E6E;"></span>r&prime;(t)</div>
+                </div>
+                <div class="hint" id="arrow-scale" style="margin-top:0.5rem; margin-bottom:0;"></div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="show-vel">
+                    <label for="show-vel">Also show the velocity vector r&prime;(t) (same scale as T)</label>
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="reset-view" type="button">Reset View</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <label class="field-label" for="preset">Curve</label>
+                    <select id="preset" class="full"></select>
+                    <label class="field-label" for="n-slider">Number of chords n</label>
+                    <div class="slider-row">
+                        <input type="range" id="n-slider" min="1" max="60" step="1" value="4">
+                        <span class="val" id="n-val">4</span>
+                    </div>
+                    <label class="field-label" for="mode">Place the chord endpoints</label>
+                    <select id="mode" class="full">
+                        <option value="t">at equal steps in the parameter t</option>
+                        <option value="s">at equal steps in arc length s</option>
+                    </select>
+                    <label class="field-label" for="t-slider">Parameter t (where T is drawn)</label>
+                    <div class="slider-row">
+                        <input type="range" id="t-slider" min="0" max="1" step="0.01" value="0">
+                        <input type="number" id="t-num" step="any" value="0" aria-label="Type a value of t">
+                    </div>
+                </div>
+
+                <div class="control-block">
+                    <h4>Length of the chains</h4>
+                    <dl class="readouts">
+                        <dt>Chord total P<sub>n</sub></dt><dd id="r-pn" class="final"></dd>
+                        <dt>Arc length L (numerical)</dt><dd id="r-L"></dd>
+                        <dt>Gap L &minus; P<sub>n</sub></dt><dd id="r-gap"></dd>
+                        <dt>P<sub>n</sub> as a share of L</dt><dd id="r-share"></dd>
+                    </dl>
+                    <p class="hint" id="exact-note" style="margin-top:0.6rem; margin-bottom:0;"></p>
+                </div>
+
+                <div class="control-block">
+                    <h4>At this t</h4>
+                    <dl class="readouts">
+                        <dt>Parameter t</dt><dd id="r-t"></dd>
+                        <dt>Distance so far s(t)</dt><dd id="r-s"></dd>
+                        <dt>Velocity r&prime;(t)</dt><dd id="r-vel"></dd>
+                        <dt>Speed |r&prime;(t)| = ds/dt</dt><dd id="r-speed"></dd>
+                        <dt>Unit tangent T(t)</dt><dd id="r-T" class="final"></dd>
+                        <dt>Length of T</dt><dd id="r-Tlen"></dd>
+                    </dl>
+                </div>
+
+                <div class="control-block">
+                    <table class="conv" id="conv">
+                        <caption>Chord total for 1, 2, 4, &hellip; 64 chords (current curve and placement)</caption>
+                        <thead>
+                            <tr><th scope="col">Chords n</th><th scope="col">Total P<sub>n</sub></th><th scope="col">Gap L &minus; P<sub>n</sub></th></tr>
+                        </thead>
+                        <tbody id="conv-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel things">
+            <h4>Things to try</h4>
+            <ol>
+                <li>Pick the <strong>parabola</strong> with <em>n</em> = 1. Predict the single chord's length by hand
+                    (it joins the two end points), then check the readout. Raise <em>n</em> and watch the table: about
+                    how many chords does it take to get within 1% of <em>L</em>?</li>
+                <li>Pick the <strong>helix</strong>. Before you switch &ldquo;place the chord endpoints&rdquo; between
+                    equal steps in <em>t</em> and equal steps in arc length, predict whether the picture will change.
+                    Then do the same on the parabola.</li>
+                <li>Pick <strong>&lang;cos t, sin t, cos 3t&rang;</strong> and type <em>t</em> = 0.5236 (that is &pi;/6).
+                    Predict the speed and the three components of T, then compare with the worked example on the
+                    section page.</li>
+                <li>On the parabola, tick &ldquo;also show r&prime;(t)&rdquo; and slide <em>t</em> from 0 to 2. Which of
+                    the two arrows changes length, and which one never does? What stays the same about their
+                    directions?</li>
+                <li>Pick the <strong>ellipse</strong> (no closed form for its perimeter) and keep doubling <em>n</em>.
+                    Predict whether P<sub>n</sub> can ever be larger than <em>L</em>, and check the table.</li>
+            </ol>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            'use strict';
+
+            const TAU = 2 * Math.PI;
+            const sin = Math.sin, cos = Math.cos;
+
+            const PRESETS = [
+                {
+                    name: 'Helix  ⟨cos t, t/2, sin t⟩, 0 ≤ t ≤ 4π (the page’s example)',
+                    short: 'helix',
+                    r: t => [cos(t), t / 2, sin(t)],
+                    dr: t => [-sin(t), 0.5, cos(t)],
+                    t0: 0, t1: 2 * TAU, tDef: 4,
+                    exact: 'Exact: L = 2π√5 ≈ 14.05 (the speed is the constant √5/2).'
+                },
+                {
+                    name: 'Wiggle  ⟨cos t, sin t, cos 3t⟩, 0 ≤ t ≤ 2π',
+                    short: 'wiggling loop',
+                    r: t => [cos(t), sin(t), cos(3 * t)],
+                    dr: t => [-sin(t), cos(t), -3 * sin(3 * t)],
+                    t0: 0, t1: TAU, tDef: 1,
+                    exact: 'No elementary closed form: the speed is √(1 + 9 sin² 3t).'
+                },
+                {
+                    name: 'Parabola  ⟨t, t², 0⟩, 0 ≤ t ≤ 2',
+                    short: 'parabola',
+                    r: t => [t, t * t, 0],
+                    dr: t => [1, 2 * t, 0],
+                    t0: 0, t1: 2, tDef: 1,
+                    exact: 'Exact: L = √17 + (1/4) ln(4 + √17) ≈ 4.647.'
+                },
+                {
+                    name: 'Ellipse  ⟨2 cos t, sin t, 0⟩, 0 ≤ t ≤ 2π',
+                    short: 'ellipse',
+                    r: t => [2 * cos(t), sin(t), 0],
+                    dr: t => [-2 * sin(t), cos(t), 0],
+                    t0: 0, t1: TAU, tDef: 1,
+                    exact: 'No elementary closed form for the perimeter of an ellipse; L is computed numerically.'
+                }
+            ];
+
+            const canvas = document.getElementById('scene');
+            const ctx = canvas.getContext('2d');
+            const $ = id => document.getElementById(id);
+            const sel = $('preset'), nSlider = $('n-slider'), modeSel = $('mode');
+            const tSlider = $('t-slider'), tNum = $('t-num');
+
+            PRESETS.forEach((p, i) => {
+                const o = document.createElement('option');
+                o.value = i;
+                o.textContent = (i + 1) + '. ' + p.name;
+                sel.appendChild(o);
+            });
+
+            const DEFAULT_VIEW = { theta: -0.7, phi: 0.8, zoom: 1 };
+            let view = Object.assign({}, DEFAULT_VIEW);
+            let P = PRESETS[0];
+            let n = 4, mode = 't', t = 0;
+            let center = [0, 0, 0], R = 1, arrowF = 1, W = 600;
+            let table = null;            // arc length table for the current preset
+            let verts = [];              // chord endpoints (parameter values)
+
+            // ---------- helpers ----------
+            function clean(x) { return Math.abs(x) < 1e-9 ? 0 : x; }
+            function fmt(x) {
+                if (!isFinite(x)) return '—';
+                const r = Number(clean(x).toPrecision(4));
+                return String(r === 0 ? 0 : r);
+            }
+            function fmtVec(v) { return '⟨' + v.map(fmt).join(', ') + '⟩'; }
+            function mag(v) { return Math.hypot(v[0], v[1], v[2]); }
+            function dist(a, b) { return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]); }
+
+            // ---------- arc-length table: composite Simpson, M subintervals ----------
+            const M = 2000;
+            function buildTable() {
+                const h = (P.t1 - P.t0) / M;
+                const s = new Float64Array(M + 1);
+                let acc = 0;
+                for (let i = 1; i <= M; i++) {
+                    const a = P.t0 + (i - 1) * h, b = a + h;
+                    acc += h / 6 * (mag(P.dr(a)) + 4 * mag(P.dr((a + b) / 2)) + mag(P.dr(b)));
+                    s[i] = acc;
+                }
+                table = { h, s, L: acc };
+            }
+            function sOf(tt) {
+                const x = (tt - P.t0) / table.h;
+                const i = Math.max(0, Math.min(M - 1, Math.floor(x)));
+                const f = x - i;
+                return table.s[i] + f * (table.s[i + 1] - table.s[i]);
+            }
+            function tOfS(sv) {
+                let lo = 0, hi = M;
+                while (hi - lo > 1) {
+                    const mid = (lo + hi) >> 1;
+                    if (table.s[mid] <= sv) lo = mid; else hi = mid;
+                }
+                const d = table.s[hi] - table.s[lo];
+                const f = d > 0 ? (sv - table.s[lo]) / d : 0;
+                return P.t0 + (lo + f) * table.h;
+            }
+
+            function endpoints(count, md) {
+                const out = [];
+                for (let k = 0; k <= count; k++) {
+                    out.push(md === 't' ? P.t0 + (P.t1 - P.t0) * k / count : tOfS(table.L * k / count));
+                }
+                return out;
+            }
+            function chordTotal(count, md) {
+                const ts = endpoints(count, md);
+                let tot = 0, prev = P.r(ts[0]);
+                for (let k = 1; k < ts.length; k++) {
+                    const cur = P.r(ts[k]);
+                    tot += dist(prev, cur);
+                    prev = cur;
+                }
+                return tot;
+            }
+
+            // ---------- projection ----------
+            function project(p) {
+                const x = p[0] - center[0], y = p[1] - center[1], z = p[2] - center[2];
+                const ct = cos(view.theta), st = sin(view.theta);
+                const x1 = x * ct - y * st;
+                const y1 = x * st + y * ct;
+                const cp = cos(view.phi), sp = sin(view.phi);
+                const z2 = y1 * sp + z * cp;
+                const k = 0.44 * W / R * view.zoom;
+                return { sx: W / 2 + x1 * k, sy: W / 2 - z2 * k };
+            }
+
+            function line3d(a, b, color, width) {
+                const pa = project(a), pb = project(b);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = width || 1;
+                ctx.beginPath();
+                ctx.moveTo(pa.sx, pa.sy);
+                ctx.lineTo(pb.sx, pb.sy);
+                ctx.stroke();
+            }
+
+            function arrow3d(a, b, color, width) {
+                const pa = project(a), pb = project(b);
+                ctx.strokeStyle = color;
+                ctx.fillStyle = color;
+                ctx.lineWidth = width;
+                ctx.beginPath();
+                ctx.moveTo(pa.sx, pa.sy);
+                ctx.lineTo(pb.sx, pb.sy);
+                ctx.stroke();
+                const dx = pb.sx - pa.sx, dy = pb.sy - pa.sy;
+                const len = Math.hypot(dx, dy);
+                if (len < 4) return;
+                const ux = dx / len, uy = dy / len, head = 11, ang = 0.45;
+                const rx = -ux, ry = -uy;
+                const w1x = rx * cos(ang) - ry * sin(ang), w1y = rx * sin(ang) + ry * cos(ang);
+                const w2x = rx * cos(ang) + ry * sin(ang), w2y = -rx * sin(ang) + ry * cos(ang);
+                ctx.beginPath();
+                ctx.moveTo(pb.sx, pb.sy);
+                ctx.lineTo(pb.sx + head * w1x, pb.sy + head * w1y);
+                ctx.lineTo(pb.sx + head * w2x, pb.sy + head * w2y);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            function strokeCurve(from, to, color, width, alpha) {
+                if (to <= from) return;
+                const cnt = Math.max(2, Math.ceil(400 * (to - from) / (P.t1 - P.t0)));
+                ctx.globalAlpha = alpha;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = width;
+                ctx.lineJoin = 'round';
+                ctx.beginPath();
+                for (let i = 0; i <= cnt; i++) {
+                    const q = project(P.r(from + (to - from) * i / cnt));
+                    if (i === 0) ctx.moveTo(q.sx, q.sy); else ctx.lineTo(q.sx, q.sy);
+                }
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+            }
+
+            function drawAxes() {
+                const L = R;
+                line3d([-L, 0, 0], [L, 0, 0], '#555', 1.2);
+                line3d([0, -L, 0], [0, L, 0], '#555', 1.2);
+                line3d([0, 0, -L], [0, 0, L], '#555', 1.2);
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 14px sans-serif';
+                [[[L * 1.06, 0, 0], 'x'], [[0, L * 1.06, 0], 'y'], [[0, 0, L * 1.06], 'z']].forEach(([p, s]) => {
+                    const q = project(p);
+                    ctx.fillText(s, q.sx + 3, q.sy - 3);
+                });
+            }
+
+            function draw() {
+                ctx.setTransform(canvas.width / W, 0, 0, canvas.width / W, 0, 0);
+                ctx.clearRect(0, 0, W, W);
+                drawAxes();
+
+                strokeCurve(P.t0, P.t1, '#008552', 2, 0.6);
+                strokeCurve(P.t0, t, '#F36E24', 4.5, 0.95);
+
+                // inscribed polygon
+                const pts = verts.map(P.r);
+                ctx.strokeStyle = '#009CDE';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                pts.forEach((p, i) => { const q = project(p); if (i === 0) ctx.moveTo(q.sx, q.sy); else ctx.lineTo(q.sx, q.sy); });
+                ctx.stroke();
+                ctx.fillStyle = '#fff';
+                ctx.strokeStyle = '#009CDE';
+                ctx.lineWidth = 2;
+                pts.forEach(p => {
+                    const q = project(p);
+                    ctx.beginPath();
+                    ctx.arc(q.sx, q.sy, n > 30 ? 2 : 3.5, 0, TAU);
+                    ctx.fill();
+                    ctx.stroke();
+                });
+
+                // T and r' at the chosen t
+                const pos = P.r(t), vel = P.dr(t), speed = mag(vel);
+                if (speed > 1e-9) {
+                    const T = vel.map(c => c / speed);
+                    if ($('show-vel').checked) {
+                        arrow3d(pos, pos.map((c, i) => c + arrowF * vel[i]), '#6E6E6E', 3);
+                    }
+                    arrow3d(pos, pos.map((c, i) => c + arrowF * T[i]), '#F36E24', 3.5);
+                }
+                const pp = project(pos);
+                ctx.fillStyle = '#009CDE';
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(pp.sx, pp.sy, 6.5, 0, TAU);
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            function readouts() {
+                const pn = chordTotal(n, mode), L = table.L;
+                $('r-pn').textContent = fmt(pn);
+                $('r-L').textContent = fmt(L);
+                $('r-gap').textContent = fmt(L - pn);
+                $('r-share').textContent = fmt(100 * pn / L) + '%';
+
+                const pos = P.r(t), vel = P.dr(t), speed = mag(vel);
+                const T = speed > 1e-9 ? vel.map(c => c / speed) : [NaN, NaN, NaN];
+                $('r-t').textContent = fmt(t);
+                $('r-s').textContent = fmt(sOf(t));
+                $('r-vel').textContent = fmtVec(vel);
+                $('r-speed').textContent = fmt(speed);
+                $('r-T').textContent = fmtVec(T);
+                $('r-Tlen').textContent = fmt(mag(T));
+                canvas.setAttribute('aria-label',
+                    '3D view of the ' + P.short + ' curve with an inscribed polygon of ' + n + ' chords, total length ' +
+                    fmt(pn) + ' against arc length ' + fmt(L) + '. The unit tangent vector at t = ' + fmt(t) +
+                    ' is ' + fmtVec(T) + '.');
+            }
+
+            function buildConvTable() {
+                const body = $('conv-body');
+                body.textContent = '';
+                const L = table.L;
+                [1, 2, 4, 8, 16, 32, 64].forEach(c => {
+                    const pn = chordTotal(c, mode);
+                    const tr = document.createElement('tr');
+                    [String(c), fmt(pn), fmt(L - pn)].forEach(txt => {
+                        const td = document.createElement('td');
+                        td.textContent = txt;
+                        tr.appendChild(td);
+                    });
+                    body.appendChild(tr);
+                });
+            }
+
+            function refreshChords() {
+                verts = endpoints(n, mode);
+                $('n-val').textContent = n;
+                readouts();
+                draw();
+            }
+
+            function setPreset(i) {
+                P = PRESETS[i];
+                buildTable();
+                const N = 600, pts = [];
+                let maxSpeed = 0;
+                for (let k = 0; k <= N; k++) {
+                    const u = P.t0 + (P.t1 - P.t0) * k / N;
+                    pts.push(P.r(u));
+                    maxSpeed = Math.max(maxSpeed, mag(P.dr(u)));
+                }
+                const lo = [0, 1, 2].map(a => Math.min(...pts.map(p => p[a])));
+                const hi = [0, 1, 2].map(a => Math.max(...pts.map(p => p[a])));
+                center = [0, 1, 2].map(a => (lo[a] + hi[a]) / 2);
+                R = Math.max(1e-6, ...pts.map(p => Math.hypot(p[0] - center[0], p[1] - center[1], p[2] - center[2]))) * 1.12;
+                arrowF = Number((0.3 * R / Math.max(1, maxSpeed / 2)).toPrecision(2));
+                $('arrow-scale').textContent = 'T and r′ are both drawn at ' + arrowF + '× their true lengths.';
+                $('exact-note').textContent = P.exact;
+                tSlider.min = Math.ceil(P.t0 * 100 - 1e-9) / 100;
+                tSlider.max = Math.floor(P.t1 * 100 + 1e-9) / 100;
+                tNum.min = P.t0;
+                tNum.max = P.t1;
+                t = P.tDef;
+                tSlider.value = t;
+                tNum.value = Number(t.toFixed(4));
+                buildConvTable();
+                refreshChords();
+            }
+
+            function setT(v) {
+                t = Math.min(P.t1, Math.max(P.t0, v));
+                tSlider.value = t;
+                tNum.value = Number(t.toFixed(4));
+                readouts();
+                draw();
+            }
+
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                W = Math.max(200, rect.width);
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = Math.round(W * dpr);
+                canvas.height = Math.round(W * dpr);
+                draw();
+            }
+
+            sel.addEventListener('change', () => setPreset(parseInt(sel.value, 10)));
+            nSlider.addEventListener('input', () => { n = parseInt(nSlider.value, 10); refreshChords(); });
+            modeSel.addEventListener('change', () => { mode = modeSel.value; buildConvTable(); refreshChords(); });
+            tSlider.addEventListener('input', () => setT(parseFloat(tSlider.value)));
+            tNum.addEventListener('input', () => {
+                const v = parseFloat(tNum.value);
+                if (isFinite(v)) { t = Math.min(P.t1, Math.max(P.t0, v)); tSlider.value = t; readouts(); draw(); }
+            });
+            tNum.addEventListener('change', () => { const v = parseFloat(tNum.value); setT(isFinite(v) ? v : t); });
+            $('show-vel').addEventListener('change', draw);
+            $('reset-view').addEventListener('click', () => { view = Object.assign({}, DEFAULT_VIEW); draw(); });
+
+            // orbit and zoom
+            let dragging = false, lx = 0, ly = 0;
+            canvas.addEventListener('pointerdown', e => {
+                dragging = true; lx = e.clientX; ly = e.clientY;
+                canvas.setPointerCapture(e.pointerId);
+            });
+            canvas.addEventListener('pointerup', e => { dragging = false; if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId); });
+            canvas.addEventListener('pointercancel', () => { dragging = false; });
+            canvas.addEventListener('pointermove', e => {
+                if (!dragging) return;
+                view.theta += (e.clientX - lx) * 0.007;
+                view.phi = Math.max(-1.45, Math.min(1.45, view.phi - (e.clientY - ly) * 0.007));
+                lx = e.clientX; ly = e.clientY;
+                draw();
+            });
+            canvas.addEventListener('wheel', e => {
+                e.preventDefault();
+                view.zoom = Math.max(0.5, Math.min(3, view.zoom * Math.exp(-e.deltaY * 0.001)));
+                draw();
+            }, { passive: false });
+            canvas.addEventListener('keydown', e => {
+                const step = 0.1;
+                if (e.key === 'ArrowLeft') view.theta -= step;
+                else if (e.key === 'ArrowRight') view.theta += step;
+                else if (e.key === 'ArrowUp') view.phi = Math.min(1.45, view.phi + step);
+                else if (e.key === 'ArrowDown') view.phi = Math.max(-1.45, view.phi - step);
+                else return;
+                e.preventDefault();
+                draw();
+            });
+
+            window.addEventListener('resize', resize);
+            setPreset(0);
+            resize();
+        })();
+    </script>
+</body>
+
+</html>

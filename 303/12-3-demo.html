@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Moving TNB Frame - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        .dashboard > * {
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard .panel {
+            margin-bottom: 0;
+        }
+
+        .panel h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        canvas#scene {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        canvas#scene:active {
+            cursor: grabbing;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .control-block {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #eee;
+        }
+
+        .control-block:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        select.full {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            min-width: 0;
+            accent-color: var(--color-accent-blue, #009CDE);
+        }
+
+        .slider-row input[type="number"] {
+            width: 5.5rem;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #6E6E6E;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4A4A4A;
+        }
+
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .readouts {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.4rem 0.9rem;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .readouts dt {
+            color: var(--text-muted);
+        }
+
+        .readouts dd {
+            margin: 0;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            overflow-wrap: anywhere;
+        }
+
+        .readouts .final {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .status {
+            margin-top: 0.75rem;
+            min-height: 1.4rem;
+            font-size: 0.9rem;
+            color: var(--color-accent-green, #008552);
+            font-weight: bold;
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .things ol {
+            padding-left: 1.25rem;
+            margin: 0;
+        }
+
+        .things li {
+            margin-bottom: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>The Moving TNB Frame</h1>
+            <p>&sect;12.3 &mdash; ride a point along a space curve and watch the T, N, B frame turn with it, with the
+                osculating circle and live readouts of curvature, torsion, and acceleration.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Choose a curve and slide <em>t</em>. At the blue point you see three perpendicular unit vectors:
+                <strong>T</strong> (the direction of travel), <strong>N</strong> (the direction the curve is bending), and
+                <strong>B</strong> = T &times; N. The green circle is the <em>osculating circle</em>: the circle that
+                best fits the curve at that point. Its radius is 1/&kappa;, and its center lies along
+                <strong>N</strong>. Pick one of the three planes to see it as a green sheet. Drag inside the scene to
+                orbit it.
+            </p>
+            <p class="hint">The frame arrows are drawn at a fixed display length (their true length is 1). The sheet
+                is a patch of the full plane. The readouts always show the true values.</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel">
+                <canvas id="scene" width="600" height="600" tabindex="0" role="img"
+                    aria-label="3D view of a space curve with its T, N, B frame at a point."></canvas>
+                <div class="scene-hint">Drag to rotate &middot; scroll to zoom &middot; arrow keys also rotate</div>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#009CDE;"></span>point you move (t)</div>
+                    <div><span class="swatch" style="background:#008552;"></span>curve, osculating circle, plane</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>T</div>
+                    <div><span class="swatch" style="background:#222;"></span>N</div>
+                    <div><span class="swatch" style="background:#6E6E6E;"></span>B</div>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="show-circle" checked>
+                    <label for="show-circle">Show the osculating circle</label>
+                </div>
+                <div class="btn-row">
+                    <button class="btn" id="play-btn" type="button" aria-pressed="false">Play</button>
+                    <button class="btn btn-secondary" id="reset-view" type="button">Reset View</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <label class="field-label" for="preset">Curve</label>
+                    <select id="preset" class="full"></select>
+                    <label class="field-label" for="plane">Plane to show at the point</label>
+                    <select id="plane" class="full">
+                        <option value="none">none</option>
+                        <option value="osc">osculating plane (spanned by T and N)</option>
+                        <option value="norm">normal plane (spanned by N and B)</option>
+                        <option value="rect">rectifying plane (spanned by B and T)</option>
+                    </select>
+                    <label class="field-label" for="t-slider">Parameter t</label>
+                    <div class="slider-row">
+                        <input type="range" id="t-slider" min="0" max="1" step="0.01" value="0">
+                        <input type="number" id="t-num" step="any" value="0" aria-label="Type a value of t">
+                    </div>
+                    <div class="status" id="plane-note"></div>
+                </div>
+
+                <div class="control-block">
+                    <h4>Shape of the curve at this t</h4>
+                    <dl class="readouts">
+                        <dt>Parameter t</dt><dd id="r-t"></dd>
+                        <dt>Curvature &kappa;</dt><dd id="r-kappa" class="final"></dd>
+                        <dt>Radius of curvature 1/&kappa;</dt><dd id="r-rho"></dd>
+                        <dt>Torsion &tau;</dt><dd id="r-tau" class="final"></dd>
+                    </dl>
+                </div>
+
+                <div class="control-block">
+                    <h4>The frame</h4>
+                    <dl class="readouts">
+                        <dt>T</dt><dd id="r-T"></dd>
+                        <dt>N</dt><dd id="r-N"></dd>
+                        <dt>B</dt><dd id="r-B"></dd>
+                    </dl>
+                </div>
+
+                <div class="control-block">
+                    <h4>Acceleration split into two parts</h4>
+                    <dl class="readouts">
+                        <dt>Speed |r&prime;|</dt><dd id="r-speed"></dd>
+                        <dt>Tangential a<sub>T</sub></dt><dd id="r-aT"></dd>
+                        <dt>Normal a<sub>N</sub> = &kappa;|r&prime;|&sup2;</dt><dd id="r-aN"></dd>
+                        <dt>|a|&sup2;</dt><dd id="r-a2"></dd>
+                        <dt>a<sub>T</sub>&sup2; + a<sub>N</sub>&sup2;</dt><dd id="r-a2b"></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel things">
+            <h4>Things to try</h4>
+            <ol>
+                <li>Pick the <strong>helix</strong>. Before you slide, predict which way N points (toward or away from
+                    the axis, and whether it tilts up or down). Then slide <em>t</em> and watch &kappa; and &tau;. Do
+                    they change?</li>
+                <li>Pick the <strong>twisted cubic</strong>. The section page found &kappa;(<em>t</em>) and
+                    &tau;(<em>t</em>) for it. Predict &kappa; and &tau; at <em>t</em> = 1 from those formulas, then type
+                    <em>t</em> = 1 and compare.</li>
+                <li>Pick the <strong>ellipse</strong>, a curve that lies in a plane. Predict &tau;, and predict which way
+                    B points. Then predict where on the ellipse &kappa; is largest, and check by sliding.</li>
+                <li>Pick the <strong>spiral</strong> and slide <em>t</em> from 0 to 12. Predict whether the osculating
+                    circle grows or shrinks, and how a<sub>T</sub> and a<sub>N</sub> behave. Compare with the formulas
+                    in the worked example on the section page (at <em>t</em> = 1).</li>
+                <li>On the cubic at <em>t</em> = 0, show the <strong>osculating plane</strong>. Predict how the curve
+                    sits relative to that sheet (does it stay on it?), then rotate the view to check. Do the same with
+                    the helix.</li>
+            </ol>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            'use strict';
+
+            const TAU = 2 * Math.PI;
+            const sin = Math.sin, cos = Math.cos;
+
+            // Each preset: r and its first three derivatives, written out by hand and checked against SymPy.
+            const PRESETS = [
+                {
+                    name: 'Helix  ⟨cos t, sin t, t⟩',
+                    short: 'helix',
+                    r: t => [cos(t), sin(t), t],
+                    d1: t => [-sin(t), cos(t), 1],
+                    d2: t => [-cos(t), -sin(t), 0],
+                    d3: t => [sin(t), -cos(t), 0],
+                    t0: -TAU, t1: TAU, tDef: 1
+                },
+                {
+                    name: 'Ellipse  ⟨3 cos t, 2 sin t, 0⟩ (a flat curve)',
+                    short: 'ellipse',
+                    r: t => [3 * cos(t), 2 * sin(t), 0],
+                    d1: t => [-3 * sin(t), 2 * cos(t), 0],
+                    d2: t => [-3 * cos(t), -2 * sin(t), 0],
+                    d3: t => [3 * sin(t), -2 * cos(t), 0],
+                    t0: 0, t1: TAU, tDef: 0.7
+                },
+                {
+                    name: 'Twisted cubic  ⟨t, t², t³⟩',
+                    short: 'twisted cubic',
+                    r: t => [t, t * t, t * t * t],
+                    d1: t => [1, 2 * t, 3 * t * t],
+                    d2: t => [0, 2, 6 * t],
+                    d3: t => [0, 0, 6],
+                    t0: -1.2, t1: 1.2, tDef: 0
+                },
+                {
+                    name: 'Spiral  ⟨t cos t, t sin t, 0⟩ (flat, speeding up)',
+                    short: 'flat spiral',
+                    r: t => [t * cos(t), t * sin(t), 0],
+                    d1: t => [cos(t) - t * sin(t), sin(t) + t * cos(t), 0],
+                    d2: t => [-2 * sin(t) - t * cos(t), 2 * cos(t) - t * sin(t), 0],
+                    d3: t => [-3 * cos(t) + t * sin(t), -3 * sin(t) - t * cos(t), 0],
+                    t0: 0, t1: 2 * TAU, tDef: 1
+                }
+            ];
+
+            const canvas = document.getElementById('scene');
+            const ctx = canvas.getContext('2d');
+            const $ = id => document.getElementById(id);
+            const sel = $('preset'), slider = $('t-slider'), tNum = $('t-num');
+            const playBtn = $('play-btn');
+
+            PRESETS.forEach((p, i) => {
+                const o = document.createElement('option');
+                o.value = i;
+                o.textContent = (i + 1) + '. ' + p.name;
+                sel.appendChild(o);
+            });
+
+            const DEFAULT_VIEW = { theta: -0.7, phi: 0.8, zoom: 1 };
+            let view = Object.assign({}, DEFAULT_VIEW);
+            let P = PRESETS[0];
+            let t = 0;
+            let center = [0, 0, 0], R = 1, W = 600;
+            let playing = false, lastTs = 0;
+
+            // ---------- vector helpers ----------
+            const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+            const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+            const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+            const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+            const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+            const mag = a => Math.hypot(a[0], a[1], a[2]);
+            function clean(x) { return Math.abs(x) < 1e-9 ? 0 : x; }
+            function fmt(x) {
+                if (!isFinite(x)) return '—';
+                const r = Number(clean(x).toPrecision(4));
+                return String(r === 0 ? 0 : r);
+            }
+            function fmtVec(v) { return v ? '⟨' + v.map(fmt).join(', ') + '⟩' : '—'; }
+
+            // The frame and the numbers at parameter u.
+            function analyze(u) {
+                const r = P.r(u), v = P.d1(u), a = P.d2(u), j = P.d3(u);
+                const speed = mag(v);
+                const c = cross(v, a);
+                const cm = mag(c);
+                const out = { r, v, a, speed, aT: dot(v, a) / speed, aN: cm / speed, a2: dot(a, a) };
+                out.T = mul(v, 1 / speed);
+                out.kappa = cm / (speed * speed * speed);
+                if (cm > 1e-9 * speed * speed * speed && cm > 1e-12) {
+                    out.B = mul(c, 1 / cm);
+                    out.N = cross(out.B, out.T);
+                    out.tau = dot(c, j) / (cm * cm);
+                    out.rho = 1 / out.kappa;
+                } else {
+                    out.B = null; out.N = null; out.tau = NaN; out.rho = Infinity;
+                }
+                return out;
+            }
+
+            // ---------- projection ----------
+            function project(p) {
+                const x = p[0] - center[0], y = p[1] - center[1], z = p[2] - center[2];
+                const ct = cos(view.theta), st = sin(view.theta);
+                const x1 = x * ct - y * st;
+                const y1 = x * st + y * ct;
+                const cp = cos(view.phi), sp = sin(view.phi);
+                const z2 = y1 * sp + z * cp;
+                const k = 0.44 * W / R * view.zoom;
+                return { sx: W / 2 + x1 * k, sy: W / 2 - z2 * k };
+            }
+
+            function line3d(a, b, color, width) {
+                const pa = project(a), pb = project(b);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = width || 1;
+                ctx.beginPath();
+                ctx.moveTo(pa.sx, pa.sy);
+                ctx.lineTo(pb.sx, pb.sy);
+                ctx.stroke();
+            }
+
+            function arrow3d(a, b, color, width, label) {
+                const pa = project(a), pb = project(b);
+                ctx.strokeStyle = color;
+                ctx.fillStyle = color;
+                ctx.lineWidth = width;
+                ctx.beginPath();
+                ctx.moveTo(pa.sx, pa.sy);
+                ctx.lineTo(pb.sx, pb.sy);
+                ctx.stroke();
+                const dx = pb.sx - pa.sx, dy = pb.sy - pa.sy;
+                const len = Math.hypot(dx, dy);
+                if (len >= 4) {
+                    const ux = dx / len, uy = dy / len, head = 11, ang = 0.45;
+                    const rx = -ux, ry = -uy;
+                    const w1x = rx * cos(ang) - ry * sin(ang), w1y = rx * sin(ang) + ry * cos(ang);
+                    const w2x = rx * cos(ang) + ry * sin(ang), w2y = -rx * sin(ang) + ry * cos(ang);
+                    ctx.beginPath();
+                    ctx.moveTo(pb.sx, pb.sy);
+                    ctx.lineTo(pb.sx + head * w1x, pb.sy + head * w1y);
+                    ctx.lineTo(pb.sx + head * w2x, pb.sy + head * w2y);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                if (label) {
+                    ctx.fillStyle = color;
+                    ctx.font = 'bold 15px sans-serif';
+                    ctx.fillText(label, pb.sx + 7, pb.sy - 7);
+                }
+            }
+
+            function strokeCurve(color, width, alpha) {
+                const cnt = 400;
+                ctx.globalAlpha = alpha;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = width;
+                ctx.lineJoin = 'round';
+                ctx.beginPath();
+                for (let i = 0; i <= cnt; i++) {
+                    const q = project(P.r(P.t0 + (P.t1 - P.t0) * i / cnt));
+                    if (i === 0) ctx.moveTo(q.sx, q.sy); else ctx.lineTo(q.sx, q.sy);
+                }
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+            }
+
+            function drawAxes() {
+                const L = R;
+                line3d([-L, 0, 0], [L, 0, 0], '#555', 1.2);
+                line3d([0, -L, 0], [0, L, 0], '#555', 1.2);
+                line3d([0, 0, -L], [0, 0, L], '#555', 1.2);
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 14px sans-serif';
+                [[[L * 1.06, 0, 0], 'x'], [[0, L * 1.06, 0], 'y'], [[0, 0, L * 1.06], 'z']].forEach(([p, s]) => {
+                    const q = project(p);
+                    ctx.fillText(s, q.sx + 3, q.sy - 3);
+                });
+            }
+
+            const PLANES = {
+                osc: { names: 'T and N', normal: 'B', title: 'osculating plane' },
+                norm: { names: 'N and B', normal: 'T', title: 'normal plane' },
+                rect: { names: 'B and T', normal: 'N', title: 'rectifying plane' }
+            };
+
+            function draw() {
+                ctx.setTransform(canvas.width / W, 0, 0, canvas.width / W, 0, 0);
+                ctx.clearRect(0, 0, W, W);
+                drawAxes();
+                strokeCurve('#008552', 2.2, 0.75);
+
+                const f = analyze(t);
+                const ell = 0.28 * R;       // display length of the unit vectors
+
+                // plane patch
+                const which = $('plane').value;
+                if (which !== 'none' && f.N) {
+                    const pair = which === 'osc' ? [f.T, f.N] : which === 'norm' ? [f.N, f.B] : [f.B, f.T];
+                    const h = 0.55 * R;
+                    const e1 = mul(pair[0], h), e2 = mul(pair[1], h);
+                    const corners = [add(add(f.r, e1), e2), add(sub(f.r, e1), e2), sub(sub(f.r, e1), e2), add(sub(f.r, e2), e1)];
+                    ctx.globalAlpha = 0.2;
+                    ctx.fillStyle = '#008552';
+                    ctx.beginPath();
+                    corners.forEach((c, i) => { const q = project(c); if (i === 0) ctx.moveTo(q.sx, q.sy); else ctx.lineTo(q.sx, q.sy); });
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                    ctx.strokeStyle = '#008552';
+                    ctx.lineWidth = 1.5;
+                    ctx.setLineDash([6, 4]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+
+                // osculating circle
+                let circleDrawn = false;
+                if ($('show-circle').checked && f.N && f.rho < 8 * R) {
+                    const c0 = add(f.r, mul(f.N, f.rho));
+                    ctx.strokeStyle = '#008552';
+                    ctx.lineWidth = 2.5;
+                    ctx.setLineDash([2, 0]);
+                    ctx.beginPath();
+                    for (let i = 0; i <= 120; i++) {
+                        const ph = TAU * i / 120;
+                        const p = add(c0, add(mul(f.N, -f.rho * cos(ph)), mul(f.T, f.rho * sin(ph))));
+                        const q = project(p);
+                        if (i === 0) ctx.moveTo(q.sx, q.sy); else ctx.lineTo(q.sx, q.sy);
+                    }
+                    ctx.stroke();
+                    circleDrawn = true;
+                }
+
+                // the frame
+                if (f.N) {
+                    arrow3d(f.r, add(f.r, mul(f.B, ell)), '#6E6E6E', 3, 'B');
+                    arrow3d(f.r, add(f.r, mul(f.N, ell)), '#222', 3.5, 'N');
+                }
+                arrow3d(f.r, add(f.r, mul(f.T, ell)), '#F36E24', 3.5, 'T');
+
+                const pp = project(f.r);
+                ctx.fillStyle = '#009CDE';
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(pp.sx, pp.sy, 6.5, 0, TAU);
+                ctx.fill();
+                ctx.stroke();
+
+                // text readouts
+                $('r-t').textContent = fmt(t);
+                $('r-kappa').textContent = fmt(f.kappa);
+                $('r-rho').textContent = f.N ? fmt(f.rho) : '— (the curve is straight here)';
+                $('r-tau').textContent = f.N ? fmt(f.tau) : '—';
+                $('r-T').textContent = fmtVec(f.T);
+                $('r-N').textContent = fmtVec(f.N);
+                $('r-B').textContent = fmtVec(f.B);
+                $('r-speed').textContent = fmt(f.speed);
+                $('r-aT').textContent = fmt(f.aT);
+                $('r-aN').textContent = fmt(f.aN);
+                $('r-a2').textContent = fmt(f.a2);
+                $('r-a2b').textContent = fmt(f.aT * f.aT + f.aN * f.aN);
+                let note = '';
+                if (which !== 'none' && f.N) {
+                    const pl = PLANES[which];
+                    note = 'The ' + pl.title + ' is spanned by ' + pl.names + '; its normal vector is ' + pl.normal + '.';
+                } else if (!f.N) {
+                    note = 'N and B are not defined where the curvature is 0.';
+                } else if ($('show-circle').checked && !circleDrawn) {
+                    note = 'The osculating circle is too large to draw here.';
+                }
+                $('plane-note').textContent = note;
+                canvas.setAttribute('aria-label',
+                    '3D view of the ' + P.short + ' with its T, N, B frame at t = ' + fmt(t) + '. Curvature ' + fmt(f.kappa) +
+                    ', torsion ' + fmt(f.tau) + '. T = ' + fmtVec(f.T) + ', N = ' + fmtVec(f.N) + ', B = ' + fmtVec(f.B) + '.');
+            }
+
+            // ---------- preset and controls ----------
+            function setPreset(i) {
+                P = PRESETS[i];
+                const N = 600, pts = [];
+                for (let k = 0; k <= N; k++) pts.push(P.r(P.t0 + (P.t1 - P.t0) * k / N));
+                const lo = [0, 1, 2].map(a => Math.min(...pts.map(p => p[a])));
+                const hi = [0, 1, 2].map(a => Math.max(...pts.map(p => p[a])));
+                center = [0, 1, 2].map(a => (lo[a] + hi[a]) / 2);
+                R = Math.max(1e-6, ...pts.map(p => Math.hypot(p[0] - center[0], p[1] - center[1], p[2] - center[2]))) * 1.12;
+                slider.min = Math.ceil(P.t0 * 100 - 1e-9) / 100;
+                slider.max = Math.floor(P.t1 * 100 + 1e-9) / 100;
+                tNum.min = P.t0;
+                tNum.max = P.t1;
+                setT(P.tDef);
+            }
+
+            function setT(v) {
+                t = Math.min(P.t1, Math.max(P.t0, v));
+                slider.value = t;
+                tNum.value = Number(t.toFixed(4));
+                draw();
+            }
+
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                W = Math.max(200, rect.width);
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = Math.round(W * dpr);
+                canvas.height = Math.round(W * dpr);
+                draw();
+            }
+
+            sel.addEventListener('change', () => { stop(); setPreset(parseInt(sel.value, 10)); });
+            slider.addEventListener('input', () => setT(parseFloat(slider.value)));
+            tNum.addEventListener('input', () => {
+                const v = parseFloat(tNum.value);
+                if (isFinite(v)) { t = Math.min(P.t1, Math.max(P.t0, v)); slider.value = t; draw(); }
+            });
+            tNum.addEventListener('change', () => { const v = parseFloat(tNum.value); setT(isFinite(v) ? v : t); });
+            ['plane', 'show-circle'].forEach(id => $(id).addEventListener('change', draw));
+            $('reset-view').addEventListener('click', () => { view = Object.assign({}, DEFAULT_VIEW); draw(); });
+
+            function stop() { playing = false; playBtn.textContent = 'Play'; playBtn.setAttribute('aria-pressed', 'false'); }
+            function frame(ts) {
+                if (!playing) return;
+                const dt = Math.min(0.1, (ts - lastTs) / 1000);
+                lastTs = ts;
+                let v = t + (P.t1 - P.t0) / 12 * dt;
+                if (v > P.t1) v = P.t0;
+                setT(v);
+                requestAnimationFrame(frame);
+            }
+            playBtn.addEventListener('click', () => {
+                if (playing) { stop(); return; }
+                playing = true;
+                playBtn.textContent = 'Pause';
+                playBtn.setAttribute('aria-pressed', 'true');
+                lastTs = performance.now();
+                requestAnimationFrame(frame);
+            });
+
+            // orbit and zoom
+            let dragging = false, lx = 0, ly = 0;
+            canvas.addEventListener('pointerdown', e => {
+                dragging = true; lx = e.clientX; ly = e.clientY;
+                canvas.setPointerCapture(e.pointerId);
+            });
+            canvas.addEventListener('pointerup', e => { dragging = false; if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId); });
+            canvas.addEventListener('pointercancel', () => { dragging = false; });
+            canvas.addEventListener('pointermove', e => {
+                if (!dragging) return;
+                view.theta += (e.clientX - lx) * 0.007;
+                view.phi = Math.max(-1.45, Math.min(1.45, view.phi - (e.clientY - ly) * 0.007));
+                lx = e.clientX; ly = e.clientY;
+                draw();
+            });
+            canvas.addEventListener('wheel', e => {
+                e.preventDefault();
+                view.zoom = Math.max(0.5, Math.min(3, view.zoom * Math.exp(-e.deltaY * 0.001)));
+                draw();
+            }, { passive: false });
+            canvas.addEventListener('keydown', e => {
+                const step = 0.1;
+                if (e.key === 'ArrowLeft') view.theta -= step;
+                else if (e.key === 'ArrowRight') view.theta += step;
+                else if (e.key === 'ArrowUp') view.phi = Math.min(1.45, view.phi + step);
+                else if (e.key === 'ArrowDown') view.phi = Math.max(-1.45, view.phi - step);
+                else return;
+                e.preventDefault();
+                draw();
+            });
+
+            window.addEventListener('resize', resize);
+            setPreset(0);
+            resize();
+        })();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warp the Grid - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        .dashboard > * {
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard .panel {
+            margin-bottom: 0;
+        }
+
+        .panel h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .pair {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .pair > div {
+            min-width: 0;
+        }
+
+        @media (max-width: 560px) {
+            .pair {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pair .cap {
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 0.35rem;
+        }
+
+        canvas.grid {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .control-block {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #eee;
+        }
+
+        .control-block:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            min-width: 0;
+            accent-color: var(--color-accent-blue, #009CDE);
+        }
+
+        .slider-row input[type="number"] {
+            width: 5.5rem;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .readouts {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.4rem 0.9rem;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .readouts dt {
+            color: var(--text-muted);
+        }
+
+        .readouts dd {
+            margin: 0;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            overflow-wrap: anywhere;
+        }
+
+        .readouts .final {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .status {
+            margin-top: 0.75rem;
+            min-height: 1.4rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--color-accent-green, #008552);
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .things ol {
+            padding-left: 1.25rem;
+            margin: 0;
+        }
+
+        .things li {
+            margin-bottom: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Warp the Grid</h1>
+            <p>&sect;14.6 &mdash; push a rectangular grid through a transformation, watch it bend, and compare the area of
+                each image cell with the Jacobian times the area of the original cell.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                The left picture is a rectangle in the <em>uv</em>-plane cut into <em>m</em> &times; <em>n</em> cells. The right
+                picture is its image under the transformation <em>x</em> = <em>g</em>(<em>u</em>, <em>v</em>),
+                <em>y</em> = <em>h</em>(<em>u</em>, <em>v</em>). Each cell lands on a bent four-sided piece of the
+                <em>xy</em>-plane. The Jacobian predicts the area of that piece: |<em>J</em>|&nbsp;&Delta;<em>u</em>&nbsp;&Delta;<em>v</em>.
+                The sum adds <em>f</em>(<em>x</em>, <em>y</em>)&nbsp;|<em>J</em>|&nbsp;&Delta;<em>u</em>&nbsp;&Delta;<em>v</em> over all cells,
+                which is the change-of-variables formula as a Riemann sum, and the exact integral is shown for comparison.
+                Use the two <strong>inspect</strong> sliders to pick a cell (shown in orange in both pictures).
+            </p>
+            <p class="hint">The sample point is the middle of each cell in the <em>uv</em>-plane. The &ldquo;true area&rdquo; of
+                an image cell is measured from its curved boundary, so for a small cell it is very close to the Jacobian
+                prediction, and for a transformation like the linear one it is exactly equal.</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel">
+                <div class="pair">
+                    <div>
+                        <div class="cap">The <em>uv</em>-plane: the original grid</div>
+                        <canvas id="uv" class="grid" width="400" height="400" role="img"
+                            aria-label="The rectangle in the uv-plane cut into cells."></canvas>
+                    </div>
+                    <div>
+                        <div class="cap">The <em>xy</em>-plane: the image of the grid</div>
+                        <canvas id="xy" class="grid" width="400" height="400" role="img"
+                            aria-label="The image of the grid in the xy-plane."></canvas>
+                    </div>
+                </div>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#009CDE;"></span>cells</div>
+                    <div><span class="swatch" style="background:#008552;"></span>boundary of the rectangle and of its image</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>the cell you are inspecting</div>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="no-jac">
+                    <label for="no-jac">Leave out the Jacobian (the common mistake)</label>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <label class="field-label" for="map">Transformation and rectangle</label>
+                    <select id="map"></select>
+                    <label class="field-label" for="func">Function <em>f</em>(<em>x</em>, <em>y</em>)</label>
+                    <select id="func"></select>
+                    <label class="field-label" for="m-slider">Cells across, <em>m</em> (<em>u</em> pieces)</label>
+                    <div class="slider-row">
+                        <input type="range" id="m-slider" min="1" max="20" step="1" value="4">
+                        <input type="number" id="m-num" min="1" max="20" step="1" value="4" aria-label="Type the number of cells in the u direction">
+                    </div>
+                    <label class="field-label" for="n-slider">Cells up, <em>n</em> (<em>v</em> pieces)</label>
+                    <div class="slider-row">
+                        <input type="range" id="n-slider" min="1" max="20" step="1" value="4">
+                        <input type="number" id="n-num" min="1" max="20" step="1" value="4" aria-label="Type the number of cells in the v direction">
+                    </div>
+                </div>
+                <div class="control-block">
+                    <h4>The Riemann sum</h4>
+                    <dl class="readouts">
+                        <dt>&Delta;<em>u</em>, &Delta;<em>v</em></dt><dd id="r-steps"></dd>
+                        <dt id="r-sum-label">Sum</dt><dd id="r-sum" class="final"></dd>
+                        <dt>Exact integral</dt><dd id="r-exact"></dd>
+                        <dt>Sum &minus; exact</dt><dd id="r-err"></dd>
+                        <dt>Area of the image region</dt><dd id="r-area"></dd>
+                    </dl>
+                    <div class="status" id="status"></div>
+                </div>
+                <div class="control-block">
+                    <h4>Inspect one cell</h4>
+                    <label class="field-label" for="i-slider">Column number (<em>u</em>)</label>
+                    <div class="slider-row">
+                        <input type="range" id="i-slider" min="1" max="4" step="1" value="1">
+                        <input type="number" id="i-num" min="1" max="4" step="1" value="1" aria-label="Type the column number to inspect">
+                    </div>
+                    <label class="field-label" for="j-slider">Row number (<em>v</em>)</label>
+                    <div class="slider-row">
+                        <input type="range" id="j-slider" min="1" max="4" step="1" value="1">
+                        <input type="number" id="j-num" min="1" max="4" step="1" value="1" aria-label="Type the row number to inspect">
+                    </div>
+                    <dl class="readouts">
+                        <dt>Cell middle (<em>u</em>*, <em>v</em>*)</dt><dd id="c-uv"></dd>
+                        <dt>Jacobian <em>J</em> there</dt><dd id="c-j"></dd>
+                        <dt>Original cell area &Delta;<em>u</em>&nbsp;&Delta;<em>v</em></dt><dd id="c-orig"></dd>
+                        <dt>Prediction |<em>J</em>|&nbsp;&Delta;<em>u</em>&nbsp;&Delta;<em>v</em></dt><dd id="c-pred"></dd>
+                        <dt>True area of the image cell</dt><dd id="c-true" class="final"></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel things">
+            <h4>Things to try</h4>
+            <ol>
+                <li>Pick the linear map <em>x</em> = 3<em>u</em> &minus; <em>v</em>, <em>y</em> = <em>u</em> + 2<em>v</em> with
+                    <em>f</em> = 1. Predict the area of every image cell compared with its original cell, then inspect two
+                    different cells to check. What is the area of the whole image?</li>
+                <li>Pick <em>x</em> = <em>u</em>&sup2; &minus; <em>v</em>&sup2;, <em>y</em> = 2<em>uv</em> (from the section page).
+                    Predict which corner of the rectangle has the largest image cells, then inspect the cell in column 1,
+                    row 1 and the cell in the last column and last row. The Jacobian is 4(<em>u</em>&sup2; + <em>v</em>&sup2;); check
+                    the two readouts against it.</li>
+                <li>Pick the polar map <em>x</em> = <em>u</em> cos <em>v</em>, <em>y</em> = <em>u</em> sin <em>v</em> with
+                    <em>f</em> = 1 and tick &ldquo;Leave out the Jacobian&rdquo;. Predict the wrong answer (it is just the area of
+                    the <em>uv</em>-rectangle), then untick it and compare with the exact area 3&pi;/4.</li>
+                <li>Pick the shear <em>x</em> = <em>u</em> + <em>v</em>&sup2;, <em>y</em> = <em>v</em>. The grid lines bend into
+                    parabolas, so predict whether the image cells keep the area of the original cells. Then inspect a cell far
+                    from the origin.</li>
+                <li>Pick the last map, the one from the double-integral example on the section page, with <em>f</em> = 1. Predict the
+                    area of the image of the rectangle [0, 2] &times; [0, 2] from the Jacobian 1/10, and check the exact area
+                    readout.</li>
+            </ol>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            'use strict';
+
+            const TAU = 2 * Math.PI, PI = Math.PI;
+            const sin = Math.sin, cos = Math.cos;
+
+            // ---------- Gauss-Legendre quadrature for the exact value ----------
+            function gaussLegendre(n) {
+                const xs = [], ws = [];
+                for (let i = 0; i < n; i++) {
+                    let z = Math.cos(Math.PI * (i + 0.75) / (n + 0.5)), pp = 1;
+                    for (let it = 0; it < 100; it++) {
+                        let p1 = 1, p2 = 0;
+                        for (let j = 0; j < n; j++) {
+                            const p3 = p2; p2 = p1;
+                            p1 = ((2 * j + 1) * z * p2 - j * p3) / (j + 1);
+                        }
+                        pp = n * (z * p1 - p2) / (z * z - 1);
+                        const z1 = z;
+                        z = z1 - p1 / pp;
+                        if (Math.abs(z - z1) < 1e-15) break;
+                    }
+                    xs.push(z); ws.push(2 / ((1 - z * z) * pp * pp));
+                }
+                return { x: xs, w: ws };
+            }
+            const GL = gaussLegendre(10);
+            function integrate1(g, a, b, panels) {
+                let s = 0;
+                const h = (b - a) / panels;
+                for (let p = 0; p < panels; p++) {
+                    const mid = a + (p + 0.5) * h;
+                    for (let k = 0; k < GL.x.length; k++) s += GL.w[k] * g(mid + GL.x[k] * h / 2) * h / 2;
+                }
+                return s;
+            }
+
+            // Each transformation: x(u,v), y(u,v), the Jacobian written out, and the rectangle in the uv-plane.
+            const MAPS = [
+                {
+                    name: 'x = 3u − v, y = u + 2v on [0, 2] × [0, 1]', short: 'the linear map x equals 3u minus v, y equals u plus 2v',
+                    x: (u, v) => 3 * u - v, y: (u, v) => u + 2 * v, J: () => 7, rect: [0, 2, 0, 1]
+                },
+                {
+                    name: 'Polar: x = u cos v, y = u sin v on [1, 2] × [0, π/2]', short: 'the polar map x equals u cosine v, y equals u sine v',
+                    x: (u, v) => u * cos(v), y: (u, v) => u * sin(v), J: (u, v) => u, rect: [1, 2, 0, PI / 2]
+                },
+                {
+                    name: 'x = u² − v², y = 2uv on [1, 2] × [0, 1] (section page)', short: 'the map x equals u squared minus v squared, y equals 2uv',
+                    x: (u, v) => u * u - v * v, y: (u, v) => 2 * u * v, J: (u, v) => 4 * (u * u + v * v), rect: [1, 2, 0, 1]
+                },
+                {
+                    name: 'Shear: x = u + v², y = v on [0, 2] × [0, 2]', short: 'the map x equals u plus v squared, y equals v, which bends the grid but keeps area',
+                    x: (u, v) => u + v * v, y: (u, v) => v, J: () => 1, rect: [0, 2, 0, 2]
+                },
+                {
+                    name: 'x = (2u − v)/5, y = (3v − u)/10 on [0, 2] × [0, 2] (section page)', short: 'the map x equals 2u minus v over 5, y equals 3v minus u over 10',
+                    x: (u, v) => (2 * u - v) / 5, y: (u, v) => (3 * v - u) / 10, J: () => 0.1, rect: [0, 2, 0, 2]
+                }
+            ];
+            const FUNCS = [
+                { name: 'f = 1  (area)', short: 'one', f: () => 1 },
+                { name: 'f = x² + y²', short: 'x squared plus y squared', f: (x, y) => x * x + y * y },
+                { name: 'f = x', short: 'x', f: (x, y) => x }
+            ];
+
+            const $ = id => document.getElementById(id);
+            const mapSel = $('map'), fSel = $('func');
+            MAPS.forEach((p, i) => { const o = document.createElement('option'); o.value = i; o.textContent = (i + 1) + '. ' + p.name; mapSel.appendChild(o); });
+            FUNCS.forEach((p, i) => { const o = document.createElement('option'); o.value = i; o.textContent = (i + 1) + '. ' + p.name; fSel.appendChild(o); });
+
+            const panels = {
+                uv: { c: $('uv'), W: 400, win: null },
+                xy: { c: $('xy'), W: 400, win: null }
+            };
+            panels.uv.ctx = panels.uv.c.getContext('2d');
+            panels.xy.ctx = panels.xy.c.getContext('2d');
+
+            let T = MAPS[0], F = FUNCS[0];
+            let m = 4, n = 4, ci = 1, cj = 1;
+
+            // ---------- helpers ----------
+            function clean(x) { return Math.abs(x) < 1e-9 ? 0 : x; }
+            function fmt(x) {
+                if (!isFinite(x)) return '—';
+                const r = Number(clean(x).toPrecision(4));
+                return String(r === 0 ? 0 : r);
+            }
+            const img = (u, v) => [T.x(u, v), T.y(u, v)];
+
+            function exact(fn) {
+                const [a, b, c, d] = T.rect;
+                return integrate1(u => integrate1(v => fn(T.x(u, v), T.y(u, v)) * Math.abs(T.J(u, v)), c, d, 6), a, b, 6);
+            }
+
+            function sums() {
+                const [a, b, c, d] = T.rect;
+                const du = (b - a) / m, dv = (d - c) / n;
+                const noJ = $('no-jac').checked;
+                let s = 0;
+                for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) {
+                    const u = a + (i + 0.5) * du, v = c + (j + 0.5) * dv;
+                    s += F.f(T.x(u, v), T.y(u, v)) * (noJ ? 1 : Math.abs(T.J(u, v))) * du * dv;
+                }
+                return { sum: s, du: du, dv: dv };
+            }
+
+            // the boundary of the cell [u1,u2] x [v1,v2], as a list of points, sent through map q
+            function cellBoundary(u1, u2, v1, v2, q) {
+                const S = 12, pts = [];
+                for (let k = 0; k < S; k++) pts.push(q(u1 + (u2 - u1) * k / S, v1));
+                for (let k = 0; k < S; k++) pts.push(q(u2, v1 + (v2 - v1) * k / S));
+                for (let k = 0; k < S; k++) pts.push(q(u2 - (u2 - u1) * k / S, v2));
+                for (let k = 0; k < S; k++) pts.push(q(u1, v2 - (v2 - v1) * k / S));
+                return pts;
+            }
+            function shoelace(p) {
+                let s = 0;
+                for (let k = 0; k < p.length; k++) { const q = p[(k + 1) % p.length]; s += p[k][0] * q[1] - q[0] * p[k][1]; }
+                return Math.abs(s) / 2;
+            }
+
+            function setWindows() {
+                const [a, b, c, d] = T.rect;
+                const win = (xmin, xmax, ymin, ymax) => {
+                    const half = Math.max(xmax - xmin, ymax - ymin) / 2 * 1.2 || 1;
+                    return { cx: (xmin + xmax) / 2, cy: (ymin + ymax) / 2, half: half };
+                };
+                panels.uv.win = win(Math.min(a, 0), b, Math.min(c, 0), d);
+                let xmin = 1e9, xmax = -1e9, ymin = 1e9, ymax = -1e9;
+                cellBoundary(a, b, c, d, (u, v) => img(u, v)).forEach(p => { xmin = Math.min(xmin, p[0]); xmax = Math.max(xmax, p[0]); ymin = Math.min(ymin, p[1]); ymax = Math.max(ymax, p[1]); });
+                panels.xy.win = win(Math.min(xmin, 0), xmax, Math.min(ymin, 0), ymax);
+            }
+
+            function drawPanel(P, q, labels) {
+                const ctx = P.ctx, W = P.W, w = P.win;
+                const toX = x => W / 2 + (x - w.cx) / w.half * W / 2;
+                const toY = y => W / 2 - (y - w.cy) / w.half * W / 2;
+                ctx.setTransform(P.c.width / W, 0, 0, P.c.width / W, 0, 0);
+                ctx.clearRect(0, 0, W, W);
+                // axes
+                ctx.strokeStyle = '#bbb'; ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, toY(0)); ctx.lineTo(W, toY(0)); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), W);
+                ctx.stroke();
+                ctx.fillStyle = '#333'; ctx.font = 'bold 13px sans-serif';
+                ctx.fillText(labels[0], W - 14, Math.min(W - 6, Math.max(14, toY(0) - 6)));
+                ctx.fillText(labels[1], Math.min(W - 14, Math.max(4, toX(0) + 6)), 14);
+
+                const [a, b, c, d] = T.rect;
+                const du = (b - a) / m, dv = (d - c) / n;
+                const path = pts => {
+                    ctx.beginPath();
+                    pts.forEach((p, k) => { if (k === 0) ctx.moveTo(toX(p[0]), toY(p[1])); else ctx.lineTo(toX(p[0]), toY(p[1])); });
+                    ctx.closePath();
+                };
+                for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) {
+                    path(cellBoundary(a + i * du, a + (i + 1) * du, c + j * dv, c + (j + 1) * dv, q));
+                    ctx.fillStyle = 'rgba(0,156,222,0.22)'; ctx.fill();
+                    ctx.strokeStyle = 'rgba(0,100,150,0.75)'; ctx.lineWidth = 0.9; ctx.stroke();
+                }
+                const i0 = Math.min(m, ci) - 1, j0 = Math.min(n, cj) - 1;
+                path(cellBoundary(a + i0 * du, a + (i0 + 1) * du, c + j0 * dv, c + (j0 + 1) * dv, q));
+                ctx.fillStyle = 'rgba(243,110,36,0.6)'; ctx.fill();
+                ctx.strokeStyle = '#CD5920'; ctx.lineWidth = 2; ctx.stroke();
+                path(cellBoundary(a, b, c, d, q));
+                ctx.strokeStyle = '#008552'; ctx.lineWidth = 2.5; ctx.stroke();
+            }
+
+            function draw() {
+                drawPanel(panels.uv, (u, v) => [u, v], ['u', 'v']);
+                drawPanel(panels.xy, img, ['x', 'y']);
+
+                const [a, b, c, d] = T.rect;
+                const sm = sums(), ex = exact(F.f), noJ = $('no-jac').checked;
+                $('r-steps').textContent = fmt(sm.du) + ', ' + fmt(sm.dv);
+                $('r-sum-label').innerHTML = noJ ? 'Sum of <em>f</em> &middot; &Delta;<em>u</em> &Delta;<em>v</em> (no Jacobian)' : 'Sum of <em>f</em> &middot; |<em>J</em>| &Delta;<em>u</em> &Delta;<em>v</em>';
+                $('r-sum').textContent = fmt(sm.sum);
+                $('r-exact').textContent = fmt(ex);
+                const err = sm.sum - ex;
+                $('r-err').textContent = (err > 1e-12 ? '+' : '') + fmt(err);
+                $('r-area').textContent = fmt(exact(() => 1));
+                $('status').textContent = noJ ? 'Without the Jacobian this is not the integral over the region in the xy-plane.' : '';
+
+                const i0 = Math.min(m, ci) - 1, j0 = Math.min(n, cj) - 1;
+                const u1 = a + i0 * sm.du, v1 = c + j0 * sm.dv;
+                const um = u1 + sm.du / 2, vm = v1 + sm.dv / 2;
+                const Jm = T.J(um, vm);
+                const trueArea = shoelace(cellBoundary(u1, u1 + sm.du, v1, v1 + sm.dv, img).concat([]));
+                $('c-uv').textContent = fmt(um) + ', ' + fmt(vm);
+                $('c-j').textContent = fmt(Jm);
+                $('c-orig').textContent = fmt(sm.du * sm.dv);
+                $('c-pred').textContent = fmt(Math.abs(Jm) * sm.du * sm.dv);
+                $('c-true').textContent = fmt(trueArea);
+
+                panels.uv.c.setAttribute('aria-label',
+                    'The rectangle from u = ' + fmt(a) + ' to ' + fmt(b) + ' and v = ' + fmt(c) + ' to ' + fmt(d) + ' cut into ' + m + ' by ' + n + ' cells. The inspected cell is column ' + (i0 + 1) + ', row ' + (j0 + 1) +
+                    ' and has area ' + fmt(sm.du * sm.dv) + '.');
+                panels.xy.c.setAttribute('aria-label',
+                    'The image of that grid under ' + T.short + '. The inspected cell is sent to a piece of area ' + fmt(trueArea) + ', and the Jacobian predicts ' + fmt(Math.abs(Jm) * sm.du * sm.dv) +
+                    '. The sum for f equal to ' + F.short + ' is ' + fmt(sm.sum) + (noJ ? ' (with the Jacobian left out)' : '') + ' and the exact integral is ' + fmt(ex) + '.');
+            }
+
+            // ---------- controls ----------
+            function syncInspect() {
+                ci = Math.min(m, Math.max(1, ci)); cj = Math.min(n, Math.max(1, cj));
+                $('i-slider').max = m; $('i-num').max = m; $('j-slider').max = n; $('j-num').max = n;
+                $('i-slider').value = ci; $('i-num').value = ci; $('j-slider').value = cj; $('j-num').value = cj;
+            }
+            function setMN(mm, nn) {
+                m = Math.min(20, Math.max(1, Math.round(mm)));
+                n = Math.min(20, Math.max(1, Math.round(nn)));
+                $('m-slider').value = m; $('m-num').value = m; $('n-slider').value = n; $('n-num').value = n;
+                syncInspect();
+                draw();
+            }
+            function resize() {
+                const dpr = window.devicePixelRatio || 1;
+                ['uv', 'xy'].forEach(k => {
+                    const P = panels[k];
+                    const rect = P.c.getBoundingClientRect();
+                    P.W = Math.max(150, rect.width);
+                    P.c.width = Math.round(P.W * dpr);
+                    P.c.height = Math.round(P.W * dpr);
+                });
+                draw();
+            }
+
+            mapSel.addEventListener('change', () => { T = MAPS[parseInt(mapSel.value, 10)]; setWindows(); draw(); });
+            fSel.addEventListener('change', () => { F = FUNCS[parseInt(fSel.value, 10)]; draw(); });
+            $('m-slider').addEventListener('input', () => setMN(parseFloat($('m-slider').value), n));
+            $('n-slider').addEventListener('input', () => setMN(m, parseFloat($('n-slider').value)));
+            $('m-num').addEventListener('change', () => { const v = parseFloat($('m-num').value); setMN(isFinite(v) ? v : m, n); });
+            $('n-num').addEventListener('change', () => { const v = parseFloat($('n-num').value); setMN(m, isFinite(v) ? v : n); });
+            $('i-slider').addEventListener('input', () => { ci = parseInt($('i-slider').value, 10); syncInspect(); draw(); });
+            $('j-slider').addEventListener('input', () => { cj = parseInt($('j-slider').value, 10); syncInspect(); draw(); });
+            $('i-num').addEventListener('change', () => { const v = parseInt($('i-num').value, 10); ci = isFinite(v) ? v : ci; syncInspect(); draw(); });
+            $('j-num').addEventListener('change', () => { const v = parseInt($('j-num').value, 10); cj = isFinite(v) ? v : cj; syncInspect(); draw(); });
+            $('no-jac').addEventListener('change', draw);
+
+            window.addEventListener('resize', resize);
+            setWindows();
+            syncInspect();
+            resize();
+        })();
+    </script>
+</body>
+
+</html>

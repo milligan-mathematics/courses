@@ -46,6 +46,106 @@ nav_order: 303
   </a>
 </div>
 
+## Chapter 12: Vector-Valued Functions
+
+<div class="resource-grid">
+  <a href="12-1.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§12.1</div>
+    <h4>Vector-Valued Functions</h4>
+  </a>
+  <a href="12-2.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§12.2</div>
+    <h4>Arc Length and the Unit Tangent Vector</h4>
+  </a>
+  <a href="12-3.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§12.3</div>
+    <h4>The Unit Normal and Binormal Vectors, Curvature, and Torsion</h4>
+  </a>
+</div>
+
+## Chapter 13: Functions of Several Variables
+
+<div class="resource-grid">
+  <a href="13-1.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§13.1</div>
+    <h4>Functions of Several Variables</h4>
+  </a>
+  <a href="13-2.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§13.2</div>
+    <h4>Limits and Continuity of Multivariable Functions</h4>
+  </a>
+  <a href="13-3.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§13.3</div>
+    <h4>Partial Derivatives</h4>
+  </a>
+  <a href="13-4.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§13.4</div>
+    <h4>The Chain Rule for Multivariable Functions</h4>
+  </a>
+  <a href="13-5.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§13.5</div>
+    <h4>Directional Derivatives and Gradient Vectors</h4>
+  </a>
+  <a href="13-6.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§13.6</div>
+    <h4>Tangent Planes and Differentials</h4>
+  </a>
+  <a href="13-7.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§13.7</div>
+    <h4>Extreme Values of Functions of Two Variables</h4>
+  </a>
+  <a href="13-8.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§13.8</div>
+    <h4>Lagrange Multipliers</h4>
+  </a>
+</div>
+
+## Chapter 14: Multiple Integration
+
+<div class="resource-grid">
+  <a href="14-1.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§14.1</div>
+    <h4>Double Integrals</h4>
+  </a>
+  <a href="14-2.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§14.2</div>
+    <h4>Applications of Double Integrals</h4>
+  </a>
+  <a href="14-3.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§14.3</div>
+    <h4>Double Integrals in Polar Coordinates</h4>
+  </a>
+  <a href="14-4.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§14.4</div>
+    <h4>Triple Integrals</h4>
+  </a>
+  <a href="14-5.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§14.5</div>
+    <h4>Triple Integrals in Cylindrical and Spherical Coordinates</h4>
+  </a>
+  <a href="14-6.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§14.6</div>
+    <h4>Substitutions and Multiple Integrals</h4>
+  </a>
+</div>
+
+## Chapter 15: Vector Calculus
+
+<div class="resource-grid">
+  <a href="15-1.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§15.1</div>
+    <h4>Vector Fields</h4>
+  </a>
+  <a href="15-2.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§15.2</div>
+    <h4>Line Integrals</h4>
+  </a>
+  <a href="15-3.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-blue);">§15.3</div>
+    <h4>The Fundamental Theorem for Line Integrals</h4>
+  </a>
+</div>
+
 More sections are on the way.
 
 ## Review Games

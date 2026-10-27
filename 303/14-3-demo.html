@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polar Rectangles - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        .dashboard > * {
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard .panel {
+            margin-bottom: 0;
+        }
+
+        .panel h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        canvas#scene {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            touch-action: none;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .control-block {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #eee;
+        }
+
+        .control-block:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            min-width: 0;
+            accent-color: var(--color-accent-blue, #009CDE);
+        }
+
+        .slider-row input[type="number"] {
+            width: 5.5rem;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .readouts {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.4rem 0.9rem;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .readouts dt {
+            color: var(--text-muted);
+        }
+
+        .readouts dd {
+            margin: 0;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            overflow-wrap: anywhere;
+        }
+
+        .readouts .final {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .status {
+            margin-top: 0.75rem;
+            min-height: 1.4rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--color-accent-green, #008552);
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .things ol {
+            padding-left: 1.25rem;
+            margin: 0;
+        }
+
+        .things li {
+            margin-bottom: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Polar Rectangles</h1>
+            <p>&sect;14.3 &mdash; cut a round region into polar rectangles, see why each has area <em>r</em>
+                &Delta;<em>r</em> &Delta;&theta;, and watch the polar Riemann sum approach the integral.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                The picture cuts the plane into <em>m</em> rings and <em>n</em> wedges. Each piece is a <strong>polar
+                rectangle</strong>. A piece counts if its center lies in the green region. The polar Riemann sum adds
+                <em>f</em> at each center times the piece&rsquo;s area, and the exact integral is shown for comparison.
+                Use the two <strong>inspect</strong> sliders to pick one piece (shown in orange) and compare its true area
+                with &Delta;<em>r</em>&nbsp;&Delta;&theta; and with <em>r</em>*&nbsp;&Delta;<em>r</em>&nbsp;&Delta;&theta;.
+            </p>
+            <p class="hint">Here <em>r</em>* is the middle of the ring, and the sample point is the center of each piece.
+                Pieces along the edge of a curved region are not counted exactly, so the sum only closes in on the
+                integral as <em>m</em> and <em>n</em> grow.</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel">
+                <canvas id="scene" width="600" height="600" role="img"
+                    aria-label="Polar grid over a region, with polar rectangles shaded."></canvas>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#009CDE;"></span>polar rectangles that are counted</div>
+                    <div><span class="swatch" style="background:#008552;"></span>edge of the region</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>the piece you are inspecting</div>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="no-r">
+                    <label for="no-r">Leave out the factor <em>r</em> (the common mistake)</label>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <label class="field-label" for="region">Region</label>
+                    <select id="region"></select>
+                    <label class="field-label" for="func">Function <em>f</em>(<em>x</em>, <em>y</em>)</label>
+                    <select id="func"></select>
+                    <label class="field-label" for="m-slider">Rings, <em>m</em> (radial pieces)</label>
+                    <div class="slider-row">
+                        <input type="range" id="m-slider" min="1" max="30" step="1" value="4">
+                        <input type="number" id="m-num" min="1" max="30" step="1" value="4" aria-label="Type the number of rings">
+                    </div>
+                    <label class="field-label" for="n-slider">Wedges, <em>n</em> (angular pieces)</label>
+                    <div class="slider-row">
+                        <input type="range" id="n-slider" min="1" max="48" step="1" value="8">
+                        <input type="number" id="n-num" min="1" max="48" step="1" value="8" aria-label="Type the number of wedges">
+                    </div>
+                </div>
+                <div class="control-block">
+                    <h4>The polar Riemann sum</h4>
+                    <dl class="readouts">
+                        <dt>Pieces counted</dt><dd id="r-count"></dd>
+                        <dt>&Delta;<em>r</em>, &Delta;&theta;</dt><dd id="r-steps"></dd>
+                        <dt id="r-sum-label">Sum of <em>f</em> &middot; <em>r</em>* &Delta;<em>r</em> &Delta;&theta;</dt><dd id="r-sum" class="final"></dd>
+                        <dt>Exact integral</dt><dd id="r-exact"></dd>
+                        <dt>Sum &minus; exact</dt><dd id="r-err"></dd>
+                    </dl>
+                    <div class="status" id="status"></div>
+                </div>
+                <div class="control-block">
+                    <h4>Inspect one polar rectangle</h4>
+                    <label class="field-label" for="i-slider">Ring number</label>
+                    <div class="slider-row">
+                        <input type="range" id="i-slider" min="1" max="4" step="1" value="1">
+                        <input type="number" id="i-num" min="1" max="4" step="1" value="1" aria-label="Type the ring number to inspect">
+                    </div>
+                    <label class="field-label" for="j-slider">Wedge number</label>
+                    <div class="slider-row">
+                        <input type="range" id="j-slider" min="1" max="8" step="1" value="1">
+                        <input type="number" id="j-num" min="1" max="8" step="1" value="1" aria-label="Type the wedge number to inspect">
+                    </div>
+                    <dl class="readouts">
+                        <dt>Radii <em>r</em><sub>1</sub>, <em>r</em><sub>2</sub></dt><dd id="c-r"></dd>
+                        <dt>&Delta;<em>r</em> &Delta;&theta; (the wrong area)</dt><dd id="c-naive"></dd>
+                        <dt><em>r</em>* &Delta;<em>r</em> &Delta;&theta;</dt><dd id="c-rstar"></dd>
+                        <dt>True area &frac12;(<em>r</em><sub>2</sub><sup>2</sup> &minus; <em>r</em><sub>1</sub><sup>2</sup>)&Delta;&theta;</dt><dd id="c-true" class="final"></dd>
+                    </dl>
+                    <div class="hint" id="c-note" style="margin-top:0.5rem;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel things">
+            <h4>Things to try</h4>
+            <ol>
+                <li>Pick the disk with <em>m</em> = 4 rings. Predict which ring&rsquo;s pieces have the biggest area, the
+                    innermost or the outermost, and by what factor. Then inspect ring 1 and ring 4 (the wedge number does not
+                    matter). Compare the true area with <em>r</em>*&nbsp;&Delta;<em>r</em>&nbsp;&Delta;&theta;; what do you notice?</li>
+                <li>Pick the annulus with <em>f</em> = 1 and tick &ldquo;Leave out the factor <em>r</em>&rdquo;. Predict the
+                    wrong answer (think: what does &int;&int;&nbsp;<em>dr</em>&nbsp;<em>d</em>&theta; give over 1 &le; <em>r</em> &le; 2
+                    and 0 &le; &theta; &le; 2&pi;?). Then check it against the exact area 3&pi;.</li>
+                <li>Pick the crescent (the region from the section page: inside <em>r</em> = 1/2, outside the cardioid
+                    <em>r</em> = 1 &minus; cos &theta;) with <em>f</em> = 1. Raise <em>m</em> and <em>n</em> to 30 and 48.
+                    Does the sum approach 7&radic;3/8 &minus; 5&pi;/12 &approx; 0.2065? Why does it get there slowly?</li>
+                <li>Pick the disk with <em>f</em> = <em>e</em><sup>&minus;(<em>x</em>&sup2;+<em>y</em>&sup2;)</sup>. The section page does this
+                    on the unit disk and gets &pi;(1 &minus; 1/<em>e</em>) &approx; 1.986. Predict whether the radius-2 disk gives
+                    more or less, and roughly what number the answers level off at as the radius grows. Then read the exact value.</li>
+                <li>Pick the disk with <em>f</em> = <em>y</em>. Predict the exact integral from symmetry, then change <em>m</em>
+                    and <em>n</em> and watch the sum.</li>
+            </ol>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            'use strict';
+
+            const TAU = 2 * Math.PI;
+            const sin = Math.sin, cos = Math.cos;
+
+            // ---------- Gauss-Legendre quadrature for the exact value ----------
+            function gaussLegendre(n) {
+                const xs = [], ws = [];
+                for (let i = 0; i < n; i++) {
+                    let z = Math.cos(Math.PI * (i + 0.75) / (n + 0.5)), pp = 1;
+                    for (let it = 0; it < 100; it++) {
+                        let p1 = 1, p2 = 0;
+                        for (let j = 0; j < n; j++) {
+                            const p3 = p2; p2 = p1;
+                            p1 = ((2 * j + 1) * z * p2 - j * p3) / (j + 1);
+                        }
+                        pp = n * (z * p1 - p2) / (z * z - 1);
+                        const z1 = z;
+                        z = z1 - p1 / pp;
+                        if (Math.abs(z - z1) < 1e-15) break;
+                    }
+                    xs.push(z); ws.push(2 / ((1 - z * z) * pp * pp));
+                }
+                return { x: xs, w: ws };
+            }
+            const GL = gaussLegendre(10);
+            function integrate1(g, a, b, panels) {
+                let s = 0;
+                const h = (b - a) / panels;
+                for (let p = 0; p < panels; p++) {
+                    const mid = a + (p + 0.5) * h;
+                    for (let k = 0; k < GL.x.length; k++) s += GL.w[k] * g(mid + GL.x[k] * h / 2) * h / 2;
+                }
+                return s;
+            }
+
+            // A region is { t0, t1, g1(t), g2(t) } for the exact integral, plus the grid it is cut with
+            // (rMax and the angle range), an inside test, the outline to draw, and the picture window.
+            const REGIONS = [
+                {
+                    name: 'Disk, r ≤ 2', short: 'the disk of radius 2',
+                    t0: 0, t1: TAU, g1: () => 0, g2: () => 2, rMax: 2, box: [-2, 2, -2, 2],
+                    inside: (r, t) => r <= 2,
+                    outline: () => [arc(2, 0, TAU)]
+                },
+                {
+                    name: 'Annulus, 1 ≤ r ≤ 2', short: 'the ring between radius 1 and radius 2',
+                    t0: 0, t1: TAU, g1: () => 1, g2: () => 2, rMax: 2, box: [-2, 2, -2, 2],
+                    inside: (r, t) => r >= 1 && r <= 2,
+                    outline: () => [arc(1, 0, TAU), arc(2, 0, TAU)]
+                },
+                {
+                    name: 'Half-disk, r ≤ 2, 0 ≤ θ ≤ π', short: 'the upper half of the disk of radius 2',
+                    t0: 0, t1: Math.PI, g1: () => 0, g2: () => 2, rMax: 2, box: [-2, 2, 0, 2],
+                    inside: (r, t) => r <= 2,
+                    outline: () => [arc(2, 0, Math.PI), [[-2, 0], [2, 0]]]
+                },
+                {
+                    name: 'Crescent: inside r = 1/2, outside r = 1 − cos θ', short: 'the crescent inside the circle r equals one half and outside the cardioid r equals 1 minus cosine theta',
+                    t0: -Math.PI / 3, t1: Math.PI / 3, g1: t => 1 - cos(t), g2: () => 0.5, rMax: 0.5, box: [0, 0.5, -0.45, 0.45],
+                    inside: (r, t) => r <= 0.5 && r >= 1 - cos(t),
+                    outline: () => [arc(0.5, -Math.PI / 3, Math.PI / 3), curve(t => 1 - cos(t), -Math.PI / 3, Math.PI / 3)]
+                },
+                {
+                    name: 'Rose petal, r ≤ sin 2θ, 0 ≤ θ ≤ π/2', short: 'one petal of the rose r equals sine of 2 theta',
+                    t0: 0, t1: Math.PI / 2, g1: () => 0, g2: t => sin(2 * t), rMax: 1, box: [0, 1, 0, 1],
+                    inside: (r, t) => r <= sin(2 * t),
+                    outline: () => [curve(t => sin(2 * t), 0, Math.PI / 2)]
+                }
+            ];
+            function arc(r, a, b) { return curve(() => r, a, b); }
+            function curve(g, a, b) {
+                const pts = [], N = 160;
+                for (let k = 0; k <= N; k++) { const t = a + (b - a) * k / N; pts.push([g(t) * cos(t), g(t) * sin(t)]); }
+                return pts;
+            }
+
+            const FUNCS = [
+                { name: 'f = 1  (area)', short: 'one', f: () => 1 },
+                { name: 'f = x² + y²', short: 'x squared plus y squared', f: (x, y) => x * x + y * y },
+                { name: 'f = e^(−(x² + y²))', short: 'e to the minus x squared minus y squared', f: (x, y) => Math.exp(-(x * x + y * y)) },
+                { name: 'f = y', short: 'y', f: (x, y) => y }
+            ];
+
+            const canvas = document.getElementById('scene');
+            const ctx = canvas.getContext('2d');
+            const $ = id => document.getElementById(id);
+            const regSel = $('region'), fSel = $('func');
+            REGIONS.forEach((p, i) => { const o = document.createElement('option'); o.value = i; o.textContent = (i + 1) + '. ' + p.name; regSel.appendChild(o); });
+            FUNCS.forEach((p, i) => { const o = document.createElement('option'); o.value = i; o.textContent = (i + 1) + '. ' + p.name; fSel.appendChild(o); });
+
+            let G = REGIONS[0], F = FUNCS[0];
+            let m = 4, n = 8, ci = 1, cj = 1;
+            let W = 600, win = { cx: 0, cy: 0, half: 1 };
+
+            // ---------- helpers ----------
+            function clean(x) { return Math.abs(x) < 1e-9 ? 0 : x; }
+            function fmt(x) {
+                if (!isFinite(x)) return '—';
+                const r = Number(clean(x).toPrecision(4));
+                return String(r === 0 ? 0 : r);
+            }
+            const toX = x => W / 2 + (x - win.cx) / win.half * W / 2;
+            const toY = y => W / 2 - (y - win.cy) / win.half * W / 2;
+            const scale = () => W / 2 / win.half;
+
+            function exact() {
+                return integrate1(t => integrate1(r => F.f(r * cos(t), r * sin(t)) * r, G.g1(t), G.g2(t), 6), G.t0, G.t1, 12);
+            }
+
+            function sums() {
+                const dr = G.rMax / m, dt = (G.t1 - G.t0) / n;
+                let s = 0, count = 0;
+                const useR = !$('no-r').checked;
+                for (let i = 0; i < m; i++) {
+                    const rs = (i + 0.5) * dr;
+                    for (let j = 0; j < n; j++) {
+                        const ts = G.t0 + (j + 0.5) * dt;
+                        if (!G.inside(rs, ts)) continue;
+                        count++;
+                        s += F.f(rs * cos(ts), rs * sin(ts)) * (useR ? rs : 1) * dr * dt;
+                    }
+                }
+                return { sum: s, count: count, dr: dr, dt: dt };
+            }
+
+            function cellPath(r1, r2, t1, t2) {
+                const s = scale(), cx = toX(0), cy = toY(0);
+                ctx.beginPath();
+                ctx.moveTo(toX(r2 * cos(t1)), toY(r2 * sin(t1)));
+                ctx.arc(cx, cy, r2 * s, -t1, -t2, true);
+                if (r1 > 1e-12) {
+                    ctx.lineTo(toX(r1 * cos(t2)), toY(r1 * sin(t2)));
+                    ctx.arc(cx, cy, r1 * s, -t2, -t1, false);
+                } else {
+                    ctx.lineTo(cx, cy);
+                }
+                ctx.closePath();
+            }
+
+            function draw() {
+                ctx.setTransform(canvas.width / W, 0, 0, canvas.width / W, 0, 0);
+                ctx.clearRect(0, 0, W, W);
+
+                // axes
+                ctx.strokeStyle = '#bbb';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, toY(0)); ctx.lineTo(W, toY(0)); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), W);
+                ctx.stroke();
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 14px sans-serif';
+                ctx.fillText('x', W - 14, Math.min(W - 6, Math.max(14, toY(0) - 6)));
+                ctx.fillText('y', Math.min(W - 14, Math.max(4, toX(0) + 8)), 14);
+
+                const sm = sums();
+                const dr = sm.dr, dt = sm.dt;
+                // pieces
+                for (let i = 0; i < m; i++) {
+                    for (let j = 0; j < n; j++) {
+                        const r1 = i * dr, r2 = r1 + dr, t1 = G.t0 + j * dt, t2 = t1 + dt;
+                        const inside = G.inside((r1 + r2) / 2, (t1 + t2) / 2);
+                        cellPath(r1, r2, t1, t2);
+                        if (inside) { ctx.fillStyle = 'rgba(0,156,222,0.35)'; ctx.fill(); }
+                        ctx.strokeStyle = inside ? 'rgba(0,100,150,0.8)' : 'rgba(150,150,150,0.45)';
+                        ctx.lineWidth = 0.8;
+                        ctx.stroke();
+                    }
+                }
+                // the inspected piece
+                const i0 = Math.min(m, ci) - 1, j0 = Math.min(n, cj) - 1;
+                const r1 = i0 * dr, r2 = r1 + dr, t1 = G.t0 + j0 * dt, t2 = t1 + dt;
+                cellPath(r1, r2, t1, t2);
+                ctx.fillStyle = 'rgba(243,110,36,0.6)'; ctx.fill();
+                ctx.strokeStyle = '#CD5920'; ctx.lineWidth = 2; ctx.stroke();
+
+                // edge of the region
+                ctx.strokeStyle = '#008552';
+                ctx.lineWidth = 2.5;
+                G.outline().forEach(pl => {
+                    ctx.beginPath();
+                    pl.forEach((p, k) => { if (k === 0) ctx.moveTo(toX(p[0]), toY(p[1])); else ctx.lineTo(toX(p[0]), toY(p[1])); });
+                    ctx.stroke();
+                });
+
+                // readouts
+                const ex = exact();
+                const noR = $('no-r').checked;
+                $('r-count').textContent = sm.count + ' of ' + (m * n);
+                $('r-steps').textContent = fmt(dr) + ', ' + fmt(dt);
+                $('r-sum-label').innerHTML = noR ? 'Sum of <em>f</em> &middot; &Delta;<em>r</em> &Delta;&theta; (no <em>r</em>)' : 'Sum of <em>f</em> &middot; <em>r</em>* &Delta;<em>r</em> &Delta;&theta;';
+                $('r-sum').textContent = fmt(sm.sum);
+                $('r-exact').textContent = fmt(ex);
+                const err = sm.sum - ex;
+                $('r-err').textContent = (err > 1e-12 ? '+' : '') + fmt(err);
+                $('status').textContent = noR ? 'Without the factor r this is not the double integral.' : '';
+
+                const dA = dr * dt, rstar = (r1 + r2) / 2;
+                $('c-r').textContent = fmt(r1) + ', ' + fmt(r2);
+                $('c-naive').textContent = fmt(dA);
+                $('c-rstar').textContent = fmt(rstar * dA);
+                $('c-true').textContent = fmt(0.5 * (r2 * r2 - r1 * r1) * dt);
+                $('c-note').textContent = G.inside(rstar, (t1 + t2) / 2)
+                    ? 'This piece is counted in the sum.'
+                    : 'This piece is not counted: its center is outside the region.';
+
+                canvas.setAttribute('aria-label',
+                    'Polar grid with ' + m + ' rings and ' + n + ' wedges over ' + G.short + '. ' + sm.count + ' pieces are counted. The polar Riemann sum for f equals ' +
+                    F.short + ' is ' + fmt(sm.sum) + (noR ? ' (with the factor r left out)' : '') + ' and the exact integral is ' + fmt(ex) +
+                    '. The inspected piece has true area ' + fmt(0.5 * (r2 * r2 - r1 * r1) * dt) + '.');
+            }
+
+            // ---------- controls ----------
+            function setWin() {
+                const b = G.box;
+                win.cx = (b[0] + b[1]) / 2; win.cy = (b[2] + b[3]) / 2;
+                win.half = Math.max(b[1] - b[0], b[3] - b[2]) / 2 * 1.1;
+            }
+            function syncInspect() {
+                ci = Math.min(m, Math.max(1, ci)); cj = Math.min(n, Math.max(1, cj));
+                $('i-slider').max = m; $('i-num').max = m; $('j-slider').max = n; $('j-num').max = n;
+                $('i-slider').value = ci; $('i-num').value = ci; $('j-slider').value = cj; $('j-num').value = cj;
+            }
+            function setMN(mm, nn) {
+                m = Math.min(30, Math.max(1, Math.round(mm)));
+                n = Math.min(48, Math.max(1, Math.round(nn)));
+                $('m-slider').value = m; $('m-num').value = m; $('n-slider').value = n; $('n-num').value = n;
+                syncInspect();
+                draw();
+            }
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                W = Math.max(200, rect.width);
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = Math.round(W * dpr);
+                canvas.height = Math.round(W * dpr);
+                draw();
+            }
+
+            regSel.addEventListener('change', () => { G = REGIONS[parseInt(regSel.value, 10)]; setWin(); draw(); });
+            fSel.addEventListener('change', () => { F = FUNCS[parseInt(fSel.value, 10)]; draw(); });
+            $('m-slider').addEventListener('input', () => setMN(parseFloat($('m-slider').value), n));
+            $('n-slider').addEventListener('input', () => setMN(m, parseFloat($('n-slider').value)));
+            $('m-num').addEventListener('change', () => { const v = parseFloat($('m-num').value); setMN(isFinite(v) ? v : m, n); });
+            $('n-num').addEventListener('change', () => { const v = parseFloat($('n-num').value); setMN(m, isFinite(v) ? v : n); });
+            $('i-slider').addEventListener('input', () => { ci = parseInt($('i-slider').value, 10); syncInspect(); draw(); });
+            $('j-slider').addEventListener('input', () => { cj = parseInt($('j-slider').value, 10); syncInspect(); draw(); });
+            $('i-num').addEventListener('change', () => { const v = parseInt($('i-num').value, 10); ci = isFinite(v) ? v : ci; syncInspect(); draw(); });
+            $('j-num').addEventListener('change', () => { const v = parseInt($('j-num').value, 10); cj = isFinite(v) ? v : cj; syncInspect(); draw(); });
+            $('no-r').addEventListener('change', draw);
+
+            window.addEventListener('resize', resize);
+            setWin();
+            syncInspect();
+            resize();
+        })();
+    </script>
+</body>
+
+</html>

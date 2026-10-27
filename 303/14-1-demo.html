@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boxes Under the Surface - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+
+        .dashboard > * {
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard .panel {
+            margin-bottom: 0;
+        }
+
+        .panel h4 {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        canvas#scene {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        canvas#scene:active {
+            cursor: grabbing;
+        }
+
+        .scene-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend span.swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+
+        .control-block {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #eee;
+        }
+
+        .control-block:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            min-width: 0;
+            accent-color: var(--color-accent-blue, #009CDE);
+        }
+
+        .slider-row input[type="number"] {
+            width: 5.5rem;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .btn {
+            background-color: var(--color-primary, #F36E24);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            font-family: var(--font-primary);
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: #CD5920;
+        }
+
+        .btn-secondary {
+            background-color: #6E6E6E;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4A4A4A;
+        }
+
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .readouts {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.4rem 0.9rem;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .readouts dt {
+            color: var(--text-muted);
+        }
+
+        .readouts dd {
+            margin: 0;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            overflow-wrap: anywhere;
+        }
+
+        .readouts .final {
+            font-weight: bold;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        .status {
+            margin-top: 0.75rem;
+            min-height: 1.4rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--color-accent-green, #008552);
+        }
+
+        .hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .things ol {
+            padding-left: 1.25rem;
+            margin: 0;
+        }
+
+        .things li {
+            margin-bottom: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Boxes Under the Surface</h1>
+            <p>&sect;14.1 &mdash; fill the region under a surface with boxes, watch the Riemann sum close in on the
+                double integral, and slice the solid to see Fubini&rsquo;s theorem at work.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container page-content">
+
+        <div class="demo-section">
+            <p>
+                Pick a surface <em>z</em> = <em>f</em>(<em>x</em>, <em>y</em>) over a rectangle. The blue boxes are a
+                double Riemann sum: each has the area of one small rectangle as its base and the height of the surface at
+                its sample point. Slide <em>n</em> to cut the rectangle into <em>n</em> &times; <em>n</em> pieces. The
+                orange sheet is a cross-section of the solid at <em>x</em> = <em>x</em><sub>0</sub>; its area is
+                <em>A</em>(<em>x</em><sub>0</sub>), and adding up those areas is the iterated integral. Drag inside
+                the scene to orbit it.
+            </p>
+            <p class="hint">Boxes below the <em>xy</em>-plane (where <em>f</em> is negative) are drawn in gray and count
+                as negative volume. The vertical direction is stretched or squeezed to fit the picture, so compare
+                heights with the readouts, not by eye.</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="panel">
+                <canvas id="scene" width="600" height="600" tabindex="0" role="img"
+                    aria-label="3D view of a surface over a rectangle with Riemann sum boxes under it."></canvas>
+                <div class="scene-hint">Drag to rotate &middot; scroll to zoom &middot; arrow keys also rotate</div>
+                <div class="legend">
+                    <div><span class="swatch" style="background:#009CDE;"></span>boxes (positive height)</div>
+                    <div><span class="swatch" style="background:#6E6E6E;"></span>boxes (negative height)</div>
+                    <div><span class="swatch" style="background:#008552;"></span>the surface</div>
+                    <div><span class="swatch" style="background:#F36E24;"></span>slice at <em>x</em> = <em>x</em><sub>0</sub></div>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="show-boxes" checked>
+                    <label for="show-boxes">Show the boxes</label>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="show-surface" checked>
+                    <label for="show-surface">Show the surface</label>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="show-slice">
+                    <label for="show-slice">Show the slice at <em>x</em> = <em>x</em><sub>0</sub></label>
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="reset-view" type="button">Reset View</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="control-block">
+                    <label class="field-label" for="preset">Surface and rectangle</label>
+                    <select id="preset"></select>
+                    <label class="field-label" for="rule">Sample point in each small rectangle</label>
+                    <select id="rule">
+                        <option value="corner">Top-right corner</option>
+                        <option value="mid">Midpoint</option>
+                        <option value="left">Bottom-left corner</option>
+                    </select>
+                    <label class="field-label" for="n-slider">Pieces per side, <em>m</em> = <em>n</em></label>
+                    <div class="slider-row">
+                        <input type="range" id="n-slider" min="1" max="30" step="1" value="4">
+                        <input type="number" id="n-num" min="1" max="30" step="1" value="4" aria-label="Type the number of pieces per side">
+                    </div>
+                    <label class="field-label" for="x-slider">Slice position <em>x</em><sub>0</sub></label>
+                    <div class="slider-row">
+                        <input type="range" id="x-slider" min="0" max="2" step="0.01" value="0.5">
+                        <input type="number" id="x-num" step="any" value="0.5" aria-label="Type a value of x0">
+                    </div>
+                </div>
+                <div class="control-block">
+                    <h4>The Riemann sum</h4>
+                    <dl class="readouts">
+                        <dt>Boxes</dt><dd id="r-boxes"></dd>
+                        <dt>&Delta;x, &Delta;y</dt><dd id="r-steps"></dd>
+                        <dt>&Delta;A</dt><dd id="r-da"></dd>
+                        <dt>Riemann sum</dt><dd id="r-sum" class="final"></dd>
+                        <dt>Exact double integral</dt><dd id="r-exact"></dd>
+                        <dt>Sum &minus; exact</dt><dd id="r-err"></dd>
+                    </dl>
+                </div>
+                <div class="control-block">
+                    <h4>One slice (Fubini)</h4>
+                    <dl class="readouts">
+                        <dt><em>x</em><sub>0</sub></dt><dd id="r-x0"></dd>
+                        <dt>Slice area <em>A</em>(<em>x</em><sub>0</sub>)</dt><dd id="r-slice" class="final"></dd>
+                    </dl>
+                    <div class="status" id="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel things">
+            <h4>Things to try</h4>
+            <ol>
+                <li>Pick surface 1 and the <strong>top-right corner</strong>, with <em>n</em> = 2. Predict the sum from
+                    the four heights, then check the readout. Now double <em>n</em> to 4, 8, 16: by what factor does the
+                    error shrink each time? Make a guess before you slide. These are the numbers in the Riemann-sum
+                    example on the section page.</li>
+                <li>On surface 1 with <em>n</em> = 2, switch to the <strong>midpoint</strong> rule. Predict whether the
+                    sum will be too big or too small, then look at the sign of &ldquo;Sum &minus; exact&rdquo;.
+                    Which rule is closer for the same <em>n</em>?</li>
+                <li>Pick surface 3, <em>f</em> = <em>x</em> &minus; <em>y</em><sup>2</sup>. Before you turn on any boxes,
+                    predict whether the double integral is positive or negative. Then raise <em>n</em> and watch the
+                    gray boxes.</li>
+                <li>On surface 1 tick the slice and slide <em>x</em><sub>0</sub> from 0 to 2. Predict where the slice area
+                    is largest, then check. The values of <em>A</em>(<em>x</em><sub>0</sub>) follow the inner integral
+                    52/3 &minus; 2<em>x</em><sub>0</sub><sup>2</sup> from the Fubini example on the section page; their total
+                    over <em>x</em><sub>0</sub> from 0 to 2 is the double integral.</li>
+                <li>Pick surface 2, set <em>n</em> = 30, and compare the corner, midpoint, and bottom-left sums.
+                    How many boxes does it take before all three agree to two decimal places?</li>
+            </ol>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            'use strict';
+
+            const TAU = 2 * Math.PI;
+            const sin = Math.sin, cos = Math.cos;
+
+            // erf for the exact value of preset 4 (Abramowitz-Stegun 7.1.26 is too coarse; use a series)
+            function erf(x) {
+                let sum = x, term = x, n = 0;
+                while (Math.abs(term) > 1e-17 && n < 200) {
+                    n++;
+                    term *= -x * x / n;
+                    sum += term / (2 * n + 1);
+                }
+                return 2 / Math.sqrt(Math.PI) * sum;
+            }
+
+            // Each preset: the function, the rectangle, the exact value of the double integral, and the
+            // exact slice area A(x0) as a check on the numerical one.
+            const PRESETS = [
+                {
+                    name: 'f = 10 − x² − y² on [0, 2] × [0, 2]',
+                    short: 'the paraboloid 10 minus x squared minus y squared',
+                    f: (x, y) => 10 - x * x - y * y,
+                    a: 0, b: 2, c: 0, d: 2,
+                    exact: 88 / 3, x0: 0.5
+                },
+                {
+                    name: 'f = 2 + sin x cos y on [0, π] × [0, π]',
+                    short: 'the wave 2 plus sine x cosine y',
+                    f: (x, y) => 2 + sin(x) * cos(y),
+                    a: 0, b: Math.PI, c: 0, d: Math.PI,
+                    exact: 2 * Math.PI * Math.PI, x0: 1
+                },
+                {
+                    name: 'f = x − y² on [0, 2] × [0, 2]',
+                    short: 'x minus y squared, which goes below the xy-plane',
+                    f: (x, y) => x - y * y,
+                    a: 0, b: 2, c: 0, d: 2,
+                    exact: -4 / 3, x0: 1
+                },
+                {
+                    name: 'f = e^(−(x² + y²)) on [−1, 1] × [−1, 1]',
+                    short: 'the bell-shaped bump e to the minus x squared minus y squared',
+                    f: (x, y) => Math.exp(-(x * x + y * y)),
+                    a: -1, b: 1, c: -1, d: 1,
+                    exact: Math.PI * erf(1) * erf(1), x0: 0
+                }
+            ];
+
+            const canvas = document.getElementById('scene');
+            const ctx = canvas.getContext('2d');
+            const $ = id => document.getElementById(id);
+            const sel = $('preset'), nSlider = $('n-slider'), nNum = $('n-num');
+            const xSlider = $('x-slider'), xNum = $('x-num');
+
+            PRESETS.forEach((p, i) => {
+                const o = document.createElement('option');
+                o.value = i;
+                o.textContent = (i + 1) + '. ' + p.name;
+                sel.appendChild(o);
+            });
+
+            const DEFAULT_VIEW = { theta: -0.75, phi: 0.75, zoom: 1 };
+            let view = Object.assign({}, DEFAULT_VIEW);
+            let P = PRESETS[0];
+            let n = 4, x0 = 0.5;
+            let center = [0, 0, 0], R = 1, zlo = 0, zhi = 1, zk = 1;
+            let W = 600;
+
+            // ---------- helpers ----------
+            function clean(x) { return Math.abs(x) < 1e-9 ? 0 : x; }
+            function fmt(x) {
+                if (!isFinite(x)) return '—';
+                const r = Number(clean(x).toPrecision(4));
+                return String(r === 0 ? 0 : r);
+            }
+
+            // Value of f, or null where it is not a finite number (so the picture skips the point).
+            function fv(x, y) {
+                const v = P.f(x, y);
+                return isFinite(v) ? v : null;
+            }
+
+            // Simpson's rule for the slice area A(x0) = integral of f(x0, y) over [c, d].
+            function sliceArea(xx) {
+                const N = 200, h = (P.d - P.c) / N;
+                let s = 0;
+                for (let k = 0; k <= N; k++) {
+                    const v = P.f(xx, P.c + k * h);
+                    s += (k === 0 || k === N ? 1 : k % 2 ? 4 : 2) * v;
+                }
+                return s * h / 3;
+            }
+
+            function riemann() {
+                const dx = (P.b - P.a) / n, dy = (P.d - P.c) / n;
+                const off = { corner: 1, mid: 0.5, left: 0 }[$('rule').value];
+                let s = 0;
+                for (let j = 0; j < n; j++) {
+                    for (let i = 0; i < n; i++) {
+                        s += P.f(P.a + (i + off) * dx, P.c + (j + off) * dy);
+                    }
+                }
+                return { sum: s * dx * dy, dx: dx, dy: dy, off: off };
+            }
+
+            // ---------- projection (same orbit scheme as the Chapter 11 and 12 demos) ----------
+            function project(p) {
+                const x = p[0] - center[0], y = p[1] - center[1], z = (p[2] - center[2]) * zk;
+                const ct = cos(view.theta), st = sin(view.theta);
+                const x1 = x * ct - y * st;
+                const y1 = x * st + y * ct;
+                const cp = cos(view.phi), sp = sin(view.phi);
+                const z2 = y1 * sp + z * cp;
+                const k = 0.44 * W / R * view.zoom;
+                return { sx: W / 2 + x1 * k, sy: W / 2 - z2 * k, depth: y1 * cp - z * sp };
+            }
+
+            // direction from the scene toward the viewer, in world coordinates
+            function toViewer() {
+                const ct = cos(view.theta), st = sin(view.theta), cp = cos(view.phi), sp = sin(view.phi);
+                return [-st * cp, -ct * cp, sp];
+            }
+
+            function line3d(a, b, color, width, dash) {
+                const pa = project(a), pb = project(b);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = width || 1;
+                ctx.setLineDash(dash || []);
+                ctx.beginPath();
+                ctx.moveTo(pa.sx, pa.sy);
+                ctx.lineTo(pb.sx, pb.sy);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            function polygon(pts, fill, stroke, alpha) {
+                ctx.beginPath();
+                pts.forEach((p, i) => {
+                    const q = project(p);
+                    if (i === 0) ctx.moveTo(q.sx, q.sy); else ctx.lineTo(q.sx, q.sy);
+                });
+                ctx.closePath();
+                if (fill) { ctx.globalAlpha = alpha; ctx.fillStyle = fill; ctx.fill(); ctx.globalAlpha = 1; }
+                if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 0.8; ctx.stroke(); }
+            }
+
+            function drawFrame() {
+                // base rectangle at z = 0, and the three axes through its corner
+                const A = [P.a, P.c, 0], B = [P.b, P.c, 0], C = [P.b, P.d, 0], D = [P.a, P.d, 0];
+                line3d(A, B, '#555', 1.2); line3d(B, C, '#555', 1.2); line3d(C, D, '#555', 1.2); line3d(D, A, '#555', 1.2);
+                line3d([P.a, P.c, zlo], [P.a, P.c, zhi], '#999', 1, [4, 4]);
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 14px sans-serif';
+                const lx = project([(P.a + P.b) / 2, P.c - 0.08 * (P.d - P.c), 0]);
+                const ly = project([P.b + 0.05 * (P.b - P.a), (P.c + P.d) / 2, 0]);
+                const lz = project([P.a, P.c, zhi]);
+                ctx.fillText('x', lx.sx - 4, lx.sy + 14);
+                ctx.fillText('y', ly.sx + 4, ly.sy + 4);
+                ctx.fillText('z', lz.sx + 4, lz.sy - 4);
+            }
+
+            function drawSurface() {
+                const M = 20;
+                ctx.strokeStyle = '#008552';
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = 0.65;
+                for (let pass = 0; pass < 2; pass++) {
+                    for (let u = 0; u <= M; u++) {
+                        ctx.beginPath();
+                        let pen = false;
+                        for (let v = 0; v <= M; v++) {
+                            const x = pass ? P.a + (P.b - P.a) * v / M : P.a + (P.b - P.a) * u / M;
+                            const y = pass ? P.c + (P.d - P.c) * u / M : P.c + (P.d - P.c) * v / M;
+                            const z = fv(x, y);
+                            if (z === null) { pen = false; continue; }
+                            const q = project([x, y, z]);
+                            if (!pen) { ctx.moveTo(q.sx, q.sy); pen = true; } else ctx.lineTo(q.sx, q.sy);
+                        }
+                        ctx.stroke();
+                    }
+                }
+                ctx.globalAlpha = 1;
+            }
+
+            function drawBoxes(rs) {
+                const faces = [];
+                const tv = toViewer();
+                const dx = rs.dx, dy = rs.dy;
+                for (let j = 0; j < n; j++) {
+                    for (let i = 0; i < n; i++) {
+                        const xa = P.a + i * dx, xb = xa + dx, ya = P.c + j * dy, yb = ya + dy;
+                        const h = fv(P.a + (i + rs.off) * dx, P.c + (j + rs.off) * dy);
+                        if (h === null || h === 0) continue;
+                        const col = h > 0 ? '#009CDE' : '#6E6E6E';
+                        const lo = Math.min(0, h), hi = Math.max(0, h);
+                        const q = [
+                            { n: [0, 0, 1], pts: [[xa, ya, hi], [xb, ya, hi], [xb, yb, hi], [xa, yb, hi]], shade: 1 },
+                            { n: [0, 0, -1], pts: [[xa, ya, lo], [xb, ya, lo], [xb, yb, lo], [xa, yb, lo]], shade: 0.6 },
+                            { n: [1, 0, 0], pts: [[xb, ya, lo], [xb, yb, lo], [xb, yb, hi], [xb, ya, hi]], shade: 0.8 },
+                            { n: [-1, 0, 0], pts: [[xa, ya, lo], [xa, yb, lo], [xa, yb, hi], [xa, ya, hi]], shade: 0.8 },
+                            { n: [0, 1, 0], pts: [[xa, yb, lo], [xb, yb, lo], [xb, yb, hi], [xa, yb, hi]], shade: 0.7 },
+                            { n: [0, -1, 0], pts: [[xa, ya, lo], [xb, ya, lo], [xb, ya, hi], [xa, ya, hi]], shade: 0.7 }
+                        ];
+                        q.forEach(f => {
+                            if (f.n[0] * tv[0] + f.n[1] * tv[1] + f.n[2] * tv[2] <= 0) return;
+                            let cx = 0, cy = 0, cz = 0;
+                            f.pts.forEach(p => { cx += p[0] / 4; cy += p[1] / 4; cz += p[2] / 4; });
+                            faces.push({ pts: f.pts, col: col, shade: f.shade, depth: project([cx, cy, cz]).depth });
+                        });
+                    }
+                }
+                faces.sort((u, v) => v.depth - u.depth);
+                faces.forEach(f => polygon(f.pts, f.col, '#ffffff', 0.45 + 0.4 * f.shade));
+            }
+
+            function drawSlice() {
+                const N = 80;
+                const top = [], base = [];
+                for (let k = 0; k <= N; k++) {
+                    const y = P.c + (P.d - P.c) * k / N;
+                    const z = fv(x0, y);
+                    if (z === null) continue;
+                    top.push([x0, y, z]);
+                    base.push([x0, y, 0]);
+                }
+                if (top.length < 2) return;
+                // the cutting plane, faintly
+                polygon([[x0, P.c, zlo], [x0, P.d, zlo], [x0, P.d, zhi], [x0, P.c, zhi]], '#008552', '#008552', 0.08);
+                polygon(top.concat(base.slice().reverse()), '#F36E24', '#F36E24', 0.55);
+                ctx.strokeStyle = '#CD5920';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                top.forEach((p, i) => { const q = project(p); if (i === 0) ctx.moveTo(q.sx, q.sy); else ctx.lineTo(q.sx, q.sy); });
+                ctx.stroke();
+            }
+
+            function draw() {
+                ctx.setTransform(canvas.width / W, 0, 0, canvas.width / W, 0, 0);
+                ctx.clearRect(0, 0, W, W);
+                const rs = riemann();
+                drawFrame();
+                if ($('show-surface').checked) drawSurface();
+                if ($('show-boxes').checked) drawBoxes(rs);
+                if ($('show-slice').checked) drawSlice();
+
+                // text readouts
+                const N = n * n;
+                $('r-boxes').textContent = n + ' × ' + n + ' = ' + N;
+                $('r-steps').textContent = fmt(rs.dx) + ', ' + fmt(rs.dy);
+                $('r-da').textContent = fmt(rs.dx * rs.dy);
+                $('r-sum').textContent = fmt(rs.sum);
+                $('r-exact').textContent = fmt(P.exact);
+                const err = rs.sum - P.exact;
+                $('r-err').textContent = (err > 0 ? '+' : '') + fmt(err);
+                $('r-x0').textContent = fmt(x0);
+                const A = sliceArea(x0);
+                $('r-slice').textContent = fmt(A);
+                $('status').textContent = rs.sum < 0 ? 'The Riemann sum is negative: more volume lies below the xy-plane than above it.' : '';
+                const ruleName = { corner: 'top-right corner', mid: 'midpoint', left: 'bottom-left corner' }[$('rule').value];
+                canvas.setAttribute('aria-label',
+                    '3D view of ' + P.short + ' over a rectangle, with ' + N + ' boxes using the ' + ruleName +
+                    ' sample point. The Riemann sum is ' + fmt(rs.sum) + ' and the exact double integral is ' + fmt(P.exact) +
+                    '. The slice at x equals ' + fmt(x0) + ' has area ' + fmt(A) + '.');
+            }
+
+            // ---------- preset and controls ----------
+            function setPreset(i) {
+                P = PRESETS[i];
+                // size the picture to the surface
+                const G = 40;
+                zlo = 0; zhi = 0;
+                for (let j = 0; j <= G; j++) {
+                    for (let k = 0; k <= G; k++) {
+                        const z = fv(P.a + (P.b - P.a) * j / G, P.c + (P.d - P.c) * k / G);
+                        if (z === null) continue;
+                        zlo = Math.min(zlo, z); zhi = Math.max(zhi, z);
+                    }
+                }
+                if (zhi - zlo < 1e-9) zhi = zlo + 1;
+                center = [(P.a + P.b) / 2, (P.c + P.d) / 2, (zlo + zhi) / 2];
+                zk = 0.9 * Math.max(P.b - P.a, P.d - P.c) / (zhi - zlo);
+                R = 1.15 * Math.hypot((P.b - P.a) / 2, (P.d - P.c) / 2, zk * (zhi - zlo) / 2);
+                xSlider.min = P.a; xSlider.max = P.b;
+                xNum.min = P.a; xNum.max = P.b;
+                setX(P.x0);
+            }
+
+            function setN(v) {
+                n = Math.min(30, Math.max(1, Math.round(v)));
+                nSlider.value = n;
+                nNum.value = n;
+                draw();
+            }
+
+            function setX(v) {
+                x0 = Math.min(P.b, Math.max(P.a, v));
+                xSlider.value = x0;
+                xNum.value = Number(x0.toFixed(4));
+                draw();
+            }
+
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                W = Math.max(200, rect.width);
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = Math.round(W * dpr);
+                canvas.height = Math.round(W * dpr);
+                draw();
+            }
+
+            sel.addEventListener('change', () => setPreset(parseInt(sel.value, 10)));
+            $('rule').addEventListener('change', draw);
+            nSlider.addEventListener('input', () => setN(parseFloat(nSlider.value)));
+            nNum.addEventListener('change', () => { const v = parseFloat(nNum.value); setN(isFinite(v) ? v : n); });
+            xSlider.addEventListener('input', () => setX(parseFloat(xSlider.value)));
+            xNum.addEventListener('change', () => { const v = parseFloat(xNum.value); setX(isFinite(v) ? v : x0); });
+            ['show-boxes', 'show-surface', 'show-slice'].forEach(id => $(id).addEventListener('change', draw));
+            $('reset-view').addEventListener('click', () => { view = Object.assign({}, DEFAULT_VIEW); draw(); });
+
+            // orbit and zoom
+            let dragging = false, lx = 0, ly = 0;
+            canvas.addEventListener('pointerdown', e => {
+                dragging = true; lx = e.clientX; ly = e.clientY;
+                canvas.setPointerCapture(e.pointerId);
+            });
+            canvas.addEventListener('pointerup', e => { dragging = false; if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId); });
+            canvas.addEventListener('pointercancel', () => { dragging = false; });
+            canvas.addEventListener('pointermove', e => {
+                if (!dragging) return;
+                view.theta += (e.clientX - lx) * 0.007;
+                view.phi = Math.max(-1.45, Math.min(1.45, view.phi - (e.clientY - ly) * 0.007));
+                lx = e.clientX; ly = e.clientY;
+                draw();
+            });
+            canvas.addEventListener('wheel', e => {
+                e.preventDefault();
+                view.zoom = Math.max(0.5, Math.min(3, view.zoom * Math.exp(-e.deltaY * 0.001)));
+                draw();
+            }, { passive: false });
+            canvas.addEventListener('keydown', e => {
+                const step = 0.1;
+                if (e.key === 'ArrowLeft') view.theta -= step;
+                else if (e.key === 'ArrowRight') view.theta += step;
+                else if (e.key === 'ArrowUp') view.phi = Math.min(1.45, view.phi + step);
+                else if (e.key === 'ArrowDown') view.phi = Math.max(-1.45, view.phi - step);
+                else return;
+                e.preventDefault();
+                draw();
+            });
+
+            window.addEventListener('resize', resize);
+            setPreset(0);
+            resize();
+        })();
+    </script>
+</body>
+
+</html>
