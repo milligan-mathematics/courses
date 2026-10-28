@@ -1741,7 +1741,7 @@
            ======================================================= */
         var G = {
             sets: {},          /* stageId -> [questions] */
-            results: {},       /* stageId -> {correct, total, points} */
+            results: {},       /* stageId -> {correct, answered, total, points} */
             score: 0, streak: 0, best: 0,
             correct: 0, answered: 0, total: 0,
             stage: null, idx: 0, attempts: 0, locked: false, selected: null
@@ -1801,15 +1801,16 @@
             G.stage = STAGES[i];
             G.idx = 0;
             if (!G.results[G.stage.id]) {
-                G.results[G.stage.id] = { correct: 0, total: G.sets[G.stage.id].length, points: 0 };
+                G.results[G.stage.id] = { correct: 0, answered: 0, total: G.sets[G.stage.id].length, points: 0 };
             } else {
                 /* replaying a stage: clear its old tally so it is not double counted */
                 var old = G.results[G.stage.id];
                 G.score -= old.points;
                 G.correct -= old.correct;
-                G.answered -= old.total;
-                G.results[G.stage.id] = { correct: 0, total: G.sets[G.stage.id].length, points: 0 };
+                G.answered -= old.answered;   /* not old.total: the old run may have been quit partway */
+                G.results[G.stage.id] = { correct: 0, answered: 0, total: G.sets[G.stage.id].length, points: 0 };
             }
+            renderScore();
             show('q');
             renderQ();
         }
@@ -1919,6 +1920,7 @@
                 G.score += gained;
                 G.correct++;
                 G.answered++;
+                G.results[G.stage.id].answered++;
                 G.results[G.stage.id].correct++;
                 G.results[G.stage.id].points += gained;
                 lockIn();
@@ -1935,6 +1937,7 @@
             } else {
                 G.streak = 0;
                 G.answered++;
+                G.results[G.stage.id].answered++;
                 lockIn();
                 showFB('bad', 'Not this time', 0, 0, q);
             }
