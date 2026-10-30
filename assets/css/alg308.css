@@ -10,8 +10,11 @@
 .a308-num { width: 8em; }
 .a308-note { font-size: 0.88rem; color: var(--text-muted, #666); margin: 4px 0 10px; }
 .a308-readout { min-height: 2.6em; line-height: 1.55; }
+.a308-readout[hidden] { display: none; }
 .a308-readout .muted, .a308-note .muted, .muted { color: var(--text-muted, #666); }
 .a308-readout .mono, .mono { font-family: Consolas, "Courier New", monospace; }
+/* "Predict first" prompt that stands in for a hidden readout (predict: true). */
+.a308-note.a308-predict { color: #444; background: #fef8ea; border-left: 4px solid #F9A01B; border-radius: 6px; padding: 8px 12px; margin: 10px 0; }
 
 /* ---- Cayley tables ------------------------------------------------- */
 .a308-cayley-wrap { overflow-x: auto; margin: 10px 0; -webkit-overflow-scrolling: touch; }
@@ -109,3 +112,21 @@ svg.a308-hom .lab.dark { fill: #333; }
 svg.a308-hom .ttl { font-size: 16px; text-anchor: middle; font-weight: bold; fill: #333; }
 .a308-steps { font-size: 0.95rem; margin: 8px 0; padding-left: 1.6em; }
 .a308-steps li { margin-bottom: 2px; }
+
+/* ---- Plane lattices (lattice2d) and draggable points ---------------- */
+.a308-num-sm { width: 5.2em; }
+.a308-lat-wrap { display: flex; justify-content: center; }
+svg.a308-lat { width: 100%; max-width: 300px; height: auto; display: block; }
+svg.a308-lat-drag { touch-action: none; }
+svg.a308-lat .grid { stroke: #eef0f3; }
+svg.a308-lat .axis { stroke: #c4c9cf; }
+svg.a308-lat .cell { fill: rgba(0, 156, 222, 0.10); stroke: none; }
+svg.a308-lat .dot { fill: #009CDE; }
+svg.a308-lat .ring { fill: none; stroke: #F36E24; stroke-width: 2; }
+svg.a308-lat .vec1 { stroke: #009CDE; stroke-width: 2.5; }
+svg.a308-lat .vec2 { stroke: #F36E24; stroke-width: 2; stroke-dasharray: 6 4; }
+svg.a308-lat .vecs { stroke: #8B5CF6; stroke-width: 3; }
+svg.a308-lat .vect { stroke: #D6336C; stroke-width: 2.5; stroke-dasharray: 6 4; }
+.a308-handle { fill: #fff; stroke: #009CDE; stroke-width: 2.5; cursor: grab; }
+.a308-handle:hover { fill: #dff2fb; }
+.a308-handle:focus { outline: none; stroke: #F36E24; stroke-width: 3.5; }

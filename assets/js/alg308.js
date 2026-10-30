@@ -10,8 +10,13 @@
  *   A308.cayley(el, opts), A308.polygon(el, opts), A308.perm(el, opts),
  *   A308.clock(el, opts), A308.lattice(el, opts), A308.cosets(el, opts),
  *   A308.quotient(el, opts), A308.hom(el, opts), A308.ring(el, opts),
- *   A308.euclid(el, opts)
+ *   A308.euclid(el, opts), A308.powmod(el, opts), A308.lattice2d(el, opts)
  *       widgets. Each takes a container element and returns a small controller.
+ *
+ *   A308.dragPoints(svg, opts), A308.dragHandle(id, pt, plane, label)
+ *       let a page make its own draggable points in an SVG (lattice2d uses them).
+ *   A308.powmodSteps(a, b, n), A308.latticeSame(b, c), A308.latticeTurn(b, n), ...
+ *       the arithmetic behind powmod and lattice2d, as plain functions.
  *
  * Conventions follow Judson, *Abstract Algebra: Theory and Applications*:
  *   - permutations multiply RIGHT TO LEFT: (sigma tau)(x) = sigma(tau(x));
@@ -19,11 +24,20 @@
  *   - D_n acts on vertices 1..n; r sends vertex i to i+1, s fixes vertex 1, and
  *     r^k s means "do s, then r^k" (so it sends vertex 1 to vertex k+1);
  *   - D_3 can use Judson's Chapter 3 names id, rho_1, rho_2, mu_1, mu_2, mu_3,
- *     where mu_i fixes the i-th vertex (A, B, C).
+ *     where mu_i fixes the i-th vertex (A, B, C);
+ *   - cosets of an additive group (ℤ_n, products of them) are written g + H and
+ *     H + g; of a multiplicative group, gH and Hg. A widget's `additive` option
+ *     overrides what the group says.
  *
  * Widgets that compute from free input accept `avoid`: a list of inputs that
  * are assigned homework. Entering one shows a friendly note instead of the
  * answer, because nothing on these pages answers an assigned problem.
+ *
+ * Every widget that has a readout also accepts `predict`: true, or a string to use
+ * as the prompt. The readout stays hidden, with the prompt in its place, until the
+ * student's first move (a click, a slider, a typed key, a menu choice), so a
+ * "predict first" question on the page cannot be answered by the widget before
+ * the student has committed. The controller's reveal() shows it early.
  *
  * The engine has no DOM dependencies, so the test suite runs it under Node.
  */
@@ -288,6 +302,15 @@
   Group.prototype.leftCosets = function (H) { return this.cosets(H, 'left'); };
   Group.prototype.rightCosets = function (H) { return this.cosets(H, 'right'); };
 
+  /* The name of the coset of g in the group's own notation: gN or Ng for a
+   * multiplicative group, g + N or N + g for an additive one (side 'left' or
+   * 'right'; nName defaults to 'H'). additive defaults to the group's own flag. */
+  Group.prototype.cosetName = function (g, side, nName, additive) {
+    var add = additive === undefined ? !!this.additive : additive, lab = this.labels[g], nn = nName || 'H';
+    if (add) return side === 'right' ? nn + ' + ' + lab : lab + ' + ' + nn;
+    return side === 'right' ? nn + lab : lab + nn;
+  };
+
   Group.prototype.isNormal = function (H) {
     var has = {};
     H.forEach(function (x) { has[x] = true; });
@@ -325,22 +348,25 @@
     return out;
   };
 
-  /* G/N as a Group whose elements are the cosets of N. Labels are "gN" written
-   * with the coset's first representative, or "N" for N itself. Returns null if
+  /* G/N as a Group whose elements are the cosets of N. Labels are "gN" (or
+   * "g + N" when the group is additive; opts.additive overrides) written with
+   * the coset's first representative, or "N" for N itself. Returns null if
    * N is not normal (the operation would not be well defined). */
   Group.prototype.quotient = function (N, opts) {
     if (!this.isNormal(N)) return null;
     opts = opts || {};
     var self = this, cs = this.leftCosets(N), which = [];
+    var additive = opts.additive === undefined ? !!this.additive : !!opts.additive;
     cs.forEach(function (c, k) { c.elements.forEach(function (x) { which[x] = k; }); });
     var nName = opts.nName || 'N';
     var labels = cs.map(function (c) {
-      return c.rep === self.e ? nName : self.labels[c.rep] + (opts.additive ? ' + ' : '') + nName;
+      return c.rep === self.e ? nName : self.cosetName(c.rep, 'left', nName, additive);
     });
     var table = cs.map(function (c1) {
       return cs.map(function (c2) { return which[self.op(c1.rep, c2.rep)]; });
     });
     var Q = new Group(this.name + '/' + nName, labels, table);
+    if (additive) Q.additive = true;
     Q.cosetList = cs;
     Q.cosetOf = which;
     return Q;
@@ -669,6 +695,45 @@
   }
   var AVOID_NOTE = 'That one is on your homework, so this page won’t do it for you. Work it by hand, then bring it to class — or try a different input here.';
 
+  /* "Predict first": with opts.predict set (true, or a string to use as the prompt), the
+   * readout `out` is hidden and a prompt sits in its place until the student's first
+   * move inside `el`: a click on a button, a table header or a lattice node, a slider or
+   * typed input, a menu choice, or Enter/Space on a header or node. The widget keeps
+   * computing as usual underneath, so the first move shows the readout for that move.
+   * Returns { revealed, reveal() }; reveal() also works as a "show me" button. */
+  var PREDICT_NOTE = 'Predict first. Make your guess, then make your first move: the readout appears after that.';
+  function predictGate(el, out, opts) {
+    var gate = { revealed: true, reveal: function () {} };
+    // A widget rebuilt in the same container must not leave the old gate's listeners behind.
+    if (el._a308Off) { el._a308Off(); el._a308Off = null; }
+    if (!opts || !opts.predict || !out) return gate;
+    var note = h('p', { class: 'a308-note a308-predict', text: typeof opts.predict === 'string' ? opts.predict : PREDICT_NOTE });
+    out.hidden = true;
+    out.parentNode.insertBefore(note, out);
+    gate.revealed = false;
+    gate.reveal = function () {
+      if (gate.revealed) return;
+      gate.revealed = true;
+      out.hidden = false;
+      if (note.parentNode) note.parentNode.removeChild(note);
+    };
+    var onClick = function (ev) { if (ev.target.closest && ev.target.closest('button, th[data-el], .node')) gate.reveal(); };
+    var onKey = function (ev) {
+      if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.closest && ev.target.closest('th[data-el], .node')) gate.reveal();
+    };
+    el.addEventListener('input', gate.reveal);
+    el.addEventListener('change', gate.reveal);
+    el.addEventListener('click', onClick);
+    el.addEventListener('keydown', onKey);
+    el._a308Off = function () {
+      el.removeEventListener('input', gate.reveal);
+      el.removeEventListener('change', gate.reveal);
+      el.removeEventListener('click', onClick);
+      el.removeEventListener('keydown', onKey);
+    };
+    return gate;
+  }
+
   /* ================================================================== *
    * Widget: Cayley table
    *
@@ -682,6 +747,7 @@
    *     showPowers: false         ...without listing the powers (when a later exercise asks for subgroups)
    *     blanks: [[a, b], ...]     "fill it in" mode: those cells become dropdowns
    *     caption: 'text'
+   *     predict: true | 'text'    hide the readout until the first header is picked (not in blanks mode)
    *     onPick: function (a) {}
    *   })
    * ================================================================== */
@@ -694,6 +760,7 @@
     el.innerHTML = '';
     el.appendChild(wrap);
     if (opts.clickable !== false || state.blanks) el.appendChild(out);
+    var gate = predictGate(el, (opts.clickable !== false && !state.blanks) ? out : null, opts);
 
     function order() {
       var G = state.G;
@@ -817,6 +884,7 @@
         render();
       },
       pick: pick,
+      reveal: gate.reveal,
       state: state
     };
   }
@@ -825,7 +893,7 @@
    * Widget: regular polygon symmetries (D_n)
    *
    *   A308.polygon(el, { n: 4, names: ['A','B','C','D'], labels: 'rs'|'judson3',
-   *                      mode: 'explore' | 'compose', onChange: fn })
+   *                      mode: 'explore' | 'compose', predict: true | 'text', onChange: fn })
    *
    * explore: buttons apply r (rotate) and s (flip) to the CURRENT position, so
    *          pressing r then s performs "r, then s" = the element s r.
@@ -876,6 +944,7 @@
     el.appendChild(h('div', { class: 'a308-poly-wrap' }, [svg]));
     el.appendChild(ctl);
     el.appendChild(out);
+    var gate = predictGate(el, out, opts);
 
     // Element g = r^k or r^k s. As a motion of the plane: first the flip (if any), then
     // rotate k notches clockwise. CSS applies the rightmost function first. Every
@@ -972,13 +1041,14 @@
         '<strong>' + G.labels[G.s] + '</strong> flips it across the dashed vertical line. The small grey numbers are fixed positions; the bold labels ride along.';
     }
     snap(G.e);
-    return { group: G, current: function () { return cur; }, apply: apply };
+    return { group: G, current: function () { return cur; }, apply: apply, reveal: gate.reveal };
   }
 
   /* ================================================================== *
    * Widget: permutation arrows and products
    *
-   *   A308.perm(el, { n: 5, sigma: '(1 2 3)', tau: '(2 4)', avoid: [['(1 3)', '(2 4)'], ...] })
+   *   A308.perm(el, { n: 5, sigma: '(1 2 3)', tau: '(2 4)', avoid: [['(1 3)', '(2 4)'], ...],
+   *                   predict: true | 'text' })
    *
    * Two-line arrow diagram of tau then sigma, the product sigma*tau (right to
    * left), cycle form, parity and order, and "follow one number through".
@@ -1002,6 +1072,7 @@
     el.appendChild(h('p', { class: 'a308-note', html: 'Products go <strong>right to left</strong>, as in Judson: στ means do τ first, then σ. Type cycles like <span class="mono">(1 3 5)(2 4)</span>; <span class="mono">(1)</span> is the identity.' }));
     el.appendChild(svgWrap);
     el.appendChild(out);
+    var gate = predictGate(el, out, opts);
 
     // Homework products to refuse. Each avoid entry is [sigma, tau] in cycle notation (or a
     // single string for one permutation). Inputs are compared as permutations, so spacing
@@ -1081,13 +1152,13 @@
     [inS, inT].forEach(function (inp) { inp.addEventListener('input', update); });
     follow.addEventListener('change', update);
     update();
-    return { update: update };
+    return { update: update, reveal: gate.reveal };
   }
 
   /* ================================================================== *
    * Widget: Z_n on a clock / n-th roots of unity
    *
-   *   A308.clock(el, { n: 12, k: 8, roots: false, maxN: 30, avoid: [[n, k], ...] })
+   *   A308.clock(el, { n: 12, k: 8, roots: false, maxN: 30, avoid: [[n, k], ...], predict: true | 'text' })
    * ================================================================== */
   function clock(el, opts) {
     el = resolve(el);
@@ -1105,6 +1176,7 @@
     el.appendChild(row);
     el.appendChild(h('div', { class: 'a308-clock-wrap' }, [svg]));
     el.appendChild(out);
+    var gate = predictGate(el, out, opts);
 
     function pos(j, n, rad) {
       var t = state.roots ? (2 * Math.PI * j / n) : (-Math.PI / 2 + 2 * Math.PI * j / n);
@@ -1154,18 +1226,30 @@
     inN.addEventListener('input', function () { state.n = Number(inN.value); update(); });
     inK.addEventListener('input', function () { state.k = Number(inK.value); update(); });
     update();
-    return { set: function (o) { Object.keys(o).forEach(function (kk) { state[kk] = o[kk]; }); inN.value = state.n; inK.value = state.k; update(); } };
+    return { set: function (o) { Object.keys(o).forEach(function (kk) { state[kk] = o[kk]; }); inN.value = state.n; inK.value = state.k; update(); }, reveal: gate.reveal };
   }
 
   /* ================================================================== *
    * Widget: subgroup lattice (Hasse diagram)
    *
-   *   A308.lattice(el, { group: G, onPick: function (H) {}, markNormal: true })
+   *   A308.lattice(el, { group: G, onPick: function (H) {}, markNormal: true,
+   *                      hideCount: true,        never say how many subgroups there are
+   *                      avoid: ['D₄', ...],     names of groups (G.name) whose lattice is homework
+   *                      predict: true | 'text' })
+   *
+   * hideCount leaves the number out of the readout and the accessible name; the drawing
+   * itself still shows every subgroup, so a page that asks "how many?" before the student
+   * has counted should not show the lattice until they have answered (or should say so).
    * ================================================================== */
   function lattice(el, opts) {
     el = resolve(el);
     el.innerHTML = '';
-    var G = opts.group, subsList = G.subgroups();
+    var G = opts.group;
+    if (avoidHit(opts.avoid, G.name)) {
+      el.appendChild(h('div', { class: 'readout a308-readout', 'aria-live': 'polite', text: AVOID_NOTE }));
+      return { subgroups: [], avoided: true, reveal: function () {} };
+    }
+    var subsList = G.subgroups();
     // Rows by the number of prime factors of |H| (with multiplicity), so a subgroup sits one row
     // above each maximal subgroup of prime index; rows by order alone stack Z_30's subgroups in a
     // single column that looks like a chain. A row too crowded to read is split by order.
@@ -1188,7 +1272,7 @@
     var W = Math.max(560, 90 + Math.max.apply(null, rows.map(rowW)));
     var rowH = 74, Hh = 40 + (rows.length - 1) * rowH + 30;
     var svg = s('svg', { viewBox: '0 0 ' + W + ' ' + Hh, class: 'a308-lattice', role: 'img',
-      'aria-label': 'Subgroup lattice of ' + G.name + ': ' + subsList.length + ' subgroups' });
+      'aria-label': 'Subgroup lattice of ' + G.name + (opts.hideCount ? '' : ': ' + subsList.length + ' subgroups') });
     if (W > 560) svg.style.minWidth = Math.round(W * 0.8) + 'px';
     var posOf = [], rowOrders = [];
     rows.forEach(function (row, li) {
@@ -1246,20 +1330,27 @@
     });
     el.appendChild(h('div', { class: 'a308-lattice-wrap' }, [svg]));
     el.appendChild(out);
-    out.innerHTML = G.name + ' has <strong>' + subsList.length + '</strong> subgroups. Click one to see its elements' +
-      (opts.markNormal ? ' (normal subgroups have a green ring)' : '') + '.';
-    return { subgroups: subsList };
+    var gate = predictGate(el, out, opts);
+    out.innerHTML = opts.hideCount
+      ? 'Subgroup lattice of ' + G.name + '. Click a subgroup to see its elements' + (opts.markNormal ? ' (normal subgroups have a green ring)' : '') + '.'
+      : G.name + ' has <strong>' + subsList.length + '</strong> subgroups. Click one to see its elements' +
+        (opts.markNormal ? ' (normal subgroups have a green ring)' : '') + '.';
+    return { subgroups: subsList, reveal: gate.reveal };
   }
 
   /* ================================================================== *
    * Widget: left vs right cosets, side by side
    *
-   *   A308.cosets(el, { group: G, subgroups: [[...], ...] or null (all proper nontrivial), avoid: [...] })
+   *   A308.cosets(el, { group: G, subgroups: [[...], ...] or null (all proper nontrivial), avoid: [...],
+   *                     additive: true | false (default: the group's own flag), predict: true | 'text' })
+   *
+   * Additive groups are written g + H and H + g.
    * ================================================================== */
   function cosets(el, opts) {
     el = resolve(el);
     el.innerHTML = '';
     var G = opts.group;
+    var additive = opts.additive === undefined ? !!G.additive : !!opts.additive;
     var choices = opts.subgroups || G.subgroups().filter(function (H) { return H.length > 1 && H.length < G.n; });
     var sel = h('select', { 'aria-label': 'subgroup H' });
     choices.forEach(function (H, i) { sel.appendChild(h('option', { value: i, text: 'H = ' + G.describe(H) + '  (order ' + H.length + ')' })); });
@@ -1268,13 +1359,14 @@
     var out = h('div', { class: 'readout a308-readout', 'aria-live': 'polite' });
     el.appendChild(grid);
     el.appendChild(out);
-    function col(title, list) {
+    var gate = predictGate(el, out, opts);
+    function col(title, list, side) {
       var c = h('div', { class: 'a308-coset-col' }, [h('h4', { text: title })]);
       list.forEach(function (cs, k) {
         var chip = h('div', { class: 'a308-coset' });
         chip.style.background = TINTS[k % TINTS.length];
         chip.style.borderColor = PALETTE[k % PALETTE.length];
-        chip.innerHTML = '<span class="rep">' + (title.indexOf('Left') === 0 ? G.labels[cs.rep] + 'H' : 'H' + G.labels[cs.rep]) + '</span> ' + setList(G, cs.elements);
+        chip.innerHTML = '<span class="rep">' + G.cosetName(cs.rep, side, 'H', additive) + '</span> ' + setList(G, cs.elements);
         c.appendChild(chip);
       });
       return c;
@@ -1284,27 +1376,32 @@
       if (avoidHit(opts.avoid, G.describe(H))) { grid.innerHTML = ''; out.innerHTML = AVOID_NOTE; return; }
       var L = G.leftCosets(H), Rr = G.rightCosets(H);
       grid.innerHTML = '';
-      grid.appendChild(col('Left cosets gH', L));
-      grid.appendChild(col('Right cosets Hg', Rr));
+      grid.appendChild(col(additive ? 'Left cosets g + H' : 'Left cosets gH', L, 'left'));
+      grid.appendChild(col(additive ? 'Right cosets H + g' : 'Right cosets Hg', Rr, 'right'));
       var same = L.every(function (c) { return Rr.some(function (d) { return d.elements.join(',') === c.elements.join(','); }); });
       out.innerHTML = '[G : H] = ' + G.n + ' / ' + H.length + ' = <strong>' + L.length + '</strong> cosets on each side. ' +
-        (same ? 'The left and right partitions are <strong>the same</strong>.' : 'The left and right partitions are <strong>different</strong>: some gH ≠ Hg.');
+        (same ? 'The left and right partitions are <strong>the same</strong>.'
+              : 'The left and right partitions are <strong>different</strong>: some ' + (additive ? 'g + H ≠ H + g' : 'gH ≠ Hg') + '.');
       if (opts.onChange) opts.onChange(H, same);
     }
     sel.addEventListener('change', update);
     update();
-    return { update: update };
+    return { update: update, reveal: gate.reveal };
   }
 
   /* ================================================================== *
    * Widget: quotient group - sort the table by cosets, then collapse
    *
-   *   A308.quotient(el, { group: G, subgroups: [...] (default: all proper nontrivial), avoid: [...] })
+   *   A308.quotient(el, { group: G, subgroups: [...] (default: all proper nontrivial), avoid: [...],
+   *                       additive: true | false (default: the group's own flag), predict: true | 'text' })
+   *
+   * Quotients of additive groups are labelled g + N and their table is headed "+".
    * ================================================================== */
   function quotient(el, opts) {
     el = resolve(el);
     el.innerHTML = '';
     var G = opts.group;
+    var additive = opts.additive === undefined ? !!G.additive : !!opts.additive;
     var choices = opts.subgroups || G.subgroups().filter(function (H) { return H.length > 1 && H.length < G.n; });
     var sel = h('select', { 'aria-label': 'subgroup N' });
     choices.forEach(function (H, i) { sel.appendChild(h('option', { value: i, text: 'N = ' + G.describe(H) + '  (order ' + H.length + ')' })); });
@@ -1313,6 +1410,7 @@
     var big = h('div', { class: 'a308-q-big' }), small = h('div', { class: 'a308-q-small' });
     var out = h('div', { class: 'readout a308-readout', 'aria-live': 'polite' });
     el.appendChild(big); el.appendChild(small); el.appendChild(out);
+    var gate = predictGate(el, out, opts);
     var cay = cayley(big, { group: G, clickable: false });
     function update() {
       var N = choices[Number(sel.value)];
@@ -1322,12 +1420,13 @@
       cay.set({ H: N, color: 'cosets-left', reorder: true });
       var normal = G.isNormal(N);
       out.innerHTML = 'Rows and columns are now grouped coset by coset, and each cell is coloured by the coset its product lands in. ' +
-        (normal ? 'Every block is a single colour: <strong>N is normal</strong>, so “coset times coset” is well defined.'
-                : 'Some blocks mix colours: <strong>N is not normal</strong>. Multiplying two cosets can land in different cosets depending on which representatives you pick.');
+        (normal ? 'Every block is a single colour: <strong>N is normal</strong>, so “coset ' + (additive ? 'plus' : 'times') + ' coset” is well defined.'
+                : 'Some blocks mix colours: <strong>N is not normal</strong>. ' + (additive ? 'Adding' : 'Multiplying') +
+                  ' two cosets can land in different cosets depending on which representatives you pick.');
     }
     btn.addEventListener('click', function () {
       var N = choices[Number(sel.value)];
-      var Q = G.quotient(N);
+      var Q = G.quotient(N, { additive: additive });
       small.innerHTML = '';
       if (!Q) {
         out.innerHTML += '<br>Nothing to collapse: the mixed blocks have no single answer. Try a normal subgroup.';
@@ -1339,13 +1438,13 @@
     });
     sel.addEventListener('change', update);
     update();
-    return { update: update };
+    return { update: update, reveal: gate.reveal };
   }
 
   /* ================================================================== *
    * Widget: homomorphisms Z_m -> Z_n determined by phi(1) = k
    *
-   *   A308.hom(el, { m: 12, n: 8, k: 2, avoid: [[m, n], ...] })
+   *   A308.hom(el, { m: 12, n: 8, k: 2, avoid: [[m, n], ...], predict: true | 'text' })
    * ================================================================== */
   function hom(el, opts) {
     el = resolve(el);
@@ -1363,6 +1462,7 @@
     var out = h('div', { class: 'readout a308-readout', 'aria-live': 'polite' });
     el.appendChild(h('div', { class: 'a308-hom-wrap' }, [svg]));
     el.appendChild(out);
+    var gate = predictGate(el, out, opts);
     function update() {
       var m = state.m, n = state.n, k = Math.min(state.k, n - 1);
       K.inp.max = n - 1;
@@ -1418,13 +1518,13 @@
     N.inp.addEventListener('input', function () { state.n = Number(N.inp.value); update(); });
     K.inp.addEventListener('input', function () { state.k = Number(K.inp.value); update(); });
     update();
-    return { update: update };
+    return { update: update, reveal: gate.reveal };
   }
 
   /* ================================================================== *
    * Widget: Z_n as a ring - addition and multiplication tables
    *
-   *   A308.ring(el, { n: 8, show: 'mul' | 'add', maxN: 20, avoid: [10, 12, ...] })
+   *   A308.ring(el, { n: 8, show: 'mul' | 'add', maxN: 20, avoid: [10, 12, ...], predict: true | 'text' })
    * ================================================================== */
   function ring(el, opts) {
     el = resolve(el);
@@ -1438,6 +1538,7 @@
     var wrap = h('div', { class: 'a308-cayley-wrap' });
     var out = h('div', { class: 'readout a308-readout', 'aria-live': 'polite' });
     el.appendChild(wrap); el.appendChild(out);
+    var gate = predictGate(el, out, opts);
     function update() {
       var n = state.n, Rg = ringZn(n);
       labN.textContent = 'ℤ' + subs(n);
@@ -1474,13 +1575,13 @@
     tAdd.addEventListener('click', function () { state.show = 'add'; update(); });
     tMul.addEventListener('click', function () { state.show = 'mul'; update(); });
     update();
-    return { update: update };
+    return { update: update, reveal: gate.reveal };
   }
 
   /* ================================================================== *
    * Widget: Euclidean algorithm with back-substitution
    *
-   *   A308.euclid(el, { a: 252, b: 198, avoid: [[a, b], ...] })
+   *   A308.euclid(el, { a: 252, b: 198, avoid: [[a, b], ...], predict: true | 'text' })
    * ================================================================== */
   function euclid(el, opts) {
     el = resolve(el);
@@ -1494,6 +1595,7 @@
     var steps = h('div', { class: 'a308-euclid' });
     var out = h('div', { class: 'readout a308-readout', 'aria-live': 'polite' });
     el.appendChild(steps); el.appendChild(out);
+    var gate = predictGate(el, out, opts);
     function update() {
       var a = Math.trunc(Number(inA.value)), b = Math.trunc(Number(inB.value));
       steps.innerHTML = '';
@@ -1512,7 +1614,488 @@
     inA.addEventListener('input', update);
     inB.addEventListener('input', update);
     update();
-    return { update: update };
+    return { update: update, reveal: gate.reveal };
+  }
+
+  /* ================================================================== *
+   * Powers mod n by repeated squaring
+   *
+   * powmodSteps(a, b, n) -> { bits (least significant first), squares [a, a^2, a^4, ... mod n],
+   *   used (the bit positions that are 1), result, prodLines (the products, as text), squarings,
+   *   multiplications }. Whole numbers, a >= 0, b >= 0, n >= 2.
+   * ================================================================== */
+  function powmodSteps(a, b, n) {
+    var bits = [], x = b;
+    while (x > 0) { bits.push(x % 2); x = Math.floor(x / 2); }
+    var squares = bits.length ? [a % n] : [];
+    for (var i = 1; i < bits.length; i++) squares.push((squares[i - 1] * squares[i - 1]) % n);
+    var used = [], result = null, prodLines = [];
+    for (var j = 0; j < bits.length; j++) {
+      if (!bits[j]) continue;
+      used.push(j);
+      if (result === null) { result = squares[j]; prodLines.push('start with a^' + Math.pow(2, j) + ' ≡ ' + squares[j]); }
+      else {
+        var p = result * squares[j];
+        prodLines.push(result + ' · ' + squares[j] + ' = ' + p + ' ≡ ' + (p % n) + ' (mod ' + n + ')');
+        result = p % n;
+      }
+    }
+    if (result === null) result = 1 % n;   // b = 0: the empty product
+    return { bits: bits, squares: squares, used: used, result: result, prodLines: prodLines,
+      squarings: Math.max(0, bits.length - 1), multiplications: Math.max(0, used.length - 1) };
+  }
+
+  /* ================================================================== *
+   * Widget: a^b mod n, worked by repeated squaring
+   *
+   *   A308.powmod(el, { a: 3, b: 45, n: 100, avoid: [[a, b, n], ...], stepwise: false,
+   *                     maxB: 1000000, maxN: 10000, prompt: 'text', predict: true | 'text' })
+   *
+   * The student types a, b and n and presses the button. stepwise: true shows the binary
+   * expansion first and then one line per press of "Next step", so a page can ask for each
+   * square (or product) to be predicted. The readout is idle until the first press, so a
+   * predict gate here only delays the idle prompt, never an answer.
+   * ================================================================== */
+  function commas(x) { return String(x).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+
+  function powmod(el, opts) {
+    el = resolve(el);
+    el.innerHTML = '';
+    var maxA = 1000000000, maxB = opts.maxB || 1000000, maxN = opts.maxN || 10000;
+    var inA = h('input', { type: 'number', min: 1, step: 1, value: opts.a === undefined ? 3 : opts.a, 'aria-label': 'base a', class: 'a308-num' });
+    var inB = h('input', { type: 'number', min: 1, step: 1, value: opts.b === undefined ? 45 : opts.b, 'aria-label': 'exponent b', class: 'a308-num' });
+    var inN = h('input', { type: 'number', min: 2, step: 1, value: opts.n === undefined ? 100 : opts.n, 'aria-label': 'modulus n', class: 'a308-num' });
+    var go = h('button', { class: 'btn411', type: 'button', text: opts.stepwise ? 'Start' : 'Compute a^b mod n' });
+    var next = opts.stepwise ? h('button', { class: 'btn411 ghost', type: 'button', text: 'Next step', disabled: 'disabled' }) : null;
+    var idle = opts.prompt || 'Press the button to see the steps.';
+    var out = h('div', { class: 'readout a308-readout', 'aria-live': 'polite', text: idle });
+    el.appendChild(h('div', { class: 'ctl-row' }, [
+      h('div', { class: 'ctl' }, [h('label', { text: 'a' }), inA]),
+      h('div', { class: 'ctl' }, [h('label', { text: 'b' }), inB]),
+      h('div', { class: 'ctl' }, [h('label', { text: 'n' }), inN])
+    ]));
+    el.appendChild(h('div', { class: 'a308-row' }, [go, next]));
+    el.appendChild(out);
+    var gate = predictGate(el, out, opts);
+    var run = null;   // the computation on screen: { a, b, n, st, sq, units, shown }
+
+    function li(t) { return '<li>' + t + '</li>'; }
+    function show(k) {
+      var r = run, st = r.st, html = '<p><strong>' + r.b + '</strong> in binary is <span class="mono">' + r.b.toString(2) + '</span>, so ' +
+        r.b + ' = ' + st.used.map(function (j) { return '2^' + j; }).join(' + ') + '.</p>';
+      var nSq = Math.min(Math.max(k - 1, 0), r.sq.length), nPr = Math.min(Math.max(k - 1 - r.sq.length, 0), st.prodLines.length);
+      if (nSq) html += '<p>Square the base, reducing mod ' + r.n + ' at each step:</p><ol class="a308-steps">' + r.sq.slice(0, nSq).map(li).join('') + '</ol>';
+      if (nPr) html += '<p>Multiply together the squares for the 1 digits:</p><ol class="a308-steps">' + st.prodLines.slice(0, nPr).map(li).join('') + '</ol>';
+      if (k >= r.units) html += '<p><strong>' + r.a + '^' + r.b + ' ≡ ' + st.result + ' (mod ' + r.n + ').</strong> That took ' + st.squarings +
+        ' squarings and ' + st.multiplications + ' multiplications. Multiplying out directly would take ' + (r.b - 1) + '.</p>';
+      out.innerHTML = html;
+      r.shown = k;
+      if (next) next.disabled = k >= r.units;
+    }
+    function start() {
+      var a = Math.floor(Number(inA.value)), b = Math.floor(Number(inB.value)), n = Math.floor(Number(inN.value));
+      run = null;
+      if (next) next.disabled = true;
+      if (!(a >= 1 && a <= maxA && b >= 1 && b <= maxB && n >= 2 && n <= maxN)) {
+        out.textContent = 'Use whole numbers: a from 1 to ' + commas(maxA) + ', b from 1 to ' + commas(maxB) + ', and n from 2 to ' + commas(maxN) + '.';
+        return;
+      }
+      if (avoidHit(opts.avoid, [a, b, n])) { out.textContent = AVOID_NOTE; return; }
+      var st = powmodSteps(a, b, n), sq = [];
+      st.squares.forEach(function (v, i) {
+        var prev = st.squares[i - 1];
+        sq.push(i === 0 ? 'a^1 ≡ ' + v + ' (mod ' + n + ')'
+          : 'a^' + Math.pow(2, i) + ' = (a^' + Math.pow(2, i - 1) + ')^2 ≡ ' + prev + '^2 = ' + (prev * prev) + ' ≡ ' + v + ' (mod ' + n + ')');
+      });
+      run = { a: a, b: b, n: n, st: st, sq: sq, units: 2 + sq.length + st.prodLines.length, shown: 0 };
+      show(opts.stepwise ? 1 : run.units);
+    }
+    go.addEventListener('click', start);
+    if (next) next.addEventListener('click', function () { if (run && run.shown < run.units) show(run.shown + 1); });
+    // Changing a number clears the steps, so what is on screen always matches the boxes.
+    el.addEventListener('input', function () { run = null; out.textContent = idle; if (next) next.disabled = true; });
+    return { reveal: gate.reveal, run: function () { start(); return run; } };
+  }
+
+  /* ================================================================== *
+   * Dragging a point in an SVG
+   *
+   *   A308.dragPoints(svg, {
+   *     plane: { cx, cy, scale },   math (x, y) sits at svg (cx + scale x, cy - scale y)
+   *     get: function (id) -> [x, y],            the point's current place
+   *     set: function (id, pt) {},               called with the new place; redraw here
+   *     snap: 1,                                 round to multiples of this (0: no rounding)
+   *     limit: 4,                                keep |x| and |y| within this
+   *     step: ...,                               arrow-key step (default: snap, else 0.1)
+   *     onStart: function (id) {}, onEnd: function (id) {} })  -> { off() }
+   *   A308.dragHandle(id, pt, plane, label)  an SVG circle the helper can grab (data-h = id,
+   *       focusable, role button); draw one per point, after everything else, on every redraw.
+   *
+   * Listeners sit on the svg itself, so redrawing the svg's children is safe: the helper
+   * captures the pointer on the svg, and after an arrow key it puts focus back on the new
+   * handle. Pages should give the svg `touch-action: none` (the .a308-lat-drag class does).
+   * ================================================================== */
+  function snapValue(v, snap) {
+    var r = snap ? Math.round(v / snap) * snap : v;
+    return Math.round(r * 1e6) / 1e6 + 0;   // + 0 turns -0 into 0
+  }
+  // Round a point to multiples of opts.snap, then keep it within opts.limit (a limit that is not a multiple of snap rounds down).
+  function snapPoint(pt, opts) {
+    opts = opts || {};
+    var lim = opts.limit ? (opts.snap ? Math.floor(opts.limit / opts.snap + 1e-9) * opts.snap : opts.limit) : null;
+    return pt.map(function (v) {
+      var r = snapValue(v, opts.snap);
+      return lim === null ? r : Math.max(-lim, Math.min(lim, r));
+    });
+  }
+
+  function dragHandle(id, pt, plane, label) {
+    return s('circle', { cx: plane.cx + plane.scale * pt[0], cy: plane.cy - plane.scale * pt[1], r: 9, class: 'a308-handle',
+      'data-h': id, tabindex: 0, role: 'button', 'aria-label': label });
+  }
+
+  function dragPoints(svg, opts) {
+    var pl = opts.plane, so = { snap: opts.snap === undefined ? 1 : opts.snap, limit: opts.limit }, dragging = null;
+    function handleId(ev) { var t = ev.target; return t && t.getAttribute ? t.getAttribute('data-h') : null; }
+    function toMath(ev) {
+      var m = svg.getScreenCTM();
+      if (!m) return null;
+      var p = svg.createSVGPoint();
+      p.x = ev.clientX; p.y = ev.clientY;
+      var q = p.matrixTransform(m.inverse());
+      return [(q.x - pl.cx) / pl.scale, (pl.cy - q.y) / pl.scale];
+    }
+    function move(id, raw) {
+      var q = snapPoint(raw, so), p = opts.get(id);
+      if (q[0] !== p[0] || q[1] !== p[1]) opts.set(id, q);
+    }
+    function onDown(ev) {
+      var id = handleId(ev);
+      if (id === null) return;
+      dragging = id;
+      try { svg.setPointerCapture(ev.pointerId); } catch (e) { /* a pointer that is already gone */ }
+      ev.preventDefault();
+      if (opts.onStart) opts.onStart(id);
+    }
+    function onMove(ev) {
+      if (dragging === null) return;
+      var pt = toMath(ev);
+      if (pt) move(dragging, pt);
+    }
+    function onUp() {
+      if (dragging === null) return;
+      var id = dragging;
+      dragging = null;
+      if (opts.onEnd) opts.onEnd(id);
+    }
+    function onKey(ev) {
+      var id = handleId(ev);
+      if (id === null) return;
+      var dx = ev.key === 'ArrowRight' ? 1 : ev.key === 'ArrowLeft' ? -1 : 0, dy = ev.key === 'ArrowUp' ? 1 : ev.key === 'ArrowDown' ? -1 : 0;
+      if (!dx && !dy) return;
+      ev.preventDefault();
+      var step = opts.step || so.snap || 0.1, p = opts.get(id);
+      move(id, [p[0] + dx * step, p[1] + dy * step]);
+      var again = svg.querySelector('[data-h="' + id + '"]');
+      if (again && again.focus) again.focus();
+    }
+    svg.addEventListener('pointerdown', onDown);
+    svg.addEventListener('pointermove', onMove);
+    svg.addEventListener('pointerup', onUp);
+    svg.addEventListener('pointercancel', onUp);
+    svg.addEventListener('keydown', onKey);
+    return { off: function () {
+      svg.removeEventListener('pointerdown', onDown);
+      svg.removeEventListener('pointermove', onMove);
+      svg.removeEventListener('pointerup', onUp);
+      svg.removeEventListener('pointercancel', onUp);
+      svg.removeEventListener('keydown', onKey);
+    } };
+  }
+
+  /* ================================================================== *
+   * Lattices in the plane
+   *
+   * A basis is [[x1, y1], [x2, y2]]; the lattice is every whole-number combination of the two
+   * vectors. Pure functions (the widget below draws them):
+   *   latticeCoords(b, p)    the (s, t) with p = s b1 + t b2, or null if b is not a basis
+   *   latticeHas(b, p)       is p a point of the lattice?
+   *   latticeSame(b, c)      do the two bases give the same lattice?
+   *   latticeShortest(b)     a shortest nonzero vector (Lagrange-Gauss reduction), or null
+   *   latticeSecond(b, U)    the vectors y1 = U11 b1 + U12 b2, y2 = U21 b1 + U22 b2, U = [U11, U12, U21, U22]
+   *   latticeCompare(b, U)   { y, det, areas, kind, same }: kind is 'bParallel', 'yParallel', 'fraction',
+   *                          'same' or 'different'
+   *   latticeTurn(b, n)      does turning the plane by 2 pi / n keep the lattice? { coords, keeps, t, shortest }
+   * ================================================================== */
+  var LAT_EPS = 1e-9;
+  function cross2(p, q) { return p[0] * q[1] - p[1] * q[0]; }
+  function isWhole(x) { return Math.abs(x - Math.round(x)) < LAT_EPS; }
+  function latticeCoords(b, p) {
+    var d = cross2(b[0], b[1]);
+    return Math.abs(d) < LAT_EPS ? null : [cross2(p, b[1]) / d, cross2(b[0], p) / d];
+  }
+  function latticeHas(b, p) {
+    var c = latticeCoords(b, p);
+    return !!c && isWhole(c[0]) && isWhole(c[1]);
+  }
+  function latticeSame(b, c) {
+    return latticeHas(b, c[0]) && latticeHas(b, c[1]) && latticeHas(c, b[0]) && latticeHas(c, b[1]);
+  }
+  function latticeShortest(b) {
+    if (Math.abs(cross2(b[0], b[1])) < LAT_EPS) return null;
+    var u = b[0].slice(), v = b[1].slice();
+    function len2(p) { return p[0] * p[0] + p[1] * p[1]; }
+    for (var it = 0; it < 200; it++) {
+      if (len2(u) > len2(v)) { var t = u; u = v; v = t; }
+      var m = Math.round((u[0] * v[0] + u[1] * v[1]) / len2(u));
+      if (m === 0) break;
+      v = [v[0] - m * u[0], v[1] - m * u[1]];
+    }
+    return u;
+  }
+  function latticeSecond(b, U) {
+    return [[U[0] * b[0][0] + U[1] * b[1][0], U[0] * b[0][1] + U[1] * b[1][1]],
+      [U[2] * b[0][0] + U[3] * b[1][0], U[2] * b[0][1] + U[3] * b[1][1]]];
+  }
+  function latticeCompare(b, U) {
+    var d = U[0] * U[3] - U[1] * U[2], y = latticeSecond(b, U);
+    var r = { y: y, det: d, areas: [Math.abs(cross2(b[0], b[1])), Math.abs(cross2(y[0], y[1]))] };
+    if (r.areas[0] < LAT_EPS) r.kind = 'bParallel';
+    else if (Math.abs(d) < LAT_EPS) r.kind = 'yParallel';
+    else if (!U.every(function (x) { return x === Math.round(x); })) r.kind = 'fraction';
+    else r.kind = Math.abs(d) === 1 ? 'same' : 'different';
+    r.same = r.kind === 'same';
+    return r;
+  }
+  function latticeTurn(b, n) {
+    var th = 2 * Math.PI / n, c = Math.cos(th), sn = Math.sin(th);
+    function turn(p) { return [c * p[0] - sn * p[1], sn * p[0] + c * p[1]]; }
+    var c1 = latticeCoords(b, turn(b[0])), c2 = latticeCoords(b, turn(b[1]));
+    if (!c1) return null;
+    return { coords: [c1, c2], keeps: c1.concat(c2).every(isWhole), t: 2 * c, shortest: latticeShortest(b) };
+  }
+
+  /* ================================================================== *
+   * Widget: a lattice in the plane, with a basis you can drag
+   *
+   *   A308.lattice2d(el, {
+   *     basis: [[3, 1], [1, 2]],      the first basis (default: the square lattice)
+   *     U: [1, 0, 0, 1],              compare mode: rings mark the lattice of a second basis, y = U b
+   *     uPresets: [{ name, u }, ...]  a menu of choices for U ("Your own U" is added)
+   *     turn: 5, turnMenu: [2, ..., 8]  turn mode: rings mark the lattice turned by 2 pi / n; turnMenu adds a menu
+   *     presets: [{ name, basis }, ...]  a menu of bases ("Your own basis" is added)
+   *     drag: true                    handles on the two basis vectors (arrow keys work too)
+   *     inputs: true                  labelled number boxes for the basis (and U)
+   *     snap: 1                       handles snap to multiples of this (use 0.1 for a hexagonal or oblique lattice)
+   *     lim: 4                        the picture shows -lim..lim in each direction
+   *     avoid: [...]                  compare mode: [[basis, basis], ...] pairings (either order) that are homework;
+   *                                   turn mode: [[basis, n], ...]
+   *     onChange: function (state) {}, predict: true | 'text' })
+   *   -> { state: { b, U, n }, set({ basis, U, turn }), update(), reveal() }
+   *
+   * Give U or turn, not both. With neither, the widget just draws the lattice and its cell.
+   * ================================================================== */
+  function lattice2d(el, opts) {
+    el = resolve(el);
+    el.innerHTML = '';
+    if ((opts.U || opts.uPresets) && (opts.turn || opts.turnMenu)) throw new Error('lattice2d: give U (compare two bases) or turn, not both');
+    var mode = (opts.turn || opts.turnMenu) ? 'turn' : (opts.U || opts.uPresets ? 'compare' : 'plain');
+    var lim = opts.lim || 4, C = 150, S = 150 / (lim + 0.5), R = lim + 0.3, dragOn = opts.drag !== false;
+    var plane = { cx: C, cy: C, scale: S }, snap = opts.snap === undefined ? 1 : opts.snap;
+    function clone(b) { return b.map(function (v) { return v.slice(); }); }
+    var state = { b: clone(opts.basis || [[1, 0], [0, 1]]), U: (opts.U || [1, 0, 0, 1]).slice(), n: opts.turn || (opts.turnMenu && opts.turnMenu[0]) || 4 };
+    function num(x) { var r = Math.round(x * 100) / 100; return String(r === 0 ? 0 : r); }
+    function vec(p) { return '(' + num(p[0]) + ', ' + num(p[1]) + ')'; }
+
+    // ---- controls
+    var kids = [];
+    function menu(label, items, onPick, ownText) {
+      var sel = h('select', { 'aria-label': label });
+      items.forEach(function (t, i) { sel.appendChild(h('option', { value: i, text: t })); });
+      if (ownText) sel.appendChild(h('option', { value: 'own', text: ownText }));
+      sel.addEventListener('change', function () { onPick(sel.value); changed(); });
+      kids.push(h('div', { class: 'ctl' }, [h('label', { text: label }), sel]));
+      return sel;
+    }
+    var presetSel = opts.presets ? menu('Lattice', opts.presets.map(function (p) { return p.name; }), function (v) {
+      if (v !== 'own') { state.b = clone(opts.presets[Number(v)].basis); syncBoxes(); }
+    }, 'Your own basis') : null;
+    var uSel = opts.uPresets ? menu('Second basis', opts.uPresets.map(function (p) { return p.name; }), function (v) {
+      if (v !== 'own') { state.U = opts.uPresets[Number(v)].u.slice(); syncBoxes(); }
+    }, 'Your own U') : null;
+    if (opts.turnMenu) {
+      var tSel = menu('Turn', opts.turnMenu.map(function (n) { return 'order ' + n + ' (by ' + num(360 / n) + '°)'; }), function (v) { state.n = opts.turnMenu[Number(v)]; });
+      tSel.value = String(Math.max(0, opts.turnMenu.indexOf(state.n)));
+    }
+    var boxes = [];   // [{ inp, get, put }]
+    function box(label, get, put, own) {
+      var inp = h('input', { type: 'number', step: 'any', 'aria-label': label, class: 'a308-num a308-num-sm' });
+      inp.addEventListener('input', function () {
+        put(isFinite(Number(inp.value)) ? Number(inp.value) : 0);
+        if (own && own.value !== 'own') own.value = 'own';
+      });
+      boxes.push({ inp: inp, get: get });
+      return h('div', { class: 'ctl' }, [h('label', { text: label }), inp]);
+    }
+    // Show at most four decimals in the boxes (a hexagonal basis has 0.8660254037844386 in it).
+    function syncBoxes() { boxes.forEach(function (bx) { bx.inp.value = Math.round(bx.get() * 1e4) / 1e4; }); }
+    var boxKids = [];
+    if (opts.inputs !== false) {
+      [['b₁ x', 0, 0], ['b₁ y', 0, 1], ['b₂ x', 1, 0], ['b₂ y', 1, 1]].forEach(function (q) {
+        boxKids.push(box('first basis: ' + q[0], function () { return state.b[q[1]][q[2]]; }, function (v) { state.b[q[1]][q[2]] = v; changed(); }, presetSel));
+      });
+      if (mode === 'compare') ['U₁₁', 'U₁₂', 'U₂₁', 'U₂₂'].forEach(function (nm, i) {
+        boxKids.push(box('matrix U: ' + nm, function () { return state.U[i]; }, function (v) { state.U[i] = v; changed(); }, uSel));
+      });
+    }
+    if (kids.length) el.appendChild(h('div', { class: 'ctl-row' }, kids));
+    if (boxKids.length) el.appendChild(h('div', { class: 'ctl-row' }, boxKids));
+    var svg = s('svg', { viewBox: '0 0 300 300', class: 'a308-lat' + (dragOn ? ' a308-lat-drag' : ''), role: dragOn ? 'group' : 'img' });
+    var out = h('div', { class: 'readout a308-readout', 'aria-live': 'polite' });
+    el.appendChild(h('div', { class: 'a308-lat-wrap' }, [svg]));
+    el.appendChild(out);
+    var gate = predictGate(el, out, opts);
+    syncBoxes();
+
+    // ---- drawing
+    function X(x) { return C + S * x; }
+    function Y(y) { return C - S * y; }
+    function inView(p) { return Math.abs(p[0]) <= R && Math.abs(p[1]) <= R; }
+    // Lattice points in the square |x|, |y| <= half; null if the lattice is too fine to draw.
+    function points(b, half) {
+      if (Math.abs(cross2(b[0], b[1])) < LAT_EPS) return [];
+      var lo = [Infinity, Infinity], hi = [-Infinity, -Infinity];
+      [[-half, -half], [-half, half], [half, -half], [half, half]].forEach(function (q) {
+        var c = latticeCoords(b, q);
+        for (var k = 0; k < 2; k++) { lo[k] = Math.min(lo[k], c[k]); hi[k] = Math.max(hi[k], c[k]); }
+      });
+      var i0 = Math.ceil(lo[0]), i1 = Math.floor(hi[0]), j0 = Math.ceil(lo[1]), j1 = Math.floor(hi[1]), pts = [];
+      if ((i1 - i0 + 1) * (j1 - j0 + 1) > 20000) return null;
+      for (var i = i0; i <= i1; i++) for (var j = j0; j <= j1; j++) {
+        var p = [i * b[0][0] + j * b[1][0], i * b[0][1] + j * b[1][1]];
+        if (Math.abs(p[0]) <= half + 1e-9 && Math.abs(p[1]) <= half + 1e-9) pts.push(p);
+        if (pts.length > 1200) return null;
+      }
+      return pts;
+    }
+    function dot(p, r, attrs) { return s('circle', Object.assign({ cx: X(p[0]), cy: Y(p[1]), r: r }, attrs)); }
+    function arrow(p, attrs) { return s('line', Object.assign({ x1: C, y1: C, x2: X(p[0]), y2: Y(p[1]) }, attrs)); }
+    function sameSet(p, q) { function k(v) { return v.map(function (w) { return w.join(','); }).sort().join(' '); } return k(p) === k(q); }
+    function held(y) {
+      return (opts.avoid || []).some(function (e) {
+        if (mode === 'compare') return (sameSet(state.b, e[0]) && sameSet(y, e[1])) || (sameSet(state.b, e[1]) && sameSet(y, e[0]));
+        return mode === 'turn' && sameSet(state.b, e[0]) && e[1] === state.n;
+      });
+    }
+
+    function draw() {
+      var b = state.b, indep = Math.abs(cross2(b[0], b[1])) >= LAT_EPS, name = 'Lattice dots of the basis ' + vec(b[0]) + ', ' + vec(b[1]);
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+      for (var k = -Math.floor(lim); k <= Math.floor(lim); k++) {
+        svg.appendChild(s('line', { x1: X(k), y1: 0, x2: X(k), y2: 300, class: 'grid' }));
+        svg.appendChild(s('line', { x1: 0, y1: Y(k), x2: 300, y2: Y(k), class: 'grid' }));
+      }
+      svg.appendChild(s('line', { x1: 0, y1: C, x2: 300, y2: C, class: 'axis' }));
+      svg.appendChild(s('line', { x1: C, y1: 0, x2: C, y2: 300, class: 'axis' }));
+      var msg = '', cmp = mode === 'compare' ? latticeCompare(b, state.U) : null, isHeld = false, fine = false;
+      if (!indep) msg = 'The two basis vectors are parallel, so they do not form a basis. Move one of them.';
+      else {
+        isHeld = mode === 'compare' ? held(cmp.y) : (mode === 'turn' && held(null));
+        svg.appendChild(s('polygon', { class: 'cell', points: [[0, 0], b[0], [b[0][0] + b[1][0], b[0][1] + b[1][1]], b[1]]
+          .map(function (q) { return X(q[0]).toFixed(1) + ',' + Y(q[1]).toFixed(1); }).join(' ') }));
+        var th = 2 * Math.PI / state.n, big = points(b, mode === 'turn' ? R * Math.SQRT2 : R);
+        if (big === null) fine = true;
+        else {
+          big.filter(inView).forEach(function (p) { svg.appendChild(dot(p, 4, { class: 'dot' })); });
+          if (mode === 'turn' && !isHeld) big.map(function (p) {
+            return [Math.cos(th) * p[0] - Math.sin(th) * p[1], Math.sin(th) * p[0] + Math.cos(th) * p[1]];
+          }).filter(inView).forEach(function (p) { svg.appendChild(dot(p, 7, { class: 'ring' })); });
+        }
+        if (mode === 'compare' && !isHeld && cmp.kind !== 'yParallel') {
+          var rings = points(cmp.y, R);
+          if (rings === null) fine = true;
+          else rings.forEach(function (p) { svg.appendChild(dot(p, 7, { class: 'ring' })); });
+          svg.appendChild(arrow(cmp.y[0], { class: 'vec2' }));
+          svg.appendChild(arrow(cmp.y[1], { class: 'vec2' }));
+        }
+        var sv = latticeShortest(b);
+        svg.appendChild(arrow(b[0], { class: 'vec1' }));
+        svg.appendChild(arrow(b[1], { class: 'vec1' }));
+        if (mode === 'turn' && !isHeld) {
+          var tt = latticeTurn(b, state.n);
+          svg.appendChild(arrow(sv, { class: 'vecs' }));
+          if (Math.abs(tt.t) > LAT_EPS) svg.appendChild(arrow([tt.t * sv[0], tt.t * sv[1]], { class: 'vect' }));
+        }
+        msg = readout(cmp, isHeld, sv);
+        // A held pairing stays out of the accessible name too.
+        if (!isHeld) name += mode === 'compare' ? ', with rings on the lattice of ' + vec(cmp.y[0]) + ', ' + vec(cmp.y[1])
+          : mode === 'turn' ? ', and rings on the lattice turned by ' + num(360 / state.n) + ' degrees' : '';
+      }
+      if (fine) msg += ' <span class="muted">(The lattice is too fine to draw every point.)</span>';
+      if (dragOn) [0, 1].forEach(function (i) {
+        svg.appendChild(dragHandle(i, b[i], plane, 'End of basis vector ' + (i + 1) + ', at ' + vec(b[i]) + '. Drag it, or use the arrow keys.'));
+      });
+      svg.setAttribute('aria-label', name);
+      out.innerHTML = msg;
+    }
+
+    function readout(cmp, isHeld, sv) {
+      var b = state.b, area = Math.abs(cross2(b[0], b[1]));
+      if (isHeld) return AVOID_NOTE;
+      if (mode === 'plain') return 'Basis ' + vec(b[0]) + ' and ' + vec(b[1]) + '. Cell area ' + num(area) + '. Shortest nonzero vector: length ' + num(Math.hypot(sv[0], sv[1])) + '.';
+      if (mode === 'compare') {
+        var d = cmp.det, head = 'Cell area of the first basis: ' + num(cmp.areas[0]) + '. Of the second: ' + num(cmp.areas[1]) + '.<br>';
+        if (cmp.kind === 'yParallel') return head + 'The new vectors are parallel (det U = 0), so they are not a basis.';
+        if (cmp.kind === 'fraction') return head + 'U has a fraction in it, so a new vector is not a lattice point and the two lattices differ.';
+        if (cmp.kind === 'same') return head + '<strong>Same lattice.</strong> Every ring is on a dot and every dot has a ring: U has whole-number entries and det U = ' + num(d) +
+          ', so U⁻¹ also has whole-number entries, and each basis lies in the other’s lattice.';
+        return head + '<strong>Different lattice.</strong> Every ring is on a dot, but det U = ' + num(d) + ' means the second lattice holds only 1 of every ' +
+          num(Math.abs(d)) + ' points, so many dots have no ring.';
+      }
+      var n = state.n, tt = latticeTurn(b, n), L = Math.hypot(sv[0], sv[1]), ang = num(360 / n);
+      var head2 = 'Turn of order ' + n + ' (by ' + ang + '°). In lattice coordinates the turned basis vectors are ' + vec(tt.coords[0]) + ' and ' + vec(tt.coords[1]) + '.';
+      var verdict = tt.keeps ? '<strong>This turn keeps the lattice.</strong> The rings sit on the dots.'
+        : '<strong>This turn does not keep the lattice.</strong> Those coordinates are not whole numbers.';
+      var arg;
+      if (Math.abs(tt.t) < LAT_EPS) arg = 'Here 2cos θ = 0, so Rv + R⁻¹v = 0 and the shortest-vector argument says nothing.';
+      else if (Math.abs(tt.t) < 1 - LAT_EPS) arg = 'Shortest-vector check: the shortest nonzero vector has length ' + num(L) + '. Then Rv + R⁻¹v = (2cos θ)v = ' + num(tt.t) +
+        'v, of length ' + num(Math.abs(tt.t) * L) + '. If the turn kept the lattice, that would be a shorter nonzero lattice vector, which is impossible. So no lattice keeps this turn.';
+      else arg = 'Shortest-vector check: 2cos θ = ' + num(tt.t) + ', so (2cos θ)v has length at least ' + num(L) + '. No contradiction.';
+      return head2 + '<br>' + verdict + '<br>' + arg;
+    }
+
+    function changed() {
+      gate.reveal();
+      draw();
+      if (opts.onChange) opts.onChange(state);
+    }
+    if (dragOn) dragPoints(svg, {
+      plane: plane, snap: snap, limit: lim,
+      get: function (id) { return state.b[Number(id)]; },
+      set: function (id, pt) {
+        state.b[Number(id)] = pt;
+        if (presetSel) presetSel.value = 'own';
+        syncBoxes();
+        changed();
+      }
+    });
+    draw();
+    return {
+      state: state,
+      update: draw,
+      reveal: gate.reveal,
+      set: function (o) {
+        if (o.basis) state.b = clone(o.basis);
+        if (o.U) state.U = o.U.slice();
+        if (o.turn) state.n = o.turn;
+        // The menus describe what the page chose; after a set() they follow the state instead.
+        if (o.basis && presetSel) presetSel.value = 'own';
+        if (o.U && uSel) uSel.value = 'own';
+        if (o.turn && tSel) tSel.value = String(Math.max(0, opts.turnMenu.indexOf(state.n)));
+        syncBoxes();
+        draw();
+      }
+    };
   }
 
   /* ================================================================== *
@@ -1531,10 +2114,14 @@
     fromTable: fromTable, checkAxioms: checkAxioms, isHomomorphism: isHomomorphism, kernel: kernel, image: image,
     ringZn: ringZn,
     // display helpers
-    sup: sup, sub: subs, setList: setList, PALETTE: PALETTE, TINTS: TINTS,
+    sup: sup, sub: subs, setList: setList, PALETTE: PALETTE, TINTS: TINTS, predictGate: predictGate,
     // widgets
     cayley: cayley, polygon: polygon, perm: perm, clock: clock, lattice: lattice, cosets: cosets,
-    quotient: quotient, hom: hom, ring: ring, euclid: euclid,
+    quotient: quotient, hom: hom, ring: ring, euclid: euclid, powmod: powmod, lattice2d: lattice2d,
+    // drag helper, plane lattices, powers mod n (pure functions)
+    dragPoints: dragPoints, dragHandle: dragHandle, snapPoint: snapPoint,
+    latticeCoords: latticeCoords, latticeHas: latticeHas, latticeSame: latticeSame, latticeShortest: latticeShortest,
+    latticeSecond: latticeSecond, latticeCompare: latticeCompare, latticeTurn: latticeTurn, powmodSteps: powmodSteps,
     h: h, svg: s, typeset: typeset
   };
 

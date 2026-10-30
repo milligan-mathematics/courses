@@ -85,7 +85,7 @@ reading: "Chapter 10, Day 2: the rest of Section 10.1, from the proof that G/N i
 
   <p>Take \(G = \mathbb Z_2 \times \mathbb Z_4\), with elements written \((a, b)\) and added coordinate by coordinate. Let \(N = \langle (0,2)\rangle = \{(0,0), (0,2)\}\). Before you look at the table, list the cosets of \(N\) yourself.</p>
 
-  <p>Predict first: how many elements does \(G/N\) have, what is its identity, what is the order of \((0,1)N\), and what is \((0,1)N + (1,0)N\)? Then click elements of the table to check their orders and inverses. The headers are the cosets, so the table shows the group \(G/N\) directly.</p>
+  <p>Predict first: how many elements does \(G/N\) have, what is its identity, what is the order of \((0,1) + N\), and what is \(((0,1) + N) + ((1,0) + N)\)? Then click elements of the table to check their orders and inverses. The headers are the cosets, so the table shows the group \(G/N\) directly.</p>
 
   <div id="d19-quotient-table"></div>
 
@@ -134,7 +134,7 @@ reading: "Chapter 10, Day 2: the rest of Section 10.1, from the proof that G/N i
     <div class="mc-fb" data-key="a"><p>Not quite. Each element of \(G/N\) is a whole coset, a set of \(|N|\) elements of \(G\). Two different elements of \(G\) can name the same element of \(G/N\).</p></div>
     <div class="mc-fb" data-key="b"><p>Only the identity coset \(N\) is a subgroup. A coset \(gN\) with \(g \notin N\) doesn't contain \(e\), so it can't be one.</p></div>
     <div class="mc-fb" data-key="c"><p>No. The labels \(N\) and \(gN\) are sets, not numbers. The number of cosets is \([G:N]\), not \(|N|\).</p></div>
-    <div class="mc-fb" data-key="d"><p>Right. Judson stresses this: the elements of a factor group are sets of elements of the original group. Here \((0,1)N = \{(0,1), (0,3)\}\).</p></div>
+    <div class="mc-fb" data-key="d"><p>Right. Judson stresses this: the elements of a factor group are sets of elements of the original group. Here \((0,1) + N = \{(0,1), (0,3)\}\).</p></div>
   </div>
 </div>
 
@@ -160,27 +160,27 @@ reading: "Chapter 10, Day 2: the rest of Section 10.1, from the proof that G/N i
   <h2>Same coset, different name</h2>
 
   <div class="mc" data-answer="c">
-    <p class="mc-q">In \(\mathbb Z_2 \times \mathbb Z_4\) modulo \(N = \langle (0,2)\rangle\), which element names the same coset as \((1,1)N\)?</p>
+    <p class="mc-q">In \(\mathbb Z_2 \times \mathbb Z_4\) modulo \(N = \langle (0,2)\rangle\), which element names the same coset as \((1,1) + N\)?</p>
     <button class="mc-opt" data-key="a">\((1,2)\)</button>
     <button class="mc-opt" data-key="b">\((0,1)\)</button>
     <button class="mc-opt" data-key="c">\((1,3)\)</button>
     <button class="mc-opt" data-key="d">\((0,0)\)</button>
-    <div class="mc-fb" data-key="a"><p>\((1,2) - (1,1) = (0,1)\), which is not in \(N\). So \((1,2)N\) is a different coset.</p></div>
+    <div class="mc-fb" data-key="a"><p>\((1,2) - (1,1) = (0,1)\), which is not in \(N\). So \((1,2) + N\) is a different coset.</p></div>
     <div class="mc-fb" data-key="b"><p>\((0,1) - (1,1) = (1,0)\), which is not in \(N\). Two elements name the same coset only when their difference lies in \(N\).</p></div>
-    <div class="mc-fb" data-key="c"><p>Right. \((1,3) - (1,1) = (0,2)\), which is in \(N\). So \((1,3)N = (1,1)N\).</p></div>
-    <div class="mc-fb" data-key="d"><p>\((0,0)N\) is the identity coset \(N\) itself, not \((1,1)N\).</p></div>
+    <div class="mc-fb" data-key="c"><p>Right. \((1,3) - (1,1) = (0,2)\), which is in \(N\). So \((1,3) + N = (1,1) + N\).</p></div>
+    <div class="mc-fb" data-key="d"><p>\((0,0) + N\) is the identity coset \(N\) itself, not \((1,1) + N\).</p></div>
   </div>
 
   <div class="mc" data-answer="b">
-    <p class="mc-q">Since \((1,2)N = (1,0)N\), you may compute \((1,2)N + (0,1)N\) with either name. Which coset is the answer?</p>
+    <p class="mc-q">Since \((1,2) + N = (1,0) + N\), you may compute \(((1,2) + N) + ((0,1) + N)\) with either name. Which coset is the answer?</p>
     <button class="mc-opt" data-key="a">\(N\)</button>
-    <button class="mc-opt" data-key="b">\((1,1)N\)</button>
-    <button class="mc-opt" data-key="c">\((1,0)N\)</button>
-    <button class="mc-opt" data-key="d">\((0,1)N\)</button>
+    <button class="mc-opt" data-key="b">\((1,1) + N\)</button>
+    <button class="mc-opt" data-key="c">\((1,0) + N\)</button>
+    <button class="mc-opt" data-key="d">\((0,1) + N\)</button>
     <div class="mc-fb" data-key="a"><p>\(N\) is the identity coset. But \((1,2) + (0,1) = (1,3)\), which is not in \(N\), so the sum isn't \(N\).</p></div>
-    <div class="mc-fb" data-key="b"><p>Right. \((1,2) + (0,1) = (1,3)\), and \((1,3)N = (1,1)N\). Using the other name, \((1,0) + (0,1) = (1,1)\) gives the same coset.</p></div>
-    <div class="mc-fb" data-key="c"><p>That is \((1,2)N\) itself. Adding \((0,1)\) moves to a different coset, because \((0,1)\) is not in \(N\).</p></div>
-    <div class="mc-fb" data-key="d"><p>The first coordinate of \((1,2) + (0,1)\) is \(1\), and every element of \((0,1)N\) has first coordinate \(0\). So the answer can't be \((0,1)N\).</p></div>
+    <div class="mc-fb" data-key="b"><p>Right. \((1,2) + (0,1) = (1,3)\), and \((1,3) + N = (1,1) + N\). Using the other name, \((1,0) + (0,1) = (1,1)\) gives the same coset.</p></div>
+    <div class="mc-fb" data-key="c"><p>That is \((1,2) + N\) itself. Adding \((0,1)\) moves to a different coset, because \((0,1)\) is not in \(N\).</p></div>
+    <div class="mc-fb" data-key="d"><p>The first coordinate of \((1,2) + (0,1)\) is \(1\), and every element of \((0,1) + N\) has first coordinate \(0\). So the answer can't be \((0,1) + N\).</p></div>
   </div>
 </div>
 
