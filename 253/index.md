@@ -4,6 +4,10 @@ title: "MATH 253: Fundamental Concepts II"
 parent: Home
 nav_order: 253
 activities:
+  - title: "Praxis 5003 Diagnostic"
+    url: "praxis-5003-diagnostic.html"
+    type: "Praxis Prep"
+    description: "Practice for the Praxis Elementary Education: Mathematics (5003) subtest. Take a quick, half or full-length check and get a study plan ranked by how many test points are at stake, or practice the topics that go with the chapter we just finished. Your results stay in your own browser."
   - title: "Number Necklaces"
     url: "number-necklaces.html"
     type: "Ch. 8 Pattern Task"
