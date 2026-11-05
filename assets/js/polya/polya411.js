@@ -403,7 +403,52 @@
     var KEY = 'polya411:' + P.slug, S = load();
     var root = el('div', 'pl pl411');
     host.appendChild(root);
+    var card = host.closest('.act'), fsb = null;
+    if (card) setupFull();
     render();
+
+    // ---------- full screen (5 Nov 2026) ----------
+    // The card fills the screen. polya411.css stacks it on a phone and splits it into two panes on a wide screen:
+    // the problem on the left (.pl-side, everything in the card but the walk-through), the walk-through on the right.
+    function setupFull() {
+      var side = el('div', 'pl-side');
+      Array.prototype.slice.call(card.children).forEach(function (c) { if (c !== host) side.appendChild(c); });
+      card.insertBefore(side, host);
+      host.classList.add('pl-main');
+      fsb = button('pl-fs-btn', '', function () { if (isFull()) exitFull(); else enterFull(); });
+      card.insertBefore(fsb, side);
+      fsLabel();
+      document.addEventListener('fullscreenchange', function () { if (!document.fullscreenElement && isFull()) exitFull(true); });
+      card.addEventListener('keydown', function (e) { if (e.key === 'Escape' && isFull()) exitFull(); });
+    }
+    function isFull() { return !!card && card.classList.contains('pl-fs'); }
+    function fsLabel() {
+      var full = isFull();
+      fsb.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8">'
+        + (full ? '<path d="M6 1v5H1M10 1v5h5M6 15v-5H1M10 15v-5h5"/>' : '<path d="M1 6V1h5M15 6V1h-5M1 10v5h5M15 10v5h-5"/>')
+        + '</svg><span>' + (full ? 'Exit full screen' : 'Full screen') + '</span>';
+      fsb.setAttribute('aria-pressed', full ? 'true' : 'false');
+    }
+    function enterFull() {
+      card.classList.add('pl-fs');
+      document.documentElement.classList.add('pl-fs-open');
+      // the browser's own full screen hides its toolbars too; where it isn't offered (iPhone), the overlay alone does
+      if (card.requestFullscreen) card.requestFullscreen().catch(function () {});
+      fsLabel();
+      fsb.focus({ preventScroll: true });
+    }
+    function exitFull(fromBrowser) {
+      card.classList.remove('pl-fs');
+      document.documentElement.classList.remove('pl-fs-open');
+      if (!fromBrowser && document.fullscreenElement === card) document.exitFullscreen().catch(function () {});
+      fsLabel();
+      var navbar = document.querySelector('.navbar');
+      window.scrollBy(0, card.getBoundingClientRect().top - (navbar ? navbar.offsetHeight : 0) - 8);
+    }
+    function scrollBox() {  // what scrolls the walk-through: the page (null), the full-screen card, or its right pane
+      if (!isFull()) return null;
+      return getComputedStyle(host).overflowY === 'auto' ? host : card;
+    }
 
     function load() {
       var s = { mode: 'idle', step: 0, cold: 0 };
@@ -474,7 +519,7 @@
 
       function setBar(phase) { var nb = progress(phase); bar.replaceWith(nb); bar = nb; }
       function slide(i, user) {  // user: reached by a click
-        var y = window.scrollY, h = col.offsetHeight;
+        var sb = scrollBox(), y = sb ? sb.scrollTop : window.scrollY, h = col.offsetHeight;
         col.style.minHeight = '';
         if (window.MathJax && MathJax.typesetClear) MathJax.typesetClear([col]);
         col.innerHTML = '';
@@ -486,13 +531,18 @@
         if (user) {
           // near the bottom of the page a shorter step shortens the page and the browser yanks the view down to the
           // new end; then keep the old height (blank below the step) and put the view back
-          if (window.scrollY < y - 1) { col.style.minHeight = h + 'px'; window.scrollTo(0, y); }
+          if ((sb ? sb.scrollTop : window.scrollY) < y - 1) {
+            col.style.minHeight = h + 'px';
+            if (sb) sb.scrollTop = y; else window.scrollTo(0, y);
+          }
           col.focus({ preventScroll: true });
-          // the walk-through's top stays where it was; only if it has scrolled off the top, bring it back (no animation)
-          var navbar = document.querySelector('.navbar');
-          var off = Math.max(0, navbar ? navbar.getBoundingClientRect().bottom : 0) + 8;
+          // the walk-through's top stays where it was; only if it has scrolled off the top, bring it back (no animation).
+          // Off the top means under the site's sticky navbar, or under the full-screen card's top bar (52px).
+          var navbar = document.querySelector('.navbar'), off;
+          if (sb) off = sb.getBoundingClientRect().top + (sb === card ? 60 : 8);
+          else off = Math.max(0, navbar ? navbar.getBoundingClientRect().bottom : 0) + 8;
           var top = root.getBoundingClientRect().top;
-          if (top < off) window.scrollBy(0, top - off);
+          if (top < off) { if (sb) sb.scrollTop += top - off; else window.scrollBy(0, top - off); }
         }
       }
       function nav(i) {

@@ -53,3 +53,35 @@
 .pl411 .pl-column:focus { outline: none; }
 .pl411 .pl-column > .pl-phase-head { margin-top: 8px; }
 .pl411 .pl-column > .pl-end { border-top: 2px solid var(--pl-line); margin-top: 8px; }
+
+/* ---- full screen (5 November 2026) ----
+   polya411.js wraps everything in the card except the walk-through in .pl-side and adds the Full screen button.
+   Full screen: one column on a phone; from 900px wide, the problem on the left and the walk-through on the right,
+   each scrolling on its own. */
+.act.polya { position: relative; }
+.act.polya .act-type { padding-right: 140px; }
+.act .pl-side > p.polya-goal:last-child { margin-bottom: 0.85rem; }
+.pl-fs-btn { position: absolute; top: 14px; right: 16px; display: inline-flex; align-items: center; gap: 6px;
+  font: inherit; font-size: 0.85rem; color: #555; background: #fff; border: 1.5px solid #DDD; border-radius: 6px;
+  padding: 4px 10px; cursor: pointer; }
+.pl-fs-btn:hover { border-color: #7A5195; color: #7A5195; }
+.pl-fs-btn svg { width: 14px; height: 14px; flex: none; }
+html.pl-fs-open, html.pl-fs-open body { overflow: hidden; }
+.act.polya.pl-fs { position: fixed; inset: 0; z-index: 2000; margin: 0; border: 0; border-radius: 0; box-shadow: none;
+  background: #fff; overflow-y: auto; padding: 64px 18px 40px; }
+.act.polya.pl-fs::before { content: ""; position: fixed; top: 0; left: 0; right: 0; height: 52px; z-index: 1;
+  background: #fff; border-bottom: 1px solid #E5E5EA; box-shadow: inset 5px 0 0 #7A5195; }
+.act.polya.pl-fs .pl-fs-btn { position: fixed; top: 10px; right: 16px; z-index: 2; }
+.act.polya.pl-fs .act-type { position: fixed; top: 0; left: 20px; z-index: 2; height: 52px; line-height: 52px; margin: 0;
+  padding: 0; max-width: calc(100% - 200px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.act.polya.pl-fs > .pl-side, .act.polya.pl-fs > .pl-main { max-width: 780px; margin: 0 auto; }
+@media (min-width: 900px) {
+  .act.polya.pl-fs { display: grid; grid-template-columns: minmax(300px, 5fr) minmax(0, 7fr); grid-template-rows: minmax(0, 1fr);
+    column-gap: 40px; overflow: hidden; padding: 52px max(32px, calc((100vw - 1560px) / 2)) 0; }
+  .act.polya.pl-fs > .pl-side, .act.polya.pl-fs > .pl-main { max-width: none; margin: 0; overflow-y: auto; padding: 22px 8px 32px 0; }
+  .act.polya.pl-fs > .pl-side { padding-right: 24px; border-right: 1px solid #E5E5EA; }
+}
+@media (max-width: 520px) {
+  .act.polya .act-type { padding-right: 0; margin-top: 30px; }
+  .pl-fs-btn { top: 10px; right: 10px; }
+}
