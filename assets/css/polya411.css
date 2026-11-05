@@ -44,3 +44,12 @@
 .act.polya mjx-container[display="true"] { display: block; max-width: 100%; overflow-x: auto; overflow-y: hidden; padding-bottom: 2px; }
 .act.polya .polya-statement { overflow-x: auto; }
 .act.polya mjx-container:not([display="true"]) { max-width: 100%; overflow-x: auto; overflow-y: hidden; vertical-align: middle; }
+
+/* one step at a time, like slides (5 November 2026): a small Back / Forward row above the step on view */
+.pl411 .pl-nav { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; margin: 6px 0 0; font-size: 0.9rem; }
+.pl411 .pl-nav .pl-link { margin-top: 0; }
+.pl411 .pl-nav .pl-back:disabled { visibility: hidden; }
+.pl411 .pl-count { color: var(--pl-muted); }
+.pl411 .pl-column:focus { outline: none; }
+.pl411 .pl-column > .pl-phase-head { margin-top: 8px; }
+.pl411 .pl-column > .pl-end { border-top: 2px solid var(--pl-line); margin-top: 8px; }

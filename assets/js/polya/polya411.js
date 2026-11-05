@@ -461,66 +461,88 @@
       return bar;
     }
 
+    // One step at a time, like slides (5 Nov 2026): Next swaps the step in place instead of stacking it under the
+    // finished ones, so the page doesn't keep growing and jumping. Back and Forward revisit finished steps read-only.
+    // S.step is still the furthest step reached, and the only thing saved; the slide on view is not.
     function renderWalk() {
-      var cur = P.steps[Math.min(S.step, P.steps.length - 1)];
-      var bar = topBar(S.step >= P.steps.length ? 'Look back' : cur.phase);
+      var n = P.steps.length;
+      var bar = topBar(S.step >= n ? 'Look back' : P.steps[S.step].phase);
       var col = el('div', 'pl-column');
+      col.setAttribute('tabindex', '-1');  // focus lands here on a slide change (the button clicked is gone)
       root.appendChild(col);
-      if (S.step > 0) {  // finished steps from an earlier visit (or skipped by a cold try), folded away
-        var det = el('details', 'pl-earlier');
-        det.appendChild(el('summary', null, S.step === 1 ? 'The step you finished' : 'The ' + S.step + ' steps you finished (or skipped)'));
-        var prev = null;
-        P.steps.slice(0, S.step).forEach(function (q) {
-          if (q.phase !== prev) det.appendChild(phaseHead(q.phase));
-          prev = q.phase;
-          det.appendChild(doneView(q));
-        });
-        col.appendChild(det);
-      }
-      var last = S.step > 0 ? P.steps[S.step - 1].phase : null;
-      live(S.step, last, false);
+      slide(S.step, false);
 
-      function live(i, prevPhase, user) {  // user: reached by a click, so bring the new step into view
-        if (i >= P.steps.length) return end();
-        var q = P.steps[i];
-        if (q.phase !== prevPhase) {
-          col.appendChild(phaseHead(q.phase));
-          var nb = progress(q.phase); bar.replaceWith(nb); bar = nb;
+      function setBar(phase) { var nb = progress(phase); bar.replaceWith(nb); bar = nb; }
+      function slide(i, user) {  // user: reached by a click
+        var y = window.scrollY, h = col.offsetHeight;
+        col.style.minHeight = '';
+        if (window.MathJax && MathJax.typesetClear) MathJax.typesetClear([col]);
+        col.innerHTML = '';
+        col.appendChild(nav(i));
+        if (i >= n) end();
+        else if (i < S.step) review(i);
+        else live(i);
+        typeset(col);
+        if (user) {
+          // near the bottom of the page a shorter step shortens the page and the browser yanks the view down to the
+          // new end; then keep the old height (blank below the step) and put the view back
+          if (window.scrollY < y - 1) { col.style.minHeight = h + 'px'; window.scrollTo(0, y); }
+          col.focus({ preventScroll: true });
+          // the walk-through's top stays where it was; only if it has scrolled off the top, bring it back (no animation)
+          var navbar = document.querySelector('.navbar');
+          var off = Math.max(0, navbar ? navbar.getBoundingClientRect().bottom : 0) + 8;
+          var top = root.getBoundingClientRect().top;
+          if (top < off) window.scrollBy(0, top - off);
         }
+      }
+      function nav(i) {
+        var row = el('div', 'pl-nav');
+        row.appendChild(el('span', 'pl-count', i >= n ? 'All ' + n + ' steps done' : 'Step ' + (i + 1) + ' of ' + n));
+        var back = button('pl-link pl-back', '&larr; Back', function () { slide(i - 1, true); });
+        back.disabled = i === 0;
+        row.appendChild(back);
+        if (i < S.step) {
+          row.appendChild(button('pl-link pl-fwd', 'Forward &rarr;', function () { slide(i + 1, true); }));
+          if (i + 1 < S.step) {
+            row.appendChild(button('pl-link pl-resume', S.step >= n ? 'Jump to the end' : 'Jump to step ' + (S.step + 1),
+              function () { slide(S.step, true); }));
+          }
+        }
+        return row;
+      }
+      function review(i) {  // a finished (or skipped) step, read-only
+        var q = P.steps[i];
+        setBar(q.phase);
+        col.appendChild(phaseHead(q.phase));
+        col.appendChild(doneView(q));
+      }
+      function live(i) {
+        var q = P.steps[i];
+        var advance = function () { S.step = i + 1; save(); slide(i + 1, true); };
+        setBar(q.phase);
+        col.appendChild(phaseHead(q.phase));
         var box = el('div', 'pl-step');
         col.appendChild(box);
-        var next = function () {
-          var b = button('pl-next', 'Next &rarr;', function () {
-            b.remove(); box.classList.add('pl-step-finished');
-            S.step = i + 1; save();
-            live(i + 1, q.phase, true);
-          });
-          box.appendChild(b);
-          b.focus({ preventScroll: true });
-        };
         if (q.type === 'text') {
           box.appendChild(el('div', 'pl-checkpoint', q.text));
-          var go = button('pl-next', q.cta || 'Got it', function () {
-            go.remove(); box.classList.add('pl-step-finished'); S.step = i + 1; save(); live(i + 1, q.phase, true);
-          });
-          box.appendChild(go);
+          box.appendChild(button('pl-next', q.cta || 'Got it', advance));
         } else {
           box.appendChild(K.questionHTML(q.text));
-          RENDER[q.type](q, box, { done: next });
-        }
-        typeset(box);
-        if (user && box.getBoundingClientRect().top > window.innerHeight * 0.6) {
-          box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          RENDER[q.type](q, box, { done: function () {
+            var b = button('pl-next', 'Next &rarr;', advance);
+            box.appendChild(b);
+            b.focus({ preventScroll: true });
+          } });
         }
       }
       function end() {
+        setBar('Look back');
         var card = el('div', 'pl-step pl-end');
         card.appendChild(el('h3', 'pl-sub', 'Nice work.'));
         card.appendChild(el('p', null, '<strong>You can now:</strong> ' + P.goal.replace(/^./, function (c) { return c.toLowerCase(); })));
         if (P.discuss) card.appendChild(el('div', 'pl-discuss', '<strong>Bring to class.</strong> ' + P.discuss));
         card.appendChild(button('pl-link', 'Work through it again', function () { set('walk', 0); }));
         col.appendChild(card);
-        typeset(card);
       }
     }
 
