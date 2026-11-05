@@ -1,0 +1,249 @@
+---
+layout: section
+title: "MATH 303 §15.1: Vector Fields (preview)"
+course_title: "MATH 303: Multivariable Calculus"
+course_url: "/303/"
+hide_from_home: true
+sitemap: false
+activities:
+  - title: "Field Flow"
+    url: "../15-1-demo.html"
+    type: "Interactive Demo"
+    description: "The full-screen version: more fields, a probe, and particles that flow along the arrows."
+---
+<style>
+  .p15 h3 { margin-top: 2.2rem; }
+  .p15 .lead { font-size: 1.08rem; }
+  .p15 .goals { background: #f8f9fa; border-radius: 8px; padding: .8rem 1.2rem .6rem; margin: 1rem 0 1.5rem; }
+  .p15 .goals ol { margin: .3rem 0 .3rem 1.2rem; }
+  .p15 .scene, .p15 .lab { background: #fff; border: 1px solid #e9ecef; border-radius: 10px; padding: 1rem; margin: 1.2rem 0; box-shadow: 0 2px 4px rgba(0,0,0,.05); }
+  .p15 .scene canvas { display: block; width: 100%; border-radius: 6px; touch-action: none; cursor: crosshair; }
+  .p15 .scene-cap { font-size: .9rem; color: #666; margin: .5rem 0 .3rem; }
+  .p15 .river-status { font-size: .88rem; color: #333; min-height: 1.3em; margin-top: .4rem; font-variant-numeric: tabular-nums; }
+  .p15 .btn-s { font: inherit; font-size: .88rem; padding: .4rem .75rem; margin: .2rem .25rem .2rem 0; border-radius: 6px; border: 1px solid #CD5920; background: #F36E24; color: #fff; cursor: pointer; }
+  .p15 .btn-s.ghost { background: #fff; color: #CD5920; }
+  .p15 .btn-s:focus-visible, .p15 .pc button:focus-visible { outline: 3px solid #009CDE; outline-offset: 2px; }
+  .p15 .pc { border-left: 4px solid #009CDE; background: #f4fafd; border-radius: 0 8px 8px 0; padding: .8rem 1rem; margin: 1.2rem 0; }
+  .p15 .pc .tag { font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: #007bb0; font-weight: bold; }
+  .p15 .pc p { margin: .3rem 0 .5rem; }
+  .p15 .pc .opts button, .p15 .sort-row button { font: inherit; font-size: .92rem; padding: .35rem .7rem; margin: .2rem .3rem .2rem 0; border-radius: 6px; border: 1px solid #b9d9ea; background: #fff; cursor: pointer; color: #333; }
+  .p15 .picked-ok { border-color: #008552 !important; background: #e6f4ec !important; }
+  .p15 .picked-no { border-color: #b3261e !important; background: #fbeaea !important; }
+  .p15 .pc-fb { margin-top: .4rem; font-size: .95rem; }
+  .p15 .pc-fb.ok { color: #0b5d3a; } .p15 .pc-fb.bad { color: #8a1c15; }
+  .p15 .pc input[data-check] { width: 6.5rem; font: inherit; padding: .25rem .4rem; border: 1px solid #b9d9ea; border-radius: 5px; }
+  .p15 .pc input.yes { border-color: #008552; background: #e6f4ec; } .p15 .pc input.no { border-color: #b3261e; background: #fbeaea; }
+  .p15 .lab-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+  @media (max-width: 760px) { .p15 .lab-grid { grid-template-columns: minmax(0, 1fr); } }
+  .p15 .lab-cv { display: block; width: 100%; border: 1px solid #ddd; border-radius: 6px; touch-action: none; cursor: crosshair; }
+  .p15 .lab-hint { font-size: .82rem; color: #666; margin-top: .3rem; }
+  .p15 .lab-lbl { display: block; font-size: .88rem; color: #555; margin-bottom: .5rem; }
+  .p15 .lab-lbl select, .p15 .lab-lbl input { display: block; width: 100%; margin-top: .2rem; padding: .35rem; font: inherit; font-size: .9rem; border: 1px solid #ccc; border-radius: 5px; background: #fff; box-sizing: border-box; }
+  .p15 .lab-err { color: #8a1c15; font-size: .85rem; }
+  .p15 .lab-tab { margin: .4rem 0 .6rem !important; font-size: .88rem; font-variant-numeric: tabular-nums; }
+  .p15 .lab-tab th, .p15 .lab-tab td { padding: 4px 8px !important; }
+  .p15 .lab-tab .ok { color: #0b5d3a; font-weight: bold; } .p15 .lab-tab .bad { color: #8a1c15; font-weight: bold; }
+  .p15 .lab-chk { font-size: .88rem; display: block; margin-top: .3rem; }
+  .p15 .sort-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: .1rem; padding: .45rem 0; border-top: 1px solid #dcebf3; }
+  .p15 .sort-why { font-size: .9rem; color: #333; }
+  .p15 details.worked, .p15 .reveal-box { background: #fafafa; border: 1px solid #eee; border-radius: 8px; padding: .5rem 1rem; margin: .8rem 0; }
+  .p15 details.worked summary { cursor: pointer; font-weight: bold; color: #CD5920; }
+  .p15 button.reveal { font: inherit; font-size: .85rem; padding: .2rem .6rem; border-radius: 5px; border: 1px solid #ccc; background: #fff; cursor: pointer; margin-left: .3rem; }
+  .p15 .big-idea { border: 2px solid #F36E24; border-radius: 10px; padding: .6rem 1rem; margin: 1.2rem 0; background: #fff8f3; }
+  .p15 .practice li { margin-bottom: .9rem; }
+</style>
+
+<div class="p15">
+
+<h1>§15.1: Vector Fields</h1>
+
+<p class="lead">Until now a function of several variables handed you a <em>number</em> at each point: a temperature, a height, a density. Plenty of things in engineering are not numbers. Water in a channel has a speed <em>and</em> a direction at every point. Start there.</p>
+
+<div class="scene river">
+  <canvas role="img" aria-label="A straight river channel two meters wide flowing left to right, with a bridge downstream. Tap the water to drop a boat."></canvas>
+  <div class="scene-cap">A straight channel 2 m wide, banks at \(y=\pm1\). The water's velocity at height \(y\) is \(\mathbf{v}(x,y)=\langle 1-y^2,\ 0\rangle\) m/s: fastest in the middle, still at the banks. Tap the water to drop a boat.</div>
+  <button type="button" class="btn-s" data-act="race">Race: boat A at y = 0, boat B at y = 0.8</button>
+  <button type="button" class="btn-s ghost" data-act="mode">Show speed only (scalar field)</button>
+  <div class="river-status" aria-live="polite"></div>
+</div>
+
+<div class="pc" data-kind="choice" data-answer="c" data-more="Press Race to watch it happen: A arrives at 8 s, B at about 22 s.">
+  <div class="tag">Predict, then check</div>
+  <p>Both boats start 8 m above the bridge. Boat A rides the middle (\(y=0\)); boat B starts near the bank at \(y=0.8\). How many times as long does B take?</p>
+  <div class="opts">
+    <button type="button" data-choice="a" data-fb="0.8 is not far from the middle, but speed depends on \(1-y^2\), not on \(y\). B's speed is \(1-0.64=0.36\) m/s.">About 1.25 times</button>
+    <button type="button" data-choice="b" data-fb="That would be true if speed were \(1-y\). Here it is \(1-y^2\): B moves at \(1-0.64=0.36\) m/s.">About 5 times</button>
+    <button type="button" data-choice="c" data-fb="B moves at \(1-0.8^2=0.36\) m/s, so it takes \(8/0.36\approx 22.2\) s against A's 8 s: \(1/0.36\approx 2.8\) times as long.">About 2.8 times</button>
+    <button type="button" data-choice="d" data-fb="The arrows near the bank are much shorter than in the middle. Toggle the speed view to see it.">The same time</button>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+</div>
+
+<p>The rule that hands you an arrow at every point is a <strong>vector field</strong>. The toggle above shows the difference that matters: <em>speed</em> \(\lVert\mathbf v\rVert\) is a scalar field (one number per point, drawn as shading), while <em>velocity</em> \(\mathbf v\) is a vector field (an arrow per point). Wind, gravity, electric force and fluid flow are all vector fields, and they are the setting for the rest of the course: next we add a field up along a curve (§15.2) and ask when the answer depends only on the endpoints (§15.3).</p>
+
+<div class="goals">
+  <strong>By the end of this section you should be able to:</strong>
+  <ol>
+    <li>Evaluate a vector field at a point and tell a vector field from a scalar field.</li>
+    <li>Describe a field from its formula (direction pattern, how the length changes) and sketch it.</li>
+    <li>Write the gradient field \(\nabla f\) of a scalar function, and say what <em>conservative</em> means.</li>
+    <li>Use the component test \(\partial P/\partial y = \partial Q/\partial x\) to rule out conservative fields.</li>
+  </ol>
+</div>
+
+<h3>Reading a vector field</h3>
+
+<p>A <strong>vector field</strong> in the plane assigns to each point \((x,y)\) of a region a vector</p>
+\[\mathbf{F}(x,y) = \langle P(x,y),\,Q(x,y)\rangle = P\,\mathbf{i} + Q\,\mathbf{j},\]
+<p>where \(P\) and \(Q\) are ordinary scalar functions. In space, \(\mathbf{F}=\langle P,Q,R\rangle\). To sketch one, pick a grid of points, compute \(\mathbf F\) at each, and draw the arrow with its <strong>tail at that point</strong>.</p>
+
+<div class="pc" data-kind="choice" data-answer="l">
+  <div class="tag">Quick check</div>
+  <p>Which way does \(\mathbf F(x,y)=\langle -y,\ x\rangle\) point at \((0,2)\)?</p>
+  <div class="opts">
+    <button type="button" data-choice="u" data-fb="Plug in: \(\mathbf F(0,2)=\langle -2,\ 0\rangle\). The \(\mathbf j\)-component is 0.">Up</button>
+    <button type="button" data-choice="d" data-fb="Plug in: \(\mathbf F(0,2)=\langle -2,\ 0\rangle\). The \(\mathbf j\)-component is 0.">Down</button>
+    <button type="button" data-choice="l" data-fb="\(\mathbf F(0,2)=\langle -2,0\rangle\): straight left, length 2.">Left</button>
+    <button type="button" data-choice="r" data-fb="Watch the sign: \(P=-y=-2\), so it points left.">Right</button>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+</div>
+
+<div class="pc" data-kind="typed" data-ok="\(\lVert\langle -2,1\rangle\rVert=\sqrt5\approx2.236\), the same as the point's distance from the origin." data-hint="\(\mathbf F(1,2)=\langle -2,\ 1\rangle\). Its length is \(\sqrt{(-2)^2+1^2}\).">
+  <div class="tag">Quick check</div>
+  <p>How long is the arrow of \(\langle -y,\ x\rangle\) at \((1,2)\)? <label>Length: <input data-check="sqrt(5)" aria-label="length of F at (1,2)" placeholder="e.g. sqrt(2)"></label>
+  <button type="button" class="btn-s" data-act="check">Check</button></p>
+  <div class="pc-fb" aria-live="polite"></div>
+</div>
+
+<p>That second answer was no accident. Drag the probe in the lab below and watch the length readout.</p>
+
+<div class="lab" id="lab1" data-presets="swirl,outflow,gravity,custom" data-start="swirl"></div>
+
+<div class="pc" data-kind="choice" data-answer="b">
+  <div class="tag">Predict, then check</div>
+  <p>In the swirl \(\langle -y,x\rangle\), put the probe somewhere and press <em>Release a particle</em>. Before you do: what will the particle do?</p>
+  <div class="opts">
+    <button type="button" data-choice="a" data-fb="Each arrow is perpendicular to the line back to the origin, so it never points inward.">Spiral in to the origin</button>
+    <button type="button" data-choice="b" data-fb="Every arrow is perpendicular to the position vector, \(\langle -y,x\rangle\cdot\langle x,y\rangle=0\), so the particle stays on its circle, going counterclockwise. Release one and see.">Go around a circle, counterclockwise</button>
+    <button type="button" data-choice="c" data-fb="The arrows have no outward part: \(\langle -y,x\rangle\cdot\langle x,y\rangle=0\).">Spiral out</button>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+</div>
+
+<details class="worked"><summary>Worked example: describe \(\mathbf F(x,y)=\langle -y,\ x\rangle\)</summary>
+<p>At \((1,0)\): \(\langle 0,1\rangle\), up. At \((0,1)\): \(\langle -1,0\rangle\), left. At \((-1,0)\): \(\langle 0,-1\rangle\), down. At \((0,-1)\): \(\langle 1,0\rangle\), right. The diagonals: \(\mathbf F(1,1)=\langle -1,1\rangle\), \(\mathbf F(-1,1)=\langle -1,-1\rangle\), \(\mathbf F(-1,-1)=\langle 1,-1\rangle\), \(\mathbf F(1,-1)=\langle 1,1\rangle\).</p>
+<p><strong>Length:</strong> \(\lVert\mathbf F\rVert=\sqrt{y^2+x^2}\), the distance from the origin, so arrows grow as you move out. <strong>Direction:</strong> \(\mathbf F\cdot\langle x,y\rangle=-yx+xy=0\), so every arrow is tangent to a circle about the origin. The pattern is a <strong>counterclockwise swirl</strong>.</p>
+</details>
+
+<details class="worked"><summary>Worked example: describe \(\mathbf F(x,y)=\dfrac{\langle x,y\rangle}{2\lVert\mathbf r\rVert}\), where \(\mathbf r=\langle x,y\rangle\)</summary>
+<p>Dividing by a positive number keeps the direction, so every arrow points straight away from the origin. The length is \(\dfrac{\lVert\mathbf r\rVert}{2\lVert\mathbf r\rVert}=\tfrac12\) at <em>every</em> point. At \((1,0)\) the arrow is \(\langle\tfrac12,0\rangle\); at \((1,1)\) it is \(\langle\tfrac1{2\sqrt2},\tfrac1{2\sqrt2}\rangle\). A steady outflow from the origin, where the field is not defined. (Choose <em>Steady outflow</em> in the lab: the length readout never changes.)</p>
+</details>
+
+<p>In space the idea is the same, only harder to draw. The constant field \(\mathbf F(x,y,z)=\langle 0,0,1\rangle\) is a unit arrow pointing in the \(+z\) direction at every point: a uniform upward push, like the lift on a level wing in still air.</p>
+
+<h3>Gravity and electric fields</h3>
+
+<p>Newton: masses \(M\) and \(m\) at distance \(r\) attract with force \(GMm/r^2\), directed toward each other. Put \(M\) at the origin and \(m\) at \(\mathbf r=\langle x,y,z\rangle\). The unit vector toward the origin is \(-\mathbf r/r\), so</p>
+\[\mathbf F(x,y,z)=-\frac{GMm}{r^2}\cdot\frac{\mathbf r}{r}=-\frac{GMm}{r^3}\,\mathbf r=-\frac{GMm}{(x^2+y^2+z^2)^{3/2}}\langle x,y,z\rangle.\]
+
+<div class="pc" data-kind="choice" data-answer="b" data-more="">
+  <div class="tag">Predict, then check</div>
+  <p>A satellite moves from distance \(r\) to distance \(2r\) from the planet's center. The pull on it becomes</p>
+  <div class="opts">
+    <button type="button" data-choice="a" data-fb="That would be an inverse (not inverse-square) law. The length is \(GMm/r^2\): doubling \(r\) divides it by \(2^2\).">half as strong</button>
+    <button type="button" data-choice="b" data-fb="\(GMm/(2r)^2=\tfrac14\cdot GMm/r^2\). The direction does not change: still straight at the center.">a quarter as strong</button>
+    <button type="button" data-choice="c" data-fb="The \(r^3\) in the formula is partly the unit vector: \(\mathbf r/r^3=(1/r^2)(\mathbf r/r)\), and \(\mathbf r/r\) has length 1.">an eighth as strong</button>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+  <p style="margin-top:.4rem">See it in the lab (a slice through the planet, with \(GMm=1\)):
+    <button type="button" class="btn-s ghost" data-showme data-lab="lab1" data-field="gravity" data-probe="1,0">probe at distance 1</button>
+    <button type="button" class="btn-s ghost" data-showme data-lab="lab1" data-field="gravity" data-probe="2,0">probe at distance 2</button></p>
+</div>
+
+<p>Coulomb's law has the same shape for a charge \(Q\) at the origin acting on a charge \(q\) (\(\varepsilon\) is the constant in your notes):</p>
+\[\mathbf F(x,y,z)=\frac{\varepsilon\,Qq}{r^3}\,\mathbf r.\]
+<p>The sign of \(Qq\) decides the direction: like charges (\(Qq>0\)) push the arrows outward, opposite charges pull them in. Both are <em>inverse-square</em> fields.</p>
+
+<h3>Gradient fields and conservative fields</h3>
+
+<p>Any scalar function \(f\) gives a vector field, its gradient \(\nabla f=\langle f_x,f_y\rangle\) (or \(\langle f_x,f_y,f_z\rangle\)). It points in the direction of steepest increase of \(f\), and its length is that rate of increase. Below, the green curves are level curves of \(f(x,y)=x^2+x\cos y\) and the arrows are \(\nabla f\). Release a cloud: every particle climbs.</p>
+
+<div class="lab" id="lab2" data-presets="grad,swirl" data-start="grad" data-contours="1"></div>
+
+<div class="pc" data-kind="typed" data-ok="\(f_x=2x+\cos y\) and \(f_y=-x\sin y\), so \(\nabla f(1,\pi/2)=\langle 2+0,\ -1\rangle\). From there \(f\) climbs fastest to the right and a little down. Put the probe at \((1, 1.57)\) to compare." data-hint="Differentiate \(x^2+x\cos y\) in \(x\) (hold \(y\) fixed), then in \(y\) (hold \(x\) fixed), and plug in \(x=1,\ y=\pi/2\).">
+  <div class="tag">Worked example, you drive</div>
+  <p>Find \(\nabla f(1,\pi/2)\) for \(f(x,y)=x^2+x\cos y\).
+  \(\big\langle\) <input data-check="2" aria-label="first component of the gradient"> , <input data-check="-1" aria-label="second component of the gradient"> \(\big\rangle\)
+  <button type="button" class="btn-s" data-act="check">Check</button></p>
+  <div class="pc-fb" aria-live="polite"></div>
+</div>
+
+<p>Look at where the arrows cross the green curves: always at right angles, because moving along a level curve does not change \(f\).</p>
+
+<div class="big-idea">A field \(\mathbf F\) is <strong>conservative</strong> if \(\mathbf F=\nabla f\) for some scalar function \(f\), called a <strong>potential function</strong> for \(\mathbf F\). Conservative fields matter because, as §15.3 shows, the work they do depends only on where you start and finish.</div>
+
+<h3>A test that rules fields out</h3>
+
+<p>If \(\mathbf F=\langle P,Q\rangle=\nabla f\), then \(P=f_x\) and \(Q=f_y\), and Clairaut's theorem says</p>
+\[\frac{\partial P}{\partial y}=f_{xy}=f_{yx}=\frac{\partial Q}{\partial x}.\]
+<p>In space the same argument gives \(P_y=Q_x\), \(P_z=R_x\), \(Q_z=R_y\). This is the <strong>component test</strong>: if any of these fails at some point, \(\mathbf F\) is <strong>not</strong> conservative. (Passing is not quite the whole story; §15.3 says exactly when it is enough.)</p>
+
+<p style="margin-top:1rem"><strong>A picture of the test.</strong> Drop a tiny paddle wheel into a flowing fluid. It spins when the flow pushes harder on one side than the other, and its spin rate is \(\tfrac12\big(\partial Q/\partial x-\partial P/\partial y\big)\). (This quantity returns later in the course as <em>curl</em>.) So the component test says: <em>in a gradient field, paddle wheels don't spin.</em> In the second lab, switch between \(\nabla f\) and the swirl and watch the wheel on the probe.</p>
+
+<div class="pc" data-kind="choice" data-answer="b">
+  <div class="tag">Why the swirl can't be a gradient</div>
+  <p>Suppose \(\langle -y,x\rangle\) were \(\nabla f\) for some height function \(f\). Walk once around the unit circle counterclockwise, always moving in the direction the arrows point. What happens to your height?</p>
+  <div class="opts">
+    <button type="button" data-choice="a" data-fb="You are always walking with the arrows, and a gradient arrow points uphill.">It goes up and comes back down</button>
+    <button type="button" data-choice="b" data-fb="You climb the whole way (every step is along \(\nabla f\), which is uphill) yet end where you started, at the same height. That is impossible, so no such \(f\) exists: the swirl is a staircase that climbs forever, and the component test agrees, \(P_y=-1\neq1=Q_x\).">It goes up the whole way, yet you end where you started</button>
+    <button type="button" data-choice="c" data-fb="The arrows are not perpendicular to your path here; they point along it.">It never changes</button>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+</div>
+
+<div class="pc" data-kind="sort" data-ok="All four sorted. The ones that pass have potentials \(f=y\sin x\) and \(f=\tfrac12x^2+xy-\tfrac12y^2\). Check each by taking its gradient.">
+  <div class="tag">Sort them</div>
+  <p>For each field, compute \(\partial P/\partial y\) and \(\partial Q/\partial x\). (You can type any of them into the first lab's <em>Type your own</em> field to see the paddle wheel.)</p>
+  <div class="sort-row" data-answer="pass" data-why="\(P_y=\cos x=Q_x\). Passes, and \(f=y\sin x\) works.">
+    <div>\(\langle y\cos x,\ \sin x\rangle\)</div>
+    <div><button type="button" data-v="pass">passes the test</button><button type="button" data-v="fail">not conservative</button></div>
+    <div class="sort-why"></div>
+  </div>
+  <div class="sort-row" data-answer="fail" data-why="\(P_y=2y\), \(Q_x=2x\). They agree only on the line \(y=x\), and the test needs them equal on an open region, so this is not conservative.">
+    <div>\(\langle y^2,\ x^2\rangle\)</div>
+    <div><button type="button" data-v="pass">passes the test</button><button type="button" data-v="fail">not conservative</button></div>
+    <div class="sort-why"></div>
+  </div>
+  <div class="sort-row" data-answer="pass" data-why="\(P_y=1=Q_x\). Passes, and \(f=\tfrac12x^2+xy-\tfrac12y^2\) works.">
+    <div>\(\langle x+y,\ x-y\rangle\)</div>
+    <div><button type="button" data-v="pass">passes the test</button><button type="button" data-v="fail">not conservative</button></div>
+    <div class="sort-why"></div>
+  </div>
+  <div class="sort-row" data-answer="fail" data-why="\(P_y=-1\), \(Q_x=1\). The swirl again: not conservative.">
+    <div>\(\langle -y,\ x\rangle\)</div>
+    <div><button type="button" data-v="pass">passes the test</button><button type="button" data-v="fail">not conservative</button></div>
+    <div class="sort-why"></div>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+</div>
+
+<h3>Practice &amp; reflection</h3>
+<ol class="practice">
+  <li>Explain the difference between a scalar field and a vector field, with one example of each from engineering or physics. <button type="button" class="reveal" aria-controls="r1" aria-expanded="false" data-label="One answer">One answer</button>
+    <div class="reveal-box" id="r1" hidden>The river: water speed at each point is a scalar field, water velocity is a vector field. Likewise air temperature (scalar) and wind (vector).</div></li>
+  <li>The fields \(\langle x,y\rangle\) and \(\langle x,y\rangle/\lVert\langle x,y\rangle\rVert\) both point away from the origin. How do their arrows differ? What would each look like along the \(x\)-axis? <button type="button" class="reveal" aria-controls="r2" aria-expanded="false" data-label="One answer">One answer</button>
+    <div class="reveal-box" id="r2" hidden>The first has length equal to the distance from the origin, so arrows grow as you move out (\(\langle 3,0\rangle\) at \((3,0)\)). The second has length 1 everywhere (\(\langle 1,0\rangle\) at \((3,0)\)) and is undefined at the origin.</div></li>
+  <li>Gravity pulls with strength \(GMm/r^2\). Moving from distance \(r\) to \(3r\), by what factor does the force change, and do the arrows still point at the same place? <button type="button" class="reveal" aria-controls="r3" aria-expanded="false" data-label="One answer">One answer</button>
+    <div class="reveal-box" id="r3" hidden>It becomes \(\tfrac19\) as strong, and it still points at the center.</div></li>
+  <li>Suppose \(\nabla f(a,b)=\langle 0,0\rangle\). What does the arrow there look like, and what might that say about the surface \(z=f(x,y)\) above \((a,b)\)? <button type="button" class="reveal" aria-controls="r4" aria-expanded="false" data-label="One answer">One answer</button>
+    <div class="reveal-box" id="r4" hidden>No arrow at all. The tangent plane is horizontal there: a critical point (a max, a min, or a saddle, as in §13.7).</div></li>
+  <li>Your friend says the component test passes for the swirl \(\langle -y,x\rangle\) because "the two minus signs cancel." Where exactly did the algebra go wrong? <button type="button" class="reveal" aria-controls="r5" aria-expanded="false" data-label="One answer">One answer</button>
+    <div class="reveal-box" id="r5" hidden>There is only one minus sign. \(P=-y\) gives \(P_y=-1\); \(Q=x\) gives \(Q_x=+1\). Nothing cancels, and the test fails.</div></li>
+</ol>
+
+<p>Before the homework: open the full-screen demo below, pick a field, and predict what a particle will do before you release it.</p>
+
+</div>
+
+<script src="15-1.js"></script>
