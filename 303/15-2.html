@@ -1,0 +1,253 @@
+---
+layout: section
+title: "MATH 303 §15.2: Line Integrals"
+course_title: "MATH 303: Multivariable Calculus"
+course_url: "/303/"
+activities:
+  - title: "Work Along a Curve"
+    url: "15-2-demo.html"
+    type: "Interactive Demo"
+    description: "The full-screen version: drag the handles of a curve through a field and watch the tangential component and the work it adds up to."
+---
+<style>
+  .p15 h3 { margin-top: 2.2rem; }
+  .p15 .lead { font-size: 1.08rem; }
+  .p15 .goals { background: #f8f9fa; border-radius: 8px; padding: .8rem 1.2rem .6rem; margin: 1rem 0 1.5rem; }
+  .p15 .goals ol { margin: .3rem 0 .3rem 1.2rem; }
+  .p15 .scene, .p15 .lab { background: #fff; border: 1px solid #e9ecef; border-radius: 10px; padding: 1rem; margin: 1.2rem 0; box-shadow: 0 2px 4px rgba(0,0,0,.05); }
+  .p15 .scene canvas { display: block; width: 100%; border-radius: 6px; touch-action: none; cursor: crosshair; }
+  .p15 .scene-cap { font-size: .9rem; color: #666; margin: .5rem 0 .3rem; }
+  .p15 .river-status { font-size: .88rem; color: #333; min-height: 2.6em; margin-top: .4rem; font-variant-numeric: tabular-nums; }
+  .p15 .btn-s { font: inherit; font-size: .88rem; padding: .4rem .75rem; margin: .2rem .25rem .2rem 0; border-radius: 6px; border: 1px solid #CD5920; background: #F36E24; color: #fff; cursor: pointer; }
+  .p15 .btn-s.ghost { background: #fff; color: #CD5920; }
+  .p15 .btn-s:focus-visible, .p15 .pc button:focus-visible { outline: 3px solid #009CDE; outline-offset: 2px; }
+  .p15 .pc { border-left: 4px solid #009CDE; background: #f4fafd; border-radius: 0 8px 8px 0; padding: .8rem 1rem; margin: 1.2rem 0; }
+  .p15 .pc .tag { font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: #007bb0; font-weight: bold; }
+  .p15 .pc p { margin: .3rem 0 .5rem; }
+  .p15 .pc .opts button { font: inherit; font-size: .92rem; padding: .35rem .7rem; margin: .2rem .3rem .2rem 0; border-radius: 6px; border: 1px solid #b9d9ea; background: #fff; cursor: pointer; color: #333; }
+  .p15 .picked-ok { border-color: #008552 !important; background: #e6f4ec !important; }
+  .p15 .picked-no { border-color: #b3261e !important; background: #fbeaea !important; }
+  .p15 .pc-fb { margin-top: .4rem; font-size: .95rem; }
+  .p15 .pc-fb.ok { color: #0b5d3a; } .p15 .pc-fb.bad { color: #8a1c15; }
+  .p15 .pc input[data-check] { width: 6.5rem; font: inherit; padding: .25rem .4rem; border: 1px solid #b9d9ea; border-radius: 5px; }
+  .p15 .pc input.yes { border-color: #008552; background: #e6f4ec; } .p15 .pc input.no { border-color: #b3261e; background: #fbeaea; }
+  .p15 .lab-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+  @media (max-width: 760px) { .p15 .lab-grid { grid-template-columns: minmax(0, 1fr); } }
+  .p15 .lab-cv { display: block; width: 100%; border: 1px solid #ddd; border-radius: 6px; touch-action: none; }
+  .p15 .lab-gr { display: block; width: 100%; border: 1px solid #eee; border-radius: 6px; margin-top: .5rem; }
+  .p15 .lab-hint { font-size: .82rem; color: #666; margin-top: .3rem; }
+  .p15 .lab-lbl { display: block; font-size: .88rem; color: #555; margin-bottom: .5rem; }
+  .p15 .lab-lbl select, .p15 .lab-lbl input:not([type=range]):not([type=checkbox]) { display: block; width: 100%; margin-top: .2rem; padding: .35rem; font: inherit; font-size: .9rem; border: 1px solid #ccc; border-radius: 5px; background: #fff; box-sizing: border-box; }
+  .p15 .lab-lbl input[type=range] { display: block; width: 100%; margin-top: .3rem; }
+  .p15 .lab-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .5rem; }
+  .p15 .lab-err { color: #8a1c15; font-size: .85rem; }
+  .p15 .lab-tab { margin: .4rem 0 .6rem !important; font-size: .88rem; font-variant-numeric: tabular-nums; }
+  .p15 .lab-tab th, .p15 .lab-tab td { padding: 4px 8px !important; }
+  .p15 .lab-tab .pos { color: #0b5d3a; font-weight: bold; } .p15 .lab-tab .neg { color: #8a1c15; font-weight: bold; }
+  .p15 .lab-chk { font-size: .88rem; display: block; margin: .3rem 0; }
+  .p15 details.worked, .p15 .reveal-box { background: #fafafa; border: 1px solid #eee; border-radius: 8px; padding: .5rem 1rem; margin: .8rem 0; }
+  .p15 details.worked summary { cursor: pointer; font-weight: bold; color: #CD5920; }
+  .p15 button.reveal { font: inherit; font-size: .85rem; padding: .2rem .6rem; border-radius: 5px; border: 1px solid #ccc; background: #fff; cursor: pointer; margin-left: .3rem; }
+  .p15 .big-idea { border: 2px solid #F36E24; border-radius: 10px; padding: .6rem 1rem; margin: 1.2rem 0; background: #fff8f3; }
+  .p15 .practice li { margin-bottom: .9rem; }
+</style>
+
+<div class="p15">
+
+<h1>§15.2: Line Integrals</h1>
+
+<p class="lead">In single-variable calculus you integrated over an interval of the \(x\)-axis. But a wire is not straight, and a force does work on a particle that travels along a winding path. We need to integrate along a <em>curve</em>. Start back at the river from §15.1.</p>
+
+<div class="scene river">
+  <canvas role="img" aria-label="The river channel from section 15.1, flowing left to right, with marked routes. Pick a route, or drag on the water to draw your own, and the boat rides it while a meter adds up how much the current helps."></canvas>
+  <div class="scene-cap">Same channel as §15.1: banks at \(y=\pm1\), current \(\mathbf{v}(x,y)=\langle 1-y^2,\ 0\rangle\) m/s. A boat rides a route. At each step the current is split into the part <span style="color:#0b7a4b;font-weight:bold">along the route</span> (green if it helps, red if it fights) and the part across it (gray), and the meter adds up <em>(current along the route) × (distance)</em>. Pick a route, or drag on the water to draw your own.</div>
+  <button type="button" class="btn-s" data-route="middle">Down the middle</button>
+  <button type="button" class="btn-s" data-route="across">Straight across</button>
+  <button type="button" class="btn-s" data-route="upstream">Upstream near the bank</button>
+  <button type="button" class="btn-s ghost" data-route="loop">The loop</button>
+  <div class="river-status" aria-live="polite"></div>
+</div>
+
+<div class="pc" data-kind="choice" data-answer="b" data-more="Press <em>Straight across</em> and watch the meter stay at 0.">
+  <div class="tag">Predict, then check</div>
+  <p>The route <em>Straight across</em> runs from \((3,-0.8)\) to \((3,0.8)\), right through the fastest water. What will the meter read at the far side?</p>
+  <div class="opts">
+    <button type="button" data-choice="a" data-fb="The current is strong in the middle, but it points downstream, and the route points across. Only the part of the current <em>along</em> the route counts.">Positive: the middle is fast</button>
+    <button type="button" data-choice="b" data-fb="The current \(\langle 1-y^2,0\rangle\) is horizontal and the route is vertical, so the current has no component along the route at any point. All of its push is sideways, and sideways pushes add nothing.">Zero</button>
+    <button type="button" data-choice="c" data-fb="Nothing on this route points against the direction of travel: the current is perpendicular to it everywhere.">Negative</button>
+    <button type="button" data-choice="d" data-fb="The meter depends only on the current and the route, not on how fast the boat goes. How fast you walk a curve never changes a line integral; more on that below.">Can't tell without the boat's speed</button>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+</div>
+
+<p>That meter is a <strong>line integral</strong>, and line integrals come in two flavors that you must keep apart:</p>
+<ul>
+  <li>a <strong>scalar line integral</strong> \(\displaystyle\int_C f\,ds\) adds up a <em>number</em> (a density, say) along the curve, weighted by arc length. It does not care which way you walk along \(C\);</li>
+  <li>a <strong>line integral of a vector field</strong> \(\displaystyle\int_C \mathbf{F}\cdot d\mathbf{r}\) adds up how much the field pushes <em>along</em> the direction of travel. It does care, and reversing direction changes its sign. The river meter is this kind.</li>
+</ul>
+
+<div class="goals">
+  <strong>By the end of this section you should be able to:</strong>
+  <ol>
+    <li>Parametrize a line segment, a circle, or a given curve and compute \(\lVert\mathbf{r}'(t)\rVert\).</li>
+    <li>Evaluate \(\int_C f\,ds\) and use it for mass, moments, and center of mass of a wire.</li>
+    <li>Evaluate \(\int_C \mathbf{F}\cdot d\mathbf{r}\) and interpret it as work or as flow.</li>
+    <li>Say what happens to each kind of line integral when the direction of \(C\) is reversed.</li>
+  </ol>
+</div>
+
+<h3>Parametrized curves and arc length</h3>
+
+<p>A smooth curve \(C\) is described by \(\mathbf{r}(t) = \langle x(t), y(t), z(t)\rangle\) for \(a \le t \le b\), with \(\mathbf{r}'(t)\) continuous and not zero. A segment from \((x_0,y_0)\) to \((x_1,y_1)\) is \(\mathbf{r}(t) = \langle x_0 + (x_1-x_0)t,\ y_0 + (y_1-y_0)t\rangle\) for \(0\le t\le1\). A circle of radius \(a\) about the origin is \(\langle a\cos t, a\sin t\rangle\).</p>
+
+<p>A small step \(dt\) in the parameter moves you a distance</p>
+\[ds = \lVert\mathbf{r}'(t)\rVert\,dt = \sqrt{x'(t)^2 + y'(t)^2 + z'(t)^2}\,dt.\]
+
+<h3>The scalar line integral</h3>
+
+\[\int_C f(x,y,z)\,ds = \int_a^b f\bigl(x(t),y(t),z(t)\bigr)\,\lVert\mathbf{r}'(t)\rVert\,dt.\]
+
+<p>Four steps: parametrize \(C\); substitute the parametrization into \(f\); compute \(\lVert\mathbf{r}'\rVert\); integrate in \(t\). The value does not depend on <em>which</em> parametrization you choose, nor on the direction you traverse \(C\).</p>
+
+<div class="pc" data-kind="typed" data-ok="With \(\mathbf r(t)=\langle t,2t\rangle\), \(0\le t\le1\): \(\mathbf r'=\langle1,2\rangle\), so \(\lVert\mathbf r'\rVert=\sqrt5\), and \(f=t^2+4t^2=5t^2\). Then \(\int_0^1 5t^2\sqrt5\,dt=\dfrac{5\sqrt5}{3}\approx3.727\). The wire lab below shows the same total." data-hint="Use \(\mathbf r(t)=\langle t,2t\rangle\), \(0\le t\le1\). Then \(\lVert\mathbf r'(t)\rVert=\lVert\langle1,2\rangle\rVert\), and \(x^2+y^2\) becomes \(t^2+(2t)^2\). Multiply and integrate from 0 to 1.">
+  <div class="tag">Worked example, you drive</div>
+  <p>Evaluate \(\displaystyle\int_C (x^2+y^2)\,ds\), where \(C\) is the segment from \((0,0)\) to \((1,2)\).</p>
+  <p><label>\(\lVert\mathbf r'(t)\rVert=\) <input data-check="sqrt(5)" aria-label="length of r prime" placeholder="e.g. sqrt(2)"></label>
+  &nbsp; <label>the integral \(=\) <input data-check="5*sqrt(5)/3" aria-label="value of the line integral" placeholder="e.g. 2sqrt(3)"></label>
+  <button type="button" class="btn-s" data-act="check">Check</button></p>
+  <div class="pc-fb" aria-live="polite"></div>
+  <p style="margin-top:.4rem"><button type="button" class="btn-s ghost" data-showme data-lab="lab1" data-curve="seg" data-rho="r2">See it in the wire lab</button></p>
+</div>
+
+<p>Here is the picture behind the formula. The lab colors a wire by its density \(\rho\) (darker = heavier). Walk along it: the lower graph is the integrand \(\rho\bigl(\mathbf r(t)\bigr)\lVert\mathbf r'(t)\rVert\), and the shaded area under it is the integral so far. The black ring is the wire's balance point (its center of mass, coming next).</p>
+
+<div class="lab" id="lab1" data-mode="scalar" data-curves="seg,semi2,circle,custom" data-start="seg" data-rhos="one,r2,y,custom" data-rho="r2"></div>
+
+<div class="pc" data-kind="choice" data-answer="b">
+  <div class="tag">Predict, then check</div>
+  <p>The helix \(\mathbf r(t)=\langle\cos t,\ \sin t,\ t\rangle\) winds around the unit circle while it climbs. How fast does it move, \(\lVert\mathbf r'(t)\rVert\)?</p>
+  <div class="opts">
+    <button type="button" data-choice="a" data-fb="That is the speed of the circle \(\langle\cos t,\sin t\rangle\) alone. The helix also climbs at rate 1: \(\mathbf r'=\langle-\sin t,\cos t,1\rangle\).">1, the same as the circle</button>
+    <button type="button" data-choice="b" data-fb="\(\mathbf r'=\langle-\sin t,\cos t,1\rangle\), so \(\lVert\mathbf r'\rVert=\sqrt{\sin^2t+\cos^2t+1}=\sqrt2\), the same at every \(t\). So \(ds=\sqrt2\,dt\) all the way up.">\(\sqrt2\)</button>
+    <button type="button" data-choice="c" data-fb="Speeds don't add like that. Around speed 1 and up speed 1 are perpendicular, so they combine like the legs of a right triangle.">2</button>
+    <button type="button" data-choice="d" data-fb="It looks as if it should, but \(\sin^2t+\cos^2t=1\) for every \(t\). Compute \(\lVert\langle-\sin t,\cos t,1\rangle\rVert\).">It depends on \(t\)</button>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+</div>
+
+<details class="worked"><summary>Worked example: \(\displaystyle\int_C (x+y+z)\,ds\) on the helix \(\langle\cos t,\sin t,t\rangle\), \(0\le t\le\pi\)</summary>
+<p>Here \(\mathbf{r}' = \langle-\sin t,\cos t,1\rangle\), so \(\lVert\mathbf{r}'\rVert = \sqrt{\sin^2t+\cos^2t+1} = \sqrt2\). Then</p>
+\[\int_C (x+y+z)\,ds = \sqrt2\int_0^\pi(\cos t+\sin t+t)\,dt = \sqrt2\Bigl[\sin t-\cos t+\tfrac{t^2}{2}\Bigr]_0^\pi = \sqrt2\Bigl(2+\frac{\pi^2}{2}\Bigr).\]
+</details>
+
+<h3>Mass, moments, and center of mass of a wire</h3>
+
+<p>If a thin wire lies along \(C\) and has linear density \(\rho(x,y)\) (mass per unit length), then each piece \(ds\) has mass \(\rho\,ds\), and</p>
+\[M = \int_C \rho\,ds,\qquad M_x = \int_C y\,\rho\,ds,\qquad M_y = \int_C x\,\rho\,ds,\qquad \bar x = \frac{M_y}{M},\quad \bar y = \frac{M_x}{M}.\]
+<p>(In space, \(M_{yz} = \int_C x\rho\,ds\), \(M_{xz} = \int_C y\rho\,ds\), \(M_{xy} = \int_C z\rho\,ds\) and the center of mass is \((M_{yz}/M,\,M_{xz}/M,\,M_{xy}/M)\).) The second moments are \(I_x = \int_C y^2\rho\,ds\), \(I_y = \int_C x^2\rho\,ds\), and \(I_0 = I_x + I_y\), with radii of gyration \(R = \sqrt{I/M}\).</p>
+
+<div class="pc" data-kind="choice" data-answer="d">
+  <div class="tag">Predict, then check</div>
+  <p>A wire is bent into the upper semicircle \(x^2+y^2=a^2\), \(y\ge0\), with density \(\rho = ky\): light at the two ends, heaviest at the top. Where is its balance point?</p>
+  <div class="opts">
+    <button type="button" data-choice="a" data-fb="A balance point does not have to sit on the wire, but every bit of this wire has \(y\ge0\), so \(\bar y=M_x/M\) is positive. It is above the center.">At the center of the circle, \((0,0)\)</button>
+    <button type="button" data-choice="b" data-fb="Halfway up is a guess, and too low: the mass is piled up near the top, where \(\rho=ky\) is largest.">At \((0,\ a/2)\)</button>
+    <button type="button" data-choice="c" data-fb="That is the balance point of a <em>uniform</em> semicircular wire. Here \(\rho=ky\) makes the top heavier, so the balance point rises above \(2a/\pi\).">At \((0,\ 2a/\pi)\approx(0,\ 0.64a)\)</button>
+    <button type="button" data-choice="d" data-fb="\(\bar y=M_x/M=\dfrac{\pi ka^3/2}{2ka^2}=\dfrac{\pi a}{4}\). The worked example below has every step. In the lab (\(a=2\), \(k=1\)) the ring sits at \(\bar y=\pi/2\approx1.571\).">At \((0,\ \pi a/4)\approx(0,\ 0.79a)\)</button>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+  <p style="margin-top:.4rem"><button type="button" class="btn-s ghost" data-showme data-lab="lab1" data-curve="semi2" data-rho="y">See it in the wire lab</button>
+    <button type="button" class="btn-s ghost" data-showme data-lab="lab1" data-curve="semi2" data-rho="one">Compare: a uniform wire</button></p>
+</div>
+
+<details class="worked"><summary>Worked example: mass and center of mass of the semicircular wire, \(\rho=ky\)</summary>
+<p>Take \(\mathbf{r}(t) = \langle a\cos t,a\sin t\rangle\), \(0\le t\le\pi\), so \(ds = a\,dt\) and \(\rho = ka\sin t\). Then</p>
+\[M = \int_0^\pi ka\sin t\cdot a\,dt = 2ka^2,\qquad M_x = \int_0^\pi a\sin t\cdot ka\sin t\cdot a\,dt = ka^3\cdot\frac\pi2,\]
+\[M_y = \int_0^\pi a\cos t\cdot ka\sin t\cdot a\,dt = ka^3\int_0^\pi\sin t\cos t\,dt = 0.\]
+<p>So \(\bar x = 0\) and \(\bar y = \dfrac{\pi ka^3/2}{2ka^2} = \dfrac{\pi a}{4}\). The zero is no surprise: the wire and its density are both symmetric left to right, and \(x\) is odd, so the contributions cancel in pairs.</p>
+</details>
+
+<p>Try <em>Walk it backward</em> in the lab: the mass and the balance point do not move. Lengths are positive whichever way you walk, so \(\int_C f\,ds\) ignores direction.</p>
+
+<h3>The line integral of a vector field</h3>
+
+\[\int_C \mathbf{F}\cdot d\mathbf{r} = \int_a^b \mathbf{F}\bigl(\mathbf{r}(t)\bigr)\cdot\mathbf{r}'(t)\,dt,\qquad d\mathbf{r} = \mathbf{r}'(t)\,dt = \langle dx,dy,dz\rangle.\]
+
+<p>Steps: parametrize; compute \(\mathbf{F}(\mathbf{r}(t))\); compute \(\mathbf{r}'(t)\); take the dot product; integrate. Notice what the dot product does. With \(\mathbf{T} = \mathbf{r}'/\lVert\mathbf{r}'\rVert\) the unit tangent, \(\mathbf{F}\cdot d\mathbf{r} = (\mathbf{F}\cdot\mathbf{T})\,ds\), so the line integral adds up the <strong>component of \(\mathbf{F}\) along the path</strong>, step by step. The part of the field pushing sideways to the path contributes nothing. That is exactly what the river meter did.</p>
+
+<ul>
+  <li>If \(\mathbf{F}\) is a force, \(\int_C\mathbf{F}\cdot d\mathbf{r}\) is the <strong>work</strong> done by the force along \(C\).</li>
+  <li>If \(\mathbf{F}\) is the velocity of a fluid, it is the <strong>flow</strong> along \(C\); for a closed curve it is the <strong>circulation</strong>. Positive means the fluid moves, on balance, with the direction of \(C\).</li>
+</ul>
+
+<div class="big-idea">Because \(\mathbf{r}'\) changes sign when you walk the other way, <strong>reversing the direction of \(C\) changes the sign of \(\int_C\mathbf{F}\cdot d\mathbf{r}\).</strong> The scalar integral \(\int_C f\,ds\) does not change, because \(ds\) is a length and lengths are positive.</div>
+
+<p>In this lab the blue arrow is \(\mathbf F\) at the walker and the thick arrow is its component along the path (green helps, red fights). The lower graph is the integrand \(\mathbf F\bigl(\mathbf r(t)\bigr)\cdot\mathbf r'(t)\); area above the axis counts as positive work, area below as negative.</p>
+
+<div class="lab" id="lab2" data-mode="vector" data-curves="circle,semi2,segw,custom" data-start="circle" data-fields="swirl,vx,river,custom" data-field="swirl"></div>
+
+<div class="pc" data-kind="choice" data-answer="a">
+  <div class="tag">Predict, then check</div>
+  <p>The field \(\mathbf F(x,y)=\langle 0,\ x\rangle\) pushes up on the right half of the plane and down on the left half. A particle goes once around the unit circle counterclockwise. The work done by \(\mathbf F\) is</p>
+  <div class="opts">
+    <button type="button" data-choice="a" data-fb="On the right half \(x&gt;0\), so \(\mathbf F\) points up, and the particle is moving up: it helps. On the left half \(\mathbf F\) points down, and the particle is moving down: it helps again. In symbols, \(\mathbf F\cdot\mathbf r'=\cos t\cdot\cos t=\cos^2t\ge0\), and \(W=\int_0^{2\pi}\cos^2t\,dt=\pi\).">positive</button>
+    <button type="button" data-choice="b" data-fb="The field is lopsided (up on one side, down on the other), but so is the motion. On the left half the particle is moving <em>down</em>, the same way the field points. Nothing cancels.">zero: the up and down pushes cancel</button>
+    <button type="button" data-choice="c" data-fb="Check one point: at \((1,0)\) the field is \(\langle0,1\rangle\) and the particle is moving straight up. That piece of work is positive.">negative</button>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+  <p style="margin-top:.4rem"><button type="button" class="btn-s ghost" data-showme data-lab="lab2" data-field="vx" data-curve="circle">See it in the lab</button></p>
+</div>
+
+<div class="pc" data-kind="typed" data-ok="Along the curve \(\mathbf{F}(\mathbf{r}(t)) = \langle t^4, t^3, t^5\rangle\) and \(\mathbf{r}'(t) = \langle 2t,3t^2,1\rangle\), so \(\mathbf{F}\cdot\mathbf{r}' = 2t^5+3t^5+t^5 = 6t^5\) and \(W = \int_0^1 6t^5\,dt = 1\). The work is positive: on balance the field helps push the particle along." data-hint="Substitute \(x=t^2,\ y=t^3,\ z=t\) into \(\langle yz,xz,xy\rangle\), so the first component is \(t^3\cdot t=t^4\). Then dot with \(\mathbf r'(t)=\langle 2t,3t^2,1\rangle\): every term is a multiple of \(t^5\).">
+  <div class="tag">Worked example, you drive</div>
+  <p>Find the work done by \(\mathbf{F}(x,y,z) = \langle yz,\ xz,\ xy\rangle\) moving a particle along \(\mathbf{r}(t) = \langle t^2,t^3,t\rangle\) from \(t=0\) to \(t=1\).</p>
+  <p><label>\(\mathbf F(\mathbf r(t))\cdot\mathbf r'(t)=\) <input data-check="6" aria-label="coefficient of t to the fifth" placeholder="number"></label> \(t^5\)
+  &nbsp; <label>\(W=\) <input data-check="1" aria-label="the work"></label>
+  <button type="button" class="btn-s" data-act="check">Check</button></p>
+  <div class="pc-fb" aria-live="polite"></div>
+</div>
+
+<div class="pc" data-kind="typed" data-ok="Counterclockwise, \(\mathbf{F}(\mathbf{r}(t)) = \langle-\sin t,\cos t\rangle = \mathbf{r}'(t)\), so \(\mathbf{F}\cdot\mathbf{r}' = \sin^2t+\cos^2t = 1\) and the flow is \(\int_0^{2\pi}1\,dt=2\pi\): the field is tangent to the circle and pushes the whole way around. Clockwise, every \(\mathbf r'\) flips, so the flow is \(-2\pi\)." data-hint="Counterclockwise, \(\mathbf r(t)=\langle\cos t,\sin t\rangle\) and \(\mathbf F(\mathbf r(t))=\langle-\sin t,\cos t\rangle\). Compare that with \(\mathbf r'(t)\). For clockwise, use the big idea above.">
+  <div class="tag">Worked example, you drive</div>
+  <p>Find the flow of the swirl \(\mathbf{F}(x,y) = \langle -y,\ x\rangle\) around the unit circle.</p>
+  <p><label>counterclockwise: <input data-check="2*pi" aria-label="flow counterclockwise" placeholder="e.g. 3pi"></label>
+  &nbsp; <label>clockwise: <input data-check="-2*pi" aria-label="flow clockwise"></label>
+  <button type="button" class="btn-s" data-act="check">Check</button></p>
+  <div class="pc-fb" aria-live="polite"></div>
+  <p style="margin-top:.4rem"><button type="button" class="btn-s ghost" data-showme data-lab="lab2" data-field="swirl" data-curve="circle" data-rev="0">Counterclockwise in the lab</button>
+    <button type="button" class="btn-s ghost" data-showme data-lab="lab2" data-field="swirl" data-curve="circle" data-rev="1">Clockwise</button></p>
+</div>
+
+<div class="pc" data-kind="choice" data-answer="b" data-more="Press <em>Ride the loop</em> to watch the meter.">
+  <div class="tag">Back to the river</div>
+  <p>The river's <em>loop</em> goes downstream along the middle from \((1,0)\) to \((5,0)\), across to \((5,0.8)\), upstream along \(y=0.8\) back to \((1,0.8)\), and across to the start. It ends where it began. What is the circulation of the current around it?</p>
+  <div class="opts">
+    <button type="button" data-choice="a" data-fb="Ending where you started does not force the total to be 0. That depends on the field. Add up the four legs: the two across-legs give 0, but the other two don't cancel.">Zero, because the loop is closed</button>
+    <button type="button" data-choice="b" data-fb="Downstream in the middle the current helps at 1 m/s for 4 m: \(+4\). Upstream at \(y=0.8\) it fights at \(0.36\) m/s for 4 m: \(-1.44\). The two across-legs give 0. Circulation \(=4-1.44=2.56\) m²/s. This is the paddle wheel from §15.1 in another form: in this channel a paddle wheel spins.">Positive</button>
+    <button type="button" data-choice="c" data-fb="The downstream leg is in the fast middle and the upstream leg is in the slow water near the bank, so the help outweighs the fight.">Negative</button>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+  <p style="margin-top:.4rem"><button type="button" class="btn-s ghost" data-ride="loop">Ride the loop</button></p>
+</div>
+
+<p>Fields whose circulation around <em>every</em> closed loop is zero are special: they are exactly the conservative fields \(\nabla f\) from §15.1, and for them the work depends only on where you start and finish. That is §15.3.</p>
+
+<h3>Practice &amp; reflection</h3>
+<ol class="practice">
+  <li>In your own words, what is the difference between what \(\int_C f\,ds\) measures and what \(\int_C\mathbf{F}\cdot d\mathbf{r}\) measures? Which one changes sign if you walk \(C\) backward, and why? <button type="button" class="reveal" aria-controls="r1" aria-expanded="false" data-label="One answer">One answer</button>
+    <div class="reveal-box" id="r1" hidden>\(\int_C f\,ds\) adds up an amount per unit length, such as the mass of a wire; it has no direction. \(\int_C\mathbf F\cdot d\mathbf r\) adds up how hard the field pushes along the direction of travel, such as work or flow. Only the second changes sign: walking backward flips every \(\mathbf r'(t)\), but \(\lVert\mathbf r'(t)\rVert\) stays positive.</div></li>
+  <li>Why does \(ds\) use the <em>length</em> \(\lVert\mathbf{r}'(t)\rVert\), while \(d\mathbf{r}\) uses the <em>vector</em> \(\mathbf{r}'(t)\)? <button type="button" class="reveal" aria-controls="r2" aria-expanded="false" data-label="One answer">One answer</button>
+    <div class="reveal-box" id="r2" hidden>\(ds\) is a distance traveled, so it needs only how far you moved. \(d\mathbf r\) is a small displacement, so it keeps the direction too; dotting it with \(\mathbf F\) picks out the part of \(\mathbf F\) along the motion.</div></li>
+  <li>The segment from \((0,0)\) to \((1,2)\) can also be parametrized by \(\mathbf{r}(s) = \langle s/2, s\rangle\), \(0\le s\le2\). Without integrating, why must \(\int_C(x^2+y^2)\,ds\) come out as \(5\sqrt5/3\) again? Then check by integrating. <button type="button" class="reveal" aria-controls="r3" aria-expanded="false" data-label="One answer">One answer</button>
+    <div class="reveal-box" id="r3" hidden>It is the same wire with the same density; only the speed of the walk changed, and \(ds\) measures distance, not time. Check: \(\lVert\mathbf r'(s)\rVert=\sqrt{1/4+1}=\sqrt5/2\) and \(x^2+y^2=\tfrac54s^2\), so the integral is \(\int_0^2\tfrac54s^2\cdot\tfrac{\sqrt5}{2}\,ds=\tfrac{5\sqrt5}{8}\cdot\tfrac83=\tfrac{5\sqrt5}{3}\).</div></li>
+  <li>Give two different reasons why \(\int_C\mathbf{F}\cdot d\mathbf{r}\) might be \(0\) even though \(\mathbf{F}\) is not the zero field. <button type="button" class="reveal" aria-controls="r4" aria-expanded="false" data-label="One answer">One answer</button>
+    <div class="reveal-box" id="r4" hidden>(1) \(\mathbf F\) is perpendicular to the path at every point, like the current on the route straight across the river. (2) The field helps on part of the path and fights on another part, and the two cancel exactly. In the second lab, \(\langle0,x\rangle\) on the segment from \((-2,-\tfrac12)\) to \((2,\tfrac12)\) fights on the left half and helps on the right half, for a total of 0.</div></li>
+  <li>A wire has density \(\rho\), and another has density \(3\rho\) along the same curve. How do their masses compare? Their centers of mass? <button type="button" class="reveal" aria-controls="r5" aria-expanded="false" data-label="One answer">One answer</button>
+    <div class="reveal-box" id="r5" hidden>The second is three times as heavy. The center of mass is the same: \(M_x\), \(M_y\) and \(M\) all triple, and the 3 cancels in \(M_y/M\) and \(M_x/M\).</div></li>
+</ol>
+
+<p>Before the homework: open the full-screen demo below, bend a path through a field, and predict the sign of the work before you look at the number.</p>
+
+</div>
+
+<script src="15-2.js"></script>

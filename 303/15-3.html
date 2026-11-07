@@ -1,0 +1,290 @@
+---
+layout: section
+title: "MATH 303 §15.3: The Fundamental Theorem for Line Integrals"
+course_title: "MATH 303: Multivariable Calculus"
+course_url: "/303/"
+activities:
+  - title: "Two Paths, One Field"
+    url: "15-3-demo.html"
+    type: "Interactive Demo"
+    description: "The full-screen version: more fields and pairs of paths, with a bar chart comparing the two works and the change in the potential."
+---
+<style>
+  .p15 h3 { margin-top: 2.2rem; }
+  .p15 .lead { font-size: 1.08rem; }
+  .p15 .goals { background: #f8f9fa; border-radius: 8px; padding: .8rem 1.2rem .6rem; margin: 1rem 0 1.5rem; }
+  .p15 .goals ol { margin: .3rem 0 .3rem 1.2rem; }
+  .p15 .scene, .p15 .lab { background: #fff; border: 1px solid #e9ecef; border-radius: 10px; padding: 1rem; margin: 1.2rem 0; box-shadow: 0 2px 4px rgba(0,0,0,.05); }
+  .p15 .scene canvas { display: block; width: 100%; border-radius: 6px; touch-action: none; }
+  .p15 .scene canvas.hike-prof { margin-top: .4rem; border: 1px solid #eee; }
+  .p15 .scene-cap { font-size: .9rem; color: #666; margin: .5rem 0 .3rem; }
+  .p15 .hike-status { font-size: .88rem; color: #333; min-height: 1.3em; margin-top: .4rem; font-variant-numeric: tabular-nums; overflow-x: auto; }
+  .p15 .hike-done { margin: .3rem 0 0; font-weight: bold; color: #0b5d3a; }
+  .p15 .btn-s { font: inherit; font-size: .88rem; padding: .4rem .75rem; margin: .2rem .25rem .2rem 0; border-radius: 6px; border: 1px solid #CD5920; background: #F36E24; color: #fff; cursor: pointer; }
+  .p15 .btn-s.ghost { background: #fff; color: #CD5920; }
+  .p15 .btn-s:focus-visible, .p15 .pc button:focus-visible { outline: 3px solid #009CDE; outline-offset: 2px; }
+  .p15 .pc { border-left: 4px solid #009CDE; background: #f4fafd; border-radius: 0 8px 8px 0; padding: .8rem 1rem; margin: 1.2rem 0; }
+  .p15 .pc .tag { font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: #007bb0; font-weight: bold; }
+  .p15 .pc p { margin: .3rem 0 .5rem; }
+  .p15 .pc .opts button, .p15 .sort-row button { font: inherit; font-size: .92rem; padding: .35rem .7rem; margin: .2rem .3rem .2rem 0; border-radius: 6px; border: 1px solid #b9d9ea; background: #fff; cursor: pointer; color: #333; text-align: left; }
+  .p15 .picked-ok { border-color: #008552 !important; background: #e6f4ec !important; }
+  .p15 .picked-no { border-color: #b3261e !important; background: #fbeaea !important; }
+  .p15 .pc-fb { margin-top: .4rem; font-size: .95rem; }
+  .p15 .pc-fb.ok { color: #0b5d3a; } .p15 .pc-fb.bad { color: #8a1c15; }
+  .p15 .pc input[data-check], .p15 .pc input[data-fn] { width: 6.5rem; font: inherit; padding: .25rem .4rem; border: 1px solid #b9d9ea; border-radius: 5px; }
+  .p15 .pc input[data-fn] { width: 12rem; max-width: 100%; }
+  .p15 .pc input.yes { border-color: #008552; background: #e6f4ec; } .p15 .pc input.no { border-color: #b3261e; background: #fbeaea; }
+  .p15 .pc .drive-row { margin: .4rem 0; }
+  .p15 .lab-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+  @media (max-width: 760px) { .p15 .lab-grid { grid-template-columns: minmax(0, 1fr); } }
+  .p15 .lab-cv { display: block; width: 100%; border: 1px solid #ddd; border-radius: 6px; touch-action: none; cursor: grab; }
+  .p15 .lab-hint { font-size: .82rem; color: #666; margin-top: .3rem; }
+  .p15 .lab-lbl { display: block; font-size: .88rem; color: #555; margin-bottom: .5rem; }
+  .p15 .lab-lbl select, .p15 .lab-lbl input { display: block; width: 100%; margin-top: .2rem; padding: .35rem; font: inherit; font-size: .9rem; border: 1px solid #ccc; border-radius: 5px; background: #fff; box-sizing: border-box; }
+  .p15 .lab-err { color: #8a1c15; font-size: .85rem; }
+  .p15 .lab-tab { margin: .4rem 0 .6rem !important; font-size: .88rem; font-variant-numeric: tabular-nums; }
+  .p15 .lab-tab th, .p15 .lab-tab td { padding: 4px 8px !important; }
+  .p15 .lab-chk { font-size: .88rem; display: block; margin: .3rem 0; }
+  .p15 .sort-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: .1rem; padding: .45rem 0; border-top: 1px solid #dcebf3; }
+  .p15 .sort-why { font-size: .9rem; color: #333; }
+  .p15 details.worked, .p15 .reveal-box { background: #fafafa; border: 1px solid #eee; border-radius: 8px; padding: .5rem 1rem; margin: .8rem 0; }
+  .p15 details.worked summary { cursor: pointer; font-weight: bold; color: #CD5920; }
+  .p15 button.reveal { font: inherit; font-size: .85rem; padding: .2rem .6rem; border-radius: 5px; border: 1px solid #ccc; background: #fff; cursor: pointer; margin-left: .3rem; }
+  .p15 .big-idea { border: 2px solid #F36E24; border-radius: 10px; padding: .6rem 1rem; margin: 1.2rem 0; background: #fff8f3; }
+  .p15 .practice li { margin-bottom: .9rem; }
+</style>
+
+<div class="p15">
+
+<h1>§15.3: The Fundamental Theorem for Line Integrals</h1>
+
+<p class="lead">Evaluating a line integral the long way means parametrizing the path, substituting, and integrating, and a messy path makes that messy. Some fields let you skip all of it. Start with a hike.</p>
+
+<div class="scene hike">
+  <canvas class="hike-map" role="img" aria-label="A contour map of a hill. Trailhead A at the lower left, a cabin B on the summit 300 meters higher. A straight direct trail and a longer zigzag switchback trail both run from A to B."></canvas>
+  <canvas class="hike-prof" role="img" aria-label="Elevation profile: height above the trailhead against distance walked, drawn as the hikers walk."></canvas>
+  <div class="scene-cap">Two trails climb from trailhead A to the cabin B, which sits 300 m higher. The direct trail (orange) is steep; the switchbacks (green) are gentler and more than twice as long. Each hiker weighs 800 N with a pack. Contours every 50 m.</div>
+  <button type="button" class="btn-s" data-act="both">Hike both trails</button>
+  <button type="button" class="btn-s ghost" data-act="draw" aria-pressed="false">Draw your own trail</button>
+  <button type="button" class="btn-s ghost" data-act="round">Round trip</button>
+  <div class="hike-status" aria-live="polite"></div>
+</div>
+
+<div class="pc" data-kind="choice" data-answer="c" data-more="Press <em>Hike both trails</em> and watch the last column; then draw a trail of your own, as wild as you like, that ends at the cabin.">
+  <div class="tag">Predict, then check</div>
+  <p>Gravity does (negative) work on each hiker on the way up. On which trail does gravity do more work?</p>
+  <div class="opts">
+    <button type="button" data-choice="a" data-fb="Gravity pulls just as hard on the gentle trail; it just has longer to do it. Each step's work is \(-800\) N times that step's rise, and the rises add up to 300 m on both trails.">The direct trail: it's steeper</button>
+    <button type="button" data-choice="b" data-fb="Longer, yes, but each meter of switchback climbs less. Gravity's work on a step is \(-800\) N times the step's <em>rise</em>, and the rises add up to 300 m on both trails.">The switchbacks: they're longer</button>
+    <button type="button" data-choice="c" data-fb="Gravity's work on each little step is \(-800\) N times that step's rise, so the total is \(-800\cdot300=-240{,}000\) J \(=-240\) kJ on <em>any</em> trail from A to B. Only the two ends matter.">The same on both</button>
+    <button type="button" data-choice="d" data-fb="You need much less than the trail's formula: the total is \(-800\) N times the total rise, 300 m, whatever the trail.">Can't tell without a formula for each trail</button>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+</div>
+
+<p>The hike is a line integral in disguise. Gravity is the vector field \(\mathbf F=\langle 0,0,-mg\rangle\), and the work along a trail is \(\int_C\mathbf F\cdot d\mathbf r=\int_C -mg\,dz\): every step contributes \(-mg\) times its rise, so the total is \(-mg\) times the total rise. Gravity is a <strong>gradient field</strong>, \(\mathbf F=\nabla(-mgz)\), and that is the whole reason the trail did not matter.</p>
+
+<p>Now recall the Fundamental Theorem of Calculus: \(\int_a^b f'(x)\,dx=f(b)-f(a)\). You never needed to know what \(f'\) did <em>between</em> \(a\) and \(b\), only what \(f\) was at the two ends. There is a version of that theorem for line integrals, and it applies exactly to the fields that are gradients. This section answers three linked questions. How do you evaluate \(\int_C\mathbf F\cdot d\mathbf r\) in one subtraction? When does the answer depend only on the endpoints? And how can you tell, quickly, whether a given field is conservative and find its potential?</p>
+
+<div class="goals">
+  <strong>By the end of this section you should be able to:</strong>
+  <ol>
+    <li>State and use the Fundamental Theorem for Line Integrals.</li>
+    <li>Explain path independence, and its connection with closed-path integrals and conservative fields.</li>
+    <li>Use the component test to decide whether a field is conservative.</li>
+    <li>Find a potential function for a conservative field in two or three variables.</li>
+  </ol>
+</div>
+
+<h3>The theorem</h3>
+
+<div class="big-idea"><strong>Theorem (Fundamental Theorem for Line Integrals).</strong> Let \(C\) be a smooth curve \(\mathbf r(t)\), \(a\le t\le b\). If \(f\) is differentiable and \(\nabla f\) is continuous on an open region containing \(C\), then
+\[\int_C \nabla f\cdot d\mathbf r = f\bigl(\mathbf r(b)\bigr)-f\bigl(\mathbf r(a)\bigr).\]</div>
+
+<p><strong>Why it is true.</strong> By definition, \(\int_C\nabla f\cdot d\mathbf r=\int_a^b\nabla f(\mathbf r(t))\cdot\mathbf r'(t)\,dt\). The integrand is</p>
+\[\frac{\partial f}{\partial x}\frac{dx}{dt}+\frac{\partial f}{\partial y}\frac{dy}{dt}+\frac{\partial f}{\partial z}\frac{dz}{dt},\]
+<p>and that is exactly what the Chain Rule says \(\dfrac{d}{dt}f(\mathbf r(t))\) is. So the integral is \(\int_a^b\dfrac{d}{dt}f(\mathbf r(t))\,dt\), and the ordinary Fundamental Theorem of Calculus finishes it: \(f(\mathbf r(b))-f(\mathbf r(a))\). (The hike's tally works the same way: each step adds the change in \(-mgz\), and the changes telescope.)</p>
+
+<p>The potential function plays the role of the antiderivative, and the answer depends only on the <strong>initial point</strong> and <strong>terminal point</strong>.</p>
+
+<details class="worked"><summary>Worked example: \(\mathbf F(x,y)=\langle ye^{xy},\ xe^{xy}\rangle\) from \((0,1)\) to \((2,0)\)</summary>
+<p>Evaluate \(\displaystyle\int_C\mathbf F\cdot d\mathbf r\), where \(C\) is any smooth curve from \((0,1)\) to \((2,0)\).</p>
+<p><em>Check.</em> \(P_y=e^{xy}+xye^{xy}\) and \(Q_x=e^{xy}+xye^{xy}\). They agree, so \(\mathbf F\) looks conservative.</p>
+<p><em>Find a potential.</em> From \(f_x=ye^{xy}\), integrate in \(x\): \(f=e^{xy}+g(y)\). Then \(f_y=xe^{xy}+g'(y)\) must equal \(Q=xe^{xy}\), so \(g'=0\). Take \(f(x,y)=e^{xy}\).</p>
+<p><em>Apply the theorem.</em> \(\int_C\mathbf F\cdot d\mathbf r=f(2,0)-f(0,1)=e^0-e^0=0.\) (This field is in the lab below: any two paths give 0.)</p>
+</details>
+
+<details class="worked"><summary>Worked example: \(\mathbf F(x,y,z)=\langle yz,\ xz,\ xy\rangle\) from §15.2</summary>
+<p>This field satisfies \(P_y=z=Q_x\), \(P_z=y=R_x\), \(Q_z=x=R_y\), and \(f(x,y,z)=xyz\) is a potential (\(f_x=yz\), \(f_y=xz\), \(f_z=xy\)). So the work along the straight segment from \(A=(1,0,0)\) to \(B=(0,2,0)\) is \(f(0,2,0)-f(1,0,0)=0-0=0\).</p>
+</details>
+
+<div class="pc" data-kind="typed" data-ok="\(f(1,1,1)-f(0,0,0)=1-0=1\), the same answer §15.2 reached the long way, with no parametrizing at all." data-hint="Use the potential \(f=xyz\). The curve starts at \(\mathbf r(0)=(0,0,0)\) and ends at \(\mathbf r(1)=(1,1,1)\).">
+  <div class="tag">Look back at §15.2</div>
+  <p>In §15.2 the work of \(\langle yz,xz,xy\rangle\) along \(\mathbf r(t)=\langle t^2,t^3,t\rangle\), \(0\le t\le1\), took a page of algebra. With the potential \(f=xyz\) it takes one line. <label>Work: <input data-check="1" aria-label="work along the curve" placeholder="a number"></label>
+  <button type="button" class="btn-s" data-act="check">Check</button></p>
+  <div class="pc-fb" aria-live="polite"></div>
+</div>
+
+<h3>Path independence</h3>
+
+<p>A line integral \(\int_C\mathbf F\cdot d\mathbf r\) is <strong>path independent</strong> if its value is the same for every path in the domain that starts at \(A\) and ends at \(B\), for every pair \(A\), \(B\). A <strong>closed path</strong> starts and ends at the same point, and \(\oint_C\) denotes an integral around one.</p>
+
+<p><strong>The theorem above says: if \(\mathbf F\) is conservative, then its line integrals are path independent.</strong> Test that in the lab. It starts with the field \(\langle 2x\cos y,\ -x^2\sin y\rangle=\nabla(x^2\cos y)\) from the worked example near the end of this page; the green curves are level curves of \(f\). Path 1 (orange) follows that example's curve \(\mathbf r(t)=\langle t^2,\pi t\rangle\) from \((0,0)\) to \((1,\pi)\).</p>
+
+<div class="lab" id="lab1" data-presets="gcos,exy,y2x2,vortex,custom" data-start="gcos"></div>
+
+<div class="pc" data-kind="choice" data-answer="b">
+  <div class="tag">Predict, then check</div>
+  <p>Path 1 gives \(-1\). Now drag path 2's blue handles anywhere you like, even far off to the side. What will the work along path 2 do?</p>
+  <div class="opts">
+    <button type="button" data-choice="a" data-fb="It would for most fields, but this one is \(\nabla(x^2\cos y)\). Drag a handle and watch: the number does not move.">Change as the path changes</button>
+    <button type="button" data-choice="b" data-fb="Every path from \((0,0)\) to \((1,\pi)\) gives \(f(1,\pi)-f(0,0)=1\cdot\cos\pi-0=-1\). Try <em>Walk both paths</em> too: at every moment, each path's work so far equals \(f(\text{dot})-f(A)\).">Stay at \(-1\)</button>
+    <button type="button" data-choice="c" data-fb="Longer paths do not automatically pick up more work; the field can push with you on some stretches and against you on others. Here it all cancels down to \(f(B)-f(A)=-1\).">Grow as the path gets longer</button>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+  <p style="margin-top:.4rem">Now drag <strong>B</strong>. The work changes, because \(f(B)\) does, and the two paths still agree.</p>
+</div>
+
+<div class="pc" data-kind="choice" data-answer="b">
+  <div class="tag">Predict, then check</div>
+  <p>The field \(\langle y^2,\ x^2\rangle\) is <em>not</em> a gradient. From \((0,0)\) to \((1,1)\), compare the straight line \(y=x\) with the path that runs along the \(x\)-axis to \((1,0)\) and then straight up. Which does more work?</p>
+  <div class="opts">
+    <button type="button" data-choice="a" data-fb="Along \(y=x\) the work is \(\int_0^1(x^2+x^2)\,dx=\tfrac23\). On the corner path the first leg gives 0 (\(y=0\) there, and \(dy=0\)) and the second gives \(\int_0^1 1^2\,dy=1\).">The straight line</button>
+    <button type="button" data-choice="b" data-fb="Straight: \(\int_0^1 2x^2\,dx=\tfrac23\). Corner: the leg along the \(x\)-axis contributes 0 and the climb at \(x=1\) contributes \(\int_0^1 1\,dy=1\). Same endpoints, different work, so no potential can exist.">The corner path</button>
+    <button type="button" data-choice="c" data-fb="That is what a gradient field would do. Here the straight line gives \(\tfrac23\) and the corner path gives 1.">They do the same work</button>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+  <p style="margin-top:.4rem"><button type="button" class="btn-s ghost" data-showme data-lab="lab1" data-preset="y2x2">Show me in the lab</button></p>
+</div>
+
+<p>Two more facts tie these ideas together.</p>
+
+<p><strong>Path independence \(\Longleftrightarrow\) every closed-path integral is zero.</strong></p>
+<ul>
+  <li><em>(\(\Rightarrow\))</em> Split a closed path \(C\) at two points \(P\) and \(Q\) into \(C_1\) (from \(P\) to \(Q\)) and \(C_2\) (from \(Q\) back to \(P\)). Reversing a path flips the sign, so \(\oint_C=\int_{C_1}+\int_{C_2}=\int_{C_1}-\int_{-C_2}\), where \(-C_2\) also runs from \(P\) to \(Q\). Path independence says the two integrals on the right are equal, so \(\oint_C\mathbf F\cdot d\mathbf r=0\).</li>
+  <li><em>(\(\Leftarrow\))</em> Let \(C_1\) and \(C_2\) be two paths from \(A\) to \(B\). Then \(C_1\) followed by \(-C_2\) is a closed path, so \(\int_{C_1}-\int_{C_2}=0\).</li>
+</ul>
+<p>That is the lab's row <em>out along 1, back along 2</em>: it is the closed-path integral, and it is 0 exactly when the two paths agree.</p>
+
+<div class="pc" data-kind="choice" data-answer="b" data-more="">
+  <div class="tag">Predict, then check</div>
+  <p>Back on the hill: hike up the switchbacks to the cabin, then come straight back down the direct trail to the trailhead. What is the total work done by gravity on the round trip?</p>
+  <div class="opts">
+    <button type="button" data-choice="a" data-fb="On the way down gravity helps: its work is \(+240\) kJ, which cancels the \(-240\) kJ of the climb.">\(-480\) kJ</button>
+    <button type="button" data-choice="b" data-fb="\(-240\) kJ up and \(+240\) kJ down: a closed path in a conservative field, so \(\oint_C\mathbf F\cdot d\mathbf r=0\). (Your legs did plenty of work; gravity's books balance.)">0</button>
+    <button type="button" data-choice="c" data-fb="Any loop that ends where it started has total rise 0, so gravity's total work is 0, whichever trails you use.">It depends on which trails you use</button>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+  <p style="margin-top:.4rem"><button type="button" class="btn-s ghost" data-showme data-hike="round">Run the round trip</button></p>
+</div>
+
+<details class="worked"><summary>Why path independence gives a potential (on an open, connected region)</summary>
+<p>Fix a starting point \(A\) and define \(f(B)=\int_A^B\mathbf F\cdot d\mathbf r\); path independence is exactly what makes this a well-defined function of \(B\). To find \(f_x\), go to \((x+\Delta x,y,z)\) by first reaching \((x,y,z)\) and then following the horizontal segment \(\langle t,y,z\rangle\). Then</p>
+\[\frac{f(x+\Delta x,y,z)-f(x,y,z)}{\Delta x}=\frac1{\Delta x}\int_x^{x+\Delta x}P(t,y,z)\,dt\longrightarrow P(x,y,z)\]
+<p>by the Fundamental Theorem of Calculus. The same argument gives \(f_y=Q\) and \(f_z=R\), so \(\nabla f=\mathbf F\). (On the hill, this \(f\) is \(-800\) N times your height above the trailhead.)</p>
+</details>
+
+<div class="big-idea">For a field on an open connected region, <strong>conservative</strong>, <strong>path independent</strong>, and <strong>zero around every closed path</strong> all mean the same thing.</div>
+
+<h3>The component test</h3>
+
+<p>If \(\mathbf F=\nabla f\) then mixed partials of \(f\) agree (Clairaut), so:</p>
+<ul>
+  <li>in the plane, \(\dfrac{\partial P}{\partial y}=\dfrac{\partial Q}{\partial x}\);</li>
+  <li>in space, \(\dfrac{\partial P}{\partial y}=\dfrac{\partial Q}{\partial x}\), \(\dfrac{\partial P}{\partial z}=\dfrac{\partial R}{\partial x}\), and \(\dfrac{\partial Q}{\partial z}=\dfrac{\partial R}{\partial y}\).</li>
+</ul>
+<p>If the components have continuous first partials on a <strong>simply connected</strong> region (one where every closed loop can be shrunk to a point without leaving it; the plane is, the plane with the origin removed is not), then these equations are also <em>sufficient</em>. Where the region has a hole the test can pass and the field still fail to be conservative, so watch the domain.</p>
+
+<div class="pc" data-kind="choice" data-answer="b">
+  <div class="tag">Predict, then check: a hole in the domain</div>
+  <p>The vortex \(\mathbf F=\dfrac{\langle -y,\ x\rangle}{x^2+y^2}\) is defined everywhere except the origin, and there \(P_y=Q_x=\dfrac{y^2-x^2}{(x^2+y^2)^2}\). From \((1,0)\) to \((-1,0)\), path 1 passes above the origin and path 2 below it. Predict the two works.</p>
+  <div class="opts">
+    <button type="button" data-choice="a" data-fb="That is what the test would promise on a simply connected region. The plane minus the origin is not one: a loop around the origin cannot shrink to a point without crossing the hole.">Equal, since the test passes</button>
+    <button type="button" data-choice="b" data-fb="Above: \(\pi\). Below: \(-\pi\). Out along one and back along the other circles the origin once, giving \(2\pi\), not 0. The field turns you around the hole, and the test cannot see the hole. So this field is not conservative, even though the test passes everywhere it is defined.">Different</button>
+    <button type="button" data-choice="c" data-fb="Each path runs with the swirl or against it the whole way, so neither is 0: above gives \(\pi\), below gives \(-\pi\).">Both zero</button>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+  <p style="margin-top:.4rem"><button type="button" class="btn-s ghost" data-showme data-lab="lab1" data-preset="vortex">Show me in the lab</button></p>
+</div>
+
+<div class="pc" data-kind="sort" data-ok="All four sorted. The two that pass have potentials \(e^{xy}\) and \(x^2z+y\sin z\); the next part shows how to find the second.">
+  <div class="tag">Sort them</div>
+  <p>For each field, run the component test (in space, all three equations).</p>
+  <div class="sort-row" data-answer="pass" data-why="\(P_y=e^{xy}+xye^{xy}=Q_x\). Passes on the whole plane, and \(f=e^{xy}\)." data-nudge="Product rule: \(\partial_y(ye^{xy})=e^{xy}+xye^{xy}\). Compare with \(\partial_x(xe^{xy})\).">
+    <div>\(\langle ye^{xy},\ xe^{xy}\rangle\)</div>
+    <div><button type="button" data-v="pass">passes the test</button><button type="button" data-v="fail">not conservative</button></div>
+    <div class="sort-why"></div>
+  </div>
+  <div class="sort-row" data-answer="fail" data-why="\(P_y=z=Q_x\), but \(P_z=y\) and \(R_x=2xy\). One failure is enough." data-nudge="The first equation passes. Check \(P_z\) against \(R_x\).">
+    <div>\(\langle yz,\ xz,\ x^2y\rangle\)</div>
+    <div><button type="button" data-v="pass">passes the test</button><button type="button" data-v="fail">not conservative</button></div>
+    <div class="sort-why"></div>
+  </div>
+  <div class="sort-row" data-answer="pass" data-why="\(P_y=0=Q_x\), \(P_z=2x=R_x\), \(Q_z=\cos z=R_y\). All three hold on all of space." data-nudge="Compute all three pairs: \(P_y,Q_x\); \(P_z,R_x\); \(Q_z,R_y\).">
+    <div>\(\langle 2xz,\ \sin z,\ x^2+y\cos z\rangle\)</div>
+    <div><button type="button" data-v="pass">passes the test</button><button type="button" data-v="fail">not conservative</button></div>
+    <div class="sort-why"></div>
+  </div>
+  <div class="sort-row" data-answer="fail" data-why="\(P_y=2y\), \(Q_x=2x\): equal only on the line \(y=x\), and the test needs them equal on an open region." data-nudge="Compute \(P_y\) and \(Q_x\). Are they equal at \((0,1)\)?">
+    <div>\(\langle y^2,\ x^2\rangle\)</div>
+    <div><button type="button" data-v="pass">passes the test</button><button type="button" data-v="fail">not conservative</button></div>
+    <div class="sort-why"></div>
+  </div>
+  <div class="pc-fb" aria-live="polite"></div>
+</div>
+
+<details class="worked"><summary>Worked example: is \(\mathbf F(x,y)=\langle y^2,\ x^2\rangle\) conservative?</summary>
+<p>\(P_y=2y\) but \(Q_x=2x\). These are not equal (for example at \((0,1)\) they are \(2\) and \(0\)), so \(\mathbf F\) is <strong>not conservative</strong>. And you can see path dependence directly. From \((0,0)\) to \((1,1)\), the straight line \(y=x\) gives \(\int_0^1 2x^2\,dx=\tfrac23\). Along the \(x\)-axis to \((1,0)\) and then straight up, the first leg contributes \(0\) and the second contributes \(\int_0^1 1\,dy=1\).</p>
+</details>
+
+<details class="worked"><summary>Worked example: is \(\mathbf F(x,y,z)=\langle yz,\ xz,\ x^2y\rangle\) conservative?</summary>
+<p>\(P_y=z=Q_x\), so far so good. But \(P_z=y\) while \(R_x=2xy\). One failed equation is enough: <strong>not conservative.</strong></p>
+</details>
+
+<h3>Finding a potential function</h3>
+
+<p>If the test passes, build \(f\) one variable at a time: integrate \(P\) in \(x\), which leaves an unknown "constant" \(g(y,z)\); match \(f_y\) with \(Q\) to find \(g\) up to a function of \(z\); match \(f_z\) with \(R\) to finish.</p>
+
+<details class="worked" open><summary>Worked example: \(\mathbf F(x,y,z)=\langle 2xz,\ \sin z,\ x^2+y\cos z\rangle\)</summary>
+<p>Show that \(\mathbf F\) is conservative and find a potential.</p>
+<p><em>Test.</em> \(P_y=0=Q_x\); \(P_z=2x=R_x\); \(Q_z=\cos z=R_y\). All three hold.</p>
+<p><em>Step 1.</em> \(f=\int 2xz\,dx=x^2z+g(y,z)\).</p>
+<p><em>Step 2.</em> \(f_y=g_y\) must equal \(Q=\sin z\), so \(g=y\sin z+h(z)\) and \(f=x^2z+y\sin z+h(z)\).</p>
+<p><em>Step 3.</em> \(f_z=x^2+y\cos z+h'(z)\) must equal \(R=x^2+y\cos z\), so \(h'=0\).</p>
+<p>A potential is \(f(x,y,z)=x^2z+y\sin z\). For instance, the work along any path from \((0,0,0)\) to \((1,2,\pi/2)\) is \(f(1,2,\pi/2)-f(0,0,0)=\tfrac\pi2+2\).</p>
+</details>
+
+<details class="worked"><summary>Worked example: \(\mathbf F(x,y)=\langle 2x\cos y,\ -x^2\sin y\rangle\) along \(\mathbf r(t)=\langle t^2,\pi t\rangle\) (the lab's first field)</summary>
+<p>Evaluate \(\displaystyle\int_C\mathbf F\cdot d\mathbf r\), where \(C\) is \(\mathbf r(t)=\langle t^2,\pi t\rangle\), \(0\le t\le1\).</p>
+<p>\(P_y=-2x\sin y=Q_x\), so the field passes the test. Integrating \(P\) in \(x\) gives \(f=x^2\cos y+g(y)\), and \(f_y=-x^2\sin y+g'(y)=Q\) forces \(g'=0\). Take \(f=x^2\cos y\). The curve starts at \(\mathbf r(0)=(0,0)\) and ends at \(\mathbf r(1)=(1,\pi)\), so</p>
+\[\begin{aligned}\int_C\mathbf F\cdot d\mathbf r&=f(1,\pi)-f(0,0)\\&=1\cdot(-1)-0=-1.\end{aligned}\]
+</details>
+
+<div class="pc" data-kind="typed" data-syntax="Type an expression in x, y and z, such as x*e^z + y, or a number such as 2 or ln(2)." data-ok="\(f=xe^z+y\) (plus any constant): \(f_x=e^z\), \(f_y=1\), \(f_z=xe^z\). The path has three straight segments, but only its two ends matter: \(f(1,0,\ln2)-f(0,1,0)=(1\cdot2+0)-(0+1)=1\)." data-hint="Step 1: \(\int e^z\,dx=xe^z+g(y,z)\). Step 2: \(f_y=g_y\) must equal 1. Step 3: check \(f_z\) against \(R=xe^z\). Then evaluate \(f\) at the last point minus \(f\) at the first; note \(e^{\ln 2}=2\).">
+  <div class="tag">Worked example, you drive</div>
+  <p>\(\mathbf F(x,y,z)=\langle e^z,\ 1,\ xe^z\rangle\) passes the test (\(P_y=Q_x=0\), \(P_z=R_x=e^z\), \(Q_z=R_y=0\)). Find a potential, then the work along the path from \((0,1,0)\) to \((1,1,0)\) to \((1,0,0)\) to \((1,0,\ln2)\) (three straight segments).</p>
+  <p class="drive-row"><label>\(f(x,y,z)=\) <input data-fn="x*exp(z)+y" aria-label="a potential function f(x, y, z)" placeholder="e.g. x*y + z" spellcheck="false"></label></p>
+  <p class="drive-row"><label>\(\displaystyle\int_C\mathbf F\cdot d\mathbf r=\) <input data-check="1" aria-label="the work along the path" placeholder="a number"></label>
+  <button type="button" class="btn-s" data-act="check">Check</button></p>
+  <div class="pc-fb" aria-live="polite"></div>
+</div>
+
+<h3>Practice &amp; reflection</h3>
+<ol class="practice">
+  <li>Explain why the Fundamental Theorem for Line Integrals is the "same theorem" as the Fundamental Theorem of Calculus. What plays the role of the antiderivative? What plays the role of the interval? <button type="button" class="reveal" aria-controls="r1" aria-expanded="false" data-label="One answer">One answer</button>
+    <div class="reveal-box" id="r1" hidden>The potential \(f\) plays the antiderivative (its gradient is the field you integrate, just as an antiderivative's derivative is the integrand), and the path's two endpoints play the ends of the interval. The proof even uses the one-variable theorem: along the path, \(\nabla f\cdot\mathbf r'(t)\) is the derivative of \(f(\mathbf r(t))\).</div></li>
+  <li>Someone hands you \(\int_C\mathbf F\cdot d\mathbf r\) along a complicated path and asks for the value. What is the first thing you should check, and why? <button type="button" class="reveal" aria-controls="r2" aria-expanded="false" data-label="One answer">One answer</button>
+    <div class="reveal-box" id="r2" hidden>Check whether \(\mathbf F\) is conservative (the component test, on a simply connected region). If it is, find a potential and subtract its values at the endpoints; the complicated path never has to be parametrized.</div></li>
+  <li>If \(\mathbf F\) is conservative and \(C\) is a closed loop, what is \(\oint_C\mathbf F\cdot d\mathbf r\)? Which of the equivalent statements about conservative fields does that use? <button type="button" class="reveal" aria-controls="r3" aria-expanded="false" data-label="One answer">One answer</button>
+    <div class="reveal-box" id="r3" hidden>It is 0: the start and end are the same point, so \(f(\text{end})-f(\text{start})=0\). It uses "conservative \(\Rightarrow\) path independent \(\Leftrightarrow\) zero around every closed path" (the round trip on the hill).</div></li>
+  <li>In a field that is <em>not</em> conservative, two particular paths from \(A\) to \(B\) might still give the same work by coincidence. Why does that not make the field path independent? <button type="button" class="reveal" aria-controls="r4" aria-expanded="false" data-label="One answer">One answer</button>
+    <div class="reveal-box" id="r4" hidden>Path independence is a claim about <em>every</em> pair of paths between <em>every</em> pair of points. One pair agreeing is one closed loop with integral 0; a single other loop with a nonzero integral breaks it. (In the lab, with \(\langle y^2,x^2\rangle\), you can bend path 2 until its work equals path 1's, and the field is still not conservative.)</div></li>
+  <li>The plane is simply connected and the plane with the origin removed is not. Why might the second fact make you cautious about concluding "conservative" from the component test? <button type="button" class="reveal" aria-controls="r5" aria-expanded="false" data-label="One answer">One answer</button>
+    <div class="reveal-box" id="r5" hidden>On a region with a hole the test only checks the field point by point, and a loop around the hole can still collect a nonzero total. The vortex in the lab passes the test everywhere it is defined, yet going around the origin once gives \(2\pi\).</div></li>
+</ol>
+
+<p>Before the homework: open the full-screen demo below, draw two different paths from A to B, predict whether the two works will agree, and compare each with the change in the potential when the field has one.</p>
+
+</div>
+
+<script src="15-3.js"></script>

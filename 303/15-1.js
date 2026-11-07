@@ -1,4 +1,4 @@
-/* MATH 303 §15.1 preview page: river scene, field labs, predict-then-check cards.
+/* MATH 303 §15.1 page: river scene, field labs, predict-then-check cards.
    Plain JS, no libraries (MathJax is loaded by the site). */
 (function () {
   'use strict';
