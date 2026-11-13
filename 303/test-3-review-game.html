@@ -1,0 +1,2116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test 3 Review Game - Math 303 - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        /* ---------- shell ---------- */
+        .prompt-box {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .prompt-box h3 {
+            margin-top: 0;
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+
+        .note {
+            color: var(--color-mountain-gray, #6E6E6E);
+            font-size: 0.92rem;
+        }
+
+        button {
+            font: inherit;
+            font-weight: 600;
+            padding: 0.55rem 1.15rem;
+            border-radius: 6px;
+            border: 1px solid var(--color-primary, #F36E24);
+            background: var(--color-primary, #F36E24);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+        }
+
+        button:hover:not(:disabled) {
+            background: var(--color-primary-dark, #CD5920);
+            border-color: var(--color-primary-dark, #CD5920);
+        }
+
+        button:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
+
+        button.ghost {
+            background: #fff;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        button.ghost:hover:not(:disabled) {
+            background: #fff5ef;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        /* ---------- scoreboard ---------- */
+        .scorebar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 2rem;
+            align-items: center;
+            padding: 0.9rem 1.25rem;
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
+        }
+
+        .stat .k {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .stat .v {
+            font-size: 1.35rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat .v.hot {
+            color: var(--color-primary, #F36E24);
+        }
+
+        .bar-wrap {
+            flex: 1 1 160px;
+            min-width: 140px;
+        }
+
+        .bar {
+            height: 10px;
+            border-radius: 999px;
+            background: #eceef1;
+            overflow: hidden;
+        }
+
+        .bar > span {
+            display: block;
+            height: 100%;
+            width: 0;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #F9A01B, #F36E24);
+            transition: width 0.35s ease;
+        }
+
+        /* ---------- stage map ---------- */
+        .map {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .stage {
+            text-align: left;
+            padding: 1rem 1.1rem;
+            border-radius: 8px;
+            border: 1px solid #e3e6ea;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+        }
+
+        .stage:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.09);
+            border-color: var(--color-primary, #F36E24);
+            background: #fff;
+        }
+
+        .stage .badge {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .stage .nm {
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        .stage .sub {
+            font-size: 0.85rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .stage .res {
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-top: 0.2rem;
+        }
+
+        .stage.done {
+            border-color: var(--color-accent-green, #008552);
+            background: #f4fbf7;
+        }
+
+        .stage.done .res {
+            color: var(--color-accent-green, #008552);
+        }
+
+        .stage.current {
+            border-color: var(--color-primary, #F36E24);
+            box-shadow: 0 0 0 3px rgba(243, 110, 36, 0.14);
+        }
+
+        /* ---------- question card ---------- */
+        .qhead {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .qhead .rnd {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: var(--color-primary, #F36E24);
+        }
+
+        .qhead .cnt {
+            font-size: 0.8rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .qtext {
+            font-size: 1.12rem;
+            line-height: 1.55;
+            margin: 0.35rem 0 1.1rem;
+        }
+
+        .qtext code {
+            background: #f2f4f6;
+            padding: 0.08em 0.35em;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        .figbox {
+            margin: 0 0 1.2rem;
+            padding: 1rem;
+            background: #fafbfc;
+            border: 1px solid #eceef1;
+            border-radius: 8px;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .figbox svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* choices */
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .choice {
+            text-align: left;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #dde1e6;
+            background: #fff;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            line-height: 1.5;
+            transition: border-color 0.12s ease, background 0.12s ease;
+        }
+
+        .choice:hover:not(:disabled) {
+            border-color: var(--color-primary, #F36E24);
+            background: #fffaf6;
+        }
+
+        .choice .ltr {
+            flex: 0 0 auto;
+            width: 1.6rem;
+            height: 1.6rem;
+            border-radius: 50%;
+            background: #eceef1;
+            color: #444;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: grid;
+            place-items: center;
+        }
+
+        .choice.sel {
+            border-color: var(--color-primary, #F36E24);
+            background: #fff3ea;
+        }
+
+        .choice.sel .ltr {
+            background: var(--color-primary, #F36E24);
+            color: #fff;
+        }
+
+        .choice.right {
+            border-color: var(--color-accent-green, #008552);
+            background: #f0faf5;
+        }
+
+        .choice.right .ltr {
+            background: var(--color-accent-green, #008552);
+            color: #fff;
+        }
+
+        .choice.wrong {
+            border-color: #c0392b;
+            background: #fdf3f2;
+        }
+
+        .choice.wrong .ltr {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        /* numeric inputs */
+        .fields {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .field label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .field input {
+            font: inherit;
+            font-size: 1.1rem;
+            padding: 0.5rem 0.7rem;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            width: 9rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .field input:focus {
+            outline: 2px solid rgba(243, 110, 36, 0.35);
+            border-color: var(--color-primary, #F36E24);
+        }
+
+        .field input.right {
+            border-color: var(--color-accent-green, #008552);
+            background: #f0faf5;
+        }
+
+        .field input.wrong {
+            border-color: #c0392b;
+            background: #fdf3f2;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            align-items: center;
+        }
+
+        /* feedback */
+        .fb {
+            margin-top: 1.2rem;
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            border-left: 4px solid #ccc;
+            background: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        .fb.good {
+            border-left-color: var(--color-accent-green, #008552);
+            background: #f2faf6;
+        }
+
+        .fb.bad {
+            border-left-color: #c0392b;
+            background: #fdf4f3;
+        }
+
+        .fb.near {
+            border-left-color: var(--color-accent-sunrise, #F9A01B);
+            background: #fffaf0;
+        }
+
+        .fb .hd {
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .fb p {
+            margin: 0.5rem 0 0;
+        }
+
+        .fb .why {
+            margin-top: 0.7rem;
+            padding-top: 0.7rem;
+            border-top: 1px dashed #d8dce1;
+            font-size: 0.95rem;
+        }
+
+        .pts {
+            font-weight: 700;
+            color: var(--color-accent-green, #008552);
+            white-space: nowrap;
+        }
+
+        /* results */
+        .resultgrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.9rem;
+            margin: 1.2rem 0 1.5rem;
+        }
+
+        .rcard {
+            border: 1px solid #e3e6ea;
+            border-radius: 8px;
+            padding: 0.9rem 1rem;
+            background: #fff;
+        }
+
+        .rcard .nm {
+            font-weight: 700;
+            margin-bottom: 0.15rem;
+        }
+
+        .rcard .sc {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .rcard .tip {
+            font-size: 0.85rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+            margin-top: 0.3rem;
+        }
+
+        .rcard.weak {
+            border-color: var(--color-accent-sunrise, #F9A01B);
+            background: #fffaf0;
+        }
+
+        .bigscore {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--color-primary, #F36E24);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 560px) {
+            .scorebar {
+                position: static;
+                gap: 0.6rem 1.25rem;
+            }
+
+            .field input {
+                width: 7rem;
+            }
+        }
+        /* MATH 303: wide math scrolls inside its own box on phones instead of widening the page */
+        mjx-container[display="true"] { display: block; overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: 2px 0; }
+        .qtext mjx-container, .choice mjx-container, .fb mjx-container { max-width: 100%; }
+        .choice > span:last-child { min-width: 0; }
+    </style>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+            options: { enableMenu: false },
+            startup: {
+                typeset: false,
+                ready: function () {
+                    MathJax.startup.defaultReady();
+                    MathJax.startup.promise.then(function () { if (typeof typeset === 'function') typeset(); });
+                }
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 303</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Test 3 Review Game</h1>
+            <p>Seven stages, Sections 14.1&ndash;15.2 &mdash; double integrals, polar coordinates, triple integrals,
+                cylindrical and spherical coordinates, change of variables, conservative fields, and line integrals.
+                Every run builds new problems, so you can play it as many times as you like.</p>
+        </div>
+    </header>
+
+    <main class="container page-content">
+
+        <div class="prompt-box" id="intro">
+            <h3>How this works</h3>
+            <ul>
+                <li>Seven stages, 34 questions. Each stage drills one section of Chapter 14 or 15.</li>
+                <li>You get <strong>two tries</strong> per question &mdash; 100 points on the first, 50 on the
+                    second.</li>
+                <li>Answer three in a row and your <strong>streak bonus</strong> starts stacking.</li>
+                <li>After every question you get the reasoning, not just the answer. That is the part that shows
+                    up on the test.</li>
+            </ul>
+            <p class="note">Nothing is saved or sent anywhere &mdash; refresh and you get a brand new set of
+                problems.</p>
+        </div>
+
+        <!-- scoreboard -->
+        <div class="scorebar" id="scorebar">
+            <div class="stat">
+                <span class="k">Score</span>
+                <span class="v" id="s-score">0</span>
+            </div>
+            <div class="stat">
+                <span class="k">Streak</span>
+                <span class="v" id="s-streak">0</span>
+            </div>
+            <div class="stat">
+                <span class="k">Correct</span>
+                <span class="v" id="s-correct">0 / 0</span>
+            </div>
+            <div class="bar-wrap">
+                <span class="k" style="font-size:0.7rem;font-weight:700;letter-spacing:0.08em;
+                    text-transform:uppercase;color:#6E6E6E;">Progress</span>
+                <div class="bar"><span id="s-bar"></span></div>
+            </div>
+        </div>
+
+        <!-- stage map -->
+        <section class="panel" id="mapPanel">
+            <h2>Pick a stage</h2>
+            <p class="note">Work straight through, or jump to whatever you feel shakiest on. Typed answers can be whole numbers, decimals, fractions like 3/8, square roots like sqrt(5), or multiples of pi like 4pi or 3pi/2.</p>
+            <div class="map" id="map"></div>
+            <div class="actions">
+                <button id="btn-start">Start from the beginning</button>
+                <button class="ghost" id="btn-reset">New problem set</button>
+            </div>
+        </section>
+
+        <!-- question -->
+        <section class="panel hidden" id="qPanel">
+            <div class="qhead">
+                <span class="rnd" id="q-round"></span>
+                <span class="cnt" id="q-count"></span>
+            </div>
+            <div class="qtext" id="q-text"></div>
+            <div id="q-fig"></div>
+            <div id="q-body"></div>
+            <div class="actions">
+                <button id="btn-check">Check answer</button>
+                <button class="ghost hidden" id="btn-next">Next question</button>
+                <button class="ghost" id="btn-quit">Back to the map</button>
+            </div>
+            <div id="q-fb"></div>
+        </section>
+
+        <!-- results -->
+        <section class="panel hidden" id="rPanel">
+            <h2 id="r-title">Run complete</h2>
+            <div class="bigscore" id="r-score">0</div>
+            <p class="note" id="r-line"></p>
+            <div class="resultgrid" id="r-grid"></div>
+            <div id="r-advice"></div>
+            <div class="actions">
+                <button id="btn-again">Play again with new problems</button>
+                <button class="ghost" id="btn-map">Back to the map</button>
+            </div>
+        </section>
+
+    </main>
+
+
+    <script>
+        'use strict';
+
+        /* =======================================================
+           small helpers
+           ======================================================= */
+        function ri(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+        function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+        function shuffle(a) {
+            a = a.slice();
+            for (var i = a.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var t = a[i]; a[i] = a[j]; a[j] = t;
+            }
+            return a;
+        }
+        function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = b; b = a % b; a = t; } return a; }
+        function fmt(x) { return String(Math.round(x * 1e6) / 1e6); }
+
+        /* math markup: M() is inline, MD() is display; tp() writes a signed sum of terms */
+        function M(t) { return '\\(' + t + '\\)'; }
+        function MD(t) { return '\\[' + t + '\\]'; }
+        function tp(terms) {
+            var s = '';
+            terms.forEach(function (tm) {
+                var c = tm[0], mono = tm[1];
+                if (c === 0) return;
+                var a = Math.abs(c);
+                var body = mono === '' ? String(a) : (a === 1 ? '' : String(a)) + mono;
+                if (s === '') s = (c < 0 ? '-' : '') + body;
+                else s += (c < 0 ? ' - ' : ' + ') + body;
+            });
+            return s || '0';
+        }
+        function pw(v, n) { return n === 0 ? '' : (n === 1 ? v : v + '^{' + n + '}'); }
+        /* reduced fraction n/d (and its value) */
+        function fr(n, d) {
+            if (d < 0) { n = -n; d = -d; }
+            var g = gcd(n, d) || 1;
+            return { n: n / g, d: d / g, v: n / d };
+        }
+        function ftex(n, d) {
+            var f = fr(n, d);
+            if (f.d === 1) return String(f.n);
+            return (f.n < 0 ? '-' : '') + '\\frac{' + Math.abs(f.n) + '}{' + f.d + '}';
+        }
+        /* (n/d) pi as TeX */
+        function pitex(n, d) {
+            var f = fr(n, d), a = Math.abs(f.n);
+            if (f.n === 0) return '0';
+            var num = (a === 1 ? '' : a) + '\\pi', s = f.n < 0 ? '-' : '';
+            return f.d === 1 ? s + num : s + '\\frac{' + num + '}{' + f.d + '}';
+        }
+        function fadd(a, b) { return fr(a.n * b.d + b.n * a.d, a.d * b.d); }
+        function vec(a, b, c) {
+            return '\\langle ' + a + ', ' + b + (c === undefined ? '' : ', ' + c) + ' \\rangle';
+        }
+        function pt(a, b, c) { return '(' + a + ', ' + b + (c === undefined ? '' : ', ' + c) + ')'; }
+        function par(a) { return a < 0 ? '(' + a + ')' : String(a); }
+        function kx(k, v) { return k === 1 ? v : (k === -1 ? '-' + v : k + v); }
+        /* integral sign with limits; angle limits are written pi/2 (a stacked fraction is unreadable that small) */
+        function I(lo, hi) {
+            var flat = function (b) { return String(b).replace(/\\frac\{(\d*\\pi)\}\{(\d+)\}/g, '$1/$2'); };
+            return '\\int_{' + flat(lo) + '}^{' + flat(hi) + '}';
+        }
+        function mc(list) { return shuffle(list); }
+
+        /* polynomials in x, y as [[coef, i, j], ...] */
+        function pnorm(p) {
+            var m = {};
+            p.forEach(function (t) { var k = t[1] + ',' + t[2]; m[k] = (m[k] || 0) + t[0]; });
+            var out = [];
+            Object.keys(m).forEach(function (k) {
+                if (m[k] !== 0) { var e = k.split(','); out.push([m[k], +e[0], +e[1]]); }
+            });
+            out.sort(function (a, b) { return (b[1] + b[2]) - (a[1] + a[2]) || b[1] - a[1]; });
+            return out;
+        }
+        function pdx(p) { return pnorm(p.filter(function (t) { return t[1] > 0; }).map(function (t) { return [t[0] * t[1], t[1] - 1, t[2]]; })); }
+        function pdy(p) { return pnorm(p.filter(function (t) { return t[2] > 0; }).map(function (t) { return [t[0] * t[2], t[1], t[2] - 1]; })); }
+        function peq(p, q) { return JSON.stringify(pnorm(p)) === JSON.stringify(pnorm(q)); }
+        function padd(p, q) { return pnorm(p.concat(q)); }
+        function ptex(p) { return tp(pnorm(p).map(function (t) { return [t[0], pw('x', t[1]) + pw('y', t[2])]; })); }
+        function psym(p) {
+            var q = pnorm(p);
+            return q.length ? q.map(function (t) { return '(' + t[0] + ')*x**' + t[1] + '*y**' + t[2]; }).join('+') : '0';
+        }
+        function pval(p, x, y) { return p.reduce(function (s, t) { return s + t[0] * Math.pow(x, t[1]) * Math.pow(y, t[2]); }, 0); }
+
+        /* typed answers: numbers, fractions like 3/8, sqrt(5), 2sqrt(3), pi, 4pi, 3pi/2 */
+        function parseNum(s) {
+            s = String(s).toLowerCase().replace(/−/g, '-').replace(/[,\s$]/g, '')
+                .replace(/√/g, 'sqrt').replace(/π/g, 'pi').replace(/×/g, '*');
+            if (s === '') return NaN;
+            if (!/^[0-9+\-*/^().a-z]*$/.test(s)) return NaN;
+            var words = s.match(/[a-z]+/g) || [];
+            if (words.some(function (w) { return w !== 'sqrt' && w !== 'pi'; })) return NaN;
+            s = s.replace(/sqrt(\d+(?:\.\d+)?)/g, 'sqrt($1)');
+            s = s.replace(/(\d|\)|pi)(?=sqrt|pi|\()/g, '$1*');
+            s = s.replace(/\^/g, '**').replace(/sqrt/g, 'Math.sqrt').replace(/pi/g, 'Math.PI');
+            try {
+                var v = Function('"use strict"; return (' + s + ');')();
+                return (typeof v === 'number' && isFinite(v)) ? v : NaN;
+            } catch (e) { return NaN; }
+        }
+        /* exact match, or the exact answer rounded to two or more decimal places */
+        function matches(v, a) {
+            if (!isFinite(v)) return false;
+            return Math.abs(v - a) <= 1e-6 * Math.max(1, Math.abs(a)) || Math.abs(v - a) <= 0.005 + 1e-9;
+        }
+        var PI_HINT = ' (Type ' + M('\\pi') + ' as <em>pi</em>, e.g. <em>3pi/2</em>.)';
+
+        /* =======================================================
+           Stage 1, Section 14.1: double integrals
+           ======================================================= */
+        function stageDouble() {
+            var qs = [];
+
+            /* --- 1. an iterated integral over a rectangle --- */
+            (function () {
+                var p = pick([1, 2, 3]), q = pick([1, 2, 3]), a = pick([1, 2, 3]), b = pick([1, 2, 4]);
+                var K = fr(a * q * q * q + 3 * b * q, 3);
+                var ans = fr(a * p * p * q * q * q + 3 * b * p * p * q, 6);
+                var ftx = tp([[a, 'xy^2'], [b, 'x']]);
+                qs.push({
+                    prompt: 'Evaluate ' + M('\\displaystyle' + I(0, p) + I(0, q) + ' (' + ftx + ')\\,dy\\,dx') + '.',
+                    type: 'num', labels: ['value'], answer: [ans.v], show: [M(ftex(ans.n, ans.d))],
+                    meta: { kind: 'iter2', p: p, q: q, a: a, b: b,
+                            region: { c: 'cart', b: [['x', '0', String(p)], ['y', '0', String(q)]] }, integrand: a + '*x*y**2+' + b + '*x' },
+                    explain: function () {
+                        return '<p>Inside first, with ' + M('x') + ' held constant:</p>' +
+                            MD(I(0, q) + ' (' + ftx + ')\\,dy = \\Bigl[' + tp([[a, 'x\\frac{y^3}{3}'], [b, 'xy']]) + '\\Bigr]_0^{' + q + '} = ' +
+                                (K.d === 1 ? kx(K.n, 'x') : ftex(K.n, K.d) + 'x')) +
+                            MD(I(0, p) + (K.d === 1 ? kx(K.n, 'x') : ftex(K.n, K.d) + 'x') + '\\,dx = ' + ftex(K.n, K.d) + '\\cdot\\frac{' + (p * p) + '}{2} = ' + ftex(ans.n, ans.d)) +
+                            '<p class="why">Over a rectangle the limits are all numbers, and Fubini says either order gives the same answer.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. a midpoint estimate --- */
+            (function () {
+                var a = pick([1, 2]), b = pick([1, 2]), c = pick([10, 12, 16, 20]), s = pick([1, -1]);
+                var xs = [a / 2, 3 * a / 2], ys = [b / 2, 3 * b / 2];
+                var ftx = tp([[c, ''], [s, 'x^2y']]);
+                var f = function (x, y) { return c + s * x * x * y; };
+                var vals = [], sum = 0;
+                xs.forEach(function (x) { ys.forEach(function (y) { var v = f(x, y); vals.push([x, y, v]); sum += v; }); });
+                var ans = a * b * sum;
+                qs.push({
+                    prompt: 'Estimate ' + M('\\displaystyle\\iint_R (' + ftx + ')\\,dA') + ' over ' + M('R = [0,' + (2 * a) + ']\\times[0,' + (2 * b) + ']') +
+                        ' with the midpoint rule, cutting ' + M('R') + ' into four equal rectangles (two across, two up).',
+                    type: 'num', labels: ['estimate'], answer: [ans], show: [M(fmt(ans))],
+                    meta: { kind: 'midpoint', a: a, b: b, c: c, s: s, f: c + '+(' + s + ')*x**2*y',
+                            region: { c: 'cart', b: [['x', '0', String(2 * a)], ['y', '0', String(2 * b)]] }, integrand: c + '+(' + s + ')*x**2*y' },
+                    explain: function () {
+                        return '<p>Each small rectangle is ' + a + ' by ' + b + ', so ' + M('\\Delta A = ' + (a * b)) + '. The midpoints are ' +
+                            M(vals.map(function (r) { return pt(fmt(r[0]), fmt(r[1])); }).join(',\\ ')) + ', where ' + M('f') + ' is ' +
+                            M(vals.map(function (r) { return fmt(r[2]); }).join(',\\ ')) + '.</p>' +
+                            MD('\\iint_R f\\,dA \\approx ' + (a * b) + '\\,(' + fmt(sum) + ') = ' + fmt(ans)) +
+                            '<p class="why">Midpoint rule: sum ' + M('f(\\text{midpoint})\\,\\Delta A') + ' over the pieces.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. a region between a line and a parabola --- */
+            (function () {
+                var k = pick([1, 2, 3]), what = pick(['area', 'x', 'y']), c = what === 'x' ? pick([1, 2, 3]) : 1;
+                var ans, inner, ask, ig;
+                if (what === 'area') { ans = fr(k * k * k, 6); inner = tp([[k, 'x'], [-1, 'x^2']]); ask = 'the area of ' + M('R'); ig = '1'; }
+                else if (what === 'x') {
+                    ans = fr(c * Math.pow(k, 4), 12); inner = tp([[c * k, 'x^2'], [-c, 'x^3']]);
+                    ask = M('\\displaystyle\\iint_R ' + kx(c, 'x') + '\\,dA'); ig = c + '*x';
+                } else {
+                    ans = fr(Math.pow(k, 5), 15); inner = '\\frac{' + tp([[k * k, 'x^2'], [-1, 'x^4']]) + '}{2}';
+                    ask = M('\\displaystyle\\iint_R y\\,dA'); ig = 'y';
+                }
+                var line = 'y = ' + kx(k, 'x');
+                qs.push({
+                    prompt: M('R') + ' is the region between the line ' + M(line) + ' and the parabola ' + M('y = x^2') + '. Find ' + ask + '.',
+                    type: 'num', labels: [what === 'area' ? 'area' : 'value'], answer: [ans.v], show: [M(ftex(ans.n, ans.d))],
+                    meta: { kind: 'between', k: k, what: what, c: c,
+                            region: { c: 'cart', b: [['x', '0', String(k)], ['y', 'x**2', k + '*x']] }, integrand: ig },
+                    explain: function () {
+                        return '<p>The curves meet where ' + M('x^2 = ' + kx(k, 'x')) + ', at ' + M('x = 0') + ' and ' + M('x = ' + k) +
+                            '. In between, the line is on top, so</p>' +
+                            MD(I(0, k) + I('x^2', kx(k, 'x')) + ' ' + (what === 'area' ? '1' : (what === 'x' ? kx(c, 'x') : 'y')) + '\\,dy\\,dx = ' +
+                                I(0, k) + '\\left(' + inner + '\\right)dx = ' + ftex(ans.n, ans.d)) +
+                            '<p class="why">Bottom curve to top curve inside, then the ' + M('x') + '-values where they cross outside.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. reverse the order (multiple choice) --- */
+            (function () {
+                var k = pick([2, 3]), fam = pick(['A', 'D']), toXY = Math.random() < 0.5;
+                var K2 = String(k * k);
+                /* a bound: [outer var, lo, hi, inner var, lo, hi], each lo/hi as [tex, sympy] */
+                function B(ov, olo, ohi, iv, ilo, ihi) { return { ov: ov, olo: olo, ohi: ohi, iv: iv, ilo: ilo, ihi: ihi }; }
+                var n = function (v) { return [String(v), String(v)]; };
+                var YX, XY, wrong;
+                if (fam === 'A') {
+                    var line = [kx(k, 'x'), k + '*x'], par2 = ['x^2', 'x**2'], yk = ['\\frac{y}{' + k + '}', 'y/' + k], sq = ['\\sqrt{y}', 'sqrt(y)'];
+                    YX = B('x', n(0), n(k), 'y', par2, line);
+                    XY = B('y', n(0), n(K2), 'x', yk, sq);
+                    wrong = toXY ? [
+                        B('y', n(0), n(k), 'x', par2, line),        /* only swapped dx and dy */
+                        B('y', n(0), n(K2), 'x', sq, yk),           /* left and right curves flipped */
+                        B('y', n(0), n(k), 'x', yk, sq)             /* kept the old outer limits */
+                    ] : [
+                        B('x', n(0), n(K2), 'y', yk, sq),
+                        B('x', n(0), n(k), 'y', line, par2),
+                        B('x', n(0), n(K2), 'y', par2, line)
+                    ];
+                } else {
+                    var top = [tp([[k * k, ''], [-1, 'x^2']]), K2 + '-x**2'], rt = ['\\sqrt{' + K2 + ' - y}', 'sqrt(' + K2 + '-y)'];
+                    YX = B('x', n(0), n(k), 'y', n(0), top);
+                    XY = B('y', n(0), n(K2), 'x', n(0), rt);
+                    wrong = toXY ? [
+                        B('y', n(0), n(k), 'x', n(0), top),
+                        B('y', n(0), n(k), 'x', n(0), rt),
+                        B('y', n(0), n(K2), 'x', n(0), [K2 + ' - y', K2 + '-y'])
+                    ] : [
+                        B('x', n(0), n(K2), 'y', n(0), rt),
+                        B('x', n(0), n(K2), 'y', n(0), top),
+                        B('x', n(0), n(k), 'y', n(0), [K2 + ' - x', K2 + '-x'])
+                    ];
+                }
+                var given = toXY ? YX : XY, right = toXY ? XY : YX;
+                var tex = function (b) {
+                    return M('\\displaystyle' + I(b.olo[0], b.ohi[0]) + I(b.ilo[0], b.ihi[0]) + ' f(x,y)\\,d' + b.iv + '\\,d' + b.ov);
+                };
+                var sym = function (b) { return [[b.ov, b.olo[1], b.ohi[1]], [b.iv, b.ilo[1], b.ihi[1]]]; };
+                var keys = ['swap', 'flip', 'outer'];
+                if (fam === 'D') keys = ['swap', 'outer', 'nosolve'];
+                qs.push({
+                    prompt: 'Which integral is ' + tex(given) + ' with the order of integration reversed?',
+                    type: 'choice',
+                    choices: mc([{ html: tex(right), correct: true, key: 'right', b: sym(right) }].concat(wrong.map(function (w, i) {
+                        return { html: tex(w), correct: false, key: keys[i], b: sym(w) };
+                    }))),
+                    meta: { kind: 'reverse', fam: fam, k: k, given: sym(given),
+                            region: { c: 'cart', b: sym(given) }, integrand: null },
+                    explain: function () {
+                        var desc = fam === 'A'
+                            ? 'the region between ' + M('y = x^2') + ' (below) and ' + M('y = ' + kx(k, 'x')) + ' (above), for ' + M('0 \\le x \\le ' + k) +
+                              '. Read sideways, ' + M('x') + ' runs from the line ' + M('x = \\frac{y}{' + k + '}') + ' on the left to the parabola ' +
+                              M('x = \\sqrt{y}') + ' on the right, for ' + M('0 \\le y \\le ' + K2)
+                            : 'the region under ' + M('y = ' + K2 + ' - x^2') + ' in the first quadrant. Read sideways, ' + M('x') + ' runs from ' +
+                              M('0') + ' to ' + M('\\sqrt{' + K2 + ' - y}') + ', for ' + M('0 \\le y \\le ' + K2);
+                        return '<p>Sketch it first. It is ' + desc + '.</p>' + MD(tex(right).slice(2, -2)) +
+                            '<p class="why">Just swapping ' + M('dx') + ' and ' + M('dy') + ' leaves an inner limit with the wrong variable in it, ' +
+                            'and the outer limits change too: they are the full range of the <em>new</em> outer variable.</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. an integral that has to be reversed --- */
+            (function () {
+                var m = pick([1, 2]), c = pick([1, 2, 3]);
+                var lo = m === 1 ? 'y' : '\\frac{y}{2}', hi = m === 1 ? '\\sqrt{\\pi y}' : '\\sqrt{\\pi y/2}';
+                var ftx = '\\frac{' + (c === 1 ? '' : c) + '\\sin x}{x}';
+                qs.push({
+                    prompt: M('\\dfrac{\\sin x}{x}') + ' has no elementary antiderivative, so reverse the order to evaluate ' +
+                        M('\\displaystyle' + I(0, m === 1 ? '\\pi' : '2\\pi') + I(lo, hi) + ' ' + ftx + '\\,dx\\,dy') + '.',
+                    type: 'num', labels: ['value'], answer: [c * m], show: [M(c * m)],
+                    meta: { kind: 'forced', m: m, c: c,
+                            region: { c: 'cart', b: [['y', '0', m + '*pi'], ['x', 'y/' + m, 'sqrt(pi*y/' + m + ')']] }, integrand: c + '*sin(x)/x' },
+                    explain: function () {
+                        var low = m === 1 ? '\\frac{x^2}{\\pi}' : '\\frac{2x^2}{\\pi}';
+                        return '<p>The region is ' + M(lo + ' \\le x \\le ' + hi) + ', which is the same as ' + M(low + ' \\le y \\le ' + kx(m, 'x')) +
+                            ' for ' + M('0 \\le x \\le \\pi') + '. Now the ' + M('y') + '-integral is easy, because ' + M(ftx) + ' is a constant in ' + M('y') + ':</p>' +
+                            MD(I(0, '\\pi') + I(low, kx(m, 'x')) + ' ' + ftx + '\\,dy\\,dx') +
+                            MD('= ' + I(0, '\\pi') + ' ' + kx(c * m, '') + (c * m === 1 ? '' : '\\,') +
+                                '\\left(1 - \\frac{x}{\\pi}\\right)\\sin x\\,dx') +
+                            MD('= ' + kx(c * m, '') + (c * m === 1 ? '' : '\\,') + '(2 - 1) = ' + (c * m)) +
+                            '<p class="why">The ' + M('x') + ' in the denominator cancels against the length of the ' + M('y') + '-interval. ' +
+                            'That cancellation is the whole reason to switch. (By parts, ' + M('\\int_0^\\pi x\\sin x\\,dx = \\pi') + '.)</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           Stage 2, Section 14.3: polar coordinates
+           ======================================================= */
+        function stagePolar() {
+            var qs = [];
+
+            /* --- 1. set it up in polar --- */
+            (function () {
+                var a = pick([1, 2]), b = a + pick([1, 2]);
+                var combo = pick([
+                    { desc: 'with ' + M('y \\ge 0'), T: ['0', '\\pi', '0', 'pi'], W: ['0', '2\\pi', '0', '2*pi'], f: 'y', ft: 'y', F: 'r\\sin\\theta', Fs: 'r*sin(th)' },
+                    { desc: 'in the first quadrant', T: ['0', '\\frac{\\pi}{2}', '0', 'pi/2'], W: ['0', '\\pi', '0', 'pi'], f: 'x', ft: 'x', F: 'r\\cos\\theta', Fs: 'r*cos(th)' },
+                    { desc: 'with ' + M('x \\le 0'), T: ['\\frac{\\pi}{2}', '\\frac{3\\pi}{2}', 'pi/2', '3*pi/2'], W: ['0', '2\\pi', '0', '2*pi'],
+                      f: 'sqrt(x**2+y**2)', ft: '\\sqrt{x^2+y^2}', F: 'r', Fs: 'r' },
+                    { desc: 'with ' + M('y \\ge 0'), T: ['0', '\\pi', '0', 'pi'], W: ['0', '\\frac{\\pi}{2}', '0', 'pi/2'], f: 'x**2', ft: 'x^2', F: 'r^2\\cos^2\\theta', Fs: 'r**2*cos(th)**2' }
+                ]);
+                var opt = function (T, r0, r1, jac) {
+                    return M('\\displaystyle' + I(T[0], T[1]) + I(r0, r1) + ' ' + (combo.F === 'r' ? 'r' : '(' + combo.F + ')') + (jac ? '\\,r' : '') + '\\,dr\\,d\\theta');
+                };
+                var S = function (T, r0, r1, jac) { return { th: [T[2], T[3]], r: [String(r0), String(r1)], F: combo.Fs, jac: jac }; };
+                qs.push({
+                    prompt: M('R') + ' is the part of the ring ' + M((a * a) + ' \\le x^2 + y^2 \\le ' + (b * b)) + ' ' + combo.desc + '. Which integral equals ' +
+                        M('\\displaystyle\\iint_R ' + combo.ft + '\\,dA') + '?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: opt(combo.T, a, b, true), correct: true, key: 'right', pol: S(combo.T, a, b, true) },
+                        { html: opt(combo.T, a, b, false), correct: false, key: 'noR', pol: S(combo.T, a, b, false) },
+                        { html: opt(combo.T, a * a, b * b, true), correct: false, key: 'rsq', pol: S(combo.T, a * a, b * b, true) },
+                        { html: opt(combo.W, a, b, true), correct: false, key: 'theta', pol: S(combo.W, a, b, true) }
+                    ]),
+                    meta: { kind: 'polar-setup', a: a, b: b, th: [combo.T[2], combo.T[3]], fpol: combo.f,
+                            region: { c: 'polar', b: [['th', combo.T[2], combo.T[3]], ['r', String(a), String(b)]] }, integrand: combo.f },
+                    explain: function () {
+                        return '<p>The ring gives ' + M(a + ' \\le r \\le ' + b) + ' (radii, not their squares), the part ' + combo.desc +
+                            ' gives ' + M(combo.T[0] + ' \\le \\theta \\le ' + combo.T[1]) + ', ' + M(combo.ft + ' = ' + combo.F) + ', and ' +
+                            M('dA = r\\,dr\\,d\\theta') + '.</p>' + MD(opt(combo.T, a, b, true).slice(2, -2)) +
+                            '<p class="why">The extra ' + M('r') + ' is not optional: polar rectangles get bigger as you move out.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. a full ring --- */
+            (function () {
+                var a = pick([1, 2]), b = a + pick([1, 2]), which = pick(['root', 'sq']);
+                var n, d, ft, inner, fs;
+                if (which === 'root') { n = 2 * (b * b * b - a * a * a); d = 3; ft = '\\sqrt{x^2+y^2}'; inner = 'r\\cdot r'; fs = 'sqrt(x**2+y**2)'; }
+                else { n = Math.pow(b, 4) - Math.pow(a, 4); d = 2; ft = '(x^2+y^2)'; inner = 'r^2\\cdot r'; fs = 'x**2+y**2'; }
+                var ans = fr(n, d);
+                qs.push({
+                    prompt: 'Evaluate ' + M('\\displaystyle\\iint_R ' + ft + '\\,dA') + ', where ' + M('R') + ' is the ring ' +
+                        M((a * a) + ' \\le x^2 + y^2 \\le ' + (b * b)) + '.' + PI_HINT,
+                    type: 'num', labels: ['value'], answer: [ans.v * Math.PI], show: [M(pitex(ans.n, ans.d))],
+                    meta: { kind: 'polar-ring', a: a, b: b, which: which,
+                            region: { c: 'polar', b: [['th', '0', '2*pi'], ['r', String(a), String(b)]] }, integrand: fs },
+                    explain: function () {
+                        var p = which === 'root' ? 3 : 4;
+                        return MD(I(0, '2\\pi') + I(a, b) + ' ' + inner + '\\,dr\\,d\\theta = 2\\pi\\left[\\frac{r^' + p + '}{' + p + '}\\right]_{' + a + '}^{' + b + '}') + MD('= 2\\pi\\cdot\\frac{' +
+                            Math.pow(b, p) + ' - ' + Math.pow(a, p) + '}{' + p + '} = ' + pitex(ans.n, ans.d)) +
+                            '<p class="why">The full ring is ' + M('0 \\le \\theta \\le 2\\pi') + '; nothing depends on ' + M('\\theta') +
+                            ', so that integral just contributes ' + M('2\\pi') + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. area inside a polar curve --- */
+            (function () {
+                var shape = pick(['cardioid', 'petal']), k, ans, curve, T, Ts, rs;
+                if (shape === 'cardioid') {
+                    k = pick([1, 2, 3]); ans = fr(3 * k * k, 2); curve = 'r = ' + (k === 1 ? '' : k) + '(1 + \\cos\\theta)';
+                    T = ['0', '2\\pi']; Ts = ['0', '2*pi']; rs = k + '*(1+cos(th))';
+                } else {
+                    k = pick([2, 3, 4]); ans = fr(k * k, 12); curve = 'r = ' + k + '\\cos 3\\theta';
+                    T = ['-\\frac{\\pi}{6}', '\\frac{\\pi}{6}']; Ts = ['-pi/6', 'pi/6']; rs = k + '*cos(3*th)';
+                }
+                qs.push({
+                    prompt: 'Use a double integral to find the area ' + (shape === 'cardioid' ? 'inside the cardioid ' + M(curve) :
+                        'of one petal of the rose ' + M(curve) + ' (the petal along the positive ' + M('x') + '-axis)') + '.' + PI_HINT,
+                    type: 'num', labels: ['area'], answer: [ans.v * Math.PI], show: [M(pitex(ans.n, ans.d))],
+                    meta: { kind: 'polar-area', shape: shape, k: k,
+                            region: { c: 'polar', b: [['th', Ts[0], Ts[1]], ['r', '0', rs]] }, integrand: '1' },
+                    explain: function () {
+                        var inner = curve.slice(4);
+                        return MD('A = ' + I(T[0], T[1]) + I(0, inner) + ' r\\,dr\\,d\\theta') +
+                            MD('= ' + I(T[0], T[1]) + '\\frac12\\left(' + inner + '\\right)^2 d\\theta = ' + pitex(ans.n, ans.d)) +
+                            '<p>' + (shape === 'cardioid' ? 'Expand ' + M('(1+\\cos\\theta)^2') + ' and use ' + M('\\cos^2\\theta = \\frac{1 + \\cos 2\\theta}{2}') +
+                                '; over a full turn only the constants survive: ' + M('\\frac{' + (k * k) + '}{2}\\left(2\\pi + \\pi\\right)') + '.' :
+                                'The petal is where ' + M('\\cos 3\\theta \\ge 0') + ' near ' + M('\\theta = 0') + ', so ' + M('-\\frac{\\pi}{6} \\le \\theta \\le \\frac{\\pi}{6}') +
+                                '. The average of ' + M('\\cos^2') + ' over that interval is ' + M('\\frac12') + '.') + '</p>' +
+                            '<p class="why">Area is ' + M('\\iint_R 1\\,dA') + ', and in polar the inner integral of ' + M('r\\,dr') + ' gives ' + M('\\frac12 r^2') + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. a circle through the origin --- */
+            (function () {
+                var k = pick([1, 2, 3]), c = 2 * k, ax = pick(['x', 'y']);
+                var trig = ax === 'y' ? '\\sin\\theta' : '\\cos\\theta', trigS = ax === 'y' ? 'sin(th)' : 'cos(th)';
+                var other = ax === 'y' ? '\\cos\\theta' : '\\sin\\theta', otherS = ax === 'y' ? 'cos(th)' : 'sin(th)';
+                var half = ax === 'y' ? ['0', '\\pi', '0', 'pi'] : ['-\\frac{\\pi}{2}', '\\frac{\\pi}{2}', '-pi/2', 'pi/2'];
+                var otherHalf = ax === 'y' ? ['-\\frac{\\pi}{2}', '\\frac{\\pi}{2}', '-pi/2', 'pi/2'] : ['0', '\\pi', '0', 'pi'];
+                var full = ['0', '2\\pi', '0', '2*pi'];
+                var opt = function (rt, T) { return M('0 \\le r \\le ' + rt + ',\\quad ' + T[0] + ' \\le \\theta \\le ' + T[1]); };
+                var S = function (rs, T) { return { th: [T[2], T[3]], r: ['0', rs] }; };
+                qs.push({
+                    prompt: 'Which polar description gives the disk ' + M('x^2 + y^2 \\le ' + c + ax) + '?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: opt(c + trig, half), correct: true, key: 'right', pol: S(c + '*' + trigS, half) },
+                        { html: opt(String(k), full), correct: false, key: 'radius', pol: S(String(k), full) },
+                        { html: opt(c + trig, full), correct: false, key: 'fullturn', pol: S(c + '*' + trigS, full) },
+                        { html: opt(c + other, otherHalf), correct: false, key: 'swap', pol: S(c + '*' + otherS, otherHalf) }
+                    ]),
+                    meta: { kind: 'circle-polar', k: k, ax: ax },
+                    explain: function () {
+                        return '<p>Substitute: ' + M('r^2 \\le ' + c + 'r' + trig) + ', so ' + M('r \\le ' + c + trig) + '. That is a circle of radius ' + k +
+                            ' centered at ' + M(ax === 'y' ? pt(0, k) : pt(k, 0)) + ', and it is traced once as ' + M('\\theta') + ' runs from ' +
+                            M(half[0]) + ' to ' + M(half[1]) + ' (where ' + M(trig + ' \\ge 0') + ').</p>' +
+                            '<p class="why">' + M('r \\le ' + k) + ' is a disk of the right size centered at the origin, which is the wrong place. ' +
+                            'Going all the way to ' + M('2\\pi') + ' runs the circle twice.</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. the missing r --- */
+            (function () {
+                var a = pick([2, 3, 4, 5]);
+                qs.push({
+                    prompt: 'A student finds the area of the disk ' + M('x^2 + y^2 \\le ' + (a * a)) + ' as ' +
+                        M('\\displaystyle' + I(0, '2\\pi') + I(0, a) + ' dr\\,d\\theta = ' + (2 * a) + '\\pi') + '. What went wrong?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: 'The area element is ' + M('r\\,dr\\,d\\theta') + ', not ' + M('dr\\,d\\theta') + '.', correct: true, key: 'right' },
+                        { html: M('\\theta') + ' should only run from ' + M('0') + ' to ' + M('\\pi') + '.', correct: false, key: 'theta' },
+                        { html: 'The ' + M('r') + '-limits should be ' + M('0') + ' to ' + M(String(a * a)) + '.', correct: false, key: 'rsq' },
+                        { html: 'Nothing. ' + M((2 * a) + '\\pi') + ' is the area.', correct: false, key: 'fine' }
+                    ]),
+                    meta: { kind: 'concept', want: 'right' },
+                    explain: function () {
+                        return MD(I(0, '2\\pi') + I(0, a) + ' r\\,dr\\,d\\theta = 2\\pi\\cdot\\frac{' + (a * a) + '}{2} = ' + (a * a) + '\\pi') +
+                            '<p class="why">' + M((2 * a) + '\\pi') + ' is the <em>circumference</em>. A quick sanity check (area ' + M('\\pi r^2') +
+                            ') catches the missing ' + M('r') + ' every time.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           Stage 3, Section 14.4: triple integrals
+           ======================================================= */
+        function stageTriple() {
+            var qs = [];
+
+            /* --- 1. a box --- */
+            (function () {
+                var p = pick([1, 2, 3]), q = pick([1, 2, 3]), s = pick([1, 2, 3]), a = pick([1, 3]), b = pick([1, 2, 4]);
+                var ans = fr(4 * a * p * p * p * q * s + 3 * b * p * q * q * s * s, 12);
+                var ftx = tp([[a, 'x^2'], [b, 'yz']]);
+                qs.push({
+                    prompt: 'Evaluate ' + M('\\displaystyle\\iiint_B (' + ftx + ')\\,dV') + ' over the box ' +
+                        M('B = [0,' + p + ']\\times[0,' + q + ']\\times[0,' + s + ']') + '.',
+                    type: 'num', labels: ['value'], answer: [ans.v], show: [M(ftex(ans.n, ans.d))],
+                    meta: { kind: 'box', p: p, q: q, s: s, a: a, b: b,
+                            region: { c: 'cart', b: [['x', '0', String(p)], ['y', '0', String(q)], ['z', '0', String(s)]] }, integrand: a + '*x**2+' + b + '*y*z' },
+                    explain: function () {
+                        return '<p>Split it into two integrals; each one factors over the box:</p>' +
+                            MD(kx(a, '') + (a === 1 ? '' : '\\,') + '\\frac{' + p + '^3}{3}\\cdot ' + q + '\\cdot ' + s + ' + ' + kx(b, '') + (b === 1 ? '' : '\\,') +
+                                p + '\\cdot\\frac{' + q + '^2}{2}\\cdot\\frac{' + s + '^2}{2} = ' + ftex(ans.n, ans.d)) +
+                            '<p class="why">On a box every limit is a number, so any of the six orders works.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. under the saddle z = xy --- */
+            (function () {
+                var a = pick([1, 2, 3]), b = pick([1, 2, 3]), what = pick(['vol', 'z', 'x']);
+                var ans, ask, ig, step;
+                if (what === 'vol') { ans = fr(a * a * b * b, 4); ask = 'the volume of'; ig = '1'; step = I(0, a) + I(0, b) + ' xy\\,dy\\,dx'; }
+                else if (what === 'z') { ans = fr(Math.pow(a * b, 3), 18); ask = M('\\iiint_E z\\,dV') + ' over'; ig = 'z'; step = I(0, a) + I(0, b) + '\\frac{x^2y^2}{2}\\,dy\\,dx'; }
+                else { ans = fr(Math.pow(a, 3) * b * b, 6); ask = M('\\iiint_E x\\,dV') + ' over'; ig = 'x'; step = I(0, a) + I(0, b) + ' x^2y\\,dy\\,dx'; }
+                qs.push({
+                    prompt: 'Find ' + ask + ' the solid ' + M('E') + ' that lies under the surface ' + M('z = xy') + ' and above the rectangle ' +
+                        M('0 \\le x \\le ' + a + ',\\ 0 \\le y \\le ' + b) + '.',
+                    type: 'num', labels: [what === 'vol' ? 'volume' : 'value'], answer: [ans.v], show: [M(ftex(ans.n, ans.d))],
+                    meta: { kind: 'under-xy', a: a, b: b, what: what,
+                            region: { c: 'cart', b: [['x', '0', String(a)], ['y', '0', String(b)], ['z', '0', 'x*y']] }, integrand: ig },
+                    explain: function () {
+                        return MD(I(0, a) + I(0, b) + I(0, 'xy') + ' ' + (what === 'vol' ? '1' : what) + '\\,dz\\,dy\\,dx = ' + step + ' = ' + ftex(ans.n, ans.d)) +
+                            '<p class="why">Floor to ceiling for ' + M('z') + ' first: from ' + M('z = 0') + ' up to ' + M('z = xy') + '. Then it is a double integral over the rectangle.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. set up the limits (multiple choice) --- */
+            (function () {
+                var k = pick([1, 2, 3]), K2 = k * k;
+                var opt = function (x0, y0, y1, z1) {
+                    return M('\\displaystyle' + I(x0, k) + I(y0, y1) + I(0, z1) + ' dz\\,dy\\,dx');
+                };
+                var S = function (x0, y0, y1, z1) { return [['x', x0, String(k)], ['y', y0, y1], ['z', '0', z1]]; };
+                var top = K2 + ' - y';
+                qs.push({
+                    prompt: M('E') + ' is the solid bounded by the parabolic cylinder ' + M('y = x^2') + ', the plane ' + M('z = ' + top) +
+                        ', and the ' + M('xy') + '-plane. Which integral gives its volume?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: opt(String(-k), 'x^2', String(K2), top), correct: true, key: 'right', b: S(String(-k), 'x**2', String(K2), K2 + '-y') },
+                        { html: opt('0', 'x^2', String(K2), top), correct: false, key: 'half', b: S('0', 'x**2', String(K2), K2 + '-y') },
+                        { html: opt(String(-k), '0', 'x^2', top), correct: false, key: 'under', b: S(String(-k), '0', 'x**2', K2 + '-y') },
+                        { html: opt(String(-k), 'x^2', String(K2), String(K2)), correct: false, key: 'flat', b: S(String(-k), 'x**2', String(K2), String(K2)) }
+                    ]),
+                    meta: { kind: 'triple-setup', k: k, region: { c: 'cart', b: S(String(-k), 'x**2', String(K2), K2 + '-y') }, integrand: '1' },
+                    explain: function () {
+                        return '<p>' + M('z') + ' runs from the floor ' + M('z = 0') + ' to the roof ' + M('z = ' + top) + '. The roof meets the floor at ' +
+                            M('y = ' + K2) + ', so the shadow in the ' + M('xy') + '-plane is between ' + M('y = x^2') + ' and ' + M('y = ' + K2) +
+                            ', which needs ' + M(-k + ' \\le x \\le ' + k) + '.</p>' +
+                            '<p class="why">The cylinder ' + M('y = x^2') + ' is a wall, not a floor. The solid sits on the side where ' + M('y \\ge x^2') +
+                            ' (that is where the roof is above the floor), and it has both a left half and a right half.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. an iterated triple integral --- */
+            (function () {
+                var a = pick([1, 2]), c = pick([1, 2, 3]), withX = Math.random() < 0.5;
+                var ans = withX ? fr(c * Math.pow(a, 6), 12) : fr(c * Math.pow(a, 5), 10);
+                var ftx = withX ? kx(c, 'x') : String(c);
+                qs.push({
+                    prompt: 'Evaluate ' + M('\\displaystyle' + I(0, a) + I(0, 'x^2') + I(0, 'y') + ' ' + ftx + '\\,dz\\,dy\\,dx') + '.',
+                    type: 'num', labels: ['value'], answer: [ans.v], show: [M(ftex(ans.n, ans.d))],
+                    meta: { kind: 'iter3', a: a, c: c, withX: withX,
+                            region: { c: 'cart', b: [['x', '0', String(a)], ['y', '0', 'x**2'], ['z', '0', 'y']] }, integrand: withX ? c + '*x' : String(c) },
+                    explain: function () {
+                        return MD(I(0, a) + I(0, 'x^2') + ' ' + ftx + 'y\\,dy\\,dx = ' + I(0, a) + ' ' + ftx + '\\cdot\\frac{x^4}{2}\\,dx') + MD('= ' +
+                            I(0, a) + '\\frac{' + (c === 1 ? '' : c) + (withX ? 'x^5' : 'x^4') + '}{2}\\,dx = ' + ftex(ans.n, ans.d)) +
+                            '<p class="why">Work from the inside out. Each inner limit can depend only on the variables still outside it.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           Stage 4, Section 14.5: cylindrical and spherical coordinates
+           ======================================================= */
+        var CONES = [
+            { tex: 'z = \\sqrt{x^2+y^2}', phi: '\\frac{\\pi}{4}', phs: 'pi/4', m: '1', deg: 45 },
+            { tex: 'z = \\sqrt{3(x^2+y^2)}', phi: '\\frac{\\pi}{6}', phs: 'pi/6', m: 'sqrt(3)', deg: 30 },
+            { tex: 'z = \\sqrt{\\tfrac{x^2+y^2}{3}}', phi: '\\frac{\\pi}{3}', phs: 'pi/3', m: '1/sqrt(3)', deg: 60 }
+        ];
+        var ANG = { 30: ['\\frac{\\pi}{6}', 'pi/6'], 45: ['\\frac{\\pi}{4}', 'pi/4'], 60: ['\\frac{\\pi}{3}', 'pi/3'], 90: ['\\frac{\\pi}{2}', 'pi/2'] };
+
+        function stageCylSph() {
+            var qs = [];
+
+            /* --- 1. a cone in spherical coordinates --- */
+            (function () {
+                var cone = pick(CONES);
+                qs.push({
+                    prompt: 'In spherical coordinates, the cone ' + M(cone.tex) + ' (the top half) is ' + M('\\varphi = {}') + '?',
+                    type: 'choice',
+                    choices: mc([30, 45, 60, 90].map(function (d) {
+                        return { html: M('\\varphi = ' + ANG[d][0]), correct: d === cone.deg, key: String(d), phi: ANG[d][1] };
+                    })),
+                    meta: { kind: 'cone-phi', m: cone.m },
+                    explain: function () {
+                        return '<p>' + M('\\varphi') + ' is measured down from the positive ' + M('z') + '-axis, and ' + M('\\tan\\varphi = \\frac{r}{z}') +
+                            '. On this cone ' + M('\\frac{r}{z} = \\tan' + cone.phi) + ', so ' + M('\\varphi = ' + cone.phi) + '.</p>' +
+                            '<p class="why">The slip is measuring the angle up from the ' + M('xy') + '-plane, which gives ' + M('\\frac{\\pi}{2} - \\varphi') +
+                            '. A steep cone (like ' + M('z = \\sqrt{3(x^2+y^2)}') + ') hugs the ' + M('z') + '-axis and has a <em>small</em> ' + M('\\varphi') + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. spherical limits for a solid below a cone --- */
+            (function () {
+                var cone = pick(CONES), a = pick([2, 4, 5]);
+                var p0 = cone.phi, p0s = cone.phs;
+                var opt = function (lo, hi, jac) {
+                    return M('\\displaystyle' + I(0, '2\\pi') + I(lo, hi) + I(0, a) + ' ' + (jac ? '\\rho^2\\sin\\varphi\\,' : '') + 'd\\rho\\,d\\varphi\\,d\\theta');
+                };
+                var S = function (lo, hi, jac) { return { phi: [lo, hi], rho: String(a), jac: jac }; };
+                /* distractors whose volumes differ from the right one (for the pi/3 cone the two sides have equal volume) */
+                var pool = {
+                    side: { html: opt('0', p0, true), correct: false, key: 'side', sph: S('0', p0s, true) },
+                    jac: { html: opt(p0, '\\frac{\\pi}{2}', false), correct: false, key: 'jac', sph: S(p0s, 'pi/2', false) },
+                    plane: { html: opt(p0, '\\pi', true), correct: false, key: 'plane', sph: S(p0s, 'pi', true) }
+                };
+                if (cone.deg !== 45) {
+                    var comp = ANG[90 - cone.deg];
+                    pool.comp = { html: opt(comp[0], '\\frac{\\pi}{2}', true), correct: false, key: 'comp', sph: S(comp[1], 'pi/2', true) };
+                }
+                var use = { 45: ['side', 'jac', 'plane'], 30: ['side', 'jac', 'comp'], 60: ['jac', 'comp', 'plane'] }[cone.deg];
+                qs.push({
+                    prompt: M('E') + ' is the solid inside the sphere ' + M('x^2+y^2+z^2 = ' + (a * a)) + ' that lies above the ' + M('xy') +
+                        '-plane and <strong>below</strong> the cone ' + M(cone.tex) + '. Which integral gives its volume?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: opt(p0, '\\frac{\\pi}{2}', true), correct: true, key: 'right', sph: S(p0s, 'pi/2', true) }
+                    ].concat(use.map(function (k) { return pool[k]; }))),
+                    meta: { kind: 'sph-setup', a: a, m: cone.m, phi0: p0s,
+                            region: { c: 'sph', b: [['th', '0', '2*pi'], ['ph', p0s, 'pi/2'], ['rho', '0', String(a)]] }, integrand: '1' },
+                    explain: function () {
+                        return '<p>The cone is ' + M('\\varphi = ' + p0) + ' and the ' + M('xy') + '-plane is ' + M('\\varphi = \\frac{\\pi}{2}') +
+                            '. Below the cone and above the plane means ' + M(p0 + ' \\le \\varphi \\le \\frac{\\pi}{2}') + '. Then ' + M('0 \\le \\rho \\le ' + a) +
+                            ', all the way around, with ' + M('dV = \\rho^2\\sin\\varphi\\,d\\rho\\,d\\varphi\\,d\\theta') + '.</p>' +
+                            '<p class="why">' + M('0 \\le \\varphi \\le ' + p0) + ' would be the ice-cream-cone piece <em>above</em> the cone instead.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. cylindrical limits under a dome --- */
+            (function () {
+                var a = pick([3, 5]), A2 = a * a;
+                var opt = function (r1, z1, jac) {
+                    return M('\\displaystyle' + I(0, '2\\pi') + I(0, r1) + I(0, z1) + ' ' + (jac ? 'r\\,' : '') + 'dz\\,dr\\,d\\theta');
+                };
+                var S = function (r1, z1, jac) { return { r: String(r1), z: z1, jac: jac }; };
+                qs.push({
+                    prompt: M('E') + ' is the solid under the paraboloid ' + M('z = ' + A2 + ' - x^2 - y^2') + ' and above the ' + M('xy') +
+                        '-plane. Which integral gives its volume?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: opt(a, A2 + ' - r^2', true), correct: true, key: 'right', cyl: S(a, A2 + '-r**2', true) },
+                        { html: opt(a, A2 + ' - r^2', false), correct: false, key: 'jac', cyl: S(a, A2 + '-r**2', false) },
+                        { html: opt(A2, A2 + ' - r^2', true), correct: false, key: 'rsq', cyl: S(A2, A2 + '-r**2', true) },
+                        { html: opt(a, String(A2), true), correct: false, key: 'flat', cyl: S(a, String(A2), true) }
+                    ]),
+                    meta: { kind: 'cyl-setup', a: a, region: { c: 'cyl', b: [['th', '0', '2*pi'], ['r', '0', String(a)], ['z', '0', A2 + '-r**2']] }, integrand: '1' },
+                    explain: function () {
+                        return '<p>In cylindrical coordinates the roof is ' + M('z = ' + A2 + ' - r^2') + '. It meets the floor ' + M('z = 0') + ' where ' +
+                            M('r = ' + a) + ', so ' + M('0 \\le r \\le ' + a) + ', and ' + M('dV = r\\,dz\\,dr\\,d\\theta') + '.</p>' +
+                            '<p class="why">The ' + M('r') + '-limit is the radius ' + a + ', not ' + A2 + '. And the roof slopes, so the ' + M('z') + '-limit depends on ' + M('r') + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. a surface in spherical coordinates --- */
+            (function () {
+                var c = pick([2, 4, 6]), kind = pick(['sphere', 'cyl']);
+                var eq, right, wrong, explain;
+                if (kind === 'sphere') {
+                    eq = 'x^2 + y^2 + z^2 = ' + c + 'z';
+                    right = ['\\rho = ' + c + '\\cos\\varphi', c + '*cos(ph)'];
+                    wrong = [['\\rho = ' + c + '\\sin\\varphi', c + '*sin(ph)'], ['\\rho = ' + c, String(c)], ['\\rho = ' + c + '\\cos\\theta', c + '*cos(th)']];
+                    explain = M('\\rho^2 = ' + c + '\\rho\\cos\\varphi') + ', and dividing by ' + M('\\rho') + ' gives ' + M(right[0]) +
+                        '. (It is a sphere of radius ' + (c / 2) + ' sitting on the origin.)';
+                } else {
+                    eq = 'x^2 + y^2 = ' + (c * c);
+                    right = ['\\rho = ' + c + '\\csc\\varphi', c + '/sin(ph)'];
+                    wrong = [['\\rho = ' + c + '\\sec\\varphi', c + '/cos(ph)'], ['\\rho = ' + c, String(c)], ['\\rho = ' + c + '\\sin\\varphi', c + '*sin(ph)']];
+                    explain = M('x^2 + y^2 = \\rho^2\\sin^2\\varphi') + ', so ' + M('\\rho\\sin\\varphi = ' + c) + ' and ' + M(right[0]) +
+                        '. (' + M('\\rho = ' + c) + ' would be a sphere, not a cylinder.)';
+                }
+                qs.push({
+                    prompt: 'Which equation describes ' + M(eq) + ' in spherical coordinates?',
+                    type: 'choice',
+                    choices: mc([{ html: M(right[0]), correct: true, key: 'right', rho: right[1] }].concat(wrong.map(function (w, i) {
+                        return { html: M(w[0]), correct: false, key: 'w' + i, rho: w[1] };
+                    }))),
+                    meta: { kind: 'sph-surface', c: c, surf: kind },
+                    explain: function () {
+                        return '<p>Use ' + M('x^2+y^2+z^2 = \\rho^2') + ', ' + M('z = \\rho\\cos\\varphi') + ', ' + M('x^2+y^2 = \\rho^2\\sin^2\\varphi') + '. ' + explain + '</p>' +
+                            '<p class="why">After converting, there should be no ' + M('x') + ', ' + M('y') + ' or ' + M('z') + ' left.</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. one evaluation --- */
+            (function () {
+                var kind = pick(['ball', 'cyl']), a, h, ans, prompt, explain, region, ig;
+                if (kind === 'ball') {
+                    a = pick([1, 2]); ans = fr(Math.pow(a, 4), 1);
+                    prompt = 'Evaluate ' + M('\\displaystyle\\iiint_E \\sqrt{x^2+y^2+z^2}\\,dV') + ', where ' + M('E') + ' is the ball ' + M('x^2+y^2+z^2 \\le ' + (a * a)) + '.';
+                    explain = MD(I(0, '2\\pi') + I(0, '\\pi') + I(0, a) + '\\rho\\cdot\\rho^2\\sin\\varphi\\,d\\rho\\,d\\varphi\\,d\\theta = 2\\pi\\cdot 2\\cdot\\frac{' + a + '^4}{4} = ' + pitex(ans.n, ans.d));
+                    region = { c: 'sph', b: [['th', '0', '2*pi'], ['ph', '0', 'pi'], ['rho', '0', String(a)]] }; ig = 'sqrt(x**2+y**2+z**2)';
+                } else {
+                    a = pick([1, 2, 3]); h = pick([1, 2, 3]); ans = fr(2 * a * a * a * h, 3);
+                    prompt = 'Evaluate ' + M('\\displaystyle\\iiint_E \\sqrt{x^2+y^2}\\,dV') + ', where ' + M('E') + ' is the solid cylinder ' +
+                        M('x^2+y^2 \\le ' + (a * a) + ',\\ 0 \\le z \\le ' + h) + '.';
+                    explain = MD(I(0, '2\\pi') + I(0, a) + I(0, h) + ' r\\cdot r\\,dz\\,dr\\,d\\theta = 2\\pi\\cdot\\frac{' + a + '^3}{3}\\cdot ' + h + ' = ' + pitex(ans.n, ans.d));
+                    region = { c: 'cyl', b: [['th', '0', '2*pi'], ['r', '0', String(a)], ['z', '0', String(h)]] }; ig = 'sqrt(x**2+y**2)';
+                }
+                qs.push({
+                    prompt: prompt + PI_HINT,
+                    type: 'num', labels: ['value'], answer: [ans.v * Math.PI], show: [M(pitex(ans.n, ans.d))],
+                    meta: { kind: 'cylsph-eval', shape: kind, a: a, h: h || 0, region: region, integrand: ig },
+                    explain: function () {
+                        return explain + '<p class="why">The integrand is the distance from the ' + (kind === 'ball' ? 'origin, ' + M('\\rho') : M('z') + '-axis, ' + M('r')) +
+                            ', and then one more factor of it comes from ' + M('dV') + '.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           Stage 5, Section 14.6: change of variables
+           ======================================================= */
+        /* rows of the avoid maps (Test 3: u = x+y, v = x-y; Quiz 8: u = 2x+y, v = x-y) */
+        function linMap() {
+            var a, b, c, d, D, S;
+            var listed = [[[1, 1], [1, -1]], [[2, 1], [1, -1]]];
+            var prop = function (r, s) { return r[0] * s[1] === r[1] * s[0]; };
+            do {
+                a = pick([1, 2, 3, -1]); b = pick([1, 2, 3, -1, -2]); c = pick([1, 2, -1, 3]); d = pick([1, 2, -1, -2, 3]);
+                D = a * d - b * c; S = a * d + b * c;
+                var bad = listed.some(function (L) {
+                    return (prop([a, b], L[0]) && prop([c, d], L[1])) || (prop([a, b], L[1]) && prop([c, d], L[0]));
+                });
+            } while (bad || Math.abs(D) < 2 || S === 0 || Math.abs(S) === Math.abs(D) || Math.abs(S) === 1);
+            return { a: a, b: b, c: c, d: d, D: D, S: S,
+                     u: tp([[a, 'x'], [b, 'y']]), v: tp([[c, 'x'], [d, 'y']]) };
+        }
+
+        function stageJacobian() {
+            var qs = [];
+
+            /* --- 1. a Jacobian --- */
+            (function () {
+                if (Math.random() < 0.5) {
+                    var a, b, c, d;
+                    do { a = pick([1, 2, 3, -1]); b = pick([1, 2, -1, -3, 4]); c = pick([2, 1, -2, 3]); d = pick([1, 3, -1, 2, 5]); } while (a * d - b * c === 0);
+                    var J = a * d - b * c;
+                    qs.push({
+                        prompt: 'Find the Jacobian ' + M('\\dfrac{\\partial(x,y)}{\\partial(u,v)}') + ' for ' + M('x = ' + tp([[a, 'u'], [b, 'v']])) + ', ' +
+                            M('y = ' + tp([[c, 'u'], [d, 'v']])) + '.',
+                        type: 'num', labels: [M('\\partial(x,y)/\\partial(u,v)')], answer: [J], show: [M(J)],
+                        meta: { kind: 'jac', x: a + '*u+(' + b + ')*v', y: c + '*u+(' + d + ')*v', at: null },
+                        explain: function () {
+                            return MD('\\begin{vmatrix} x_u & x_v \\\\ y_u & y_v \\end{vmatrix} = \\begin{vmatrix} ' + a + ' & ' + b + ' \\\\ ' + c + ' & ' + d +
+                                ' \\end{vmatrix} = (' + a + ')(' + d + ') - (' + b + ')(' + c + ') = ' + J) +
+                                '<p class="why">Top row: the derivatives of ' + M('x') + '. Bottom row: the derivatives of ' + M('y') + '.</p>';
+                        }
+                    });
+                } else {
+                    var p = pick([1, 2, -1]), q = pick([1, 2, 3, -1]);
+                    var J2 = 4 * (p * p + q * q);
+                    qs.push({
+                        prompt: 'For ' + M('x = u^2 - v^2') + ', ' + M('y = 2uv') + ', find ' + M('\\dfrac{\\partial(x,y)}{\\partial(u,v)}') + ' at ' + M('(u,v) = ' + pt(p, q)) + '.',
+                        type: 'num', labels: ['Jacobian at ' + M(pt(p, q))], answer: [J2], show: [M(J2)],
+                        meta: { kind: 'jac', x: 'u**2-v**2', y: '2*u*v', at: [p, q] },
+                        explain: function () {
+                            return MD('\\begin{vmatrix} 2u & -2v \\\\ 2v & 2u \\end{vmatrix} = 4u^2 + 4v^2') +
+                                '<p>At ' + M(pt(p, q)) + ': ' + M('4(' + (p * p) + ' + ' + (q * q) + ') = ' + J2) + '.</p>' +
+                                '<p class="why">Watch the sign: ' + M('(2u)(2u) - (-2v)(2v)') + ' adds the two squares.</p>';
+                        }
+                    });
+                }
+            })();
+
+            /* --- 2. the reciprocal (multiple choice) --- */
+            (function () {
+                var L = linMap(), AD = Math.abs(L.D), AS = Math.abs(L.S);
+                qs.push({
+                    prompt: 'You substitute ' + M('u = ' + L.u) + ', ' + M('v = ' + L.v) + ' in a double integral. Then ' + M('dA = {}') + '?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: M('\\dfrac{1}{' + AD + '}\\,du\\,dv'), correct: true, key: 'right', val: [1, AD] },
+                        { html: M(AD + '\\,du\\,dv'), correct: false, key: 'det', val: [AD, 1] },
+                        { html: M('\\dfrac{1}{' + AS + '}\\,du\\,dv'), correct: false, key: 'plus', val: [1, AS] },
+                        { html: M('du\\,dv'), correct: false, key: 'one', val: [1, 1] }
+                    ]),
+                    meta: { kind: 'jac-recip', a: L.a, b: L.b, c: L.c, d: L.d, map: [L.a, L.b, L.c, L.d] },
+                    explain: function () {
+                        return MD('\\frac{\\partial(u,v)}{\\partial(x,y)} = \\begin{vmatrix} ' + L.a + ' & ' + L.b + ' \\\\ ' + L.c + ' & ' + L.d + ' \\end{vmatrix} = ' + L.D) +
+                            '<p>That is the Jacobian the wrong way around. The one you need is its reciprocal: ' +
+                            M('\\left|\\frac{\\partial(x,y)}{\\partial(u,v)}\\right| = ' + ftex(1, AD)) + ', so ' + M('dA = ' + ftex(1, AD) + '\\,du\\,dv') + '.</p>' +
+                            '<p class="why">When ' + M('u') + ' and ' + M('v') + ' are given in terms of ' + M('x') + ' and ' + M('y') +
+                            ', you can skip solving for ' + M('x') + ' and ' + M('y') + ': just flip the determinant over (and take its absolute value).</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. a full substitution --- */
+            (function () {
+                var L = linMap(), P = pick([2, 3, 4]), Q = pick([1, 2, 3]), AD = Math.abs(L.D), lin = Math.random() < 0.5;
+                var ans = lin ? fr(P * P * Q, 2 * AD) : fr(P * Q, AD);
+                qs.push({
+                    prompt: M('R') + ' is the parallelogram ' + M('0 \\le ' + L.u + ' \\le ' + P) + ', ' + M('0 \\le ' + L.v + ' \\le ' + Q) + '. Use ' +
+                        M('u = ' + L.u) + ', ' + M('v = ' + L.v) + ' to find ' + (lin ? M('\\displaystyle\\iint_R (' + L.u + ')\\,dA') : 'the area of ' + M('R')) + '.',
+                    type: 'num', labels: [lin ? 'value' : 'area'], answer: [ans.v], show: [M(ftex(ans.n, ans.d))],
+                    meta: { kind: 'cov', map: [L.a, L.b, L.c, L.d], P: P, Q: Q, lin: lin,
+                            region: { c: 'lin', map: [L.a, L.b, L.c, L.d], u: ['0', String(P)], v: ['0', String(Q)] },
+                            integrand: lin ? L.a + '*x+(' + L.b + ')*y' : '1' },
+                    explain: function () {
+                        return '<p>' + M('\\partial(u,v)/\\partial(x,y) = ' + L.D) + ', so ' + M('dA = ' + ftex(1, AD) + '\\,du\\,dv') + ', and ' + M('R') +
+                            ' becomes the rectangle ' + M('[0,' + P + ']\\times[0,' + Q + ']') + ':</p>' +
+                            MD(I(0, Q) + I(0, P) + ' ' + (lin ? 'u' : '1') + '\\cdot' + ftex(1, AD) + '\\,du\\,dv = ' + ftex(1, AD) + '\\cdot' +
+                                (lin ? '\\frac{' + P + '^2}{2}' : P) + '\\cdot ' + Q + ' = ' + ftex(ans.n, ans.d)) +
+                            '<p class="why">The point of the substitution: a slanted region becomes a rectangle. The price is the factor ' + M(ftex(1, AD)) + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. where r and rho^2 sin(phi) come from --- */
+            (function () {
+                var which = pick(['polar', 'sph']);
+                var Q = which === 'polar' ? {
+                    prompt: 'For polar coordinates, ' + M('x = r\\cos\\theta') + ', ' + M('y = r\\sin\\theta') + ', what is ' + M('\\dfrac{\\partial(x,y)}{\\partial(r,\\theta)}') + '?',
+                    opts: [['r', 'r'], ['1', '1'], ['r^2', 'r**2'], ['-r', '-r']],
+                    why: MD('\\begin{vmatrix} \\cos\\theta & -r\\sin\\theta \\\\ \\sin\\theta & r\\cos\\theta \\end{vmatrix} = r\\cos^2\\theta + r\\sin^2\\theta = r') +
+                        '<p class="why">That is the ' + M('r') + ' in ' + M('dA = r\\,dr\\,d\\theta') + '. Polar coordinates are just one more change of variables.</p>'
+                } : {
+                    prompt: 'For spherical coordinates, what is ' + M('\\left|\\dfrac{\\partial(x,y,z)}{\\partial(\\rho,\\varphi,\\theta)}\\right|') + ' (for ' + M('0 \\le \\varphi \\le \\pi') + ')?',
+                    opts: [['\\rho^2\\sin\\varphi', 'rho**2*sin(ph)'], ['\\rho\\sin\\varphi', 'rho*sin(ph)'], ['\\rho^2\\cos\\varphi', 'rho**2*cos(ph)'], ['\\rho^2', 'rho**2']],
+                    why: '<p>The ' + M('3\\times 3') + ' determinant works out to ' + M('\\rho^2\\sin\\varphi') + ' (up to sign), which is the factor in ' +
+                        M('dV = \\rho^2\\sin\\varphi\\,d\\rho\\,d\\varphi\\,d\\theta') + '.</p><p class="why">Every volume element you have used is the absolute value of a Jacobian.</p>'
+                };
+                qs.push({
+                    prompt: Q.prompt,
+                    type: 'choice',
+                    choices: mc(Q.opts.map(function (o, i) { return { html: M(o[0]), correct: i === 0, key: 'o' + i, expr: o[1] }; })),
+                    meta: { kind: 'coord-jac', which: which },
+                    explain: function () { return Q.why; }
+                });
+            })();
+
+            /* --- 5. the area of an ellipse --- */
+            (function () {
+                var A, B;
+                do { A = pick([2, 3, 4, 5]); B = pick([2, 3, 4, 5]); } while (A === B);
+                qs.push({
+                    prompt: 'Use ' + M('x = ' + A + 'u') + ', ' + M('y = ' + B + 'v') + ' to find the area of the ellipse ' +
+                        M('\\dfrac{x^2}{' + (A * A) + '} + \\dfrac{y^2}{' + (B * B) + '} \\le 1') + '.' + PI_HINT,
+                    type: 'num', labels: ['area'], answer: [A * B * Math.PI], show: [M(pitex(A * B, 1))],
+                    meta: { kind: 'ellipse', A: A, B: B,
+                            region: { c: 'ell', A: A, B: B }, integrand: '1' },
+                    explain: function () {
+                        return '<p>The ellipse becomes the unit disk ' + M('u^2 + v^2 \\le 1') + ', and ' + M('\\frac{\\partial(x,y)}{\\partial(u,v)} = ' +
+                            '\\begin{vmatrix} ' + A + ' & 0 \\\\ 0 & ' + B + ' \\end{vmatrix} = ' + (A * B)) + '.</p>' +
+                            MD('\\text{Area} = \\iint_{u^2+v^2\\le 1} ' + (A * B) + '\\,du\\,dv = ' + (A * B) + '\\cdot\\pi = ' + pitex(A * B, 1)) +
+                            '<p class="why">Stretching by ' + A + ' one way and ' + B + ' the other multiplies every area by ' + (A * B) + '. That is exactly what the Jacobian measures.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           Stage 6, Section 15.1: vector fields and potentials
+           ======================================================= */
+        /* f = A x^m y^n + B x^e + C y^g; never the Test 3 potentials' shapes */
+        function potential() {
+            var A, B, C, mi, xe, ye, phi, sup;
+            var listed = ['x2y,x,y2', 'x3,xy2,y'];
+            do {
+                A = pick([1, 2, 3, -1, -2]); B = pick([1, 2, -3, 4, -1]); C = pick([1, -2, 3, 5, 2]);
+                mi = pick([[2, 1], [1, 2], [3, 1], [1, 3], [2, 2]]); xe = pick([1, 2, 3]); ye = pick([1, 2, 3]);
+                phi = pnorm([[A, mi[0], mi[1]], [B, xe, 0], [C, 0, ye]]);
+                sup = phi.map(function (t) { return 'x' + t[1] + 'y' + t[2]; });
+                var key = phi.map(function (t) { return (t[1] ? 'x' + (t[1] > 1 ? t[1] : '') : '') + (t[2] ? 'y' + (t[2] > 1 ? t[2] : '') : ''); }).sort().join(',');
+                var bad = listed.some(function (l) { return l.split(',').sort().join(',') === key; }) ||
+                    listedField(pdx(phi), pdy(phi));
+            } while (bad);
+            return { A: A, B: B, C: C, mi: mi, xe: xe, ye: ye, phi: phi,
+                     mixed: [[A, mi[0], mi[1]]], xt: [[B, xe, 0]], yt: [[C, 0, ye]],
+                     P: pdx(phi), Q: pdy(phi) };
+        }
+        function ftexF(P, Q) { return vec(ptex(P), ptex(Q)); }
+        /* shapes (monomials per component) of the 2-D polynomial fields on Test 3, Quiz 9 and the 15.x worked examples */
+        function shape(p) { return pnorm(p).map(function (t) { return t[1] + '.' + t[2]; }).sort().join(' '); }
+        var LISTED_FIELDS = [
+            [[[1, 1, 1], [1, 0, 0]], [[1, 2, 0], [1, 0, 1]]], [[[1, 2, 0], [1, 0, 2]], [[1, 1, 1], [1, 0, 0]]],
+            [[[1, 0, 2]], [[1, 1, 0]]], [[[1, 0, 1]], [[1, 2, 0]]], [[[1, 0, 1]], [[1, 1, 0]]]
+        ].map(function (F) { return shape(F[0]) + '|' + shape(F[1]); });
+        function listedField(P, Q) { return LISTED_FIELDS.indexOf(shape(P) + '|' + shape(Q)) >= 0; }
+
+        function stageFields() {
+            var qs = [];
+
+            /* --- 1. which field is conservative? --- */
+            (function () {
+                var g, fields;
+                do {
+                    g = potential();
+                    var w1 = [g.P, pdy(padd([[2 * g.A, g.mi[0], g.mi[1]]], g.yt))];
+                    var w2 = [pdx(padd([[2 * g.A, g.mi[0], g.mi[1]]], g.xt)), g.Q];
+                    var w3 = [g.Q, g.P];
+                    if (peq(pdy(w3[0]), pdx(w3[1]))) w3 = [g.P, padd(g.Q, [[1, 1, 0]])];
+                    fields = [[g.P, g.Q], w1, w2, w3];
+                    var texts = fields.map(function (f) { return ftexF(f[0], f[1]); });
+                    var distinct = texts.filter(function (t, i) { return texts.indexOf(t) === i; }).length === 4 &&
+                        !fields.some(function (f) { return listedField(f[0], f[1]); });
+                } while (!distinct);
+                qs.push({
+                    prompt: 'Which of these vector fields is conservative?',
+                    type: 'choice',
+                    choices: mc(fields.map(function (f, i) {
+                        return { html: M('\\mathbf F = ' + ftexF(f[0], f[1])), correct: i === 0, key: 'f' + i, field: [psym(f[0]), psym(f[1])] };
+                    })),
+                    meta: { kind: 'which-cons', fields: fields.map(function (f) { return [psym(f[0]), psym(f[1])]; }) },
+                    explain: function () {
+                        return '<p>Test ' + M('\\frac{\\partial P}{\\partial y} = \\frac{\\partial Q}{\\partial x}') + '. For ' + M(ftexF(g.P, g.Q)) + ':</p>' +
+                            MD('\\frac{\\partial P}{\\partial y} = ' + ptex(pdy(g.P)) + ',\\qquad \\frac{\\partial Q}{\\partial x} = ' + ptex(pdx(g.Q))) +
+                            '<p>They match. (It is ' + M('\\nabla f') + ' for ' + M('f = ' + ptex(g.phi)) + '.) In the other three, the two partials disagree.</p>' +
+                            '<p class="why">The test compares the ' + M('y') + '-derivative of the <em>first</em> component with the ' + M('x') + '-derivative of the <em>second</em>.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. find the potential, then evaluate it --- */
+            (function () {
+                var g, p, q, val;
+                do { g = potential(); p = pick([1, 2, -1]); q = pick([1, -1, 2]); val = pval(g.phi, p, q); } while (val === 0);
+                qs.push({
+                    prompt: M('\\mathbf F = ' + ftexF(g.P, g.Q)) + ' is conservative. Find the potential ' + M('f') + ' with ' + M('f(0,0) = 0') +
+                        ', and give ' + M('f' + pt(p, q)) + '.',
+                    type: 'num', labels: [M('f' + pt(p, q))], answer: [val], show: [M(val)],
+                    meta: { kind: 'pot-value', field: [psym(g.P), psym(g.Q)], p: p, q: q, f: psym(g.phi) },
+                    explain: function () {
+                        return '<p>Integrate the first component in ' + M('x') + ', adding an unknown ' + M('g(y)') + ':</p>' +
+                            MD('f = ' + ptex(padd(g.mixed, g.xt)) + ' + g(y)') +
+                            '<p>Then ' + M('f_y = ' + ptex(pdy(g.mixed)) + ' + g\'(y)') + ' must equal ' + M(ptex(g.Q)) + ', so ' + M('g\'(y) = ' + ptex(pdy(g.yt))) +
+                            ' and ' + M('g(y) = ' + ptex(g.yt)) + ' (no constant, since ' + M('f(0,0) = 0') + ').</p>' +
+                            MD('f = ' + ptex(g.phi) + ',\\qquad f' + pt(p, q) + ' = ' + val) +
+                            '<p class="why">Check: the gradient of your ' + M('f') + ' should give back both components of ' + M('\\mathbf F') + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. the double-counting trap --- */
+            (function () {
+                var g = potential();
+                var opts = [
+                    { p: g.phi, key: 'right' },
+                    { p: padd(g.phi, g.mixed), key: 'double' },
+                    { p: padd(g.mixed, g.xt), key: 'noY' },
+                    { p: padd(g.mixed, g.yt), key: 'noX' }
+                ];
+                qs.push({
+                    prompt: 'Which function is a potential for ' + M('\\mathbf F = ' + ftexF(g.P, g.Q)) + '?',
+                    type: 'choice',
+                    choices: mc(opts.map(function (o) { return { html: M('f = ' + ptex(o.p)), correct: o.key === 'right', key: o.key, f: psym(o.p) }; })),
+                    meta: { kind: 'pot-pick', field: [psym(g.P), psym(g.Q)] },
+                    explain: function () {
+                        return '<p>Check each choice by taking its gradient. The right one gives back ' + M('\\mathbf F') + ':</p>' +
+                            MD('\\nabla\\bigl(' + ptex(g.phi) + '\\bigr)') + MD('= ' + ftexF(g.P, g.Q)) +
+                            '<p class="why">The common slip: integrate ' + M('P') + ' in ' + M('x') + ', integrate ' + M('Q') + ' in ' + M('y') +
+                            ', and add. Both integrals contain ' + M(ptex(g.mixed)) + ', so it gets counted twice. Use the second component only to find the missing ' +
+                            M('g(y)') + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. two potentials for the same field --- */
+            (function () {
+                qs.push({
+                    prompt: M('f') + ' and ' + M('g') + ' are both potentials for the same field ' + M('\\mathbf F') + ' on the whole plane, so ' +
+                        M('\\nabla f = \\nabla g = \\mathbf F') + '. What can you say about ' + M('f - g') + '?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: 'It is a constant.', correct: true, key: 'right' },
+                        { html: 'It is always ' + M('0') + ': potentials are unique.', correct: false, key: 'zero' },
+                        { html: 'It can be any function of ' + M('x') + ' alone.', correct: false, key: 'gx' },
+                        { html: 'Nothing; it could be anything.', correct: false, key: 'any' }
+                    ]),
+                    meta: { kind: 'concept', want: 'right' },
+                    explain: function () {
+                        return '<p>' + M('\\nabla(f - g) = \\mathbf 0') + ', so both partials of ' + M('f - g') + ' are zero everywhere, and a function with zero ' +
+                            'partials on the whole plane is constant.</p><p class="why">That is why "find a potential" has many right answers, and why ' +
+                            'pinning down a value like ' + M('f(0,0) = 0') + ' picks out one of them.</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. a gradient field at a point --- */
+            (function () {
+                var g, p, q, a, b;
+                do { g = potential(); p = pick([1, 2, -1]); q = pick([1, -1, 2]); a = pval(g.P, p, q); b = pval(g.Q, p, q); } while (a === 0 && b === 0);
+                qs.push({
+                    prompt: M('\\mathbf F = \\nabla f') + ' for ' + M('f(x,y) = ' + ptex(g.phi)) + '. Find ' + M('\\mathbf F' + pt(p, q)) + '.',
+                    type: 'num', labels: ['first component', 'second component'], answer: [a, b], show: [M(a), M(b)],
+                    meta: { kind: 'gradfield', f: psym(g.phi), p: p, q: q },
+                    explain: function () {
+                        return MD('\\mathbf F = \\nabla f = ' + ftexF(g.P, g.Q)) + MD('\\mathbf F' + pt(p, q) + ' = ' + vec(a, b)) +
+                            '<p class="why">A gradient field is just the gradient from Chapter 13, drawn as an arrow at every point. ' +
+                            'The arrows point uphill on the graph of ' + M('f') + '.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           Stage 7, Section 15.2: line integrals
+           ======================================================= */
+        /* curves r(t) = < al t^p, be t^q >, 0 <= t <= 1 */
+        var CURVES = [
+            { al: 1, p: 1, be: 1, q: 2 }, { al: 1, p: 2, be: 1, q: 1 }, { al: 2, p: 1, be: 1, q: 2 },
+            { al: 1, p: 1, be: 1, q: 3 }, { al: 1, p: 1, be: 2, q: 2 }
+        ];
+        var MONOS = [[1, 0], [0, 1], [2, 0], [0, 2], [1, 1]];
+        /* fields <a x^i y^j, b x^k y^l>, never one whose shape is on a quiz, the test, or a worked example */
+        function workField() {
+            var listed = ['0,2|1,0', '0,1|2,0', '0,1|1,0', '1,0|0,1'];
+            var P, Q, key;
+            do {
+                var m1 = pick(MONOS), m2 = pick(MONOS);
+                P = [[pick([1, 2, 3, -1]), m1[0], m1[1]]]; Q = [[pick([1, 2, 3, -2]), m2[0], m2[1]]];
+                key = m1.join(',') + '|' + m2.join(',');
+            } while (listed.indexOf(key) >= 0 || listedField(P, Q));
+            return { P: P, Q: Q };
+        }
+        function ct(c, e) { return tp([[c, pw('t', e)]]); }
+        /* poly in t as {exp: coef}; F(r(t)) . r'(t) and the trap versions */
+        function tpoly(F, C, how) {
+            var out = {};
+            var add = function (c, e) { out[e] = (out[e] || 0) + c; };
+            var onCurve = function (term) { return [term[0] * Math.pow(C.al, term[1]) * Math.pow(C.be, term[2]), C.p * term[1] + C.q * term[2]]; };
+            var P = onCurve(F.P[0]), Q = onCurve(F.Q[0]);
+            var dx = [C.al * C.p, C.p - 1], dy = [C.be * C.q, C.q - 1], X = [C.al, C.p], Y = [C.be, C.q];
+            if (how === 'dot') { add(P[0] * dx[0], P[1] + dx[1]); add(Q[0] * dy[0], Q[1] + dy[1]); }
+            if (how === 'nodot') { add(P[0], P[1]); add(Q[0], Q[1]); }
+            if (how === 'dotr') { add(P[0] * X[0], P[1] + X[1]); add(Q[0] * Y[0], Q[1] + Y[1]); }
+            if (how === 'swap') { add(P[0] * dy[0], P[1] + dy[1]); add(Q[0] * dx[0], Q[1] + dx[1]); }
+            return out;
+        }
+        function tpolyTex(o) {
+            var es = Object.keys(o).map(Number).sort(function (a, b) { return b - a; });
+            return tp(es.map(function (e) { return [o[e], pw('t', e)]; }));
+        }
+        function tpolySym(o) { return Object.keys(o).map(function (e) { return '(' + o[e] + ')*t**' + e; }).join('+') || '0'; }
+        function tpolyInt(o) {
+            var s = fr(0, 1);
+            Object.keys(o).forEach(function (e) { s = fadd(s, fr(o[e], Number(e) + 1)); });
+            return s;
+        }
+        function curveTex(C) { return vec(ct(C.al, C.p), ct(C.be, C.q)); }
+        function curveSym(C) { return [C.al + '*t**' + C.p, C.be + '*t**' + C.q]; }
+
+        function stageLine() {
+            var qs = [];
+
+            /* --- 1. a scalar line integral along a segment --- */
+            (function () {
+                var x0, y0, d, a, b, ans;
+                do {
+                    x0 = pick([-1, 0, 1, 2]); y0 = pick([-1, 0, 1, 2]);
+                    d = pick([[3, 4], [4, -3], [-3, 4], [6, 8], [5, 12], [0, 5], [8, -6]]);
+                    a = pick([1, 2, 3]); b = pick([1, -1, 2, 3]);
+                    ans = fr(Math.round(Math.sqrt(d[0] * d[0] + d[1] * d[1])) * (a * (2 * x0 + d[0]) + b * (2 * y0 + d[1])), 2);
+                } while (ans.n === 0);
+                var L = Math.round(Math.sqrt(d[0] * d[0] + d[1] * d[1]));
+                var x1 = x0 + d[0], y1 = y0 + d[1];
+                var ftx = tp([[a, 'x'], [b, 'y']]);
+                var rt = vec(tp([[x0, ''], [d[0], 't']]), tp([[y0, ''], [d[1], 't']]));
+                qs.push({
+                    prompt: 'Evaluate ' + M('\\displaystyle\\int_C (' + ftx + ')\\,ds') + ', where ' + M('C') + ' is the line segment from ' + M(pt(x0, y0)) +
+                        ' to ' + M(pt(x1, y1)) + '.',
+                    type: 'num', labels: ['value'], answer: [ans.v], show: [M(ftex(ans.n, ans.d))],
+                    meta: { kind: 'seg-ds', x0: x0, y0: y0, d: d, a: a, b: b,
+                            curve: { type: 'seg', r: [x0 + '+(' + d[0] + ')*t', y0 + '+(' + d[1] + ')*t'], t: ['0', '1'] }, integrand: a + '*x+(' + b + ')*y' },
+                    explain: function () {
+                        var c0 = a * x0 + b * y0, h = fr(a * d[0] + b * d[1], 2);
+                        var mean = h.n === 0 ? String(c0) : (c0 === 0 ? ftex(h.n, h.d) :
+                            c0 + (h.n < 0 ? ' - ' + ftex(-h.n, h.d) : ' + ' + ftex(h.n, h.d)));
+                        return '<p>Parametrize: ' + M('\\mathbf r(t) = ' + rt) + ', ' + M('0 \\le t \\le 1') + '. Then ' +
+                            M('\\|\\mathbf r\'(t)\\| = \\|' + vec(d[0], d[1]) + '\\| = ' + L) + ', so ' + M('ds = ' + L + '\\,dt') + ':</p>' +
+                            MD(I(0, 1) + '\\bigl(' + tp([[a * x0 + b * y0, ''], [a * d[0] + b * d[1], 't']]) + '\\bigr)\\,' + L + '\\,dt') +
+                            MD('= ' + L + '\\left(' + mean + '\\right) = ' + ftex(ans.n, ans.d)) +
+                            '<p class="why">Writing ' + M('ds = dt') + ' would give ' + M(ftex(ans.n, ans.d * L)) + ', off by a factor of ' + L + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. ds on a circle (multiple choice) --- */
+            (function () {
+                var a = pick([2, 3, 4]), which = pick(['y', 'x2']);
+                var base = which === 'y' ? [a + '\\sin t', a + '*sin(t)'] : [(a * a) + '\\cos^2 t', (a * a) + '*cos(t)**2'];
+                var opt = function (fac) { return M('\\displaystyle' + I(0, '\\pi') + (fac ? '(' + base[0] + ')(' + fac + ')' : base[0]) + '\\,dt'); };
+                qs.push({
+                    prompt: M('C') + ' is the upper half of the circle ' + M('x^2 + y^2 = ' + (a * a)) + ', ' + M('\\mathbf r(t) = ' + vec(a + '\\cos t', a + '\\sin t')) +
+                        ', ' + M('0 \\le t \\le \\pi') + '. Which integral equals ' + M('\\displaystyle\\int_C ' + (which === 'y' ? 'y' : 'x^2') + '\\,ds') + '?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: opt(String(a)), correct: true, key: 'right', t: '(' + base[1] + ')*' + a },
+                        { html: opt(''), correct: false, key: 'dsdt', t: base[1] },
+                        { html: opt(String(a * a)), correct: false, key: 'sq', t: '(' + base[1] + ')*' + (a * a) },
+                        { html: opt('-' + a + '\\sin t'), correct: false, key: 'dx', t: '(' + base[1] + ')*(-' + a + '*sin(t))' }
+                    ]),
+                    meta: { kind: 'circ-ds', a: a, f: which === 'y' ? 'y' : 'x**2',
+                            curve: { type: 'arc', r: [a + '*cos(t)', a + '*sin(t)'], t: ['0', 'pi'] }, integrand: which === 'y' ? 'y' : 'x**2' },
+                    explain: function () {
+                        return '<p>' + M('\\mathbf r\'(t) = ' + vec('-' + a + '\\sin t', a + '\\cos t')) + ' has length ' + M('\\sqrt{' + (a * a) + '\\sin^2 t + ' + (a * a) + '\\cos^2 t} = ' + a) +
+                            ', so ' + M('ds = ' + a + '\\,dt') + '. Replace ' + M(which === 'y' ? 'y' : 'x^2') + ' by ' + M(base[0]) + ' and multiply by ' + a + '.</p>' +
+                            '<p class="why">' + M('ds') + ' is a length, so it is never negative and never just ' + M('dt') + ' unless the speed is 1. ' +
+                            'The ' + M('-' + a + '\\sin t\\,dt') + ' choice is ' + M('dx') + ', which belongs to a different integral.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. work along a curve --- */
+            (function () {
+                var C, F, poly, W;
+                do { C = pick(CURVES); F = workField(); poly = tpoly(F, C, 'dot'); W = tpolyInt(poly); } while (W.n === 0);
+                var end = pt(C.al, C.be);
+                qs.push({
+                    prompt: 'Find the work done by ' + M('\\mathbf F = ' + ftexF(F.P, F.Q)) + ' on a particle moving along ' + M('\\mathbf r(t) = ' + curveTex(C)) +
+                        ' from ' + M(pt(0, 0)) + ' to ' + M(end) + ' (' + M('0 \\le t \\le 1') + ').',
+                    type: 'num', labels: ['work'], answer: [W.v], show: [M(ftex(W.n, W.d))],
+                    meta: { kind: 'work', field: [psym(F.P), psym(F.Q)],
+                            curve: { type: 'pow', r: curveSym(C), t: ['0', '1'] } },
+                    explain: function () {
+                        return '<p>' + M('\\mathbf r\'(t) = ' + vec(ct(C.al * C.p, C.p - 1), ct(C.be * C.q, C.q - 1))) + ' and ' +
+                            M('\\mathbf F(\\mathbf r(t)) = ' + vec(tpolyTex(tpoly({ P: F.P, Q: [[0, 0, 0]] }, C, 'nodot')), tpolyTex(tpoly({ P: [[0, 0, 0]], Q: F.Q }, C, 'nodot')))) + '. Dot them:</p>' +
+                            MD('W = ' + I(0, 1) + '\\bigl(' + tpolyTex(poly) + '\\bigr)\\,dt = ' + ftex(W.n, W.d)) +
+                            '<p class="why">Three steps every time: substitute ' + M('\\mathbf r(t)') + ' into ' + M('\\mathbf F') + ', dot with ' + M('\\mathbf r\'(t)') + ', integrate in ' + M('t') + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. the work integral, set up (multiple choice) --- */
+            (function () {
+                var C, F, polys, vals;
+                do {
+                    C = pick(CURVES); F = workField();
+                    polys = ['dot', 'nodot', 'dotr', 'swap'].map(function (h) { return tpoly(F, C, h); });
+                    vals = polys.map(function (p) { var s = tpolyInt(p); return s.n + '/' + s.d; });
+                } while (vals.filter(function (v, i) { return vals.indexOf(v) === i; }).length < 4);
+                var keys = ['right', 'nodot', 'dotr', 'swap'];
+                qs.push({
+                    prompt: 'Which integral is the work done by ' + M('\\mathbf F = ' + ftexF(F.P, F.Q)) + ' along ' + M('\\mathbf r(t) = ' + curveTex(C)) +
+                        ', ' + M('0 \\le t \\le 1') + '?',
+                    type: 'choice',
+                    choices: mc(polys.map(function (p, i) {
+                        return { html: M('\\displaystyle' + I(0, 1) + '\\bigl(' + tpolyTex(p) + '\\bigr)\\,dt'), correct: i === 0, key: keys[i], t: tpolySym(p) };
+                    })),
+                    meta: { kind: 'work-setup', field: [psym(F.P), psym(F.Q)], curve: { type: 'pow', r: curveSym(C), t: ['0', '1'] } },
+                    explain: function () {
+                        return '<p>Work is ' + M('\\int_C \\mathbf F\\cdot d\\mathbf r = \\int_0^1 \\mathbf F(\\mathbf r(t))\\cdot\\mathbf r\'(t)\\,dt') + ', with ' +
+                            M('\\mathbf r\'(t) = ' + vec(ct(C.al * C.p, C.p - 1), ct(C.be * C.q, C.q - 1))) + '. That gives ' + M(tpolyTex(polys[0])) + '.</p>' +
+                            '<p class="why">The traps: adding the components without dotting with ' + M('\\mathbf r\'(t)') + ', dotting with ' + M('\\mathbf r(t)') +
+                            ' instead of its derivative, and pairing the first component with ' + M('y\'(t)') + '.</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. reversing the direction --- */
+            (function () {
+                var ask = pick(['work', 'ds']);
+                var want = ask === 'work' ? 'flip' : 'same';
+                qs.push({
+                    prompt: 'You traverse the same curve ' + M('C') + ' in the opposite direction. What happens to ' +
+                        (ask === 'work' ? M('\\displaystyle\\int_C \\mathbf F\\cdot d\\mathbf r') : M('\\displaystyle\\int_C f\\,ds')) + '?',
+                    type: 'choice',
+                    choices: mc([
+                        { html: 'It changes sign.', correct: want === 'flip', key: 'flip' },
+                        { html: 'It stays the same.', correct: want === 'same', key: 'same' },
+                        { html: 'It doubles.', correct: false, key: 'double' },
+                        { html: 'It becomes ' + M('0') + '.', correct: false, key: 'zero' }
+                    ]),
+                    meta: { kind: 'concept', want: want },
+                    explain: function () {
+                        return ask === 'work'
+                            ? '<p>Going backwards flips ' + M('\\mathbf r\'(t)') + ', so every ' + M('\\mathbf F\\cdot d\\mathbf r') + ' changes sign. ' +
+                              'A force that helps you one way works against you the other way.</p><p class="why">Contrast ' + M('\\int_C f\\,ds') +
+                              ': ' + M('ds') + ' is a length, so direction does not matter there.</p>'
+                            : '<p>' + M('ds = \\|\\mathbf r\'(t)\\|\\,dt') + ' is a length, and length does not care which way you walk. The value is unchanged.</p>' +
+                              '<p class="why">Contrast work, ' + M('\\int_C \\mathbf F\\cdot d\\mathbf r') + ', which does change sign.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        var STAGES = [
+            { id: 'double', name: 'Slice and Swap', sub: 'Iterated integrals, regions, reversing the order', item: 'Section 14.1', build: stageDouble },
+            { id: 'polar', name: 'Polar Express', sub: 'Rings, roses, and the extra r', item: 'Section 14.3', build: stagePolar },
+            { id: 'triple', name: 'Triple Stack', sub: 'Floor to roof, then the shadow', item: 'Section 14.4', build: stageTriple },
+            { id: 'cylsph', name: 'Cone Zone', sub: 'Cylindrical and spherical limits', item: 'Section 14.5', build: stageCylSph },
+            { id: 'jacobian', name: 'Jacobian Junction', sub: 'Change of variables and its scale factor', item: 'Section 14.6', build: stageJacobian },
+            { id: 'fields', name: 'Field Trip', sub: 'Conservative fields and potentials', item: 'Section 15.1', build: stageFields },
+            { id: 'line', name: 'Along the Line', sub: 'ds, work, and direction', item: 'Section 15.2', build: stageLine }
+        ];
+
+        /* typeset any math in the question panel (MathJax loads asynchronously) */
+        function typeset() {
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise([document.getElementById('qPanel')]).catch(function () { });
+            }
+        }
+
+        /* =======================================================
+           game state + engine
+           ======================================================= */
+        var G = {
+            sets: {},          /* stageId -> [questions] */
+            results: {},       /* stageId -> {correct, answered, total, points} */
+            score: 0, streak: 0, best: 0,
+            correct: 0, answered: 0, total: 0,
+            stage: null, idx: 0, attempts: 0, locked: false, selected: null
+        };
+
+        var el = function (id) { return document.getElementById(id); };
+
+        function buildAll() {
+            G.sets = {}; G.results = {};
+            G.score = 0; G.streak = 0; G.best = 0;
+            G.correct = 0; G.answered = 0; G.total = 0;
+            STAGES.forEach(function (s) {
+                var qs = s.build();
+                G.sets[s.id] = qs;
+                G.total += qs.length;
+            });
+            renderMap();
+            renderScore();
+        }
+
+        function renderScore() {
+            el('s-score').textContent = G.score;
+            el('s-streak').textContent = G.streak;
+            el('s-streak').className = 'v' + (G.streak >= 3 ? ' hot' : '');
+            el('s-correct').textContent = G.correct + ' / ' + G.answered;
+            el('s-bar').style.width = (G.total ? (G.answered / G.total * 100) : 0) + '%';
+        }
+
+        function renderMap() {
+            var m = el('map');
+            m.innerHTML = '';
+            STAGES.forEach(function (s, i) {
+                var r = G.results[s.id];
+                var b = document.createElement('button');
+                b.className = 'stage' + (r ? ' done' : '') +
+                    (G.stage && G.stage.id === s.id ? ' current' : '');
+                b.innerHTML = '<span class="badge">Stage ' + (i + 1) + ' &middot; ' + s.item + '</span>' +
+                    '<span class="nm">' + s.name + '</span>' +
+                    '<span class="sub">' + s.sub + '</span>' +
+                    (r ? '<span class="res">' + r.correct + ' of ' + r.total + ' &middot; ' +
+                        r.points + ' pts</span>'
+                        : '<span class="res" style="color:#6E6E6E">' + G.sets[s.id].length +
+                        ' questions</span>');
+                b.addEventListener('click', function () { startStage(i); });
+                m.appendChild(b);
+            });
+        }
+
+        function show(which) {
+            el('mapPanel').classList.toggle('hidden', which !== 'map');
+            el('qPanel').classList.toggle('hidden', which !== 'q');
+            el('rPanel').classList.toggle('hidden', which !== 'r');
+            el('intro').classList.toggle('hidden', which !== 'map');
+        }
+
+        function startStage(i) {
+            G.stage = STAGES[i];
+            G.idx = 0;
+            if (!G.results[G.stage.id]) {
+                G.results[G.stage.id] = { correct: 0, answered: 0, total: G.sets[G.stage.id].length, points: 0 };
+            } else {
+                /* replaying a stage: clear its old tally so it is not double counted */
+                var old = G.results[G.stage.id];
+                G.score -= old.points;
+                G.correct -= old.correct;
+                G.answered -= old.answered;   /* not old.total: the old run may have been quit partway */
+                G.results[G.stage.id] = { correct: 0, answered: 0, total: G.sets[G.stage.id].length, points: 0 };
+            }
+            renderScore();
+            show('q');
+            renderQ();
+        }
+
+        function currentQ() { return G.sets[G.stage.id][G.idx]; }
+
+        function renderQ() {
+            var q = currentQ();
+            G.attempts = 0; G.locked = false; G.selected = null;
+
+            el('q-round').innerHTML = G.stage.name + ' <span style="color:#A2A2A2">&middot; ' +
+                G.stage.item + '</span>';
+            el('q-count').textContent = 'Question ' + (G.idx + 1) + ' of ' + G.sets[G.stage.id].length;
+            el('q-text').innerHTML = q.prompt;
+            el('q-fig').innerHTML = q.fig ? '<div class="figbox">' + q.fig + '</div>' : '';
+            el('q-fb').innerHTML = '';
+            el('btn-check').classList.remove('hidden');
+            el('btn-check').disabled = false;
+            el('btn-check').textContent = 'Check answer';
+            el('btn-next').classList.add('hidden');
+
+            var body = el('q-body');
+            body.innerHTML = '';
+
+            if (q.type === 'choice') {
+                var wrap = document.createElement('div');
+                wrap.className = 'choices';
+                q.choices.forEach(function (c, i) {
+                    var b = document.createElement('button');
+                    b.className = 'choice';
+                    b.type = 'button';
+                    b.dataset.i = i;
+                    b.innerHTML = '<span class="ltr">' + 'ABCD'[i] + '</span><span>' + c.html + '</span>';
+                    b.addEventListener('click', function () {
+                        if (G.locked) return;
+                        wrap.querySelectorAll('.choice').forEach(function (n) { n.classList.remove('sel'); });
+                        b.classList.add('sel');
+                        G.selected = i;
+                    });
+                    wrap.appendChild(b);
+                });
+                body.appendChild(wrap);
+            } else {
+                var f = document.createElement('div');
+                f.className = 'fields';
+                q.labels.forEach(function (lab, i) {
+                    var d = document.createElement('div');
+                    d.className = 'field';
+                    d.innerHTML = '<label for="in' + i + '">' + lab + '</label>' +
+                        '<input id="in' + i + '" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">';
+                    f.appendChild(d);
+                });
+                body.appendChild(f);
+                var first = body.querySelector('input');
+                if (first) setTimeout(function () { first.focus(); }, 30);
+                body.querySelectorAll('input').forEach(function (inp) {
+                    inp.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (!el('btn-next').classList.contains('hidden')) nextQ();
+                            else check();
+                        }
+                    });
+                });
+            }
+            typeset();
+        }
+
+        function check() {
+            var q = currentQ();
+            var ok;
+
+            if (q.type === 'choice') {
+                if (G.selected === null) {
+                    flashFB('near', 'Pick an answer first', 'Choose one of the options, then check it.');
+                    return;
+                }
+                ok = !!q.choices[G.selected].correct;
+            } else {
+                var inputs = Array.prototype.slice.call(el('q-body').querySelectorAll('input'));
+                if (inputs.length !== q.answer.length) return;   /* should never happen */
+                if (inputs.some(function (i) { return i.value.trim() === ''; })) {
+                    flashFB('near', 'Fill in every box',
+                        inputs.length > 1 ? 'Every box needs a value before you can check.'
+                            : 'Type an answer before you check it.');
+                    return;
+                }
+                var bad = inputs.filter(function (i) { return !isFinite(parseNum(i.value)); });
+                if (bad.length) {
+                    flashFB('near', 'That is not a number I can read',
+                        'Use digits, a fraction like 3/8, sqrt(5), or pi. No units or words.');
+                    return;
+                }
+                ok = inputs.every(function (inp, i) {
+                    return matches(parseNum(inp.value), q.answer[i], q.round);
+                });
+                inputs.forEach(function (inp, i) {
+                    inp.classList.remove('right', 'wrong');
+                    inp.classList.add(matches(parseNum(inp.value), q.answer[i], q.round) ? 'right' : 'wrong');
+                });
+            }
+
+            G.attempts++;
+
+            if (ok) {
+                var base = G.attempts === 1 ? 100 : 50;
+                G.streak++;
+                if (G.streak > G.best) G.best = G.streak;
+                var bonus = G.streak >= 3 ? Math.min(75, (G.streak - 2) * 25) : 0;
+                var gained = base + bonus;
+                G.score += gained;
+                G.correct++;
+                G.answered++;
+                G.results[G.stage.id].answered++;
+                G.results[G.stage.id].correct++;
+                G.results[G.stage.id].points += gained;
+                lockIn();
+                showFB('good', 'Correct', gained, bonus, q);
+            } else if (G.attempts === 1) {
+                G.streak = 0;
+                flashFB('near', 'Not quite &mdash; one more try',
+                    'Have another look. A correct answer on the second try is still worth 50 points.');
+                if (q.type === 'choice') {
+                    var sel = el('q-body').querySelector('.choice.sel');
+                    if (sel) { sel.classList.add('wrong'); sel.classList.remove('sel'); sel.disabled = true; }
+                    G.selected = null;
+                }
+            } else {
+                G.streak = 0;
+                G.answered++;
+                G.results[G.stage.id].answered++;
+                lockIn();
+                showFB('bad', 'Not this time', 0, 0, q);
+            }
+            renderScore();
+        }
+
+        function lockIn() {
+            var q = currentQ();
+            G.locked = true;
+            el('btn-check').classList.add('hidden');
+            el('btn-next').classList.remove('hidden');
+            el('btn-next').textContent = (G.idx + 1 < G.sets[G.stage.id].length)
+                ? 'Next question' : 'See stage results';
+            if (q.type === 'choice') {
+                el('q-body').querySelectorAll('.choice').forEach(function (b) {
+                    var i = Number(b.dataset.i);
+                    b.disabled = true;
+                    b.classList.remove('sel');
+                    if (q.choices[i].correct) b.classList.add('right');
+                });
+            } else {
+                el('q-body').querySelectorAll('input').forEach(function (inp) { inp.disabled = true; });
+            }
+        }
+
+        function flashFB(kind, head, msg) {
+            el('q-fb').innerHTML = '<div class="fb ' + kind + '" role="status"><div class="hd">' + head + '</div>' +
+                '<p>' + msg + '</p></div>';
+            typeset();
+        }
+
+        function showFB(kind, head, gained, bonus, q) {
+            var ptline = gained > 0
+                ? ' <span class="pts">+' + gained + ' pts' +
+                (bonus ? ' (' + (gained - bonus) + ' + ' + bonus + ' streak)' : '') + '</span>'
+                : '';
+            var answerLine = '';
+            if (kind === 'bad') {
+                if (q.type === 'choice') {
+                    var right = q.choices.filter(function (c) { return c.correct; })[0];
+                    answerLine = '<p>The answer was <strong>' + right.html + '</strong></p>';
+                } else {
+                    answerLine = '<p>The answer was <strong>' +
+                        q.answer.map(function (a, i) { return q.labels[i] + ' = ' + (q.show ? q.show[i] : fmt(a)); }).join(', ') +
+                        '</strong>.</p>';
+                }
+            }
+            el('q-fb').innerHTML = '<div class="fb ' + kind + '" role="status">' +
+                '<div class="hd">' + head + ptline + '</div>' +
+                answerLine +
+                (typeof q.explain === 'function' ? q.explain() : (q.explain || '')) +
+                '</div>';
+            typeset();
+        }
+
+        function nextQ() {
+            if (G.idx + 1 < G.sets[G.stage.id].length) {
+                G.idx++;
+                renderQ();
+                el('qPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            var doneAll = STAGES.every(function (s) { return G.results[s.id]; });
+            show('r');
+            el('r-score').textContent = G.score;
+
+            var r = G.results[G.stage.id];
+            el('r-title').textContent = doneAll ? 'All seven stages complete' : G.stage.name + ' complete';
+            el('r-line').innerHTML = 'You got <strong>' + r.correct + ' of ' + r.total + '</strong> in ' +
+                G.stage.name + '. Best streak so far: <strong>' + G.best + '</strong>.' +
+                (doneAll ? ' You have now cleared every stage.' : '');
+
+            var grid = el('r-grid');
+            grid.innerHTML = '';
+            STAGES.forEach(function (s) {
+                var res = G.results[s.id];
+                var d = document.createElement('div');
+                var weak = res && res.correct < res.total;
+                d.className = 'rcard' + (weak ? ' weak' : '');
+                d.innerHTML = '<div class="nm">' + s.name + '</div>' +
+                    '<div class="sc">' + (res ? res.correct + '/' + res.total : '&mdash;') + '</div>' +
+                    '<div class="tip">' + (res
+                        ? (weak ? 'Worth another pass &mdash; ' + s.item.toLowerCase()
+                            : 'Clean run &mdash; ' + s.item.toLowerCase())
+                        : 'Not attempted yet') + '</div>';
+                grid.appendChild(d);
+            });
+
+            var weakOnes = STAGES.filter(function (s) {
+                var res = G.results[s.id];
+                return res && res.correct < res.total;
+            });
+            el('r-advice').innerHTML = weakOnes.length
+                ? '<div class="prompt-box"><h3>Where to spend your study time</h3><p>' +
+                weakOnes.map(function (s) {
+                    return '<strong>' + s.name + '</strong> (' + s.item + ')';
+                }).join(', ') + '. Replay those stages &mdash; you will get different problems each time, ' +
+                'so you cannot just memorize the answers.</p></div>'
+                : '<div class="prompt-box"><h3>Nice run</h3><p>No missed questions in the stages you ' +
+                'attempted. Run it again for a fresh set, or go back and do the stages you skipped.</p></div>';
+        }
+
+        /* ---------- wiring ---------- */
+        el('btn-check').addEventListener('click', check);
+        el('btn-next').addEventListener('click', nextQ);
+        el('btn-quit').addEventListener('click', function () { renderMap(); show('map'); });
+        el('btn-map').addEventListener('click', function () { renderMap(); show('map'); });
+        el('btn-start').addEventListener('click', function () { startStage(0); });
+        el('btn-reset').addEventListener('click', function () { buildAll(); show('map'); });
+        el('btn-again').addEventListener('click', function () { buildAll(); startStage(0); });
+
+        /* ---------- go ---------- */
+        buildAll();
+        show('map');
+    </script>
+</body>
+
+</html>
