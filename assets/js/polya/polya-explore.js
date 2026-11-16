@@ -811,7 +811,7 @@
       + (spec.target_label || 'b') + '. Drag the picture to turn it.');
     var S = Space(box, Object.assign({ keys: V.concat([b]) }, spec));
     var sl = sliders(box, c.map(function (v, i) {
-      return { name: 'c' + i, label: 'c' + SUB[i + 1], min: -(spec.range || 3), max: spec.range || 3, step: spec.step || 0.5, value: v };
+      return { name: 'c' + i, label: spec.slider_labels ? spec.slider_labels[i] : 'c' + SUB[i + 1], min: -(spec.range || 3), max: spec.range || 3, step: spec.step || 0.5, value: v };
     }), function () { c = c.map(function (_, i) { return sl.get('c' + i); }); draw(); });
     var out = readout(box);
     function draw() {
@@ -883,8 +883,9 @@
     hint(box, spec.hint || 'Move the sliders to slide Q around the plane. Make the dashed segment from ' + (spec.P_label || 'P')
       + ' to Q as short as you can. Drag the picture to turn it.');
     var S = Space(box, Object.assign({ keys: [U, Vd, n] }, spec));
-    var sl = sliders(box, [{ name: 'a', label: 'a', min: ar.min, max: ar.max, step: ar.step, value: a },
-                           { name: 'b', label: 'b', min: br.min, max: br.max, step: br.step, value: bb }],
+    var lab = spec.slider_labels || ['a', 'b'], ql = spec.Q_label || 'Q';  // optional names (MATH 351: c and m, Ax)
+    var sl = sliders(box, [{ name: 'a', label: lab[0], min: ar.min, max: ar.max, step: ar.step, value: a },
+                           { name: 'b', label: lab[1], min: br.min, max: br.max, step: br.step, value: bb }],
                      function () { a = sl.get('a'); bb = sl.get('b'); draw(); });
     var out = readout(box);
     function draw() {
@@ -894,9 +895,9 @@
         add.seg({ a: P, b: Q, color: C.ax, width: 2.5, dash: hit ? 'none' : '6 4' });
         if (hit) add.right({ at: Q, u: sub3(P, Q), v: planeBasis({ normal: n }).e1 });
         add.point({ p: P, color: C.x, label: spec.P_label || 'P' });
-        add.point({ p: Q, color: C.p, label: 'Q' });
+        add.point({ p: Q, color: C.p, label: ql });
       });
-      out.innerHTML = 'Q = ' + vecN(Q) + ' &nbsp; distance from ' + (spec.P_label || 'P') + ' = ' + fmt(d, 3);
+      out.innerHTML = ql + ' = ' + vecN(Q) + ' &nbsp; distance from ' + (spec.P_label || 'P') + ' = ' + fmt(d, 3);
       if (!done && hit) { done = true; onGoal({ Q: vecN(Q), dist: fmt(d, 3) }); }
     }
     draw();

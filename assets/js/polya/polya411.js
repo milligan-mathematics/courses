@@ -392,6 +392,10 @@
     else if (q.type === 'order') ans = note('pl-model', 'The proof:', q.model);
     else if (q.type === 'error') { var w = q.lines.filter(function (x) { return x.wrong; })[0]; ans = note('pl-ok', 'The first wrong line:', w.html + ' ' + w.comment); }
     else if (q.type === 'write') ans = note('pl-model', 'One way to write it:', q.model);
+    // the 307 step types MATH 351 also uses (16 Nov 2026); 411 and 308 pages have none of them
+    else if (q.type === 'matrix') ans = note('pl-ok', 'Answer: \\(' + (q.label ? q.label + ' ' : '') + q.answer_tex + '\\).', q.comment.replace(/^(Right|Yes)[.:!,]\s*/, ''));
+    else if (q.type === 'example') ans = note('pl-ok', 'One that works:', q.model);
+    else if (q.type === 'explore') ans = note('pl-ok', 'The figure:', (q.found || '').replace(/^(Right|Yes)[.:!,]\s*/, '').replace(/\{\w+\}/g, '…'));
     if (ans) box.appendChild(ans);
     return box;
   }
@@ -590,7 +594,7 @@
         var card = el('div', 'pl-step pl-end');
         card.appendChild(el('h3', 'pl-sub', 'Nice work.'));
         card.appendChild(el('p', null, '<strong>You can now:</strong> ' + P.goal.replace(/^./, function (c) { return c.toLowerCase(); })));
-        if (P.discuss) card.appendChild(el('div', 'pl-discuss', '<strong>Bring to class.</strong> ' + P.discuss));
+        if (P.discuss) card.appendChild(el('div', 'pl-discuss', '<strong>' + (window.POLYA_DISCUSS_LABEL || 'Bring to class.') + '</strong> ' + P.discuss));
         card.appendChild(button('pl-link', 'Work through it again', function () { set('walk', 0); }));
         col.appendChild(card);
       }
