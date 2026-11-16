@@ -151,6 +151,11 @@ More sections are on the way.
 ## Review Games
 
 <div class="resource-grid">
+  <a href="test-3-review-game.html" class="resource-card">
+    <div class="resource-meta" style="color: var(--color-accent-green);">Play on Your Own</div>
+    <h4>Test 3 Review Game — §§14.1, 14.3–15.2</h4>
+    <p class="resource-desc">Seven stages, 34 questions, and a fresh problem set every run. Reversing the order, polar, triple, cylindrical and spherical integrals, change of variables, conservative fields, and line integrals, each with the reasoning, not just the answer.</p>
+  </a>
   <a href="test-2-review-game.html" class="resource-card">
     <div class="resource-meta" style="color: var(--color-accent-green);">Play on Your Own</div>
     <h4>Test 2 Review Game — §§13.2–13.8</h4>
