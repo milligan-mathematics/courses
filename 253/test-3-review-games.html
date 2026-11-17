@@ -519,7 +519,7 @@
         <div class="prompt-box" id="intro">
             <h3>How this works</h3>
             <ul>
-                <li>Seven stages, 30 questions. Each stage drills one skill from Chapters 10, 11 and 12.</li>
+                <li>Seven stages, 35 questions. Each stage drills one skill from Chapters 10, 11 and 12.</li>
                 <li>You get <strong>two tries</strong> per question &mdash; 100 points on the first, 50 on the
                     second.</li>
                 <li>Answer three in a row and your <strong>streak bonus</strong> starts stacking.</li>
@@ -957,7 +957,7 @@
             })();
 
             /* --- 4. regular polygon --- */
-            (function () {
+            if (Math.random() < 0.5) (function () {
                 var n = pick([5, 6, 8, 9, 10, 12]);
                 var name = { 5: 'pentagon', 6: 'hexagon', 8: 'octagon', 9: 'nonagon', 10: 'decagon', 12: '12-sided polygon' }[n];
                 var turn = 360 / n, inside = 180 - turn;
@@ -975,6 +975,55 @@
                             '<p class="why">Check with the angle-sum rule: the inside angles of an ' + n + '-sided polygon add to ' +
                             '(' + n + ' &minus; 2) &middot; 180&deg; = ' + ((n - 2) * 180) + '&deg;, and ' + ((n - 2) * 180) + ' &divide; ' + n +
                             ' = ' + inside + '. Same answer, two different routes.</p>';
+                    }
+                });
+            })();
+            else (function () {
+                var n = pick([3, 5, 6]), given, miss;
+                do {
+                    given = [];
+                    for (var i = 0; i < n - 1; i++) given.push(5 * ri(6, 30));
+                    miss = 360 - sum(given);
+                } while (miss < 30 || miss > 150);
+                var thing = pick([
+                    { who: 'A lawn mower', does: 'is steered', go: 'mows' },
+                    { who: 'A delivery drone', does: 'flies', go: 'flies' },
+                    { who: 'A hiker', does: 'walks', go: 'walks' }
+                ]);
+                var shape = { 3: 'three-sided', 5: 'five-sided', 6: 'six-sided' }[n];
+                var ord = ['first', 'second', 'third', 'fourth', 'fifth'];
+                qs.push({
+                    prompt: thing.who + ' ' + thing.go + ' once around a ' + shape + ' path and ends up back where it started, ' +
+                        'facing the way it began. At the first ' + (n - 1) + ' corners it turns left by <strong>' +
+                        given.join('&deg;, ') + '&deg;</strong>.' +
+                        '<br><br>How many degrees does it turn at the last corner? And what is the angle <em>inside</em> the path at that corner?',
+                    type: 'num', labels: ['Turn at last corner (degrees)', 'Inside angle at that corner (degrees)'],
+                    answer: [miss, 180 - miss],
+                    meta: { kind: 'turn-path', n: n, given: given, miss: miss },
+                    explain: function () {
+                        return '<p>Going once around and ending up facing the way you started means the turns add up to ' +
+                            '<strong>one full turn, 360&deg;</strong>.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">360 &minus; (' + given.join(' + ') + ') = ' + miss + '&deg;</p>' +
+                            '<p class="why">At each corner the turn and the inside angle make a straight line, so the inside angle is ' +
+                            '180&deg; &minus; ' + miss + '&deg; = <strong>' + (180 - miss) + '&deg;</strong>. A turn of ' + miss +
+                            '&deg; and an inside angle of ' + miss + '&deg; are different things.</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. clock hands --- */
+            (function () {
+                var m = 5 * ri(1, 11), h = ri(1, 11);
+                while (m === 30 || m === 0) m = 5 * ri(1, 11);
+                qs.push({
+                    prompt: 'On a clock, how many degrees does the <strong>minute hand</strong> turn in ' + m + ' minutes? How many degrees does the <strong>hour hand</strong> turn in ' + h + ' hour' + (h > 1 ? 's' : '') + '?',
+                    type: 'num', labels: ['Minute hand (degrees)', 'Hour hand (degrees)'], answer: [6 * m, 30 * h],
+                    meta: { kind: 'clock', m: m, h: h },
+                    explain: function () {
+                        return '<p>Each hand makes one full turn, 360&deg;, on its own schedule. The minute hand goes all the way around in 60 minutes, so it turns 360 &divide; 60 = <strong>6&deg; per minute</strong>. ' +
+                            'The hour hand goes around in 12 hours, so it turns 360 &divide; 12 = <strong>30&deg; per hour</strong>.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + m + ' &times; 6 = ' + (6 * m) + '&deg;<br>' + h + ' &times; 30 = ' + (30 * h) + '&deg;</p>' +
+                            '<p class="why">This is the &ldquo;turning&rdquo; view of an angle: an angle measures how much something rotates, not how long its sides are.</p>';
                     }
                 });
             })();
@@ -1318,6 +1367,52 @@
                 });
             })();
 
+            /* --- 2. which box is bigger? --- */
+            (function () {
+                var ATTR = [
+                    { name: 'length', unit: 'feet', f: function (b) { return b[0]; } },
+                    { name: 'bottom area', unit: 'square feet', f: function (b) { return b[0] * b[1]; } },
+                    { name: 'height', unit: 'feet', f: function (b) { return b[2]; } },
+                    { name: 'volume', unit: 'cubic feet', f: function (b) { return b[0] * b[1] * b[2]; } },
+                    { name: 'distance around the bottom', unit: 'feet', f: function (b) { return 2 * (b[0] + b[1]); } }
+                ];
+                var X, Y, ok;
+                do {
+                    X = [ri(2, 9), ri(1, 6), ri(1, 5)]; Y = [ri(2, 9), ri(1, 6), ri(1, 5)];
+                    ok = ATTR.every(function (a) { return a.f(X) !== a.f(Y); });
+                    /* 6 x 2 x 1 against 3 x 3 x 1.5 is the real test's pair */
+                } while (!ok || (X[0] === 6 && X[1] === 2 && X[2] === 1));
+                var trues = [], falses = [];
+                ATTR.forEach(function (a, i) {
+                    var xWins = a.f(X) > a.f(Y);
+                    trues.push({ attr: i, who: xWins ? 'X' : 'Y' });
+                    falses.push({ attr: i, who: xWins ? 'Y' : 'X' });
+                });
+                var T = pick(trues), F = shuffle(falses).slice(0, 3);
+                var stm = [T].concat(F);
+                var choices = shuffle(stm.map(function (s, i) {
+                    var a = ATTR[s.attr];
+                    return { html: 'Box ' + s.who + ' is bigger: it has the greater <strong>' + a.name + '</strong> (measured in ' + a.unit + ').', correct: i === 0, key: s.attr + s.who };
+                }));
+                qs.push({
+                    prompt: 'Two open boxes are built for a school garden (dimensions in feet).' +
+                        '<table style="margin:0.6rem 0 0.2rem;border-collapse:collapse"><tr><th style="padding:2px 14px"></th><th style="padding:2px 14px">Length</th><th style="padding:2px 14px">Width</th><th style="padding:2px 14px">Height</th></tr>' +
+                        '<tr><td style="padding:2px 14px"><strong>Box X</strong></td><td style="text-align:center">' + X[0] + '</td><td style="text-align:center">' + X[1] + '</td><td style="text-align:center">' + X[2] + '</td></tr>' +
+                        '<tr><td style="padding:2px 14px"><strong>Box Y</strong></td><td style="text-align:center">' + Y[0] + '</td><td style="text-align:center">' + Y[1] + '</td><td style="text-align:center">' + Y[2] + '</td></tr></table>' +
+                        '<br>Which statement is <strong>true</strong>?',
+                    type: 'choice', choices: choices,
+                    meta: { kind: 'box-compare', X: X, Y: Y, statements: stm },
+                    explain: function () {
+                        var rows = ATTR.map(function (a) {
+                            return a.name + ': X = ' + a.f(X) + ', Y = ' + a.f(Y) + ' ' + a.unit;
+                        }).join('<br>');
+                        return '<p>&ldquo;Bigger&rdquo; does not mean one thing. A box can be bigger in one way and smaller in another, and each way has its own kind of unit.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace;font-size:0.9rem">' + rows + '</p>' +
+                            '<p class="why">The right choice compares one attribute and names it. Whenever a comparison says &ldquo;bigger&rdquo;, ask: bigger in <em>what</em>?</p>';
+                    }
+                });
+            })();
+
             /* --- 3. n square feet vs. n feet squared --- */
             (function () {
                 var n = ri(3, 9);
@@ -1432,6 +1527,31 @@
                         return '<p>A square foot is 12 inches by 12 inches: 12 &times; 12 = <strong>144</strong> square inches. A cubic foot is 12 &times; 12 &times; 12 = <strong>1,728</strong> cubic inches.</p>' +
                             '<p style="font-family:ui-monospace,Consolas,monospace">(a) ' + s + ' &times; 144 = ' + commas(144 * s) + ' square inches<br>(b) ' + c + ' &times; 1,728 = ' + commas(1728 * c) + ' cubic inches</p>' +
                             '<p class="why">Each time the dimension goes up by one (length, area, volume), the conversion factor gets one more factor of 12.</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. price per square yard or per square foot? --- */
+            (function () {
+                var Y, F;
+                do {
+                    Y = ri(12, 60); F = ri(100, 700) / 100;
+                } while (Math.abs(Y - 9 * F) < 1.5);
+                var thing = pick(['floor tile', 'artificial turf', 'vinyl flooring']);
+                var best = Y < 9 * F ? 'yard' : 'foot';
+                qs.push({
+                    prompt: 'One store sells ' + thing + ' for <strong>$' + Y + ' per square yard</strong>. Another sells it for <strong>' + money(F) + ' per square foot</strong>. Which is cheaper?',
+                    type: 'choice',
+                    choices: shuffle([
+                        { html: 'The $' + Y + ' per square yard price', correct: best === 'yard', key: 'yard' },
+                        { html: 'The ' + money(F) + ' per square foot price', correct: best === 'foot', key: 'foot' },
+                        { html: 'They cost the same, since 1 yard is 3 feet', correct: false, key: 'same' }
+                    ]),
+                    meta: { kind: 'sqyd-price', Y: Y, F: F, best: best },
+                    explain: function () {
+                        return '<p>Put both prices in the same unit. A square yard is 3 feet by 3 feet, so it holds <strong>9 square feet</strong>.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + money(F) + ' &times; 9 = ' + money(9 * F) + ' per square yard, compared with $' + Y + ' per square yard</p>' +
+                            '<p class="why">So the ' + (best === 'yard' ? '$' + Y + ' per square yard' : money(F) + ' per square foot') + ' price is cheaper. Multiplying by 3 instead of 9 is the classic slip: that converts a length, not an area.</p>';
                     }
                 });
             })();
@@ -1551,6 +1671,23 @@
                         return '<p>The number of digits after the decimal point tells you the place the measurement was rounded to. More digits means a smaller rounding window.</p>' +
                             '<p style="font-family:ui-monospace,Consolas,monospace">' + pr.a + ' &rarr; within &plusmn;' + fmt(pr.ha) + '<br>' + pr.b + ' &rarr; within &plusmn;' + fmt(pr.hb) + '</p>' +
                             '<p class="why">So the one that is within &plusmn;' + fmt(hr) + ' is the more accurate claim. Adding a zero after the decimal point is not decoration. It is a statement.</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. a little off on each side --- */
+            (function () {
+                var n = pick([20, 30, 40, 50, 60, 80, 100]);
+                qs.push({
+                    prompt: 'Jo thinks a square tabletop is <strong>' + n + ' cm by ' + n + ' cm</strong>, but it is really <strong>' + (n + 1) + ' cm by ' + (n + 1) + ' cm</strong>. ' +
+                        'Each side is just 1 cm longer than she thinks. How many square centimeters bigger is the real area than the area she calculates?',
+                    type: 'num', labels: ['Extra area (square cm)'], answer: [2 * n + 1],
+                    meta: { kind: 'square-off', n: n },
+                    explain: function () {
+                        return '<p style="font-family:ui-monospace,Consolas,monospace">' + (n + 1) + ' &times; ' + (n + 1) + ' = ' + ((n + 1) * (n + 1)) + '<br>' + n + ' &times; ' + n + ' = ' + (n * n) +
+                            '<br>difference = ' + (2 * n + 1) + ' square cm</p>' +
+                            '<p class="why">Picture it: the extra is a strip 1 cm wide along one side (' + n + ' sq cm), another along the next side (' + n + ' sq cm), and a 1-by-1 corner. ' +
+                            'A small error in each length adds up to a bigger error in the area, which is why an area is less accurate than the measurements behind it.</p>';
                     }
                 });
             })();
@@ -1773,7 +1910,7 @@
             })();
 
             /* --- 6. which round one is the better buy? --- */
-            (function () {
+            if (Math.random() < 0.5) (function () {
                 var S = pick([
                     { thing: 'pie', size: 'inch', ds: [6, 8, 9, 10, 12], lo: 6, hi: 26, unit: 'square inches' },
                     { thing: 'round rug', size: 'foot', ds: [3, 4, 5, 6, 8], lo: 25, hi: 220, unit: 'square feet' },
@@ -1806,6 +1943,39 @@
                             '<p style="font-family:ui-monospace,Consolas,monospace">' + nm(D1) + ': &pi; &times; ' + fmt(r1) + '&sup2; &asymp; ' + fmt2(a1) + ' ' + S.unit + ', &divide; ' + P1 + ' &asymp; ' + fmt2(a1 / P1) + ' per dollar<br>' +
                             nm(D2) + ': &pi; &times; ' + fmt(r2) + '&sup2; &asymp; ' + fmt2(a2) + ' ' + S.unit + ', &divide; ' + P2 + ' &asymp; ' + fmt2(a2 / P2) + ' per dollar</p>' +
                             '<p class="why">So the ' + (best === 'small' ? nm(D1) : nm(D2)) + ' is the better buy. Area grows with the <em>square</em> of the radius: doubling the diameter gives four times the area, so the price alone does not tell you.</p>';
+                    }
+                });
+            })();
+            else (function () {
+                var P = pick([[6, 9, 4], [8, 12, 4], [6, 12, 2], [10, 15, 4], [8, 10, 16], [4, 6, 4], [9, 12, 9]]);
+                var d1 = P[0], d2 = P[1], k = P[2], s1 = k * pick([1, 2]);
+                var s2 = s1 * d2 * d2 / (d1 * d1);
+                var thing = pick(['round cake', 'round pan of cornbread', 'round quiche']);
+                qs.push({
+                    prompt: 'A <strong>' + d1 + '-inch</strong> ' + thing + ' serves <strong>' + s1 + '</strong> people. About how many people should a <strong>' + d2 + '-inch</strong> ' + thing + ' of the same thickness serve? (The sizes are diameters.)',
+                    type: 'num', labels: ['People served'], answer: [s2],
+                    meta: { kind: 'cake-serves', d1: d1, d2: d2, s1: s1 },
+                    explain: function () {
+                        return '<p>Servings go with the <strong>area</strong> of the top, not the diameter. The areas are &pi;(' + fmt(d1 / 2) + ')&sup2; and &pi;(' + fmt(d2 / 2) + ')&sup2;, so the bigger one has (' + d2 + ' &divide; ' + d1 + ')&sup2; times the area.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">(' + d2 + '/' + d1 + ')&sup2; = ' + fmt(d2 * d2 / (d1 * d1)) + '<br>' + s1 + ' &times; ' + fmt(d2 * d2 / (d1 * d1)) + ' = ' + fmt(s2) + ' people</p>' +
+                            '<p class="why">Scaling by the diameters alone (' + s1 + ' &times; ' + d2 + '/' + d1 + ' = ' + fmt(s1 * d2 / d1) + ') undercounts: when every length grows, the area grows by the square of that factor.</p>';
+                    }
+                });
+            })();
+
+            /* --- 7. same perimeter, different areas --- */
+            (function () {
+                var Pm;
+                do { Pm = 2 * ri(8, 20); } while (Pm === 30);
+                var k = Pm / 2, mx = Math.floor(k / 2) * Math.ceil(k / 2), mn = k - 1;
+                qs.push({
+                    prompt: 'A rectangle has a perimeter of <strong>' + Pm + ' feet</strong>, and its sides are whole numbers of feet. What is the <strong>largest</strong> area it could have? What is the <strong>smallest</strong>?',
+                    type: 'num', labels: ['Largest area (square feet)', 'Smallest area (square feet)'], answer: [mx, mn],
+                    meta: { kind: 'perim-area', P: Pm },
+                    explain: function () {
+                        return '<p>Length + width is half the perimeter, ' + k + ' feet. List the pairs: 1 and ' + (k - 1) + ', 2 and ' + (k - 2) + ', 3 and ' + (k - 3) + ', and so on.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">most square: ' + Math.floor(k / 2) + ' &times; ' + Math.ceil(k / 2) + ' = ' + mx + ' sq ft<br>long and skinny: 1 &times; ' + (k - 1) + ' = ' + mn + ' sq ft</p>' +
+                            '<p class="why">Same perimeter, very different areas. Perimeter (a length) does not determine area, which is why &ldquo;which is bigger, the perimeter or the area?&rdquo; does not even make sense.</p>';
                     }
                 });
             })();
