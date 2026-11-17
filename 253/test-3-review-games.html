@@ -1856,8 +1856,10 @@
                     'parallel to the base to a new position, and the new triangle is drawn dashed.');
                 var top = f([minx + 0.3, h]), top2 = f([maxx - 0.3, h]);
                 o += '<line x1="' + px(top[0]) + '" y1="' + px(top[1]) + '" x2="' + px(top2[0]) + '" y2="' + px(top2[1]) + '" stroke="#9aa3ab" stroke-width="1.2" stroke-dasharray="2 4"/>';
-                o += svgPoly(f, [A, B, C1], 'fill="none" stroke="' + ORANGE + '" stroke-width="2.4" stroke-dasharray="7 5"');
                 o += svgPoly(f, [A, B, C0], 'fill="' + SHADE + '" stroke="' + INK + '" stroke-width="2.4"');
+                /* the dashed triangle's two slanted sides go on top, so they stay visible where they cross the shaded triangle */
+                o += '<polyline data-role="sheared" points="' + [A, C1, B].map(function (pt) { var q = f(pt); return px(q[0]) + ',' + px(q[1]); }).join(' ') +
+                    '" fill="none" stroke="' + ORANGE + '" stroke-width="2.4" stroke-dasharray="7 5"/>';
                 var c0 = f(C0), c1 = f(C1), a0 = f(A), b0 = f(B);
                 o += '<circle cx="' + px(c0[0]) + '" cy="' + px(c0[1]) + '" r="4.5" fill="' + INK + '"/><circle cx="' + px(c1[0]) + '" cy="' + px(c1[1]) + '" r="4.5" fill="' + ORANGE + '"/>';
                 o += svgLabel((a0[0] + b0[0]) / 2, a0[1] + 20, 'base ' + b + ' cm', { size: 13 });
