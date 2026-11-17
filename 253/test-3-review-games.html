@@ -1,0 +1,2255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test 3 Review Games - Milligan Mathematics</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        /* ---------- shell ---------- */
+        .prompt-box {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--color-primary, #F36E24);
+        }
+
+        .prompt-box h3 {
+            margin-top: 0;
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+
+        .note {
+            color: var(--color-mountain-gray, #6E6E6E);
+            font-size: 0.92rem;
+        }
+
+        button {
+            font: inherit;
+            font-weight: 600;
+            padding: 0.55rem 1.15rem;
+            border-radius: 6px;
+            border: 1px solid var(--color-primary, #F36E24);
+            background: var(--color-primary, #F36E24);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+        }
+
+        button:hover:not(:disabled) {
+            background: var(--color-primary-dark, #CD5920);
+            border-color: var(--color-primary-dark, #CD5920);
+        }
+
+        button:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
+
+        button.ghost {
+            background: #fff;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        button.ghost:hover:not(:disabled) {
+            background: #fff5ef;
+            color: var(--color-primary-dark, #CD5920);
+        }
+
+        /* ---------- scoreboard ---------- */
+        .scorebar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 2rem;
+            align-items: center;
+            padding: 0.9rem 1.25rem;
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
+        }
+
+        .stat .k {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .stat .v {
+            font-size: 1.35rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat .v.hot {
+            color: var(--color-primary, #F36E24);
+        }
+
+        .bar-wrap {
+            flex: 1 1 160px;
+            min-width: 140px;
+        }
+
+        .bar {
+            height: 10px;
+            border-radius: 999px;
+            background: #eceef1;
+            overflow: hidden;
+        }
+
+        .bar > span {
+            display: block;
+            height: 100%;
+            width: 0;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #F9A01B, #F36E24);
+            transition: width 0.35s ease;
+        }
+
+        /* ---------- stage map ---------- */
+        .map {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .stage {
+            text-align: left;
+            padding: 1rem 1.1rem;
+            border-radius: 8px;
+            border: 1px solid #e3e6ea;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+        }
+
+        .stage:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.09);
+            border-color: var(--color-primary, #F36E24);
+            background: #fff;
+        }
+
+        .stage .badge {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .stage .nm {
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        .stage .sub {
+            font-size: 0.85rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .stage .res {
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-top: 0.2rem;
+        }
+
+        .stage.done {
+            border-color: var(--color-accent-green, #008552);
+            background: #f4fbf7;
+        }
+
+        .stage.done .res {
+            color: var(--color-accent-green, #008552);
+        }
+
+        .stage.current {
+            border-color: var(--color-primary, #F36E24);
+            box-shadow: 0 0 0 3px rgba(243, 110, 36, 0.14);
+        }
+
+        /* ---------- question card ---------- */
+        .qhead {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .qhead .rnd {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: var(--color-primary, #F36E24);
+        }
+
+        .qhead .cnt {
+            font-size: 0.8rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .qtext {
+            font-size: 1.12rem;
+            line-height: 1.55;
+            margin: 0.35rem 0 1.1rem;
+        }
+
+        .qtext code {
+            background: #f2f4f6;
+            padding: 0.08em 0.35em;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        .figbox {
+            margin: 0 0 1.2rem;
+            padding: 1rem;
+            background: #fafbfc;
+            border: 1px solid #eceef1;
+            border-radius: 8px;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .figbox svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* choices */
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .choice {
+            text-align: left;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #dde1e6;
+            background: #fff;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            line-height: 1.5;
+            transition: border-color 0.12s ease, background 0.12s ease;
+        }
+
+        .choice:hover:not(:disabled) {
+            border-color: var(--color-primary, #F36E24);
+            background: #fffaf6;
+        }
+
+        .choice .ltr {
+            flex: 0 0 auto;
+            width: 1.6rem;
+            height: 1.6rem;
+            border-radius: 50%;
+            background: #eceef1;
+            color: #444;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: grid;
+            place-items: center;
+        }
+
+        .choice.sel {
+            border-color: var(--color-primary, #F36E24);
+            background: #fff3ea;
+        }
+
+        .choice.sel .ltr {
+            background: var(--color-primary, #F36E24);
+            color: #fff;
+        }
+
+        .choice.right {
+            border-color: var(--color-accent-green, #008552);
+            background: #f0faf5;
+        }
+
+        .choice.right .ltr {
+            background: var(--color-accent-green, #008552);
+            color: #fff;
+        }
+
+        .choice.wrong {
+            border-color: #c0392b;
+            background: #fdf3f2;
+        }
+
+        .choice.wrong .ltr {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        /* numeric inputs */
+        .fields {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .field label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--color-mountain-gray, #6E6E6E);
+        }
+
+        .field input {
+            font: inherit;
+            font-size: 1.1rem;
+            padding: 0.5rem 0.7rem;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            width: 9rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .field input:focus {
+            outline: 2px solid rgba(243, 110, 36, 0.35);
+            border-color: var(--color-primary, #F36E24);
+        }
+
+        .field input.right {
+            border-color: var(--color-accent-green, #008552);
+            background: #f0faf5;
+        }
+
+        .field input.wrong {
+            border-color: #c0392b;
+            background: #fdf3f2;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            align-items: center;
+        }
+
+        /* feedback */
+        .fb {
+            margin-top: 1.2rem;
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            border-left: 4px solid #ccc;
+            background: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        .fb.good {
+            border-left-color: var(--color-accent-green, #008552);
+            background: #f2faf6;
+        }
+
+        .fb.bad {
+            border-left-color: #c0392b;
+            background: #fdf4f3;
+        }
+
+        .fb.near {
+            border-left-color: var(--color-accent-sunrise, #F9A01B);
+            background: #fffaf0;
+        }
+
+        .fb .hd {
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .fb p {
+            margin: 0.5rem 0 0;
+        }
+
+        .fb .why {
+            margin-top: 0.7rem;
+            padding-top: 0.7rem;
+            border-top: 1px dashed #d8dce1;
+            font-size: 0.95rem;
+        }
+
+        .pts {
+            font-weight: 700;
+            color: var(--color-accent-green, #008552);
+            white-space: nowrap;
+        }
+
+        /* results */
+        .resultgrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.9rem;
+            margin: 1.2rem 0 1.5rem;
+        }
+
+        .rcard {
+            border: 1px solid #e3e6ea;
+            border-radius: 8px;
+            padding: 0.9rem 1rem;
+            background: #fff;
+        }
+
+        .rcard .nm {
+            font-weight: 700;
+            margin-bottom: 0.15rem;
+        }
+
+        .rcard .sc {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .rcard .tip {
+            font-size: 0.85rem;
+            color: var(--color-mountain-gray, #6E6E6E);
+            margin-top: 0.3rem;
+        }
+
+        .rcard.weak {
+            border-color: var(--color-accent-sunrise, #F9A01B);
+            background: #fffaf0;
+        }
+
+        .bigscore {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--color-primary, #F36E24);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 560px) {
+            .scorebar {
+                position: static;
+                gap: 0.6rem 1.25rem;
+            }
+
+            .field input {
+                width: 7rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="brand">
+                <span>Milligan</span> Mathematics
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Math 253</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <h1>Test 3 Review Games</h1>
+            <p>Eight stages, Chapters 10, 11 &amp; 12 &mdash; angles, circles and compass constructions, units and
+                accuracy, areas, and Thales&rsquo; theorem. Every run builds new problems, so you can take it as many
+                times as you like.</p>
+        </div>
+    </header>
+
+    <main class="container page-content">
+
+        <div class="prompt-box" id="intro">
+            <h3>How this works</h3>
+            <ul>
+                <li>Eight stages, 33 questions. Each stage drills one skill from Chapters 10, 11 and 12.</li>
+                <li>You get <strong>two tries</strong> per question &mdash; 100 points on the first, 50 on the
+                    second.</li>
+                <li>Answer three in a row and your <strong>streak bonus</strong> starts stacking.</li>
+                <li>After every question you get the reasoning, not just the answer. That is the part that shows
+                    up on the test.</li>
+            </ul>
+            <p class="note">Nothing is saved or sent anywhere &mdash; refresh and you get a brand new set of
+                problems.</p>
+        </div>
+
+        <!-- scoreboard -->
+        <div class="scorebar" id="scorebar">
+            <div class="stat">
+                <span class="k">Score</span>
+                <span class="v" id="s-score">0</span>
+            </div>
+            <div class="stat">
+                <span class="k">Streak</span>
+                <span class="v" id="s-streak">0</span>
+            </div>
+            <div class="stat">
+                <span class="k">Correct</span>
+                <span class="v" id="s-correct">0 / 0</span>
+            </div>
+            <div class="bar-wrap">
+                <span class="k" style="font-size:0.7rem;font-weight:700;letter-spacing:0.08em;
+                    text-transform:uppercase;color:#6E6E6E;">Progress</span>
+                <div class="bar"><span id="s-bar"></span></div>
+            </div>
+        </div>
+
+        <!-- stage map -->
+        <section class="panel" id="mapPanel">
+            <h2>Pick a stage</h2>
+            <p class="note">Work straight through, or jump to whatever you feel shakiest on. Answers can be whole numbers, decimals, or fractions like 3/8. Type just the number: the box tells you the unit.</p>
+            <div class="map" id="map"></div>
+            <div class="actions">
+                <button id="btn-start">Start from the beginning</button>
+                <button class="ghost" id="btn-reset">New problem set</button>
+            </div>
+        </section>
+
+        <!-- question -->
+        <section class="panel hidden" id="qPanel">
+            <div class="qhead">
+                <span class="rnd" id="q-round"></span>
+                <span class="cnt" id="q-count"></span>
+            </div>
+            <div class="qtext" id="q-text"></div>
+            <div id="q-fig"></div>
+            <div id="q-body"></div>
+            <div class="actions">
+                <button id="btn-check">Check answer</button>
+                <button class="ghost hidden" id="btn-next">Next question</button>
+                <button class="ghost" id="btn-quit">Back to the map</button>
+            </div>
+            <div id="q-fb"></div>
+        </section>
+
+        <!-- results -->
+        <section class="panel hidden" id="rPanel">
+            <h2 id="r-title">Run complete</h2>
+            <div class="bigscore" id="r-score">0</div>
+            <p class="note" id="r-line"></p>
+            <div class="resultgrid" id="r-grid"></div>
+            <div id="r-advice"></div>
+            <div class="actions">
+                <button id="btn-again">Play again with new problems</button>
+                <button class="ghost" id="btn-map">Back to the map</button>
+            </div>
+        </section>
+
+    </main>
+
+
+    <script>
+        'use strict';
+
+        /* =======================================================
+           small helpers
+           ======================================================= */
+        function ri(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+        function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+        function shuffle(a) {
+            a = a.slice();
+            for (var i = a.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var t = a[i]; a[i] = a[j]; a[j] = t;
+            }
+            return a;
+        }
+        function gcd(a, b) { while (b) { var t = b; b = a % b; a = t; } return a; }
+        function sum(a) { return a.reduce(function (s, x) { return s + x; }, 0); }
+        function sortNum(a) { return a.slice().sort(function (x, y) { return x - y; }); }
+        function medianSorted(s) {
+            var n = s.length, m = n >> 1;
+            return n % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+        }
+        /* plain decimal text: no trailing zeros, no float noise */
+        function fmt(x) { return String(Math.round(x * 1e6) / 1e6); }
+        function fmt2(x) { return String(Math.round(x * 100) / 100); }
+        function money(x) {
+            var v = Math.round(Math.abs(x) * 100) / 100;
+            return (x < 0 ? '&minus;' : '') + '$' + v.toFixed(2);
+        }
+        function commas(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+        function fracStr(n, d) {
+            var g = gcd(n, d);
+            return (d / g === 1) ? String(n / g) : (n / g) + '/' + (d / g);
+        }
+        /* a/b rendered as a stacked-looking inline fraction */
+        function fracHtml(n, d) {
+            var g = gcd(n, d);
+            return (d / g === 1) ? String(n / g) : '<sup>' + (n / g) + '</sup>&frasl;<sub>' + (d / g) + '</sub>';
+        }
+        /* 0.535714... -> '15/28' (for showing probability answers) */
+        function asFraction(x) {
+            for (var d = 1; d <= 2000; d++) {
+                var n = Math.round(x * d);
+                if (Math.abs(n / d - x) < 1e-9) return fracStr(n, d);
+            }
+            return fmt(x);
+        }
+        function listStr(a) { return a.join(', '); }
+        var LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        /* typed answers: whole numbers, decimals, or fractions like 3/8 */
+        function parseNum(s) {
+            s = String(s).replace(/−/g, '-').replace(/[,\s$]/g, '');
+            var m = s.match(/^(-?\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+            if (m) { var d = Number(m[2]); return d === 0 ? NaN : Number(m[1]) / d; }
+            if (/^-?(\d+\.?\d*|\.\d+)$/.test(s)) return Number(s);
+            return NaN;
+        }
+        /* round:true questions (probabilities) also accept the exact answer rounded to 2 or 3 places */
+        function matches(v, a, round) {
+            if (!isFinite(v)) return false;
+            if (Math.abs(v - a) < 1e-9) return true;
+            if (!round) return false;
+            return Math.abs(v - Math.round(a * 100) / 100) < 1e-9 ||
+                Math.abs(v - Math.round(a * 1000) / 1000) < 1e-9;
+        }
+
+        /* =======================================================
+           figures (every one has an aria-label that carries the data)
+           ======================================================= */
+        function svgOpen(w, h, label) {
+            return '<svg viewBox="0 0 ' + w + ' ' + h + '" width="' + Math.min(w, 640) +
+                '" role="img" aria-label="' + label + '">';
+        }
+
+        /* =======================================================
+           geometry figures (every one has an aria-label that carries the data)
+           Math coordinates have y up; makeMap() turns them into pixels.
+           ======================================================= */
+        var DEG = Math.PI / 180;
+        var INK = '#111', SHADE = '#fde3d0', ORANGE = '#F36E24';
+
+        function px(x) { return Math.round(x * 10) / 10; }
+
+        /* pts: [[x, y], ...] that must fit; returns f(point) -> pixel [x, y], with f.s = pixels per unit */
+        function makeMap(pts, W, H, pad) {
+            var minx = Infinity, maxx = -Infinity, miny = Infinity, maxy = -Infinity;
+            pts.forEach(function (p) {
+                minx = Math.min(minx, p[0]); maxx = Math.max(maxx, p[0]);
+                miny = Math.min(miny, p[1]); maxy = Math.max(maxy, p[1]);
+            });
+            var w = (maxx - minx) || 1, h = (maxy - miny) || 1;
+            var s = Math.min((W - 2 * pad) / w, (H - 2 * pad) / h);
+            var offx = pad + ((W - 2 * pad) - s * w) / 2, offy = pad + ((H - 2 * pad) - s * h) / 2;
+            var f = function (p) { return [offx + s * (p[0] - minx), H - offy - s * (p[1] - miny)]; };
+            f.s = s;
+            return f;
+        }
+
+        function svgLine(f, p, q, extra) {
+            var a = f(p), b = f(q);
+            return '<line x1="' + px(a[0]) + '" y1="' + px(a[1]) + '" x2="' + px(b[0]) + '" y2="' + px(b[1]) +
+                '" stroke="' + INK + '" stroke-width="1.6" ' + (extra || '') + '/>';
+        }
+
+        function svgPoly(f, pts, extra) {
+            return '<polygon points="' + pts.map(function (p) { var a = f(p); return px(a[0]) + ',' + px(a[1]); }).join(' ') +
+                '" ' + (extra || 'fill="none" stroke="' + INK + '" stroke-width="2"') + '/>';
+        }
+
+        function svgLabel(x, y, text, o) {
+            o = o || {};
+            return '<text x="' + px(x) + '" y="' + px(y) + '" text-anchor="' + (o.anchor || 'middle') + '" font-size="' +
+                (o.size || 13) + '" font-weight="' + (o.bold ? 700 : 400) + '" fill="' + (o.color || '#333') + '"' +
+                (o.halo ? ' stroke="#fff" stroke-width="4" stroke-linejoin="round" paint-order="stroke"' : '') + '>' + text + '</text>';
+        }
+
+        /* arc and label for the angle at V between the rays toward P1 and P2 (the angle smaller than 180) */
+        function angleMark(f, V, P1, P2, r, label, bold) {
+            var a1 = Math.atan2(P1[1] - V[1], P1[0] - V[0]) / DEG, a2 = Math.atan2(P2[1] - V[1], P2[0] - V[0]) / DEG;
+            var d = (((a2 - a1) % 360) + 360) % 360;
+            var start = d <= 180 ? a1 : a2, span = d <= 180 ? d : 360 - d;
+            var v = f(V), e = start + span, mid = start + span / 2;
+            var sx = v[0] + r * Math.cos(start * DEG), sy = v[1] - r * Math.sin(start * DEG);
+            var ex = v[0] + r * Math.cos(e * DEG), ey = v[1] - r * Math.sin(e * DEG);
+            var lr = r + (bold ? 13 : 20);
+            return '<path d="M' + px(sx) + ' ' + px(sy) + ' A' + r + ' ' + r + ' 0 0 0 ' + px(ex) + ' ' + px(ey) +
+                '" fill="none" stroke="#555" stroke-width="1.3"/>' +
+                svgLabel(v[0] + lr * Math.cos(mid * DEG), v[1] - lr * Math.sin(mid * DEG) + 5, label,
+                    bold ? { bold: true, size: 16, color: ORANGE } : {});
+        }
+
+        /* little square for a right angle at V between P1 and P2 */
+        function rightMark(f, V, P1, P2, size) {
+            var v = f(V), a = f(P1), b = f(P2);
+            var u = [a[0] - v[0], a[1] - v[1]], w = [b[0] - v[0], b[1] - v[1]];
+            var lu = Math.hypot(u[0], u[1]), lw = Math.hypot(w[0], w[1]);
+            u = [u[0] / lu * size, u[1] / lu * size]; w = [w[0] / lw * size, w[1] / lw * size];
+            return '<polyline points="' + px(v[0] + u[0]) + ',' + px(v[1] + u[1]) + ' ' + px(v[0] + u[0] + w[0]) + ',' +
+                px(v[1] + u[1] + w[1]) + ' ' + px(v[0] + w[0]) + ',' + px(v[1] + w[1]) +
+                '" fill="none" stroke="#555" stroke-width="1.3"/>';
+        }
+
+        /* two parallel horizontal lines with a bent segment between them */
+        function bentFig(x, y, T, hm) {
+            var M = [0, hm];
+            var P = [(T - hm) / Math.sin(x * DEG) * Math.cos(x * DEG), T];
+            var Q = [hm / Math.sin(y * DEG) * Math.cos(y * DEG), 0];
+            var minx = Math.min(P[0], Q[0], 0) - 1.0, maxx = Math.max(P[0], Q[0], 0) + 1.0;
+            var f = makeMap([[minx, -0.35], [maxx, T + 0.35]], 440, 200, 10);
+            var o = svgOpen(440, 200, 'Two parallel horizontal lines with a bent segment between them. The segment touches the ' +
+                'top line, bends, and touches the bottom line. Angle ' + x + ' degrees is marked at the top, to the left of the ' +
+                'segment. Angle ' + y + ' degrees is marked at the bottom, to the left of the segment. Angle a is marked at the ' +
+                'bend, on the right side.');
+            [T, 0].forEach(function (yy) {
+                o += svgLine(f, [minx, yy], [maxx, yy]);
+                var c = f([maxx - 0.45, yy]), s = f.s;
+                o += '<polyline points="' + px(c[0] - 6) + ',' + px(c[1] - 5) + ' ' + px(c[0]) + ',' + px(c[1]) + ' ' +
+                    px(c[0] - 6) + ',' + px(c[1] + 5) + '" fill="none" stroke="' + INK + '" stroke-width="1.4"/>';
+            });
+            o += svgLine(f, P, M, 'stroke-width="2.4"') + svgLine(f, M, Q, 'stroke-width="2.4"');
+            o += angleMark(f, P, [P[0] - 1, T], M, 26, x + '&deg;');
+            o += angleMark(f, Q, [Q[0] - 1, 0], M, 26, y + '&deg;');
+            o += angleMark(f, M, P, Q, 22, 'a', true);
+            return { svg: o + '</svg>', M: M, P: P, Q: Q };
+        }
+
+        /* triangle ABC on a base with its base extended past B; marks given as numbers, the unknown as 'a' */
+        function extFig(alpha, gamma, ask) {
+            var beta = 180 - alpha - gamma, e = alpha + gamma;
+            var A = [0, 0], B = [4, 0];
+            var t = 4 * Math.sin(beta * DEG) / Math.sin(gamma * DEG);
+            var C = [t * Math.cos(alpha * DEG), t * Math.sin(alpha * DEG)];
+            var X = [5.9, 0];
+            var f = makeMap([[Math.min(-0.5, C[0] - 0.6), -0.4], [6.4, C[1] + 0.5]], 440, 230, 10);
+            var labA = alpha + '&deg;';
+            var labC = ask === 'apex' ? 'a' : gamma + '&deg;';
+            var labB = ask === 'apex' ? e + '&deg;' : 'a';
+            var desc = 'A triangle sitting on a horizontal base, with the base extended to the right past its right corner. ' +
+                (ask === 'apex'
+                    ? 'The angle at the left corner is ' + alpha + ' degrees, the outside angle at the right corner is ' + e +
+                    ' degrees, and angle a is the angle at the top corner.'
+                    : 'The angle at the left corner is ' + alpha + ' degrees, the angle at the top corner is ' + gamma +
+                    ' degrees, and angle a is the outside angle at the right corner, between the extension and the side.');
+            var o = svgOpen(440, 230, desc);
+            o += svgPoly(f, [A, B, C], 'fill="#fafbfc" stroke="' + INK + '" stroke-width="2.4"');
+            o += svgLine(f, B, X, 'stroke-width="2.4"');
+            o += angleMark(f, A, B, C, 32, labA);
+            o += angleMark(f, C, A, B, 30, labC, ask === 'apex');
+            o += angleMark(f, B, X, C, 28, labB, ask !== 'apex');
+            return { svg: o + '</svg>', A: A, B: B, C: C, beta: beta, e: e };
+        }
+
+        /* two circles, centers P=(0,0) and Q=(d,0); crossing points; optional shading or triangle */
+        function crossPoints(d, r1, r2) {
+            var a = (d * d + r1 * r1 - r2 * r2) / (2 * d), h2 = r1 * r1 - a * a;
+            if (h2 < -1e-9) return [];
+            if (Math.abs(h2) < 1e-9) return [[a, 0]];
+            var h = Math.sqrt(h2);
+            return [[a, h], [a, -h]];
+        }
+
+        function circleFig(d, r1, r2, unit, opt) {
+            opt = opt || {};
+            var W = 520, H = 300;
+            var minx = Math.min(-r1, d - r2), maxx = Math.max(r1, d + r2), R = Math.max(r1, r2);
+            var f = makeMap([[minx, -R], [maxx, R]], W, H, 22);
+            var s = f.s, P = f([0, 0]), Q = f([d, 0]);
+            var pts = crossPoints(d, r1, r2);
+            var desc = 'Two circles. The left circle is centered at P with radius ' + r1 + ' ' + unit +
+                ', the right circle at Q with radius ' + r2 + ' ' + unit + ', and P and Q are ' + d + ' ' + unit + ' apart.' +
+                (opt.region ? ' Part of the picture is shaded; read which part from the figure.' : '') +
+                (opt.tri ? ' The two circles cross at C and a triangle ABC is drawn.' : '');
+            var o = svgOpen(W, H, desc);
+            o += '<defs><clipPath id="clipA"><circle cx="' + px(P[0]) + '" cy="' + px(P[1]) + '" r="' + px(r1 * s) + '"/></clipPath>' +
+                '<clipPath id="clipB"><circle cx="' + px(Q[0]) + '" cy="' + px(Q[1]) + '" r="' + px(r2 * s) + '"/></clipPath></defs>';
+            var ca = '<circle data-role="A" cx="' + px(P[0]) + '" cy="' + px(P[1]) + '" r="' + px(r1 * s) + '"',
+                cb = '<circle data-role="B" cx="' + px(Q[0]) + '" cy="' + px(Q[1]) + '" r="' + px(r2 * s) + '"';
+            if (opt.region) {
+                o += '<rect x="1" y="1" width="' + (W - 2) + '" height="' + (H - 2) + '" fill="#fff" stroke="#ccd1d6"/>';
+                var z = opt.region;     /* 'AnotB' | 'both' | 'BnotA' | 'neither' */
+                if (z === 'neither') {
+                    o += '<rect x="1" y="1" width="' + (W - 2) + '" height="' + (H - 2) + '" fill="' + SHADE + '" data-role="shade"/>' +
+                        ca + ' fill="#fff"/>' + cb + ' fill="#fff"/>';
+                } else if (z === 'AnotB') {
+                    o += ca + ' fill="' + SHADE + '"/>' + cb + ' fill="#fff"/>';
+                } else if (z === 'BnotA') {
+                    o += cb + ' fill="' + SHADE + '"/>' + ca + ' fill="#fff"/>';
+                } else {
+                    o += ca + ' fill="#fff"/>' + cb + ' fill="' + SHADE + '" clip-path="url(#clipA)"/>';
+                }
+            }
+            o += ca + ' fill="none" stroke="' + INK + '" stroke-width="2"/>' + cb + ' fill="none" stroke="' + INK + '" stroke-width="2"/>';
+            /* radii along the axis, labeled */
+            o += svgLine(f, [0, 0], [-r1, 0], 'stroke-dasharray="5 4" stroke-width="1.3"') +
+                svgLine(f, [d, 0], [d + r2, 0], 'stroke-dasharray="5 4" stroke-width="1.3"');
+            o += svgLabel(f([-r1 / 2, 0])[0], P[1] - 7, r1 + ' ' + unit, { size: 12, color: '#6E6E6E' }) +
+                svgLabel(f([d + r2 / 2, 0])[0], Q[1] - 7, r2 + ' ' + unit, { size: 12, color: '#6E6E6E' });
+            o += '<circle cx="' + px(P[0]) + '" cy="' + px(P[1]) + '" r="4" fill="' + INK + '"/>' +
+                '<circle cx="' + px(Q[0]) + '" cy="' + px(Q[1]) + '" r="4" fill="' + INK + '"/>' +
+                svgLabel(P[0], P[1] + 20, opt.names ? opt.names[0] : 'P', { bold: true, size: 15, halo: true }) +
+                svgLabel(Q[0], Q[1] + 20, opt.names ? opt.names[1] : 'Q', { bold: true, size: 15, halo: true });
+            if (opt.dots) {
+                pts.forEach(function (p) {
+                    var c = f(p);
+                    o += '<circle cx="' + px(c[0]) + '" cy="' + px(c[1]) + '" r="5" fill="' + ORANGE + '" stroke="' + INK + '"/>';
+                });
+            }
+            if (opt.tri) {
+                var C = f(pts[0]);
+                o += svgLine(f, [0, 0], pts[0], 'stroke-width="2.4"') + svgLine(f, [d, 0], pts[0], 'stroke-width="2.4"') +
+                    svgLine(f, [0, 0], [d, 0], 'stroke-width="2.4"') +
+                    '<circle cx="' + px(C[0]) + '" cy="' + px(C[1]) + '" r="4" fill="' + ORANGE + '"/>' +
+                    svgLabel(C[0], C[1] - 9, 'C', { bold: true, size: 15 });
+            }
+            return o + '</svg>';
+        }
+
+        /* polygon (counterclockwise) with the length of each listed edge written outside it */
+        function polyFig(verts, edgeLabels, extraSvg, desc, W, H) {
+            var f = makeMap(verts.concat([]), W, H, 34);
+            var o = svgOpen(W, H, desc);
+            o += svgPoly(f, verts, 'fill="' + SHADE + '" stroke="' + INK + '" stroke-width="2.2"');
+            edgeLabels.forEach(function (lb) {
+                var p = verts[lb.i], q = verts[(lb.i + 1) % verts.length];
+                var a = f(p), b = f(q);
+                var dx = q[0] - p[0], dy = q[1] - p[1], len = Math.hypot(dx, dy);
+                var nx = dy / len, ny = -dx / len;           /* outward normal (math), counterclockwise polygon */
+                o += svgLabel((a[0] + b[0]) / 2 + nx * 17, (a[1] + b[1]) / 2 - ny * 17 + 5, lb.text, { size: 13 });
+            });
+            return { f: f, open: o, wrap: function (extra) { return o + (extra || '') + '</svg>'; } };
+        }
+
+        /* =======================================================
+           STAGE 1 - Angle Alley (10.2)
+           ======================================================= */
+        function stageAngles() {
+            var qs = [];
+
+            /* --- 1. a bent segment between parallel lines --- */
+            (function () {
+                var x, y;
+                do {
+                    x = ri(20, 70); y = ri(20, 70);
+                    /* 35 and 50 are the angles of the real test's parallel-lines diagram */
+                } while (x === y || (Math.min(x, y) === 35 && Math.max(x, y) === 50));
+                var T = 2.4, hm = pick([0.9, 1.1, 1.3, 1.5]);
+                var g = bentFig(x, y, T, hm);
+                qs.push({
+                    prompt: 'The two long lines are <strong>parallel</strong>. Find the measure of angle <em>a</em>, in degrees.',
+                    fig: g.svg,
+                    type: 'num', labels: ['Angle a (degrees)'], answer: [x + y],
+                    meta: { kind: 'bent', x: x, y: y, T: T, M: g.M, P: g.P, Q: g.Q },
+                    explain: function () {
+                        return '<p>Imagine a third line through the bend, parallel to the other two. It cuts angle <em>a</em> into ' +
+                            'two pieces. Each piece is an <strong>alternate interior angle</strong> with one of the marked angles, ' +
+                            'so the top piece is ' + x + '&deg; and the bottom piece is ' + y + '&deg;.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">a = ' + x + '&deg; + ' + y + '&deg; = ' + (x + y) + '&deg;</p>' +
+                            '<p class="why">The common slip is to subtract, or to treat the bend as a triangle you cannot close. ' +
+                            'The parallel line you add is what lets you carry each angle across.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. exterior angle of a triangle --- */
+            (function () {
+                var ask = pick(['apex', 'ext']), alpha, gamma;
+                do {
+                    alpha = ri(30, 75); gamma = ri(30, 75);
+                } while (alpha + gamma > 140 || alpha === gamma);
+                var g = extFig(alpha, gamma, ask);
+                var e = alpha + gamma;
+                var ans = ask === 'apex' ? e - alpha : e;
+                qs.push({
+                    prompt: 'Find the measure of angle <em>a</em>, in degrees. One side of the triangle has been extended.',
+                    fig: g.svg,
+                    type: 'num', labels: ['Angle a (degrees)'], answer: [ans],
+                    meta: { kind: 'ext-angle', ask: ask, alpha: alpha, gamma: gamma, e: e, A: g.A, B: g.B, C: g.C },
+                    explain: function () {
+                        if (ask === 'apex') {
+                            return '<p>An <strong>exterior angle</strong> of a triangle equals the sum of the two interior angles that are ' +
+                                'not next to it. The ' + e + '&deg; angle is outside the triangle at the right corner, so ' +
+                                e + '&deg; = ' + alpha + '&deg; + <em>a</em>.</p>' +
+                                '<p style="font-family:ui-monospace,Consolas,monospace">a = ' + e + '&deg; &minus; ' + alpha + '&deg; = ' + ans + '&deg;</p>' +
+                                '<p class="why">You can also get there in two steps: the inside angle at the right corner is ' +
+                                (180 - e) + '&deg; (it makes ' + e + '&deg; with a straight line), and the three inside angles ' +
+                                'add to 180&deg;.</p>';
+                        }
+                        return '<p>The exterior angle at the right corner equals the sum of the two <em>remote</em> interior angles: ' +
+                            alpha + '&deg; + ' + gamma + '&deg; = <strong>' + e + '&deg;</strong>.</p>' +
+                            '<p class="why">Check it the long way: the inside angle at that corner is 180&deg; &minus; ' + alpha +
+                            '&deg; &minus; ' + gamma + '&deg; = ' + (180 - e) + '&deg;, and the inside and outside angles make a ' +
+                            'straight line, so ' + (180 - e) + '&deg; + ' + e + '&deg; = 180&deg;.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. isosceles triangle --- */
+            (function () {
+                var ask = pick(['base', 'apex']), apex;
+                do { apex = 2 * ri(10, 70); } while (apex === 60 || apex === 90);
+                var base = (180 - apex) / 2;
+                var ans = ask === 'base' ? base : apex;
+                qs.push({
+                    prompt: 'In triangle ABC, sides <strong>AB and AC are the same length</strong>. ' +
+                        (ask === 'base' ? 'Angle A measures <strong>' + apex + '&deg;</strong>. What is the measure of angle B?'
+                            : 'Angle B measures <strong>' + base + '&deg;</strong>. What is the measure of angle A?'),
+                    type: 'num', labels: [(ask === 'base' ? 'Angle B' : 'Angle A') + ' (degrees)'], answer: [ans],
+                    meta: { kind: 'isosceles', ask: ask, apex: apex, base: base },
+                    explain: function () {
+                        var h = '<p>Equal sides sit across from equal angles. Angle B is across from AC and angle C is across from AB, so angles B and C are equal. ' +
+                            'That is the <strong>isosceles triangle</strong> fact, and the three angles still add to 180&deg;.</p>';
+                        h += ask === 'base'
+                            ? '<p style="font-family:ui-monospace,Consolas,monospace">B = C = (180&deg; &minus; ' + apex + '&deg;) &divide; 2 = ' + base + '&deg;</p>'
+                            : '<p style="font-family:ui-monospace,Consolas,monospace">A = 180&deg; &minus; ' + base + '&deg; &minus; ' + base + '&deg; = ' + apex + '&deg;</p>';
+                        return h + '<p class="why">Watch for this inside circles: two radii are always the same length, so a triangle made from two radii is isosceles. The last stage uses that.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. regular polygon --- */
+            (function () {
+                var n = pick([5, 6, 8, 9, 10, 12]);
+                var name = { 5: 'pentagon', 6: 'hexagon', 8: 'octagon', 9: 'nonagon', 10: 'decagon', 12: '12-sided polygon' }[n];
+                var turn = 360 / n, inside = 180 - turn;
+                qs.push({
+                    prompt: 'A skater glides around the edge of a <strong>regular ' + name + '</strong> (all sides the same length, ' +
+                        'all angles the same size), turning left by the same amount at every corner, and finishes where she started, ' +
+                        'facing the way she began.<br><br>How many degrees does she turn at each corner? What is each angle inside the ' + name + '?',
+                    type: 'num', labels: ['Turn at each corner (degrees)', 'Each inside angle (degrees)'],
+                    answer: [turn, inside],
+                    meta: { kind: 'regular-polygon', n: n },
+                    explain: function () {
+                        return '<p>All ' + n + ' turns are equal and together they make one full turn:</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">360&deg; &divide; ' + n + ' = ' + turn + '&deg; per corner</p>' +
+                            '<p>The inside angle and the turn make a straight line: 180&deg; &minus; ' + turn + '&deg; = <strong>' + inside + '&deg;</strong>.</p>' +
+                            '<p class="why">Check with the angle-sum rule: the inside angles of an ' + n + '-sided polygon add to ' +
+                            '(' + n + ' &minus; 2) &middot; 180&deg; = ' + ((n - 2) * 180) + '&deg;, and ' + ((n - 2) * 180) + ' &divide; ' + n +
+                            ' = ' + inside + '. Same answer, two different routes.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           STAGE 2 - Circle Corner (10.4)
+           ======================================================= */
+        function stageCircles() {
+            var qs = [];
+
+            /* --- 1. how many places are exactly r1 from P and exactly r2 from Q? --- */
+            (function () {
+                var d, r1, r2, roll = Math.random();
+                do {
+                    if (roll < 0.55) {            /* two points */
+                        r1 = ri(2, 8); r2 = ri(2, 8); d = ri(Math.abs(r1 - r2) + 1, r1 + r2 - 1);
+                    } else if (roll < 0.8) {      /* touching */
+                        r1 = ri(2, 8); r2 = ri(2, 8);
+                        d = Math.random() < 0.5 ? r1 + r2 : Math.abs(r1 - r2);
+                    } else {                      /* none */
+                        r1 = ri(2, 7); r2 = ri(2, 7);
+                        d = Math.random() < 0.5 ? r1 + r2 + ri(1, 3) : Math.abs(r1 - r2) - ri(1, 2);
+                    }
+                    /* d = 4 with radii 3 and 2 is the real test's library problem */
+                } while (d < 1 || d > 14 || (d === 4 && ((r1 === 3 && r2 === 2) || (r1 === 2 && r2 === 3))));
+                var cnt = crossPoints(d, r1, r2).length;
+                var sc = pick([
+                    { a: 'radio tower P', b: 'radio tower Q', n: ['P', 'Q'], u: 'km', what: 'a spot where a repair crew could park' },
+                    { a: 'campsite P', b: 'campsite Q', n: ['P', 'Q'], u: 'km', what: 'a place to put a trail marker' },
+                    { a: 'fire hydrant P', b: 'fire hydrant Q', n: ['P', 'Q'], u: 'm', what: 'a place to plant a tree' }
+                ]);
+                qs.push({
+                    prompt: 'On a map, ' + sc.a + ' and ' + sc.b + ' are <strong>' + d + ' ' + sc.u + '</strong> apart. You want ' +
+                        sc.what + ' that is <strong>exactly ' + r1 + ' ' + sc.u + ' from P</strong> and <strong>exactly ' + r2 + ' ' + sc.u +
+                        ' from Q</strong>.<br><br>How many different places are there?',
+                    fig: circleFig(d, r1, r2, sc.u, { dots: true }),
+                    type: 'num', labels: ['Number of places'], answer: [cnt],
+                    meta: { kind: 'circle-cross', d: d, r1: r1, r2: r2 },
+                    explain: function () {
+                        var why;
+                        if (cnt === 2) why = 'The circles cross in two places, one on each side of the line PQ. Every place that is exactly ' + r1 + ' ' + sc.u + ' from P is on the first circle, and every place exactly ' + r2 + ' ' + sc.u + ' from Q is on the second, so the answers are where the circles cross.';
+                        else if (cnt === 1) why = 'The circles just <em>touch</em>, at a single point on the line PQ. Every place exactly ' + r1 + ' ' + sc.u + ' from P is on the first circle, every place exactly ' + r2 + ' ' + sc.u + ' from Q is on the second, so the answer is the one point they share.';
+                        else why = d > r1 + r2
+                            ? 'The circles are too far apart to meet: ' + r1 + ' + ' + r2 + ' = ' + (r1 + r2) + ', which is less than ' + d + '. No place is on both circles.'
+                            : 'One circle sits completely inside the other without touching: the centers are only ' + d + ' apart, but the radii differ by ' + Math.abs(r1 - r2) + '. No place is on both circles.';
+                        return '<p>' + why + '</p>' +
+                            '<p class="why">Rule of thumb: two circles cross in two places when the distance between the centers is bigger than the ' +
+                            'difference of the radii and smaller than their sum (here between ' + Math.abs(r1 - r2) + ' and ' + (r1 + r2) +
+                            '). Exactly equal to either gives one touching point; outside that range gives none.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. which description matches the shaded region? --- */
+            (function () {
+                var r1, r2, d;
+                do {
+                    r1 = ri(3, 7); r2 = ri(3, 7); d = ri(Math.abs(r1 - r2) + 1, r1 + r2 - 1);
+                } while (d < 3);
+                var zones = ['AnotB', 'both', 'BnotA', 'neither'];
+                var z = pick(zones);
+                var u = pick(['km', 'miles']);
+                var flags = { AnotB: ['in', 'out'], both: ['in', 'in'], BnotA: ['out', 'in'], neither: ['out', 'out'] };
+                function words(fl) {
+                    return (fl[0] === 'in' ? 'less than ' : 'more than ') + r1 + ' ' + u + ' from P and ' +
+                        (fl[1] === 'in' ? 'less than ' : 'more than ') + r2 + ' ' + u + ' from Q';
+                }
+                var choices = shuffle(zones.map(function (k) {
+                    return { html: 'A place ' + words(flags[k]), correct: k === z, key: k };
+                }));
+                qs.push({
+                    prompt: 'The map shows where two cell towers, P and Q, are. The <strong>shaded region</strong> is where a new school could be built.' +
+                        '<br><br>Which sentence describes the shaded region? (The dashed segments show how big each circle is.)',
+                    fig: circleFig(d, r1, r2, u, { region: z }),
+                    type: 'choice', choices: choices,
+                    meta: { kind: 'region', r1: r1, r2: r2, d: d, zone: z, flags: flags[z] },
+                    explain: function () {
+                        return '<p>Inside a circle means <strong>closer</strong> than its radius; outside means <strong>farther</strong>. ' +
+                            'The shaded part is ' + (z === 'both' ? 'inside both circles' : z === 'neither' ? 'outside both circles' :
+                                z === 'AnotB' ? 'inside the circle around P but outside the circle around Q' :
+                                    'inside the circle around Q but outside the circle around P') + ', so the sentence is: <em>' + words(flags[z]) + '</em>.</p>' +
+                            '<p class="why">A good habit: pick a spot in the shaded part and ask two questions about it, one for each tower. ' +
+                            'Is it closer than ' + r1 + ' ' + u + ' to P? Closer than ' + r2 + ' ' + u + ' to Q?</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. map scale --- */
+            (function () {
+                var k = pick([2, 5, 10, 20, 25]), m = ri(3, 9), R = k * ri(2, 6);
+                var u = pick(['miles', 'km']);
+                qs.push({
+                    prompt: 'On a county map, <strong>1 cm stands for ' + k + ' ' + u + '</strong>. Two towns are ' + m + ' cm apart on the map.' +
+                        '<br><br>(a) How far apart are the towns in real life?<br>(b) A hospital serves every place <strong>within ' + R + ' ' + u +
+                        '</strong> of it. To draw that on the map with a compass, what radius should you use?',
+                    type: 'num', labels: ['Real distance (' + u + ')', 'Compass radius (cm)'], answer: [m * k, R / k],
+                    meta: { kind: 'map-scale', k: k, m: m, R: R },
+                    explain: function () {
+                        return '<p>Each centimeter on the map is ' + k + ' ' + u + ' on the ground.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">(a) ' + m + ' &times; ' + k + ' = ' + (m * k) + ' ' + u +
+                            '<br>(b) ' + R + ' &divide; ' + k + ' = ' + (R / k) + ' cm</p>' +
+                            '<p class="why">Going <em>from the map to the ground</em> you multiply by the scale; going <em>from the ground to the map</em> ' +
+                            'you divide. The circle around the hospital is every place the right distance away, so its radius is that distance, ' +
+                            'drawn to scale.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           STAGE 3 - Compass & Shapes (10.5)
+           ======================================================= */
+        var HIER_DEF = {
+            quadrilateral: 'a shape with four straight sides',
+            parallelogram: 'a quadrilateral with two pairs of parallel sides',
+            rectangle: 'a quadrilateral with four right angles',
+            rhombus: 'a quadrilateral with four equal sides',
+            square: 'a quadrilateral with four right angles and four equal sides'
+        };
+        /* what each shape always has, in words that fit "Every X has ..." */
+        var HIER_HAS = {
+            quadrilateral: 'four straight sides',
+            parallelogram: 'two pairs of parallel sides',
+            rectangle: 'four right angles',
+            rhombus: 'four equal sides',
+            square: 'four right angles and four equal sides'
+        };
+        var HIER_COUNTER = {
+            'rectangle|square': 'a 2-by-5 rectangle has right angles but its sides are not all equal',
+            'rhombus|square': 'a rhombus can lean over: its sides are equal but its angles are not right angles',
+            'parallelogram|rectangle': 'a parallelogram can lean over, so its angles are not right angles',
+            'parallelogram|rhombus': 'a long, leaning parallelogram has two different side lengths',
+            'rectangle|rhombus': 'a 2-by-5 rectangle does not have four equal sides',
+            'rhombus|rectangle': 'a leaning rhombus has no right angles',
+            'quadrilateral|parallelogram': 'a kite has no parallel sides at all',
+            'parallelogram|square': 'a leaning parallelogram is not a square'
+        };
+
+        function stageCompass() {
+            var qs = [];
+
+            /* --- 1. which three lengths can build a triangle? --- */
+            (function () {
+                function key(s) { return s.slice().sort(function (a, b) { return a - b; }).join(','); }
+                var sets, seen, ok = false;
+                while (!ok) {
+                    var x = ri(3, 9), y = ri(3, 9), z = ri(Math.abs(x - y) + 1, x + y - 1);
+                    var good = [x, y, z];
+                    var p1 = ri(2, 7), q1 = ri(2, 7), p2 = ri(2, 7), q2 = ri(2, 7), p3 = ri(2, 7), q3 = ri(2, 7);
+                    var bad = [[p1, q1, p1 + q1], [p2, q2, p2 + q2 + ri(1, 3)], [p3, q3, p3 + q3 + ri(1, 3)]];
+                    sets = [good].concat(bad);
+                    seen = {};
+                    ok = sets.every(function (s) {
+                        var k = key(s);
+                        if (seen[k]) return false;
+                        seen[k] = 1;
+                        /* 2, 3, 6 is the real test's "cannot build it" set */
+                        return k !== '2,3,6';
+                    });
+                }
+                var choices = shuffle(sets.map(function (s, i) {
+                    return { html: shuffle(s).join(' cm, ') + ' cm', correct: i === 0, key: key(s) };
+                }));
+                qs.push({
+                    prompt: 'You have three straws and want to build a triangle with them. Which set of straw lengths <strong>can</strong> make a triangle?',
+                    type: 'choice', choices: choices,
+                    meta: { kind: 'tri-build', sets: sets },
+                    explain: function () {
+                        var s = sets[0].slice().sort(function (a, b) { return a - b; });
+                        return '<p>With a compass you swing a circle of the first length from one end and a circle of the second length from the other end. ' +
+                            'The triangle exists only if the circles actually cross, which happens only when <strong>the two shorter sides add up to more than the longest side</strong>.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + s[0] + ' + ' + s[1] + ' = ' + (s[0] + s[1]) + ' &gt; ' + s[2] + ' &check;</p>' +
+                            '<p class="why">If the two short sides add to <em>exactly</em> the long side, the circles only touch and the &ldquo;triangle&rdquo; is flat, a single straight segment. ' +
+                            'If they add to less, the circles never meet.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. third side range --- */
+            (function () {
+                var a, b;
+                do {
+                    a = ri(2, 12); b = ri(2, 12);
+                    /* 6 and 3 are two sides of the real test's triangle */
+                } while (a === b || (Math.min(a, b) === 3 && Math.max(a, b) === 6));
+                var lo = Math.abs(a - b), hi = a + b;
+                qs.push({
+                    prompt: 'Two sides of a triangle are <strong>' + a + ' cm</strong> and <strong>' + b + ' cm</strong>. The third side is longer than what length, and shorter than what length?',
+                    type: 'num', labels: ['Longer than (cm)', 'Shorter than (cm)'], answer: [lo, hi],
+                    meta: { kind: 'third-side', a: a, b: b },
+                    explain: function () {
+                        return '<p>Swing a circle of radius ' + a + ' around one end of the ' + b + ' cm segment. The third corner sits on that circle, and its distance from the other end ' +
+                            'can be as small as <strong>' + b + ' &minus; ' + a + '</strong> (or ' + a + ' &minus; ' + b + ') in size and as large as <strong>' + a + ' + ' + b + '</strong>.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + lo + ' &lt; third side &lt; ' + hi + '</p>' +
+                            '<p class="why">Both ends are strict: at exactly ' + lo + ' or exactly ' + hi + ' the three sides lie along one line, so there is no triangle.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. two circles through each other's centers --- */
+            (function () {
+                var s = ri(3, 9);
+                qs.push({
+                    prompt: 'Draw a segment AB that is <strong>' + s + ' cm</strong> long. With a compass, draw a circle centered at A that passes through B, and a circle centered at B that passes through A. ' +
+                        'The circles cross at C. Join C to A and to B.' +
+                        '<br><br>What is the measure of angle ACB? What is the perimeter of triangle ABC?',
+                    fig: circleFig(s, s, s, 'cm', { tri: true, names: ['A', 'B'] }),
+                    type: 'num', labels: ['Angle ACB (degrees)', 'Perimeter (cm)'], answer: [60, 3 * s],
+                    meta: { kind: 'equilateral', s: s },
+                    explain: function () {
+                        return '<p>C is on the circle around A, so AC = ' + s + ' cm (the circle&rsquo;s radius). C is also on the circle around B, so BC = ' + s + ' cm. ' +
+                            'And AB = ' + s + ' cm already. All three sides are equal, so triangle ABC is <strong>equilateral</strong>.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">3 &times; ' + s + ' = ' + (3 * s) + ' cm</p>' +
+                            '<p class="why">The three angles of a triangle add to 180&deg; and equal sides mean equal angles, so each angle is 180&deg; &divide; 3 = <strong>60&deg;</strong>. ' +
+                            'This is exactly why the circles &ldquo;guarantee&rdquo; the lengths: every point on a circle is the same distance from its center.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. the steps of a construction --- */
+            (function () {
+                var t;
+                do {
+                    t = [ri(3, 9), ri(3, 9), ri(3, 9)].sort(function (x, y) { return x - y; });
+                } while (t[0] + t[1] <= t[2] || t[0] === t[1] || t[1] === t[2]);
+                var a = t[0], b = t[1], c = t[2];
+                var right = 'Open the compass to ' + a + ' cm and draw a circle centered at A. Open it to ' + b + ' cm and draw a circle centered at B. Join a point where the circles cross to A and to B.';
+                var wrong = [
+                    'Open the compass to ' + c + ' cm and draw circles centered at A and at B. Join a point where the circles cross to A and to B.',
+                    'Open the compass to ' + (a + b) + ' cm (that is ' + a + ' + ' + b + ') and draw one circle centered at A. Join any point on that circle to A and to B.',
+                    'Open the compass to ' + a + ' cm and draw circles centered at both A and B. Join a point where the circles cross to A and to B.'
+                ];
+                qs.push({
+                    prompt: 'You want to construct a triangle with sides <strong>' + a + ' cm, ' + b + ' cm and ' + c + ' cm</strong>. ' +
+                        'You have already copied the ' + c + ' cm side as segment AB. Which steps finish the construction?',
+                    type: 'choice',
+                    choices: shuffle([{ html: right, correct: true, key: 'right' }].concat(wrong.map(function (w, i) { return { html: w, correct: false, key: 'wrong' + i }; }))),
+                    meta: { kind: 'construct-steps', a: a, b: b, c: c },
+                    explain: function () {
+                        return '<p>The third corner has to be <strong>' + a + ' cm from A</strong> and <strong>' + b + ' cm from B</strong>. Every point on a circle of radius ' + a + ' centered at A is exactly ' + a +
+                            ' cm from A, and every point on a circle of radius ' + b + ' centered at B is exactly ' + b + ' cm from B. A point where the circles cross is both, so it is the corner you want.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">1. copy the ' + c + ' cm side as AB<br>2. circle of radius ' + a + ' cm about A<br>3. circle of radius ' + b + ' cm about B<br>4. join a crossing point to A and B</p>' +
+                            '<p class="why">Swapping the two radii (' + b + ' about A, ' + a + ' about B) also works; it just flips the triangle. Using the same radius at both ends, or the base length again, gives the wrong sides. ' +
+                            'Practice saying these steps in order, not just drawing them.</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. the quadrilateral hierarchy --- */
+            (function () {
+                var T = shuffle([['square', 'rhombus'], ['square', 'parallelogram'], ['rectangle', 'parallelogram'],
+                ['rhombus', 'parallelogram'], ['square', 'quadrilateral'], ['rectangle', 'quadrilateral'], ['rhombus', 'quadrilateral'],
+                ['parallelogram', 'quadrilateral']])[0];
+                var F = shuffle([['rectangle', 'square'], ['rhombus', 'square'], ['parallelogram', 'rectangle'],
+                ['rectangle', 'rhombus'], ['rhombus', 'rectangle'], ['quadrilateral', 'parallelogram'], ['parallelogram', 'square']]).slice(0, 3);
+                var all = [T].concat(F);
+                var choices = shuffle(all.map(function (p, i) {
+                    return { html: 'Every ' + p[0] + ' is a ' + p[1] + '.', correct: i === 0, key: p[0] + '|' + p[1] };
+                }));
+                qs.push({
+                    prompt: 'Which statement is <strong>true</strong>?',
+                    type: 'choice', choices: choices,
+                    meta: { kind: 'hierarchy', pairs: all },
+                    explain: function () {
+                        var h = '<p>Check the <strong>definition</strong> of a ' + T[1] + ': ' + HIER_DEF[T[1]] + '. Every ' + T[0] + ' has ' + HIER_HAS[T[0]] + ', so it fits the definition. ' +
+                            'Every ' + T[0] + ' is a ' + T[1] + '.</p>';
+                        var bad = F.map(function (p) {
+                            return '&ldquo;Every ' + p[0] + ' is a ' + p[1] + '&rdquo; fails: ' + HIER_COUNTER[p[0] + '|' + p[1]] + '.';
+                        }).join('<br>');
+                        return h + '<p class="why">The others are backwards or too much. ' + bad + '</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           STAGE 4 - Units & Attributes (Chapter 11)
+           ======================================================= */
+        var UNITS_LEN = ['feet', 'yards', 'inches', 'miles', 'meters'];
+        var UNITS_AREA = ['square feet', 'square yards', 'square inches', 'square meters', 'square miles'];
+        var UNITS_VOL = ['cubic feet', 'cubic yards', 'cubic inches', 'cubic meters'];
+
+        function stageUnits() {
+            var qs = [];
+
+            /* --- 1. which unit measures that attribute? --- */
+            (function () {
+                var items = [
+                    { kind: 'length', text: 'the distance around the edge of a rectangular garden', right: ['feet', 'yards'] },
+                    { kind: 'length', text: 'how far a hiking trail stretches', right: ['miles', 'meters'] },
+                    { kind: 'length', text: 'the height of a doorway', right: ['feet', 'inches'] },
+                    { kind: 'area', text: 'how much tile it takes to cover a bathroom floor', right: ['square yards', 'square feet'] },
+                    { kind: 'area', text: 'how much paint it takes to cover one wall', right: ['square feet', 'square meters'] },
+                    { kind: 'area', text: 'how much grass a soccer field has', right: ['square meters', 'square yards'] },
+                    { kind: 'volume', text: 'how much soil fills a planter box', right: ['cubic feet', 'cubic inches'] },
+                    { kind: 'volume', text: 'how much water fills a swimming pool', right: ['cubic meters', 'cubic feet'] },
+                    { kind: 'volume', text: 'how much gravel a dump truck holds', right: ['cubic yards', 'cubic feet'] }
+                ];
+                var it = pick(items), right = pick(it.right);
+                var other = [];
+                if (it.kind !== 'length') other = other.concat(UNITS_LEN);
+                if (it.kind !== 'area') other = other.concat(UNITS_AREA);
+                if (it.kind !== 'volume') other = other.concat(UNITS_VOL);
+                var wrong = shuffle(other).slice(0, 3);
+                qs.push({
+                    prompt: 'Which unit would you use to measure <strong>' + it.text + '</strong>?',
+                    type: 'choice',
+                    choices: shuffle([{ html: right, correct: true }].concat(wrong.map(function (w) { return { html: w, correct: false }; }))),
+                    meta: { kind: 'unit-choice', attr: it.kind, right: right, wrong: wrong },
+                    explain: function () {
+                        var what = it.kind === 'length' ? 'a <strong>length</strong>, measured by laying units end to end, so the unit is a length: ' + right + '.'
+                            : it.kind === 'area' ? 'an <strong>area</strong>, measured by covering with unit squares, so the unit is a square one: ' + right + '.'
+                                : 'a <strong>volume</strong>, measured by filling with unit cubes, so the unit is a cubic one: ' + right + '.';
+                        return '<p>That is ' + what + '</p>' +
+                            '<p class="why">Ask yourself what you would <em>do</em> to measure it: walk along it (length), cover it (area), or fill it (volume).</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. fence or sod: length vs. area --- */
+            (function () {
+                var L, W;
+                do { L = ri(8, 30); W = ri(5, 20); } while (L <= W || (L === 15 && W === 12));
+                qs.push({
+                    prompt: 'A rectangular yard is <strong>' + L + ' feet</strong> long and <strong>' + W + ' feet</strong> wide. ' +
+                        'How many feet of <strong>fence</strong> go all the way around it? How many square feet of <strong>sod</strong> cover it?',
+                    type: 'num', labels: ['Fence (feet)', 'Sod (square feet)'], answer: [2 * (L + W), L * W],
+                    meta: { kind: 'fence-sod', L: L, W: W },
+                    explain: function () {
+                        return '<p>Fence runs <em>along the edge</em>, so it is a <strong>length</strong> (perimeter), counted in feet. Sod <em>covers the inside</em>, so it is an <strong>area</strong>, counted in unit squares.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">fence: ' + L + ' + ' + W + ' + ' + L + ' + ' + W + ' = ' + (2 * (L + W)) + ' feet<br>sod: ' + L + ' &times; ' + W + ' = ' + (L * W) + ' square feet</p>' +
+                            '<p class="why">Same yard, two different attributes, two different kinds of unit. Before you compute, ask which attribute the question is about.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. n square feet vs. n feet squared --- */
+            (function () {
+                var n = ri(3, 9);
+                qs.push({
+                    prompt: 'What is the difference between <strong>' + n + ' square feet</strong> and <strong>' + n + ' feet squared</strong>?',
+                    type: 'choice',
+                    choices: shuffle([
+                        { html: n + ' square feet is the area of ' + n + ' squares that are each 1 foot by 1 foot. ' + n + ' feet squared is a square that is ' + n + ' feet on each side, so its area is ' + n + ' &times; ' + n + ' = ' + (n * n) + ' square feet.', correct: true },
+                        { html: 'There is no difference. Both mean ' + n + ' square feet; &ldquo;feet squared&rdquo; is just another way to say it.', correct: false },
+                        { html: 'Both mean ' + (n * n) + ' square feet, because for any area you multiply the number by itself.', correct: false },
+                        { html: n + ' square feet is ' + (n * n) + ' square feet, and ' + n + ' feet squared is ' + n + ' square feet.', correct: false }
+                    ]),
+                    meta: { kind: 'sq-feet-squared', n: n },
+                    explain: function () {
+                        return '<p>A <strong>square foot</strong> is a unit of area: one square, 1 foot on each side. &ldquo;' + n + ' square feet&rdquo; means ' + n + ' of those squares.</p>' +
+                            '<p>&ldquo;' + n + ' feet squared&rdquo; names the <em>shape</em>: a square whose sides are each ' + n + ' feet. It would take ' + n + ' rows of ' + n + ' unit squares to cover it: ' + (n * n) + ' square feet.</p>' +
+                            '<p class="why">One is a count of unit squares; the other is a square with a given side. They only agree when n is 1.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           STAGE 5 - Conversion Yard (Chapter 11)
+           ======================================================= */
+        function stageConvert() {
+            var qs = [];
+
+            function room() {
+                var L, W;
+                do {
+                    L = ri(6, 24); W = ri(6, 24);
+                    /* 15 by 12 (area 180, 20 square yards) is the real test's carpet-for-a-room problem */
+                } while ((L * W) % 9 !== 0 || L * W === 180);
+                return [L, W];
+            }
+
+            /* --- 1. square yards and cost --- */
+            (function () {
+                var r = room(), L = r[0], W = r[1], price = ri(12, 35);
+                var yd = L * W / 9;
+                var what = pick([
+                    { room: 'A rectangular lawn', item: 'sod' },
+                    { room: 'A rectangular dance studio floor', item: 'vinyl flooring' },
+                    { room: 'A rectangular rooftop garden', item: 'artificial turf' }
+                ]);
+                qs.push({
+                    prompt: what.room + ' is <strong>' + L + ' feet by ' + W + ' feet</strong>. The ' + what.item + ' is sold by the <strong>square yard</strong> at <strong>$' + price + '</strong> per square yard.' +
+                        '<br><br>How many square yards do you need, and what will it cost?',
+                    type: 'num', labels: ['Square yards needed', 'Cost ($)'], answer: [yd, yd * price],
+                    meta: { kind: 'sq-yards', L: L, W: W, price: price },
+                    explain: function () {
+                        return '<p>A square yard is 3 feet by 3 feet, which holds <strong>9</strong> square feet. The floor is ' + L + ' &times; ' + W + ' = ' + (L * W) + ' square feet.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + (L * W) + ' &divide; 9 = ' + yd + ' square yards<br>' + yd + ' &times; $' + price + ' = $' + (yd * price) + '</p>' +
+                            '<p class="why">You could also change the sides first: ' + L + ' ft = ' + fmt(L / 3) + ' yd and ' + W + ' ft = ' + fmt(W / 3) + ' yd, and ' +
+                            fmt(L / 3) + ' &times; ' + fmt(W / 3) + ' = ' + yd + '. Same answer.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. cubic yards and cubic feet --- */
+            (function () {
+                var k = pick([3, 4, 5, 6, 7, 8, 9]), m = ri(2, 9);
+                var load = pick(['gravel', 'mulch', 'sand']);
+                qs.push({
+                    prompt: 'A truck delivers <strong>' + k + ' cubic yards</strong> of ' + load + '. A garden center sells the same ' + load + ' by the cubic foot.' +
+                        '<br><br>(a) How many cubic feet is ' + k + ' cubic yards?<br>(b) A bin holds <strong>' + (27 * m) + ' cubic feet</strong>. How many cubic yards is that?',
+                    type: 'num', labels: ['Cubic feet in ' + k + ' cubic yards', 'Cubic yards in ' + (27 * m) + ' cubic feet'], answer: [27 * k, m],
+                    meta: { kind: 'cubic', k: k, m: m },
+                    explain: function () {
+                        return '<p>A cubic yard is a cube 3 feet by 3 feet by 3 feet, so it holds 3 &times; 3 &times; 3 = <strong>27</strong> cubic feet.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">(a) ' + k + ' &times; 27 = ' + (27 * k) + ' cubic feet<br>(b) ' + (27 * m) + ' &divide; 27 = ' + m + ' cubic yards</p>' +
+                            '<p class="why">Going to the smaller unit (feet), there are more of them, so multiply. Going back to the bigger unit (yards), divide. ' +
+                            'For volume the factor is 3 three times: not 3, and not 9.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. why divide by 9? --- */
+            (function () {
+                var r = room(), L = r[0], W = r[1], A = L * W;
+                qs.push({
+                    prompt: 'A student wants the area of a ' + L + ' ft by ' + W + ' ft lawn in square yards. She finds ' + L + ' &times; ' + W + ' = ' + A +
+                        ' square feet and then divides by 3, because &ldquo;1 yard is 3 feet.&rdquo; Her answer is ' + fmt(A / 3) + ' square yards.<br><br>What went wrong?',
+                    type: 'choice',
+                    choices: shuffle([
+                        { html: 'A square yard is 3 feet by 3 feet, so it holds 3 &times; 3 = 9 square feet. She should divide ' + A + ' by 9 and get ' + (A / 9) + ' square yards.', correct: true },
+                        { html: 'Nothing. Dividing by 3 is right because 1 yard is 3 feet.', correct: false },
+                        { html: 'She should multiply by 3, not divide, because yards are bigger than feet.', correct: false },
+                        { html: 'She should divide by 27, because there are 27 cubic feet in a cubic yard.', correct: false }
+                    ]),
+                    meta: { kind: 'div9', L: L, W: W },
+                    explain: function () {
+                        return '<p>The 3 is for <em>length</em>. Area counts squares, and one square yard has 3 rows of 3 square feet.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + A + ' &divide; 9 = ' + (A / 9) + ' square yards</p>' +
+                            '<p class="why">Her ' + fmt(A / 3) + ' is three times too big. A drawing of one square yard marked off in feet shows it right away: nine little squares.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. square inches and cubic inches --- */
+            (function () {
+                var s = ri(2, 9), c = ri(2, 6);
+                qs.push({
+                    prompt: '(a) A tile mosaic covers <strong>' + s + ' square feet</strong>. How many square inches is that?<br>' +
+                        '(b) A crate holds <strong>' + c + ' cubic feet</strong>. How many cubic inches is that?',
+                    type: 'num', labels: ['Square inches', 'Cubic inches'], answer: [144 * s, 1728 * c],
+                    meta: { kind: 'inch-conv', s: s, c: c },
+                    explain: function () {
+                        return '<p>A square foot is 12 inches by 12 inches: 12 &times; 12 = <strong>144</strong> square inches. A cubic foot is 12 &times; 12 &times; 12 = <strong>1,728</strong> cubic inches.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">(a) ' + s + ' &times; 144 = ' + commas(144 * s) + ' square inches<br>(b) ' + c + ' &times; 1,728 = ' + commas(1728 * c) + ' cubic inches</p>' +
+                            '<p class="why">Each time the dimension goes up by one (length, area, volume), the conversion factor gets one more factor of 12.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           STAGE 6 - Accuracy Arena (Chapter 11)
+           ======================================================= */
+        function dec(x, places) { return x.toFixed(places); }
+
+        function stageAccuracy() {
+            var qs = [];
+
+            /* --- 1. range of one measurement --- */
+            (function () {
+                var spec = pick([
+                    { p: 0.1, places: 1, word: 'tenth', lo: 12, hi: 90 },
+                    { p: 0.5, places: 1, word: 'half', lo: 8, hi: 60 },
+                    { p: 1, places: 0, word: 'whole number', lo: 12, hi: 90 },
+                    { p: 10, places: 0, word: 'ten', lo: 4, hi: 60 }
+                ]);
+                var unit = pick(['feet', 'inches', 'miles', 'centimeters']);
+                var v;
+                do {
+                    v = spec.p * ri(spec.lo, spec.hi);
+                    /* 400 miles to the nearest ten is the old tests' accuracy item */
+                } while (spec.p === 10 && v === 400);
+                var lo = v - spec.p / 2, hi = v + spec.p / 2;
+                qs.push({
+                    prompt: 'A length is reported as <strong>' + dec(v, spec.places) + ' ' + unit + '</strong>, measured to the nearest <strong>' + spec.word + '</strong>.' +
+                        '<br><br>What are the smallest and largest values the true length could be? (Use the smallest and the largest, even if the largest is not quite reached.)',
+                    type: 'num', labels: ['Smallest (' + unit + ')', 'Largest (' + unit + ')'], answer: [lo, hi],
+                    meta: { kind: 'measure-range', v: v, p: spec.p },
+                    explain: function () {
+                        return '<p>Measuring to the nearest ' + spec.word + ' means the true value is within <strong>half a unit of that place</strong> of the reported value: ' +
+                            'half of ' + fmt(spec.p) + ' is ' + fmt(spec.p / 2) + '.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + fmt(v) + ' &minus; ' + fmt(spec.p / 2) + ' = ' + fmt(lo) + '<br>' + fmt(v) + ' + ' + fmt(spec.p / 2) + ' = ' + fmt(hi) + '</p>' +
+                            '<p class="why">Anything from ' + fmt(lo) + ' up to (but not including) ' + fmt(hi) + ' rounds to ' + dec(v, spec.places) + '. That is why 400 miles and 400.0 miles are not the same claim: the first says &ldquo;within 5 or so,&rdquo; the second says &ldquo;within 0.05.&rdquo;</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. range of an area --- */
+            (function () {
+                var L, W;
+                do { L = ri(5, 14); W = ri(5, 14); } while (L === W);
+                var lo = (L - 0.5) * (W - 0.5), hi = (L + 0.5) * (W + 0.5);
+                var what = pick(['rug', 'garden bed', 'banner']);
+                qs.push({
+                    prompt: 'A rectangular ' + what + ' is measured as <strong>' + L + ' ft by ' + W + ' ft</strong>, each to the nearest foot.' +
+                        '<br><br>What are the smallest and largest areas it could really have, in square feet? (Decimals are fine.)',
+                    type: 'num', labels: ['Smallest area (sq ft)', 'Largest area (sq ft)'], answer: [lo, hi],
+                    meta: { kind: 'area-range', L: L, W: W },
+                    explain: function () {
+                        return '<p>Each side could be half a foot smaller or larger: the length is between ' + (L - 0.5) + ' and ' + (L + 0.5) + ' ft, the width between ' + (W - 0.5) + ' and ' + (W + 0.5) + ' ft.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">smallest: ' + (L - 0.5) + ' &times; ' + (W - 0.5) + ' = ' + fmt(lo) + '<br>largest: ' + (L + 0.5) + ' &times; ' + (W + 0.5) + ' = ' + fmt(hi) + '</p>' +
+                            '<p class="why">Notice that ' + L + ' &times; ' + W + ' = ' + (L * W) + ' is somewhere in the middle, but the possible areas spread over about ' + fmt(hi - lo) + ' square feet. Multiplying two rough numbers gives a rough number.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. what to report --- */
+            (function () {
+                var L, W, lo, hi, prod, n;
+                do {
+                    L = ri(20, 69) / 10; W = ri(20, 69) / 10;
+                    prod = L * W;
+                    lo = (L - 0.05) * (W - 0.05); hi = (L + 0.05) * (W + 0.05);
+                    n = Math.round(prod);
+                    /* the real test uses 3.2 by 4.7 */
+                } while ((Math.round(lo) !== n || Math.round(hi) !== n) || (L === 3.2 && W === 4.7) || (L === 4.7 && W === 3.2));
+                var p2 = prod.toFixed(2), p1 = prod.toFixed(1);
+                var qd = pick(['rectangular tabletop', 'rectangular window', 'rectangular bulletin board']);
+                var choices = shuffle([
+                    { html: p2 + ' square feet, because that is what the calculator says.', correct: false, key: 'full' },
+                    { html: p1 + ' square feet, since both measurements were to the nearest tenth.', correct: false, key: 'tenth' },
+                    { html: 'About ' + n + ' square feet. The area could be anywhere from ' + lo.toFixed(2) + ' to ' + hi.toFixed(2) + ', so only the whole-number part is trustworthy.', correct: true, key: 'whole' },
+                    { html: 'About ' + (n + 1) + ' square feet, rounding up to be safe.', correct: false, key: 'up' }
+                ]);
+                qs.push({
+                    prompt: 'A ' + qd + ' is measured as <strong>' + L.toFixed(1) + ' ft by ' + W.toFixed(1) + ' ft</strong>, each to the nearest tenth of a foot. A calculator gives ' +
+                        L.toFixed(1) + ' &times; ' + W.toFixed(1) + ' = ' + p2 + '.<br><br>Which is the best way to report the area?',
+                    type: 'choice', choices: choices,
+                    meta: { kind: 'best-report', L: L, W: W, n: n },
+                    explain: function () {
+                        return '<p>Each side could be off by up to 0.05 ft, so the true area is between ' + (L - 0.05).toFixed(2) + ' &times; ' + (W - 0.05).toFixed(2) + ' = <strong>' + lo.toFixed(2) +
+                            '</strong> and ' + (L + 0.05).toFixed(2) + ' &times; ' + (W + 0.05).toFixed(2) + ' = <strong>' + hi.toFixed(2) + '</strong>. ' +
+                            'Both ends round to ' + n + ', but the digits after the decimal point are not reliable.</p>' +
+                            '<p class="why">A calculator keeps every digit whether or not they mean anything. Reporting ' + p2 + ' claims accuracy the measurements never had; rounding to the nearest whole number says only what you know.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. which reading is more accurate? --- */
+            (function () {
+                var pairs = [
+                    function () { var v = pick([120, 250, 36, 75, 90]); return { a: String(v), b: v + '.0', right: 'b', ha: 0.5, hb: 0.05 }; },
+                    function () { var v = pick([12, 18, 24, 31, 45]); return { a: v + '.00', b: v + '.0', right: 'a', ha: 0.005, hb: 0.05 }; },
+                    function () { var w = ri(10, 60); var t = ri(1, 9); return { a: String(w), b: w + '.' + t, right: 'b', ha: 0.5, hb: 0.05 }; }
+                ];
+                var pr = pick(pairs)();
+                var unit = pick(['miles', 'inches', 'meters', 'grams']);
+                var right = pr.right === 'a' ? 'The first: ' + pr.a + ' ' + unit : 'The second: ' + pr.b + ' ' + unit;
+                var wrongs = [pr.right === 'a' ? 'The second: ' + pr.b + ' ' + unit : 'The first: ' + pr.a + ' ' + unit,
+                    'They are equally accurate: the numbers are (nearly) the same size.',
+                    'There is no way to tell from the numbers alone.'];
+                qs.push({
+                    prompt: 'Two students report the same kind of measurement: one writes <strong>' + pr.a + ' ' + unit + '</strong>, the other writes <strong>' + pr.b + ' ' + unit + '</strong>.' +
+                        '<br><br>Which report claims to be more <strong>accurate</strong>?',
+                    type: 'choice',
+                    choices: shuffle([{ html: right, correct: true }].concat(wrongs.map(function (w) { return { html: w, correct: false }; }))),
+                    meta: { kind: 'more-accurate', a: pr.a, b: pr.b, right: pr.right },
+                    explain: function () {
+                        var hr = pr.right === 'a' ? pr.ha : pr.hb;
+                        return '<p>The number of digits after the decimal point tells you the place the measurement was rounded to. More digits means a smaller rounding window.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + pr.a + ' &rarr; within &plusmn;' + fmt(pr.ha) + '<br>' + pr.b + ' &rarr; within &plusmn;' + fmt(pr.hb) + '</p>' +
+                            '<p class="why">So the one that is within &plusmn;' + fmt(hr) + ' is the more accurate claim. Adding a zero after the decimal point is not decoration. It is a statement.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           STAGE 7 - Area Arena (12.2 - 12.6)
+           ======================================================= */
+        var PYTH_PAIRS = [[3, 4], [4, 3], [5, 12], [12, 5], [6, 8], [8, 6], [9, 12], [12, 9]];
+
+        function stageArea() {
+            var qs = [];
+
+            /* --- 1. composite shape --- */
+            (function () {
+                var kind = pick(['L', 'house']);
+                var u = pick(['ft', 'm']);
+                var verts, labels, area, W, H, c, d, k;
+                var desc, extra = '', g;
+                if (kind === 'L') {
+                    W = ri(8, 16); H = ri(8, 14); c = ri(3, W - 3); d = ri(3, H - 3);
+                    verts = [[0, 0], [W, 0], [W, H - d], [W - c, H - d], [W - c, H], [0, H]];
+                    labels = [{ i: 0, text: W + ' ' + u }, { i: 1, text: (H - d) + ' ' + u }, { i: 2, text: c + ' ' + u },
+                        { i: 3, text: d + ' ' + u }, { i: 4, text: (W - c) + ' ' + u }, { i: 5, text: H + ' ' + u }];
+                    area = W * H - c * d;
+                    desc = 'An L-shaped plan with six sides. Going around from the bottom: ' + labels.map(function (l) { return l.text; }).join(', ') + '. All corners are right angles.';
+                    g = polyFig(verts, labels, '', desc, 460, 300);
+                    qs.push({
+                        prompt: 'Here is the floor plan of a school <strong>courtyard</strong>. All the corners are right angles. Find its area.',
+                        fig: g.wrap(''),
+                        type: 'num', labels: ['Area (square ' + (u === 'ft' ? 'feet' : 'meters') + ')'], answer: [area],
+                        meta: { kind: 'composite', shape: 'L', verts: verts, area: area },
+                        explain: function () {
+                            return '<p>Think of it as a big rectangle with a corner missing (<strong>additivity</strong>: the pieces add up to the whole).</p>' +
+                                '<p style="font-family:ui-monospace,Consolas,monospace">big rectangle: ' + W + ' &times; ' + H + ' = ' + (W * H) + '<br>missing corner: ' + c + ' &times; ' + d + ' = ' + (c * d) +
+                                '<br>area = ' + (W * H) + ' &minus; ' + (c * d) + ' = ' + area + '</p>' +
+                                '<p class="why">You could also cut it into two rectangles and add: ' + (W - c) + ' &times; ' + H + ' = ' + ((W - c) * H) + ' and ' + c + ' &times; ' + (H - d) + ' = ' + (c * (H - d)) +
+                                ', total ' + area + '. Two routes, same area.</p>';
+                        }
+                    });
+                } else {
+                    W = 2 * ri(3, 7); H = ri(5, 10); k = ri(2, 6);
+                    verts = [[0, 0], [W, 0], [W, H], [W / 2, H + k], [0, H]];
+                    labels = [{ i: 0, text: W + ' ' + u }, { i: 1, text: H + ' ' + u }, { i: 4, text: H + ' ' + u }];
+                    area = W * H + W * k / 2;
+                    desc = 'A house-shaped plan: a rectangle ' + W + ' by ' + H + ' ' + u + ' with a triangle on top whose peak is ' + k + ' ' + u + ' above the top edge.';
+                    g = polyFig(verts, labels, '', desc, 460, 300);
+                    var f = g.f, t = f([W / 2, H]), pk = f([W / 2, H + k]);
+                    extra = '<line x1="' + px(t[0]) + '" y1="' + px(t[1]) + '" x2="' + px(pk[0]) + '" y2="' + px(pk[1]) + '" stroke="#555" stroke-dasharray="5 4" stroke-width="1.4"/>' +
+                        svgLabel(t[0] + 22, (t[1] + pk[1]) / 2 + 5, k + ' ' + u, { size: 13 }) +
+                        '<polyline points="' + px(t[0] - 9) + ',' + px(t[1]) + ' ' + px(t[0] - 9) + ',' + px(t[1] - 9) + ' ' + px(t[0]) + ',' + px(t[1] - 9) + '" fill="none" stroke="#555" stroke-width="1.3"/>';
+                    qs.push({
+                        prompt: 'Here is the floor plan of a small <strong>stage</strong>: a rectangle with a triangular front. The dashed segment is perpendicular to the top edge of the rectangle. Find its area.',
+                        fig: g.wrap(extra),
+                        type: 'num', labels: ['Area (square ' + (u === 'ft' ? 'feet' : 'meters') + ')'], answer: [area],
+                        meta: { kind: 'composite', shape: 'house', verts: verts, area: area },
+                        explain: function () {
+                            return '<p>Split it into a rectangle and a triangle and add (<strong>additivity</strong>).</p>' +
+                                '<p style="font-family:ui-monospace,Consolas,monospace">rectangle: ' + W + ' &times; ' + H + ' = ' + (W * H) + '<br>triangle: &frac12; &times; ' + W + ' &times; ' + k + ' = ' + (W * k / 2) +
+                                '<br>area = ' + (W * H) + ' + ' + (W * k / 2) + ' = ' + area + '</p>' +
+                                '<p class="why">The triangle&rsquo;s base is the top of the rectangle, ' + W + ' ' + u + ', and its height is the dashed segment, ' + k + ' ' + u + '.</p>';
+                        }
+                    });
+                }
+            })();
+
+            /* --- 1b. a plan with a notch and a cut corner: two lengths are hidden --- */
+            (function () {
+                var W, H, c, d, p, q, top;
+                do {
+                    W = ri(13, 20); H = ri(9, 13); c = ri(4, 6); d = ri(3, 4); p = ri(2, 5); q = ri(2, 6);
+                    top = W - c - p;
+                    /* 16 by 10 with a 4 x 3 notch and a 4-by-5 cut is the real test's patio */
+                } while (top < 3 || H - d < 3 || H - q < 2 || (p * q) % 2 !== 0 || (W === 16 && H === 10));
+                var u = pick(['ft', 'm']), U = u === 'ft' ? 'feet' : 'meters';
+                var verts = [[0, 0], [W, 0], [W, H - q], [W - p, H], [c, H], [c, H - d], [0, H - d]];
+                var labels = [{ i: 0, text: W + ' ' + u }, { i: 1, text: (H - q) + ' ' + u }, { i: 3, text: top + ' ' + u },
+                    { i: 4, text: d + ' ' + u }, { i: 5, text: c + ' ' + u }, { i: 6, text: (H - d) + ' ' + u }];
+                var area = W * H - c * d - p * q / 2;
+                var desc = 'A seven-sided plan: a rectangle with a rectangular notch cut from the upper left corner and a slanted cut across the upper right corner. ' +
+                    'Bottom ' + W + ' ' + u + ', right side ' + (H - q) + ', slanted edge unlabeled, top ' + top + ', notch ' + d + ' down and ' + c + ' across, left side ' + (H - d) + '. All other corners are right angles.';
+                var g = polyFig(verts, labels, '', desc, 460, 300);
+                qs.push({
+                    prompt: 'Here is the floor plan of a <strong>deck</strong>. Every corner is a right angle except the two at the ends of the slanted edge. Find its area.',
+                    fig: g.wrap(''),
+                    type: 'num', labels: ['Area (square ' + U + ')'], answer: [area],
+                    meta: { kind: 'notch-cut', verts: verts, W: W, H: H, c: c, d: d, p: p, q: q, area: area },
+                    explain: function () {
+                        return '<p>First find the two lengths nobody wrote down. The full height is ' + (H - d) + ' + ' + d + ' = ' + H + ' ' + u + ', so the slanted cut drops ' + H + ' &minus; ' + (H - q) + ' = <strong>' + q + ' ' + u + '</strong>. ' +
+                            'The full width is ' + W + ' ' + u + ', so the cut goes ' + W + ' &minus; ' + c + ' &minus; ' + top + ' = <strong>' + p + ' ' + u + '</strong> across.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">big rectangle: ' + W + ' &times; ' + H + ' = ' + (W * H) + '<br>notch: ' + c + ' &times; ' + d + ' = ' + (c * d) +
+                            '<br>corner triangle: &frac12; &times; ' + p + ' &times; ' + q + ' = ' + (p * q / 2) + '<br>area = ' + (W * H) + ' &minus; ' + (c * d) + ' &minus; ' + (p * q / 2) + ' = ' + area + '</p>' +
+                            '<p class="why">Taking pieces away from a rectangle you can see is often easier than cutting the shape up. The common slips: forgetting the &frac12; on the triangle, or using a side length you never actually found.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. triangle whose height is outside --- */
+            (function () {
+                var b, tp, t, h;
+                do {
+                    b = ri(5, 12); tp = pick(PYTH_PAIRS); t = tp[0]; h = tp[1];
+                    /* base 9, outside 8, height 6 is the real test's obtuse triangle */
+                } while (b === 9 && t === 8 && h === 6);
+                var s = Math.hypot(t, h);
+                var A = [0, 0], B = [b, 0], C = [b + t, h], F = [b + t, 0], X = [b + t + 0.6, 0];
+                var f = makeMap([[-0.6, -1.2], [b + t + 1.8, h + 0.8]], 460, 250, 10);
+                var o = svgOpen(460, 250, 'A triangle with base ' + b + ' units on a horizontal line. The base line is extended to the right, and a dashed vertical segment of length ' + h +
+                    ' units drops from the top corner to the extended line. The longest side slants and has length ' + fmt(s) + ' units.');
+                o += svgPoly(f, [A, B, C], 'fill="' + SHADE + '" stroke="' + INK + '" stroke-width="2.4"');
+                o += svgLine(f, B, F, 'stroke-dasharray="6 4" stroke-width="1.5"') + svgLine(f, F, C, 'stroke-dasharray="6 4" stroke-width="1.5"');
+                o += rightMark(f, F, B, C, 9);
+                var a0 = f(A), b0 = f(B), c0 = f(C), f0 = f(F), m = f([(b + b + t) / 2, h / 2]);
+                o += svgLabel((a0[0] + b0[0]) / 2, a0[1] + 20, b + ' cm', { size: 13 }) +
+                    svgLabel(c0[0] + 8, (c0[1] + f0[1]) / 2 + 5, h + ' cm', { size: 13, anchor: 'start' }) +
+                    svgLabel(m[0] + h / s * 20, m[1] + t / s * 20 + 5, fmt(s) + ' cm', { size: 13, halo: true });
+                qs.push({
+                    prompt: 'Find the area of this triangle. The dashed segment is <strong>perpendicular</strong> to the extended base.',
+                    fig: o + '</svg>',
+                    type: 'num', labels: ['Area (square cm)'], answer: [b * h / 2],
+                    meta: { kind: 'obtuse', b: b, t: t, h: h, A: A, B: B, C: C },
+                    explain: function () {
+                        return '<p>Use the base that lies along the line: ' + b + ' cm, and the height <em>perpendicular</em> to that line: ' + h + ' cm.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">area = &frac12; &times; ' + b + ' &times; ' + h + ' = ' + fmt(b * h / 2) + ' square cm</p>' +
+                            '<p class="why">The slanted side, ' + fmt(s) + ' cm, is not the height. (Using it would give &frac12; &times; ' + b + ' &times; ' + fmt(s) + ' = ' + fmt(b * s / 2) +
+                            ', which is too big.) The height is a perpendicular distance, and it can fall outside the triangle. Think of the triangle as a big triangle (base ' + (b + t) + ', same height) with a smaller one cut away.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. parallelogram --- */
+            (function () {
+                var b = ri(6, 14), tp = pick(PYTH_PAIRS), t = tp[0], h = tp[1], s = Math.hypot(t, h);
+                var A = [0, 0], B = [b, 0], C = [b + t, h], D = [t, h], F = [t, 0];
+                var f = makeMap([[-0.5, -1.2], [b + t + 1.2, h + 0.8]], 460, 240, 10);
+                var o = svgOpen(460, 240, 'A parallelogram with a horizontal base of ' + b + ' units. The left and right sides slant and have length ' + fmt(s) +
+                    ' units. A dashed segment of length ' + h + ' units runs from the top left corner straight down to the base line, at a right angle.');
+                o += svgPoly(f, [A, B, C, D], 'fill="' + SHADE + '" stroke="' + INK + '" stroke-width="2.4"');
+                o += svgLine(f, D, F, 'stroke-dasharray="6 4" stroke-width="1.5"') + rightMark(f, F, A, D, 9);
+                var a0 = f(A), b0 = f(B), d0 = f(D), f0 = f(F), mA = f([t / 2, h / 2]);
+                o += svgLabel((a0[0] + b0[0]) / 2, a0[1] + 20, b + ' ft', { size: 13 }) +
+                    svgLabel(d0[0] + 8, (d0[1] + f0[1]) / 2 + 5, h + ' ft', { size: 13, anchor: 'start' }) +
+                    svgLabel(mA[0] - 10, mA[1] - 6, fmt(s) + ' ft', { size: 13, anchor: 'end' });
+                qs.push({
+                    prompt: 'A banner is shaped like this <strong>parallelogram</strong>. The dashed segment is perpendicular to the base. What is the banner&rsquo;s area?',
+                    fig: o + '</svg>',
+                    type: 'num', labels: ['Area (square feet)'], answer: [b * h],
+                    meta: { kind: 'parallelogram', b: b, t: t, h: h, A: A, B: B, C: C, D: D },
+                    explain: function () {
+                        return '<p>Slide the little triangle on the left over to the right side and the parallelogram becomes a rectangle with the same base and height (<strong>shearing</strong> keeps the area).</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">area = base &times; height = ' + b + ' &times; ' + h + ' = ' + (b * h) + ' square feet</p>' +
+                            '<p class="why">Multiplying the two side lengths, ' + b + ' &times; ' + fmt(s) + ' = ' + fmt(b * s) + ', is the common slip. The slanted side is not the height.</p>';
+                    }
+                });
+            })();
+
+            /* --- 4. shearing a triangle --- */
+            (function () {
+                var b = 2 * ri(3, 7), h = ri(4, 9), x0 = ri(1, b - 1), x1 = x0 + pick([-3, -2, 2, 3, 4, 5]);
+                var A = [0, 0], B = [b, 0], C0 = [x0, h], C1 = [x1, h];
+                var minx = Math.min(0, x0, x1) - 0.8, maxx = Math.max(b, x0, x1) + 0.8;
+                var f = makeMap([[minx, -1.0], [maxx, h + 0.9]], 460, 240, 10);
+                var o = svgOpen(460, 240, 'A triangle with base ' + b + ' units and height ' + h + ' units, drawn solid. Its top corner slides along a horizontal line ' +
+                    'parallel to the base to a new position, and the new triangle is drawn dashed.');
+                var top = f([minx + 0.3, h]), top2 = f([maxx - 0.3, h]);
+                o += '<line x1="' + px(top[0]) + '" y1="' + px(top[1]) + '" x2="' + px(top2[0]) + '" y2="' + px(top2[1]) + '" stroke="#9aa3ab" stroke-width="1.2" stroke-dasharray="2 4"/>';
+                o += svgPoly(f, [A, B, C1], 'fill="none" stroke="' + ORANGE + '" stroke-width="2.4" stroke-dasharray="7 5"');
+                o += svgPoly(f, [A, B, C0], 'fill="' + SHADE + '" stroke="' + INK + '" stroke-width="2.4"');
+                var c0 = f(C0), c1 = f(C1), a0 = f(A), b0 = f(B);
+                o += '<circle cx="' + px(c0[0]) + '" cy="' + px(c0[1]) + '" r="4.5" fill="' + INK + '"/><circle cx="' + px(c1[0]) + '" cy="' + px(c1[1]) + '" r="4.5" fill="' + ORANGE + '"/>';
+                o += svgLabel((a0[0] + b0[0]) / 2, a0[1] + 20, 'base ' + b + ' cm', { size: 13 });
+                var hf = f([x0, 0]), hm = f([x0, h / 2]);
+                o += '<line x1="' + px(c0[0]) + '" y1="' + px(c0[1]) + '" x2="' + px(hf[0]) + '" y2="' + px(hf[1]) + '" stroke="#555" stroke-dasharray="5 4" stroke-width="1.4"/>' +
+                    rightMark(f, [x0, 0], [x0 + 1, 0], [x0, h], 8) +
+                    svgLabel(hm[0] + 8, hm[1] + 4, h + ' cm',{ size: 13, anchor: 'start', halo: true });
+                var ans = b * h / 2;
+                qs.push({
+                    prompt: 'The solid triangle has base ' + b + ' cm and height ' + h + ' cm. Its top corner slides to the right or left along the line parallel to the base, to the new corner shown in orange, giving the dashed triangle.' +
+                        '<br><br>What is the area of the <strong>dashed</strong> triangle?',
+                    fig: o + '</svg>',
+                    type: 'num', labels: ['Area of the new triangle (square cm)'], answer: [ans],
+                    meta: { kind: 'shear', b: b, h: h, A: A, B: B, C0: C0, C1: C1 },
+                    explain: function () {
+                        return '<p>The base is still ' + b + ' cm and the height, the distance between the two parallel lines, is still ' + h + ' cm.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">area = &frac12; &times; ' + b + ' &times; ' + h + ' = ' + fmt(ans) + ' square cm, the same as before</p>' +
+                            '<p class="why">Sliding a corner along a line parallel to the opposite side is a <strong>shear</strong>. It changes the shape and the side lengths but not the base or the height, so it does not change the area.</p>';
+                    }
+                });
+            })();
+
+            /* --- 5. circular path --- */
+            (function () {
+                var D, w;
+                do {
+                    D = 2 * ri(3, 9); w = ri(1, 5);
+                    /* a 3-ft path around a 10-ft garden is the old tests' version */
+                } while (D === 10 && w === 3);
+                var r = D / 2, ans = w * (D + w);
+                var f = makeMap([[-(r + w), -(r + w)], [r + w + (r + w) * 0.7, r + w]], 380, 260, 12);
+                var c = f([0, 0]), s = f.s;
+                var o = svgOpen(380, 260, 'A circular garden with diameter ' + D + ' units, surrounded by a path ' + w + ' units wide, which makes a larger circle around it.');
+                o += '<circle cx="' + px(c[0]) + '" cy="' + px(c[1]) + '" r="' + px((r + w) * s) + '" fill="' + SHADE + '" stroke="' + INK + '" stroke-width="2.2"/>' +
+                    '<circle cx="' + px(c[0]) + '" cy="' + px(c[1]) + '" r="' + px(r * s) + '" fill="#cfe8d6" stroke="' + INK + '" stroke-width="2.2"/>';
+                o += svgLine(f, [-r, 0], [r, 0], 'stroke-dasharray="5 4" stroke-width="1.3"') + svgLabel(c[0], c[1] - 7, D + ' ft', { size: 13 });
+                o += svgLine(f, [r, 0], [r + w, 0], 'stroke-width="3"') + svgLabel(f([r + w, 0])[0] + 8, c[1] + 5, 'path ' + w + ' ft wide', { size: 13, anchor: 'start' });
+                qs.push({
+                    prompt: 'A circular garden has a diameter of <strong>' + D + ' feet</strong>. A path <strong>' + w + ' feet wide</strong> goes all the way around it. ' +
+                        'What is the area of the <em>path</em> alone? Type the number that multiplies &pi; (so for 20&pi; square feet, type 20).',
+                    fig: o + '</svg>',
+                    type: 'num', labels: ['Path area = ___ &times; &pi; (square feet)'], answer: [ans],
+                    meta: { kind: 'ring', D: D, w: w },
+                    explain: function () {
+                        return '<p>The garden has radius ' + r + ' ft. With the path, the big circle has radius ' + r + ' + ' + w + ' = ' + (r + w) + ' ft. The path is the big circle <strong>minus</strong> the garden.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">&pi;(' + (r + w) + ')&sup2; &minus; &pi;(' + r + ')&sup2; = ' + ((r + w) * (r + w)) + '&pi; &minus; ' + (r * r) + '&pi; = ' + ans + '&pi; square feet</p>' +
+                            '<p class="why">The diameter is ' + D + ', not the radius. And the path is not &pi;(' + w + ')&sup2;: its width is ' + w + ' ft all the way round, but it is a ring, not a circle of radius ' + w + '. About ' + fmt(Math.round(ans * 3.14 * 100) / 100) + ' square feet using 3.14.</p>';
+                    }
+                });
+            })();
+
+            /* --- 6. which round one is the better buy? --- */
+            (function () {
+                var S = pick([
+                    { thing: 'pie', size: 'inch', ds: [6, 8, 9, 10, 12], lo: 6, hi: 26, unit: 'square inches' },
+                    { thing: 'round rug', size: 'foot', ds: [3, 4, 5, 6, 8], lo: 25, hi: 220, unit: 'square feet' },
+                    { thing: 'round tablecloth', size: 'inch', ds: [48, 60, 70, 90], lo: 10, hi: 60, unit: 'square inches' }
+                ]);
+                var D1, D2, P1, P2, a1, a2;
+                do {
+                    var two = shuffle(S.ds.slice()).slice(0, 2).sort(function (x, y) { return x - y; });
+                    D1 = two[0]; D2 = two[1]; P1 = ri(S.lo, S.hi);
+                    a1 = Math.PI * D1 * D1 / 4; a2 = Math.PI * D2 * D2 / 4;
+                    /* the bigger one costs about what its area would suggest, give or take 12 to 35 percent, so either can win */
+                    var fct = pick([1, -1]) === 1 ? 1.12 + Math.random() * 0.23 : 0.65 + Math.random() * 0.23;
+                    P2 = Math.round(P1 * (a2 / a1) * fct);
+                } while (P2 <= P1 || Math.abs((a1 / P1) / (a2 / P2) - 1) < 0.08);
+                var best = a1 / P1 > a2 / P2 ? 'small' : 'large';
+                var nm = function (D) { return D + '-' + S.size + ' ' + S.thing; };
+                qs.push({
+                    prompt: 'A shop sells a <strong>' + nm(D1) + '</strong> for <strong>$' + P1 + '</strong> and a <strong>' + nm(D2) + '</strong> for <strong>$' + P2 + '</strong>. ' +
+                        'The sizes are the diameters. Which one gives you more ' + S.thing.replace('round ', '') + ' for your money?',
+                    type: 'choice',
+                    choices: shuffle([
+                        { html: 'The ' + nm(D1), correct: best === 'small', key: 'small' },
+                        { html: 'The ' + nm(D2), correct: best === 'large', key: 'large' },
+                        { html: 'They are the same deal, because the price goes up with the size', correct: false, key: 'same' }
+                    ]),
+                    meta: { kind: 'circle-buy', D1: D1, D2: D2, P1: P1, P2: P2, best: best },
+                    explain: function () {
+                        var r1 = D1 / 2, r2 = D2 / 2;
+                        return '<p>The sizes are diameters, so the radii are ' + fmt(r1) + ' and ' + fmt(r2) + '. Compare <strong>area per dollar</strong>.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">' + nm(D1) + ': &pi; &times; ' + fmt(r1) + '&sup2; &asymp; ' + fmt2(a1) + ' ' + S.unit + ', &divide; ' + P1 + ' &asymp; ' + fmt2(a1 / P1) + ' per dollar<br>' +
+                            nm(D2) + ': &pi; &times; ' + fmt(r2) + '&sup2; &asymp; ' + fmt2(a2) + ' ' + S.unit + ', &divide; ' + P2 + ' &asymp; ' + fmt2(a2 / P2) + ' per dollar</p>' +
+                            '<p class="why">So the ' + (best === 'small' ? nm(D1) : nm(D2)) + ' is the better buy. Area grows with the <em>square</em> of the radius: doubling the diameter gives four times the area, so the price alone does not tell you.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           STAGE 8 - Thales Point (the bonus topic)
+           Circle center O = (0,0), radius 1; diameter P (-1,0) to Q (1,0); T at angle th on the top half.
+           ======================================================= */
+        function thalesFig(th, opt) {
+            var P = [-1, 0], Q = [1, 0], O = [0, 0], T = [Math.cos(th * DEG), Math.sin(th * DEG)];
+            var f = makeMap([[-1.3, -1.25], [1.3, 1.3]], 380, 330, 8), c = f(O);
+            var o = svgOpen(380, 330, opt.desc);
+            o += '<circle cx="' + px(c[0]) + '" cy="' + px(c[1]) + '" r="' + px(f.s) + '" fill="none" stroke="#333" stroke-width="2.2"/>';
+            o += svgPoly(f, [P, Q, T], 'fill="' + SHADE + '" stroke="' + INK + '" stroke-width="2.4"');
+            if (opt.radius) {
+                o += svgLine(f, O, T, 'stroke-width="2"');
+                [P, Q, T].forEach(function (E) {
+                    var m = [E[0] / 2, E[1] / 2], n = [-E[1] * 0.06, E[0] * 0.06];
+                    o += svgLine(f, [m[0] + n[0], m[1] + n[1]], [m[0] - n[0], m[1] - n[1]], 'stroke-width="2"');
+                });
+            }
+            (opt.marks || []).forEach(function (mk) { o += angleMark(f, mk[0], mk[1], mk[2], mk[3], mk[4], mk[5]); });
+            [[P, 'P', -16, 6], [Q, 'Q', 16, 6], [T, 'T', T[0] * 16, -12], [O, 'O', 0, 20]].forEach(function (L) {
+                var a = f(L[0]);
+                o += '<circle cx="' + px(a[0]) + '" cy="' + px(a[1]) + '" r="3.5" fill="' + INK + '"/>' + svgLabel(a[0] + L[2], a[1] + L[3], L[1], { size: 14, bold: true });
+            });
+            return { svg: o + '</svg>', P: P, Q: Q, O: O, T: T };
+        }
+
+        function stageThales() {
+            var qs = [];
+
+            /* --- 1. one angle given, find the other two --- */
+            (function () {
+                var x;
+                do { x = ri(20, 70); } while (x === 45 || x === 22 || x === 23 || x === 67 || x === 68);
+                var th = 2 * x;
+                var g0 = thalesFig(th, { desc: '' });
+                var g = thalesFig(th, {
+                    desc: 'A triangle PQT inscribed in a circle with center O. PQ is a diameter. The angle at P is marked ' + x + ' degrees; the angle at T is marked with a question mark.',
+                    marks: [[g0.P, g0.Q, g0.T, 34, x + '&deg;'], [g0.T, g0.P, g0.Q, 26, '?', true]]
+                });
+                qs.push({
+                    prompt: 'Triangle PQT is inscribed in a circle, and its longest side PQ is a <strong>diameter</strong>. The angle at P is ' + x + '&deg;. ' +
+                        'What is the angle at T? What is the angle at Q?',
+                    fig: g.svg,
+                    type: 'num', labels: ['Angle at T (degrees)', 'Angle at Q (degrees)'], answer: [90, 90 - x],
+                    meta: { kind: 'thales-angles', x: x, th: th, P: g.P, Q: g.Q, T: g.T },
+                    explain: function () {
+                        return '<p>A triangle drawn in a circle with one side a diameter always has a <strong>right angle</strong> at the third corner (Thales&rsquo; theorem). So the angle at T is 90&deg;.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">Q = 180&deg; &minus; 90&deg; &minus; ' + x + '&deg; = ' + (90 - x) + '&deg;</p>' +
+                            '<p class="why">The next question shows <em>why</em> T is a right angle, using radii and isosceles triangles.</p>';
+                    }
+                });
+            })();
+
+            /* --- 2. why: radii make two isosceles triangles --- */
+            (function () {
+                var cang;
+                do { cang = 2 * ri(20, 70); } while (cang === 90);
+                var g0 = thalesFig(cang, { desc: '' });
+                var g = thalesFig(cang, {
+                    radius: true,
+                    desc: 'A triangle PQT inscribed in a circle with center O; PQ is a diameter. The radius OT is drawn, and OP, OQ and OT carry equal tick marks. The angle TOQ at the center is marked ' + cang + ' degrees.',
+                    marks: [[g0.O, g0.Q, g0.T, 22, cang + '&deg;']]
+                });
+                var bq = (180 - cang) / 2, bp = cang / 2;
+                qs.push({
+                    prompt: 'PQ is a diameter of the circle with center O, and the radius OT is drawn. The angle TOQ at the center is <strong>' + cang + '&deg;</strong>. ' +
+                        'Find angle OTQ and angle OTP. (Hint: OP, OQ and OT are all radii.)',
+                    fig: g.svg,
+                    type: 'num', labels: ['Angle OTQ (degrees)', 'Angle OTP (degrees)'], answer: [bq, bp],
+                    meta: { kind: 'thales-iso', cang: cang, P: g.P, Q: g.Q, O: g.O, T: g.T },
+                    explain: function () {
+                        return '<p>OT = OQ (both radii), so triangle OTQ is <strong>isosceles</strong> and its base angles are equal: (180&deg; &minus; ' + cang + '&deg;) &divide; 2 = <strong>' + bq + '&deg;</strong>.</p>' +
+                            '<p>Angle TOP is 180&deg; &minus; ' + cang + '&deg; = ' + (180 - cang) + '&deg; (P, O, Q are on one line). OT = OP, so triangle OTP is isosceles too: (180&deg; &minus; ' + (180 - cang) + '&deg;) &divide; 2 = <strong>' + bp + '&deg;</strong>.</p>' +
+                            '<p style="font-family:ui-monospace,Consolas,monospace">angle PTQ = ' + bp + '&deg; + ' + bq + '&deg; = 90&deg;</p>' +
+                            '<p class="why">Try it with any other angle at O: the two pieces always add to 90&deg;. In general, if the base angles are x and y, the big triangle&rsquo;s angles are x, y and x + y, so 2x + 2y = 180&deg; and x + y = 90&deg;.</p>';
+                    }
+                });
+            })();
+
+            /* --- 3. what Thales says --- */
+            (function () {
+                var opts = shuffle([
+                    { html: 'The angle at T is 90&deg; no matter where T is on the circle (as long as T is not P or Q).', correct: true, key: 'always' },
+                    { html: 'The angle at T is 90&deg; only when T is at the very top of the circle, halfway between P and Q.', correct: false, key: 'top' },
+                    { html: 'The angle at T gets bigger as T moves closer to P.', correct: false, key: 'grows' },
+                    { html: 'The angle at T is 60&deg;, because the triangle is equilateral.', correct: false, key: 'sixty' }
+                ]);
+                qs.push({
+                    prompt: 'PQ is a diameter of a circle. A point T moves around the circle, and you watch triangle PQT. Which statement is <strong>true</strong>?',
+                    type: 'choice', choices: opts,
+                    meta: { kind: 'thales-which' },
+                    explain: function () {
+                        return '<p>Wherever T sits, the radius OT splits triangle PQT into two isosceles triangles, and their base angles x and y always satisfy 2x + 2y = 180&deg;. So the angle at T, x + y, is always <strong>90&deg;</strong>.</p>' +
+                            '<p class="why">The <em>shape</em> of the triangle changes as T moves (the angles at P and Q trade off), but the angle at T does not. It is never equilateral: the diameter is always the longest side.</p>';
+                    }
+                });
+            })();
+
+            return qs;
+        }
+
+        /* =======================================================
+           stage registry
+           ======================================================= */
+        var STAGE_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+        var STAGES = [
+            { id: 'angles', name: 'Angle Alley', sub: 'Parallel lines, exterior angles, isosceles triangles', item: 'Section 10.2', build: stageAngles },
+            { id: 'circles', name: 'Circle Corner', sub: 'Places that are a given distance away', item: 'Section 10.4', build: stageCircles },
+            { id: 'compass', name: 'Compass & Shapes', sub: 'Triangles from circles, the steps, the shape family', item: 'Section 10.5', build: stageCompass },
+            { id: 'units', name: 'Units & Attributes', sub: 'Length, area or volume: which unit fits', item: 'Chapter 11', build: stageUnits },
+            { id: 'convert', name: 'Conversion Yard', sub: 'Square and cubic units', item: 'Chapter 11', build: stageConvert },
+            { id: 'accuracy', name: 'Accuracy Arena', sub: 'How far off could it be?', item: 'Chapter 11', build: stageAccuracy },
+            { id: 'area', name: 'Area Arena', sub: 'Hidden lengths, adding, shearing, circles', item: 'Sections 12.2&ndash;12.6', build: stageArea },
+            { id: 'thales', name: 'Thales Point', sub: 'Angles in a semicircle', item: 'Bonus topic', build: stageThales }
+        ];
+
+        /* =======================================================
+           game state + engine
+           ======================================================= */
+        var G = {
+            sets: {},          /* stageId -> [questions] */
+            results: {},       /* stageId -> {correct, answered, total, points} */
+            score: 0, streak: 0, best: 0,
+            correct: 0, answered: 0, total: 0,
+            stage: null, idx: 0, attempts: 0, locked: false, selected: null
+        };
+
+        var el = function (id) { return document.getElementById(id); };
+
+        function buildAll() {
+            G.sets = {}; G.results = {};
+            G.score = 0; G.streak = 0; G.best = 0;
+            G.correct = 0; G.answered = 0; G.total = 0;
+            STAGES.forEach(function (s) {
+                var qs = s.build();
+                G.sets[s.id] = qs;
+                G.total += qs.length;
+            });
+            renderMap();
+            renderScore();
+        }
+
+        function renderScore() {
+            el('s-score').textContent = G.score;
+            el('s-streak').textContent = G.streak;
+            el('s-streak').className = 'v' + (G.streak >= 3 ? ' hot' : '');
+            el('s-correct').textContent = G.correct + ' / ' + G.answered;
+            el('s-bar').style.width = (G.total ? (G.answered / G.total * 100) : 0) + '%';
+        }
+
+        function renderMap() {
+            var m = el('map');
+            m.innerHTML = '';
+            STAGES.forEach(function (s, i) {
+                var r = G.results[s.id];
+                var b = document.createElement('button');
+                b.className = 'stage' + (r ? ' done' : '') +
+                    (G.stage && G.stage.id === s.id ? ' current' : '');
+                b.innerHTML = '<span class="badge">Stage ' + (i + 1) + ' &middot; ' + s.item + '</span>' +
+                    '<span class="nm">' + s.name + '</span>' +
+                    '<span class="sub">' + s.sub + '</span>' +
+                    (r ? '<span class="res">' + r.correct + ' of ' + r.total + ' &middot; ' +
+                        r.points + ' pts</span>'
+                        : '<span class="res" style="color:#6E6E6E">' + G.sets[s.id].length +
+                        ' questions</span>');
+                b.addEventListener('click', function () { startStage(i); });
+                m.appendChild(b);
+            });
+        }
+
+        function show(which) {
+            el('mapPanel').classList.toggle('hidden', which !== 'map');
+            el('qPanel').classList.toggle('hidden', which !== 'q');
+            el('rPanel').classList.toggle('hidden', which !== 'r');
+            el('intro').classList.toggle('hidden', which !== 'map');
+        }
+
+        function startStage(i) {
+            G.stage = STAGES[i];
+            G.idx = 0;
+            if (!G.results[G.stage.id]) {
+                G.results[G.stage.id] = { correct: 0, answered: 0, total: G.sets[G.stage.id].length, points: 0 };
+            } else {
+                /* replaying a stage: clear its old tally so it is not double counted */
+                var old = G.results[G.stage.id];
+                G.score -= old.points;
+                G.correct -= old.correct;
+                G.answered -= old.answered;   /* not old.total: the old run may have been quit partway */
+                G.results[G.stage.id] = { correct: 0, answered: 0, total: G.sets[G.stage.id].length, points: 0 };
+            }
+            renderScore();
+            show('q');
+            renderQ();
+        }
+
+        function currentQ() { return G.sets[G.stage.id][G.idx]; }
+
+        function renderQ() {
+            var q = currentQ();
+            G.attempts = 0; G.locked = false; G.selected = null;
+
+            el('q-round').innerHTML = G.stage.name + ' <span style="color:#A2A2A2">&middot; ' +
+                G.stage.item + '</span>';
+            el('q-count').textContent = 'Question ' + (G.idx + 1) + ' of ' + G.sets[G.stage.id].length;
+            el('q-text').innerHTML = q.prompt;
+            el('q-fig').innerHTML = q.fig ? '<div class="figbox">' + q.fig + '</div>' : '';
+            el('q-fb').innerHTML = '';
+            el('btn-check').classList.remove('hidden');
+            el('btn-check').disabled = false;
+            el('btn-check').textContent = 'Check answer';
+            el('btn-next').classList.add('hidden');
+
+            var body = el('q-body');
+            body.innerHTML = '';
+
+            if (q.type === 'choice') {
+                var wrap = document.createElement('div');
+                wrap.className = 'choices';
+                q.choices.forEach(function (c, i) {
+                    var b = document.createElement('button');
+                    b.className = 'choice';
+                    b.type = 'button';
+                    b.dataset.i = i;
+                    b.innerHTML = '<span class="ltr">' + 'ABCD'[i] + '</span><span>' + c.html + '</span>';
+                    b.addEventListener('click', function () {
+                        if (G.locked) return;
+                        wrap.querySelectorAll('.choice').forEach(function (n) { n.classList.remove('sel'); });
+                        b.classList.add('sel');
+                        G.selected = i;
+                    });
+                    wrap.appendChild(b);
+                });
+                body.appendChild(wrap);
+            } else {
+                var f = document.createElement('div');
+                f.className = 'fields';
+                q.labels.forEach(function (lab, i) {
+                    var d = document.createElement('div');
+                    d.className = 'field';
+                    d.innerHTML = '<label for="in' + i + '">' + lab + '</label>' +
+                        '<input id="in' + i + '" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">';
+                    f.appendChild(d);
+                });
+                body.appendChild(f);
+                var first = body.querySelector('input');
+                if (first) setTimeout(function () { first.focus(); }, 30);
+                body.querySelectorAll('input').forEach(function (inp) {
+                    inp.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (!el('btn-next').classList.contains('hidden')) nextQ();
+                            else check();
+                        }
+                    });
+                });
+            }
+        }
+
+        function check() {
+            var q = currentQ();
+            var ok;
+
+            if (q.type === 'choice') {
+                if (G.selected === null) {
+                    flashFB('near', 'Pick an answer first', 'Choose one of the options, then check it.');
+                    return;
+                }
+                ok = !!q.choices[G.selected].correct;
+            } else {
+                var inputs = Array.prototype.slice.call(el('q-body').querySelectorAll('input'));
+                if (inputs.length !== q.answer.length) return;   /* should never happen */
+                if (inputs.some(function (i) { return i.value.trim() === ''; })) {
+                    flashFB('near', 'Fill in every box',
+                        inputs.length > 1 ? 'Every box needs a value before you can check.'
+                            : 'Type an answer before you check it.');
+                    return;
+                }
+                var bad = inputs.filter(function (i) { return !isFinite(parseNum(i.value)); });
+                if (bad.length) {
+                    flashFB('near', 'That is not a number I can read',
+                        'Use digits, a decimal point, or a fraction like 3/8. No units or words.');
+                    return;
+                }
+                ok = inputs.every(function (inp, i) {
+                    return matches(parseNum(inp.value), q.answer[i], q.round);
+                });
+                inputs.forEach(function (inp, i) {
+                    inp.classList.remove('right', 'wrong');
+                    inp.classList.add(matches(parseNum(inp.value), q.answer[i], q.round) ? 'right' : 'wrong');
+                });
+            }
+
+            G.attempts++;
+
+            if (ok) {
+                var base = G.attempts === 1 ? 100 : 50;
+                G.streak++;
+                if (G.streak > G.best) G.best = G.streak;
+                var bonus = G.streak >= 3 ? Math.min(75, (G.streak - 2) * 25) : 0;
+                var gained = base + bonus;
+                G.score += gained;
+                G.correct++;
+                G.answered++;
+                G.results[G.stage.id].answered++;
+                G.results[G.stage.id].correct++;
+                G.results[G.stage.id].points += gained;
+                lockIn();
+                showFB('good', 'Correct', gained, bonus, q);
+            } else if (G.attempts === 1) {
+                G.streak = 0;
+                flashFB('near', 'Not quite &mdash; one more try',
+                    'Have another look. A correct answer on the second try is still worth 50 points.');
+                if (q.type === 'choice') {
+                    var sel = el('q-body').querySelector('.choice.sel');
+                    if (sel) { sel.classList.add('wrong'); sel.classList.remove('sel'); sel.disabled = true; }
+                    G.selected = null;
+                }
+            } else {
+                G.streak = 0;
+                G.answered++;
+                G.results[G.stage.id].answered++;
+                lockIn();
+                showFB('bad', 'Not this time', 0, 0, q);
+            }
+            renderScore();
+        }
+
+        function lockIn() {
+            var q = currentQ();
+            G.locked = true;
+            el('btn-check').classList.add('hidden');
+            el('btn-next').classList.remove('hidden');
+            el('btn-next').textContent = (G.idx + 1 < G.sets[G.stage.id].length)
+                ? 'Next question' : 'See stage results';
+            if (q.type === 'choice') {
+                el('q-body').querySelectorAll('.choice').forEach(function (b) {
+                    var i = Number(b.dataset.i);
+                    b.disabled = true;
+                    b.classList.remove('sel');
+                    if (q.choices[i].correct) b.classList.add('right');
+                });
+            } else {
+                el('q-body').querySelectorAll('input').forEach(function (inp) { inp.disabled = true; });
+            }
+        }
+
+        function flashFB(kind, head, msg) {
+            el('q-fb').innerHTML = '<div class="fb ' + kind + '" role="status"><div class="hd">' + head + '</div>' +
+                '<p>' + msg + '</p></div>';
+        }
+
+        function showFB(kind, head, gained, bonus, q) {
+            var ptline = gained > 0
+                ? ' <span class="pts">+' + gained + ' pts' +
+                (bonus ? ' (' + (gained - bonus) + ' + ' + bonus + ' streak)' : '') + '</span>'
+                : '';
+            var answerLine = '';
+            if (kind === 'bad') {
+                if (q.type === 'choice') {
+                    var right = q.choices.filter(function (c) { return c.correct; })[0];
+                    answerLine = '<p>The answer was <strong>' + right.html + '</strong></p>';
+                } else {
+                    answerLine = '<p>The answer was <strong>' +
+                        q.answer.map(function (a, i) { return q.labels[i] + ' = ' + (q.round ? asFraction(a) : fmt(a)); }).join(', ') +
+                        '</strong>.</p>';
+                }
+            }
+            el('q-fb').innerHTML = '<div class="fb ' + kind + '" role="status">' +
+                '<div class="hd">' + head + ptline + '</div>' +
+                answerLine +
+                (typeof q.explain === 'function' ? q.explain() : (q.explain || '')) +
+                '</div>';
+        }
+
+        function nextQ() {
+            if (G.idx + 1 < G.sets[G.stage.id].length) {
+                G.idx++;
+                renderQ();
+                el('qPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            var doneAll = STAGES.every(function (s) { return G.results[s.id]; });
+            show('r');
+            el('r-score').textContent = G.score;
+
+            var r = G.results[G.stage.id];
+            el('r-title').textContent = doneAll ? 'All ' + STAGE_WORDS[STAGES.length] + ' stages complete' : G.stage.name + ' complete';
+            el('r-line').innerHTML = 'You got <strong>' + r.correct + ' of ' + r.total + '</strong> in ' +
+                G.stage.name + '. Best streak so far: <strong>' + G.best + '</strong>.' +
+                (doneAll ? ' You have now cleared every stage.' : '');
+
+            var grid = el('r-grid');
+            grid.innerHTML = '';
+            STAGES.forEach(function (s) {
+                var res = G.results[s.id];
+                var d = document.createElement('div');
+                var weak = res && res.correct < res.total;
+                d.className = 'rcard' + (weak ? ' weak' : '');
+                d.innerHTML = '<div class="nm">' + s.name + '</div>' +
+                    '<div class="sc">' + (res ? res.correct + '/' + res.total : '&mdash;') + '</div>' +
+                    '<div class="tip">' + (res
+                        ? (weak ? 'Worth another pass &mdash; ' + s.item.toLowerCase()
+                            : 'Clean run &mdash; ' + s.item.toLowerCase())
+                        : 'Not attempted yet') + '</div>';
+                grid.appendChild(d);
+            });
+
+            var weakOnes = STAGES.filter(function (s) {
+                var res = G.results[s.id];
+                return res && res.correct < res.total;
+            });
+            el('r-advice').innerHTML = weakOnes.length
+                ? '<div class="prompt-box"><h3>Where to spend your study time</h3><p>' +
+                weakOnes.map(function (s) {
+                    return '<strong>' + s.name + '</strong> (' + s.item + ')';
+                }).join(', ') + '. Replay those stages &mdash; you will get different problems each time, ' +
+                'so you cannot just memorize the answers.</p></div>'
+                : '<div class="prompt-box"><h3>Nice run</h3><p>No missed questions in the stages you ' +
+                'attempted. Run it again for a fresh set, or go back and do the stages you skipped.</p></div>';
+        }
+
+        /* ---------- wiring ---------- */
+        el('btn-check').addEventListener('click', check);
+        el('btn-next').addEventListener('click', nextQ);
+        el('btn-quit').addEventListener('click', function () { renderMap(); show('map'); });
+        el('btn-map').addEventListener('click', function () { renderMap(); show('map'); });
+        el('btn-start').addEventListener('click', function () { startStage(0); });
+        el('btn-reset').addEventListener('click', function () { buildAll(); show('map'); });
+        el('btn-again').addEventListener('click', function () { buildAll(); startStage(0); });
+
+        /* ---------- go ---------- */
+        buildAll();
+        show('map');
+    </script>
+</body>
+
+</html>
