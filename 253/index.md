@@ -7,7 +7,7 @@ activities:
   - title: "Test 3 Review Games"
     url: "test-3-review-games.html"
     type: "Ch. 10, 11 & 12 Review"
-    description: "Eight stages, 33 questions, and a fresh problem set every run. Angles and isosceles triangles, circles and compass constructions, units and accuracy, areas with hidden lengths, and Thales' theorem, each one with the reasoning, not just the answer."
+    description: "Seven stages, 30 questions, and a fresh problem set every run. Angles and isosceles triangles, circles and compass constructions, units and accuracy, and areas with hidden lengths, each one with the reasoning, not just the answer."
   - title: "Praxis 5003 Diagnostic"
     url: "praxis-5003-diagnostic.html"
     type: "Praxis Prep"

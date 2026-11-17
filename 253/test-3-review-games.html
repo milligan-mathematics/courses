@@ -508,8 +508,8 @@
     <header class="hero">
         <div class="container">
             <h1>Test 3 Review Games</h1>
-            <p>Eight stages, Chapters 10, 11 &amp; 12 &mdash; angles, circles and compass constructions, units and
-                accuracy, areas, and Thales&rsquo; theorem. Every run builds new problems, so you can take it as many
+            <p>Seven stages, Chapters 10, 11 &amp; 12 &mdash; angles, circles and compass constructions, units and
+                accuracy, and areas. Every run builds new problems, so you can take it as many
                 times as you like.</p>
         </div>
     </header>
@@ -519,7 +519,7 @@
         <div class="prompt-box" id="intro">
             <h3>How this works</h3>
             <ul>
-                <li>Eight stages, 33 questions. Each stage drills one skill from Chapters 10, 11 and 12.</li>
+                <li>Seven stages, 30 questions. Each stage drills one skill from Chapters 10, 11 and 12.</li>
                 <li>You get <strong>two tries</strong> per question &mdash; 100 points on the first, 50 on the
                     second.</li>
                 <li>Answer three in a row and your <strong>streak bonus</strong> starts stacking.</li>
@@ -951,7 +951,7 @@
                         h += ask === 'base'
                             ? '<p style="font-family:ui-monospace,Consolas,monospace">B = C = (180&deg; &minus; ' + apex + '&deg;) &divide; 2 = ' + base + '&deg;</p>'
                             : '<p style="font-family:ui-monospace,Consolas,monospace">A = 180&deg; &minus; ' + base + '&deg; &minus; ' + base + '&deg; = ' + apex + '&deg;</p>';
-                        return h + '<p class="why">Watch for this inside circles: two radii are always the same length, so a triangle made from two radii is isosceles. The last stage uses that.</p>';
+                        return h + '<p class="why">Watch for this inside circles: two radii are always the same length, so a triangle made from two radii is isosceles.</p>';
                     }
                 });
             })();
@@ -1814,106 +1814,6 @@
         }
 
         /* =======================================================
-           STAGE 8 - Thales Point
-           Circle center O = (0,0), radius 1; diameter P (-1,0) to Q (1,0); T at angle th on the top half.
-           ======================================================= */
-        function thalesFig(th, opt) {
-            var P = [-1, 0], Q = [1, 0], O = [0, 0], T = [Math.cos(th * DEG), Math.sin(th * DEG)];
-            var f = makeMap([[-1.3, -1.25], [1.3, 1.3]], 380, 330, 8), c = f(O);
-            var o = svgOpen(380, 330, opt.desc);
-            o += '<circle cx="' + px(c[0]) + '" cy="' + px(c[1]) + '" r="' + px(f.s) + '" fill="none" stroke="#333" stroke-width="2.2"/>';
-            o += svgPoly(f, [P, Q, T], 'fill="' + SHADE + '" stroke="' + INK + '" stroke-width="2.4"');
-            if (opt.radius) {
-                o += svgLine(f, O, T, 'stroke-width="2"');
-                [P, Q, T].forEach(function (E) {
-                    var m = [E[0] / 2, E[1] / 2], n = [-E[1] * 0.06, E[0] * 0.06];
-                    o += svgLine(f, [m[0] + n[0], m[1] + n[1]], [m[0] - n[0], m[1] - n[1]], 'stroke-width="2"');
-                });
-            }
-            (opt.marks || []).forEach(function (mk) { o += angleMark(f, mk[0], mk[1], mk[2], mk[3], mk[4], mk[5]); });
-            [[P, 'P', -16, 6], [Q, 'Q', 16, 6], [T, 'T', T[0] * 16, -12], [O, 'O', 0, 20]].forEach(function (L) {
-                var a = f(L[0]);
-                o += '<circle cx="' + px(a[0]) + '" cy="' + px(a[1]) + '" r="3.5" fill="' + INK + '"/>' + svgLabel(a[0] + L[2], a[1] + L[3], L[1], { size: 14, bold: true });
-            });
-            return { svg: o + '</svg>', P: P, Q: Q, O: O, T: T };
-        }
-
-        function stageThales() {
-            var qs = [];
-
-            /* --- 1. one angle given, find the other two --- */
-            (function () {
-                var x;
-                do { x = ri(20, 70); } while (x === 45 || x === 22 || x === 23 || x === 67 || x === 68);
-                var th = 2 * x;
-                var g0 = thalesFig(th, { desc: '' });
-                var g = thalesFig(th, {
-                    desc: 'A triangle PQT inscribed in a circle with center O. PQ is a diameter. The angle at P is marked ' + x + ' degrees; the angle at T is marked with a question mark.',
-                    marks: [[g0.P, g0.Q, g0.T, 34, x + '&deg;'], [g0.T, g0.P, g0.Q, 26, '?', true]]
-                });
-                qs.push({
-                    prompt: 'Triangle PQT is inscribed in a circle, and its longest side PQ is a <strong>diameter</strong>. The angle at P is ' + x + '&deg;. ' +
-                        'What is the angle at T? What is the angle at Q?',
-                    fig: g.svg,
-                    type: 'num', labels: ['Angle at T (degrees)', 'Angle at Q (degrees)'], answer: [90, 90 - x],
-                    meta: { kind: 'thales-angles', x: x, th: th, P: g.P, Q: g.Q, T: g.T },
-                    explain: function () {
-                        return '<p>A triangle drawn in a circle with one side a diameter always has a <strong>right angle</strong> at the third corner (Thales&rsquo; theorem). So the angle at T is 90&deg;.</p>' +
-                            '<p style="font-family:ui-monospace,Consolas,monospace">Q = 180&deg; &minus; 90&deg; &minus; ' + x + '&deg; = ' + (90 - x) + '&deg;</p>' +
-                            '<p class="why">The next question shows <em>why</em> T is a right angle, using radii and isosceles triangles.</p>';
-                    }
-                });
-            })();
-
-            /* --- 2. why: radii make two isosceles triangles --- */
-            (function () {
-                var cang;
-                do { cang = 2 * ri(20, 70); } while (cang === 90);
-                var g0 = thalesFig(cang, { desc: '' });
-                var g = thalesFig(cang, {
-                    radius: true,
-                    desc: 'A triangle PQT inscribed in a circle with center O; PQ is a diameter. The radius OT is drawn, and OP, OQ and OT carry equal tick marks. The angle TOQ at the center is marked ' + cang + ' degrees.',
-                    marks: [[g0.O, g0.Q, g0.T, 22, cang + '&deg;']]
-                });
-                var bq = (180 - cang) / 2, bp = cang / 2;
-                qs.push({
-                    prompt: 'PQ is a diameter of the circle with center O, and the radius OT is drawn. The angle TOQ at the center is <strong>' + cang + '&deg;</strong>. ' +
-                        'Find angle OTQ and angle OTP. (Hint: OP, OQ and OT are all radii.)',
-                    fig: g.svg,
-                    type: 'num', labels: ['Angle OTQ (degrees)', 'Angle OTP (degrees)'], answer: [bq, bp],
-                    meta: { kind: 'thales-iso', cang: cang, P: g.P, Q: g.Q, O: g.O, T: g.T },
-                    explain: function () {
-                        return '<p>OT = OQ (both radii), so triangle OTQ is <strong>isosceles</strong> and its base angles are equal: (180&deg; &minus; ' + cang + '&deg;) &divide; 2 = <strong>' + bq + '&deg;</strong>.</p>' +
-                            '<p>Angle TOP is 180&deg; &minus; ' + cang + '&deg; = ' + (180 - cang) + '&deg; (P, O, Q are on one line). OT = OP, so triangle OTP is isosceles too: (180&deg; &minus; ' + (180 - cang) + '&deg;) &divide; 2 = <strong>' + bp + '&deg;</strong>.</p>' +
-                            '<p style="font-family:ui-monospace,Consolas,monospace">angle PTQ = ' + bp + '&deg; + ' + bq + '&deg; = 90&deg;</p>' +
-                            '<p class="why">Try it with any other angle at O: the two pieces always add to 90&deg;. In general, if the base angles are x and y, the big triangle&rsquo;s angles are x, y and x + y, so 2x + 2y = 180&deg; and x + y = 90&deg;.</p>';
-                    }
-                });
-            })();
-
-            /* --- 3. what Thales says --- */
-            (function () {
-                var opts = shuffle([
-                    { html: 'The angle at T is 90&deg; no matter where T is on the circle (as long as T is not P or Q).', correct: true, key: 'always' },
-                    { html: 'The angle at T is 90&deg; only when T is at the very top of the circle, halfway between P and Q.', correct: false, key: 'top' },
-                    { html: 'The angle at T gets bigger as T moves closer to P.', correct: false, key: 'grows' },
-                    { html: 'The angle at T is 60&deg;, because the triangle is equilateral.', correct: false, key: 'sixty' }
-                ]);
-                qs.push({
-                    prompt: 'PQ is a diameter of a circle. A point T moves around the circle, and you watch triangle PQT. Which statement is <strong>true</strong>?',
-                    type: 'choice', choices: opts,
-                    meta: { kind: 'thales-which' },
-                    explain: function () {
-                        return '<p>Wherever T sits, the radius OT splits triangle PQT into two isosceles triangles, and their base angles x and y always satisfy 2x + 2y = 180&deg;. So the angle at T, x + y, is always <strong>90&deg;</strong>.</p>' +
-                            '<p class="why">The <em>shape</em> of the triangle changes as T moves (the angles at P and Q trade off), but the angle at T does not. It is never equilateral: the diameter is always the longest side.</p>';
-                    }
-                });
-            })();
-
-            return qs;
-        }
-
-        /* =======================================================
            stage registry
            ======================================================= */
         var STAGE_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
@@ -1924,8 +1824,7 @@
             { id: 'units', name: 'Units & Attributes', sub: 'Length, area or volume: which unit fits', item: 'Chapter 11', build: stageUnits },
             { id: 'convert', name: 'Conversion Yard', sub: 'Square and cubic units', item: 'Chapter 11', build: stageConvert },
             { id: 'accuracy', name: 'Accuracy Arena', sub: 'How far off could it be?', item: 'Chapter 11', build: stageAccuracy },
-            { id: 'area', name: 'Area Arena', sub: 'Hidden lengths, adding, shearing, circles', item: 'Sections 12.2&ndash;12.6', build: stageArea },
-            { id: 'thales', name: 'Thales Point', sub: 'Angles in a semicircle', item: 'Circles &amp; triangles', build: stageThales }
+            { id: 'area', name: 'Area Arena', sub: 'Hidden lengths, adding, shearing, circles', item: 'Sections 12.2&ndash;12.6', build: stageArea }
         ];
 
         /* =======================================================
