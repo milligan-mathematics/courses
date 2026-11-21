@@ -582,19 +582,26 @@
 
   // ---------- writing ----------
   function renderWrite(q, box, opts) {
-    box.appendChild(el('p', 'pl-hint', 'Write it in your own words first, then compare. '
+    // window.POLYA_WRITE (494 reading companions, 21 Nov 2026): relabels this step and keeps the text in the browser
+    var W = window.POLYA_WRITE || null;
+    box.appendChild(el('p', 'pl-hint', W ? W.hint : 'Write it in your own words first, then compare. '
       + 'Nothing here is saved or graded; it&rsquo;s for your thinking.'));
     var ta = document.createElement('textarea');
-    ta.rows = 3; ta.setAttribute('aria-label', 'Your answer in your own words');
+    ta.rows = W ? 6 : 3; ta.setAttribute('aria-label', 'Your answer in your own words');
+    if (W) {
+      var wkey = 'polya-write:' + location.pathname + ':' + q.text.length + ':' + q.text.slice(0, 40);
+      try { ta.value = localStorage.getItem(wkey) || ''; } catch (e) { /* storage blocked: fine */ }
+      ta.addEventListener('input', function () { try { localStorage.setItem(wkey, ta.value); } catch (e) { /* fine */ } });
+    }
     var out = el('div', 'pl-msg');
-    var btn = button('pl-check-btn', 'Compare with mine', function () {
+    var btn = button('pl-check-btn', W ? W.button : 'Compare with mine', function () {
       out.innerHTML = '';
       if (ta.value.trim().split(/\s+/).filter(Boolean).length < 3) {
         out.appendChild(el('p', 'pl-nudge', 'Write a sentence first, even a rough one.'));
         return;
       }
       btn.remove();
-      show(out, note('pl-model', 'Here&rsquo;s one way to say it:', q.model));
+      show(out, note('pl-model', W ? W.model : 'Here&rsquo;s one way to say it:', q.model));
       if (q.checklist && q.checklist.length) {
         var cl = el('fieldset', 'pl-checklist');
         cl.appendChild(el('legend', null, 'Look back at what you wrote. Did yours&hellip;'));

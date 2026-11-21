@@ -467,13 +467,13 @@
       var n = PHASES.indexOf(phase), bar = el('ol', 'pl-progress');
       bar.setAttribute('aria-label', 'Phase ' + (n + 1) + ' of 4: ' + phase);
       PHASES.forEach(function (name, i) {
-        bar.appendChild(el('li', 'pl-seg pl-p' + (i + 1) + (i < n ? ' pl-done' : i === n ? ' pl-now' : ''), name));
+        bar.appendChild(el('li', 'pl-seg pl-p' + (i + 1) + (i < n ? ' pl-done' : i === n ? ' pl-now' : ''), (P.phase_labels || PHASES)[i]));  // phase_labels: 494 reading cards
       });
       return bar;
     }
     function phaseHead(phase) {
       var n = PHASES.indexOf(phase) + 1;
-      return el('h3', 'pl-phase-head pl-c' + n, 'Phase ' + n + ' of 4 &middot; ' + phase);
+      return el('h3', 'pl-phase-head pl-c' + n, 'Phase ' + n + ' of 4 &middot; ' + (P.phase_labels || PHASES)[n - 1]);
     }
     function coldName(plain) {  // what the cold try tests: N, n or delta
       var t = P.cold && P.cold.length ? P.steps[P.cold[0]].type : 'epsN';
@@ -494,7 +494,8 @@
       var row = el('div', 'pl-start');
       row.appendChild(button('btn411', 'Walk me through it', function () { set('walk', 0); }));
       if (P.cold && P.cold.length) {
-        row.appendChild(button('btn411 ghost', 'Already have a proof? Test your ' + coldName(true), function () { set('cold', 0); }));
+        // window.POLYA_COLD (494 MFT pages, 21 Nov 2026) relabels the cold try for a paper answer; other pages unchanged
+        row.appendChild(button('btn411 ghost', window.POLYA_COLD ? POLYA_COLD.start : 'Already have a proof? Test your ' + coldName(true), function () { set('cold', 0); }));
       }
       root.appendChild(row);
     }
@@ -603,14 +604,14 @@
     function renderCold() {
       var idx = P.cold[S.cold], q = P.steps[idx];
       var box = el('div', 'pl-step');
-      box.appendChild(el('p', 'pl-phase', 'Testing your proof&rsquo;s ' + coldName() + ' &middot; ' + (P.cold.length > 1 ? 'part ' + (S.cold + 1) + ' of ' + P.cold.length : 'one try')));
+      box.appendChild(el('p', 'pl-phase', (window.POLYA_COLD ? POLYA_COLD.label : 'Testing your proof&rsquo;s ' + coldName()) + ' &middot; ' + (P.cold.length > 1 ? 'part ' + (S.cold + 1) + ' of ' + P.cold.length : 'one try')));
       box.appendChild(K.questionHTML(q.cold_text || q.text));
       root.appendChild(box);
       RENDER[q.type](q, box, { cold: true, done: function (res) {
         if (res === 'right' && S.cold + 1 < P.cold.length) {
           box.appendChild(button('pl-next', 'Next part &rarr;', function () { S.cold += 1; save(); render(); }));
         } else if (res === 'right') {
-          box.appendChild(el('p', null, 'Your ' + coldName() + ' survived every challenge the page could throw at it. That isn&rsquo;t a proof (the proof shows it works '
+          box.appendChild(el('p', null, window.POLYA_COLD ? POLYA_COLD.right : 'Your ' + coldName() + ' survived every challenge the page could throw at it. That isn&rsquo;t a proof (the proof shows it works '
             + 'for <em>every</em> ' + (q.type === 'escN' ? '\\(N\\)' : '\\(\\varepsilon\\)') + '), but it&rsquo;s a good sign. Skip ahead to <strong>Look back</strong>.'));
           if (q.cold_note) {  // a case the test can't see (m = 0 on Day 22), with an optional jump to the step about it
             box.appendChild(el('p', null, q.cold_note));
@@ -621,7 +622,7 @@
           box.appendChild(button('pl-next', 'On to Look back &rarr;', function () { set('walk', firstOf('Look back')); }));
           box.appendChild(button('pl-link', 'Walk through the whole thing anyway', function () { set('walk', 0); }));
         } else {
-          box.appendChild(el('p', null, 'That&rsquo;s useful to know before class. The walk-through will take you through it one phase at a time.'));
+          box.appendChild(el('p', null, window.POLYA_COLD ? POLYA_COLD.wrong : 'That&rsquo;s useful to know before class. The walk-through will take you through it one phase at a time.'));
           box.appendChild(button('pl-next', 'Walk me through it &rarr;', function () { set('walk', 0); }));
         }
         typeset(box);
